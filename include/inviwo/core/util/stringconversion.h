@@ -349,7 +349,7 @@ std::array<std::string_view, numItems> splitIntoArray(std::string_view str, char
  */
 constexpr size_t iCaseFind(std::string_view str, std::string_view substring) {
     if (str.empty() && substring.empty()) return 0;
-    if (auto found = std::ranges::search(
+    if (const auto found = std::ranges::search(
             str, substring, {}, [](unsigned char c) { return std::tolower(c); },
             [](unsigned char c) { return std::tolower(c); });
         !found.empty()) {

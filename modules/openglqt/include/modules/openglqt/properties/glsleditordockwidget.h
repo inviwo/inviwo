@@ -46,7 +46,7 @@ class Property;
  */
 class IVW_MODULE_OPENGLQT_API GLSLEditorDockWidget : public TextEditorDockWidget {
 public:
-    GLSLEditorDockWidget(Property* property);
+    explicit GLSLEditorDockWidget(Property* property);
 
 private:
     std::vector<std::shared_ptr<std::function<void()>>> callbacks_;

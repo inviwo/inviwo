@@ -39,8 +39,8 @@ class SpatialSampler {
 public:
     static const unsigned SpatialDimensions = 3;
     using type = ReturnType;
-    SpatialSampler(const SpatialEntity& spatialEntity,
-                   CoordinateSpace space = CoordinateSpace::Data);
+    explicit SpatialSampler(const SpatialEntity& spatialEntity,
+                            CoordinateSpace space = CoordinateSpace::Data);
     virtual ~SpatialSampler() = default;
 
     auto sample(const dvec3& pos) const -> ReturnType;

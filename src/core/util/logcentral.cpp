@@ -83,7 +83,7 @@ void LogCentral::registerLogger(std::weak_ptr<Logger> logger) {
 void LogCentral::unregisterLogger(std::shared_ptr<Logger> log) {
     const std::scoped_lock lock{mutex_};
     std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-        if (auto l = logger.lock()) {
+        if (const auto l = logger.lock()) {
             return l.get() == log.get();
         } else {
             return true;
@@ -116,7 +116,7 @@ void LogCentral::log(std::string_view source, LogLevel level, LogAudience audien
         if (level >= std::max(logVerbosity_, localVerbosity())) {
             // use remove if here to remove expired weak pointers while calling the loggers.
             std::erase_if(loggers_, [&](const std::weak_ptr<Logger>& logger) {
-                if (auto l = logger.lock()) {
+                if (const auto l = logger.lock()) {
                     l->log(source, level, audience, file, function, line, msg);
                     return false;
                 } else {

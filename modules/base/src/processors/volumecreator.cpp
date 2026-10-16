@@ -155,7 +155,7 @@ void VolumeCreator::process() {
         deserialized_ = false;
     }
 
-    auto volume = std::make_shared<Volume>(*loadedData_);
+    const auto volume = std::make_shared<Volume>(*loadedData_);
     basis_.updateEntity(*volume);
     information_.updateVolume(*volume);
     outport_.setData(volume);

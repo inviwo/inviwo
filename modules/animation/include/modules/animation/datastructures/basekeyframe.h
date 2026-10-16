@@ -44,7 +44,7 @@ class IVW_MODULE_ANIMATION_API BaseKeyframe : public Keyframe {
 public:
     using value_type = void;
     BaseKeyframe() = default;
-    BaseKeyframe(Seconds time);
+    explicit BaseKeyframe(Seconds time);
 
     virtual ~BaseKeyframe() = default;
 

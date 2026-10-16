@@ -57,7 +57,7 @@ const BitSet& IndexList::getIndices() const {
 
 bool IndexList::set(std::string_view src, const BitSet& indices) {
     const std::string source(src);
-    auto it = indicesBySource_.find(source);
+    const auto it = indicesBySource_.find(source);
 
     if (it == indicesBySource_.end()) {
         if (indices.empty()) return false;

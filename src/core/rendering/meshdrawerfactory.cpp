@@ -33,18 +33,18 @@
 namespace inviwo {
 
 bool MeshDrawerFactory::registerObject(MeshDrawer* drawer) {
-    auto res = drawers_.insert(drawer);
+    const auto res = drawers_.insert(drawer);
     return res.second;
 }
 
 bool MeshDrawerFactory::unRegisterObject(MeshDrawer* drawer) {
-    auto res = drawers_.erase(drawer);
+    const auto res = drawers_.erase(drawer);
     return res > 0;
 }
 
 std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
-    auto it = std::find_if(drawers_.begin(), drawers_.end(),
-                           [geom](MeshDrawer* d) { return d->canDraw(geom); });
+    const auto it = std::find_if(drawers_.begin(), drawers_.end(),
+                                 [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
     if (it != drawers_.end()) {
         return std::unique_ptr<MeshDrawer>((*it)->create(geom));
@@ -54,8 +54,8 @@ std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
 }
 
 bool MeshDrawerFactory::hasKey(const Mesh* geom) const {
-    auto it = std::find_if(drawers_.begin(), drawers_.end(),
-                           [geom](MeshDrawer* d) { return d->canDraw(geom); });
+    const auto it = std::find_if(drawers_.begin(), drawers_.end(),
+                                 [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
     return (it != drawers_.end());
 }

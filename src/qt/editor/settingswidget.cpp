@@ -90,7 +90,7 @@ SettingsWidget::SettingsWidget(InviwoMainWindow* mainwindow)
 SettingsWidget::~SettingsWidget() = default;
 
 void SettingsWidget::updateSettingsWidget() {
-    auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
+    const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
 
     for (auto setting : settings) {
         auto settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);

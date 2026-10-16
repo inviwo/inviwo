@@ -58,7 +58,7 @@ private:
 template <typename T, typename P>
 class PropertyWidgetFactoryObjectTemplate : public PropertyWidgetFactoryObject {
 public:
-    PropertyWidgetFactoryObjectTemplate(const PropertySemantics& semantics)
+    explicit PropertyWidgetFactoryObjectTemplate(const PropertySemantics& semantics)
         : PropertyWidgetFactoryObject(PropertyTraits<P>::classIdentifier(), semantics) {}
 
     virtual ~PropertyWidgetFactoryObjectTemplate() = default;

@@ -61,7 +61,7 @@ void Source::process() {
     }
 
     try {
-        auto data = std::make_shared<Handle>(file_.get());
+        const auto data = std::make_shared<Handle>(file_.get());
         port_.setData(data);
     } catch (H5::Exception& e) {
         throw Exception(SourceContext{}, "Could not load file: {}: {}", file_.get(),

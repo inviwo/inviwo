@@ -40,7 +40,7 @@ class Processor;
  */
 class IVW_CORE_API ProcessorWidget : public ProcessorWidgetMetaDataObserver {
 public:
-    ProcessorWidget(Processor* p);
+    explicit ProcessorWidget(Processor* p);
     virtual ~ProcessorWidget() = default;
 
     virtual Processor* getProcessor() const;

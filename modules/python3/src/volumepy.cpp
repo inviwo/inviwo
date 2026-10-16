@@ -189,15 +189,16 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeSrc) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    pybind11::array data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
+    const pybind11::array data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
         using CompType = typename util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = vr->getDimensions();
 
-        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.z, dims.y, dims.x}
-                                 : pybind11::array::ShapeContainer{dims.z, dims.y, dims.x, extent};
+        const auto shape = extent == 1
+                               ? pybind11::array::ShapeContainer{dims.z, dims.y, dims.x}
+                               : pybind11::array::ShapeContainer{dims.z, dims.y, dims.x, extent};
         pybind11::array_t<CompType> data{shape};
 
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
@@ -243,7 +244,7 @@ std::shared_ptr<VolumeRAM> VolumePy2RAMConverter::createFrom(
 
     auto dst = volumeDst->getData();
     auto src = volumeSrc->data().data(0);
-    auto size = volumeSrc->data().nbytes();
+    const auto size = volumeSrc->data().nbytes();
 
     if (pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
@@ -265,7 +266,7 @@ void VolumePy2RAMConverter::update(std::shared_ptr<const VolumePy> volumeSrc,
 
     auto dst = volumeDst->getData();
     auto src = volumeSrc->data().data(0);
-    auto size = volumeSrc->data().nbytes();
+    const auto size = volumeSrc->data().nbytes();
 
     if (pybind11::array::c_style == (volumeSrc->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);

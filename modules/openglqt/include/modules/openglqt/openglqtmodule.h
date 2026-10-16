@@ -44,7 +44,7 @@ class OpenGLQtMenu;
 class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule,
                                                public ProcessorNetworkEvaluationObserver {
 public:
-    OpenGLQtModule(InviwoApplication* app);
+    explicit OpenGLQtModule(InviwoApplication* app);
     virtual ~OpenGLQtModule();
 
     virtual void onProcessorNetworkEvaluationBegin() override;

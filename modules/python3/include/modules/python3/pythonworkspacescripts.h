@@ -90,7 +90,7 @@ private:
 template <typename T>
 std::optional<T> PythonWorkspaceScripts::getMetaData(std::string_view scriptKey,
                                                      std::string_view metaDataKey) const {
-    if (auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
+    if (const auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
         it != scriptMetaData_.end()) {
         if (auto* m = dynamic_cast<MetaDataType<T>*>(it->second.get())) {
             return m->get();
@@ -102,7 +102,7 @@ template <typename T>
 void PythonWorkspaceScripts::setMetaData(std::string_view scriptKey, std::string_view metaDataKey,
                                          T val) {
 
-    if (auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
+    if (const auto it = scriptMetaData_.find(std::pair{scriptKey, metaDataKey});
         it != scriptMetaData_.end()) {
         if (auto* m = dynamic_cast<MetaDataType<T>*>(it->second.get())) {
             m->set(val);

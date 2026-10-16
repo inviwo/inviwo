@@ -54,7 +54,7 @@ class ListProperty;
  */
 class IVW_MODULE_QTWIDGETS_API ListPropertyWidgetQt : public CompositePropertyWidgetQt {
 public:
-    ListPropertyWidgetQt(ListProperty* property);
+    explicit ListPropertyWidgetQt(ListProperty* property);
     virtual ~ListPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

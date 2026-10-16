@@ -52,7 +52,7 @@ struct OrdinalRefPropertyHelper {
         namespace py = pybind11;
         using P = OrdinalRefProperty<T>;
 
-        auto classname = Defaultvalues<T>::getName() + "RefProperty";
+        const auto classname = Defaultvalues<T>::getName() + "RefProperty";
 
         py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name,

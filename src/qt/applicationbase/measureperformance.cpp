@@ -37,7 +37,7 @@
 
 namespace inviwo::utilqt {
 
-void simulateMouseDrag(QWidget& widget, size_t count, QPoint length) {
+void simulateMouseDrag(const QWidget& widget, size_t count, QPoint length) {
 
     const auto pos1 = widget.rect().center();
     const auto gpos1 = widget.mapToGlobal(pos1);

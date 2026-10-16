@@ -44,7 +44,7 @@ class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<dvec3> {
         std::shared_ptr<const Volume> volume_;
         VolumeSampler<dvec4> sampler_;
 
-        Wrapper(std::shared_ptr<const Volume> volume)
+        explicit Wrapper(std::shared_ptr<const Volume> volume)
             : next_()
             , duration_(std::numeric_limits<double>::infinity())
             , timestamp_(std::numeric_limits<double>::infinity())
@@ -62,8 +62,8 @@ class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<dvec3> {
     };
 
 public:
-    VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
-                          bool allowLooping = true);
+    explicit VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
+                                   bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
     void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }

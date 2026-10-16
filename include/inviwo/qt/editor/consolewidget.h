@@ -158,7 +158,7 @@ private:
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
     Q_OBJECT
 public:
-    ConsoleWidget(InviwoMainWindow* parent);
+    explicit ConsoleWidget(InviwoMainWindow* parent);
     ~ConsoleWidget();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

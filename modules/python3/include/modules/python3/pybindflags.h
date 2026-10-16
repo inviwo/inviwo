@@ -71,7 +71,7 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
         .def(py::init<flags::flags<E>>())
         .def(py::init([](py::args args) {
             auto f = flags::flags<E>{flags::empty};
-            for (auto i : args.cast<std::vector<E>>()) {
+            for (const auto i : args.cast<std::vector<E>>()) {
                 f.insert(i);
             }
             return f;

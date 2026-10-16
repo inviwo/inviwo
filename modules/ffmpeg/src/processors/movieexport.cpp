@@ -103,16 +103,16 @@ MovieExport::MovieExport()
     activeCodec_.setSerializationMode(PropertySerializationMode::None);
     activeCodec_.setReadOnly(true);
 
-    auto updateCodecs = [this]() {
-        auto outputFormat = getOutputFormat();
+    const auto updateCodecs = [this]() {
+        const auto outputFormat = getOutputFormat();
         codec_.replaceOptions(ffmpeg::codecsOptionsFor(outputFormat));
     };
 
-    auto updateActive = [this]() {
-        auto outputFormat = getOutputFormat();
+    const auto updateActive = [this]() {
+        const auto outputFormat = getOutputFormat();
         activeFormat_.set(fmt::format("{} ({})", outputFormat.name(), outputFormat.longName()));
 
-        auto codec = getCodec(outputFormat);
+        const auto codec = getCodec(outputFormat);
         activeCodec_.set(fmt::format("{} ({})", codec.name(), codec.longName().value_or("-")));
     };
 
@@ -153,12 +153,12 @@ ffmpeg::CodecID MovieExport::getCodec(const ffmpeg::OutputFormat& outputFormat) 
 }
 
 void MovieExport::process() {
-    auto img = inport_.getData();
+    const auto img = inport_.getData();
 
     if (start_.isModified()) {
 
-        auto format = (!guessFormat() ? ffmpeg::OutputFormat(format_.getSelectedValue())
-                                      : ffmpeg::OutputFormat{});
+        const auto format = (!guessFormat() ? ffmpeg::OutputFormat(format_.getSelectedValue())
+                                            : ffmpeg::OutputFormat{});
 
         recorder = std::make_unique<ffmpeg::Recorder>(
             file_.get(), format, mode_,

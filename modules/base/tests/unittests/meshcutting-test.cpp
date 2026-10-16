@@ -46,7 +46,7 @@ namespace inviwo {
 
 TEST(MeshCutting, BarycentricInsidePolygon) {
 
-    auto testCorners = [](const std::vector<vec2>& poly) {
+    const auto testCorners = [](const std::vector<vec2>& poly) {
         for (size_t i = 0; i < poly.size(); ++i) {
             const auto res = meshutil::detail::barycentricInsidePolygon(poly[i], poly);
             for (size_t j = 0; j < res.size(); ++j) {
@@ -59,21 +59,21 @@ TEST(MeshCutting, BarycentricInsidePolygon) {
         }
     };
 
-    auto testCenter = [](const std::vector<vec2>& poly) {
+    const auto testCenter = [](const std::vector<vec2>& poly) {
         const auto res = meshutil::detail::barycentricInsidePolygon(vec2{0.5, 0.5}, poly);
         for (size_t j = 0; j < res.size(); ++j) {
             EXPECT_FLOAT_EQ(res[j], 1.0f / res.size());
         }
     };
 
-    std::vector<vec2> poly2{{0.0f, 0.0f}, {1.0f, 1.0f}};
+    const std::vector<vec2> poly2{{0.0f, 0.0f}, {1.0f, 1.0f}};
     testCorners(poly2);
     testCenter(poly2);
 
-    std::vector<vec2> poly3{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}};
+    const std::vector<vec2> poly3{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}};
     testCorners(poly3);
 
-    std::vector<vec2> poly4{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
+    const std::vector<vec2> poly4{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
     testCorners(poly4);
     testCenter(poly4);
 }

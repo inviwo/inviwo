@@ -41,7 +41,7 @@ class IvwComboBox;
 
 class IVW_MODULE_QTWIDGETS_API OptionPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    OptionPropertyWidgetQt(BaseOptionProperty* property);
+    explicit OptionPropertyWidgetQt(BaseOptionProperty* property);
     virtual void updateFromProperty() override;
 
 private:

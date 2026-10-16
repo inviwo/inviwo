@@ -73,17 +73,17 @@ EigenNormalize::EigenNormalize()
 }
 
 void EigenNormalize::process() {
-    auto m = in_.getData();
+    const auto m = in_.getData();
     switch (method_.get()) {
         case Method::MaxElement: {
-            auto maxV = m->maxCoeff();
+            const auto maxV = m->maxCoeff();
             out_.setData(std::make_shared<Eigen::MatrixXf>((*m) / maxV));
             break;
         }
         case Method::MinMaxElement: {
-            auto minV = m->minCoeff();
-            auto maxV = m->maxCoeff();
-            auto m2 = std::make_shared<Eigen::MatrixXf>(*m);
+            const auto minV = m->minCoeff();
+            const auto maxV = m->maxCoeff();
+            const auto m2 = std::make_shared<Eigen::MatrixXf>(*m);
             m2->array() -= minV;
             m2->array() /= maxV - minV;
             out_.setData(m2);

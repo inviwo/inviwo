@@ -115,7 +115,7 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
         const auto normal = glm::dot(edge.faceNormals[0], viewDirection) > 0 ? edge.faceNormals[0]
                                                                              : edge.faceNormals[1];
         const auto axis = corners[edge.idx[1]] - corners[edge.idx[0]];
-        auto dir = glm::cross(axis, normal);
+        const auto dir = glm::cross(axis, normal);
         return dir * glm::sign(glm::dot(center - corners[edge.idx[1]], dir));
     };
 
@@ -299,8 +299,8 @@ void CropWidget::initializeResources() {
 }
 
 void CropWidget::initMesh() {
-    auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
-        auto* app = getNetwork()->getApplication();
+    const auto load = [this](std::string_view file) -> std::shared_ptr<const Mesh> {
+        const auto* app = getNetwork()->getApplication();
         const auto* module = app->getModuleByIdentifier("UserInterfaceGL");
         if (!module) {
             throw Exception("Could not locate module 'UserInterfaceGL'");
@@ -317,8 +317,8 @@ void CropWidget::initMesh() {
         return reader->readData(module->getPath(ModulePath::Data) / "meshes" / file);
     };
 
-    auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,
-                    auto... args) -> std::shared_ptr<const Mesh> {
+    const auto cache = [](std::weak_ptr<const Mesh>& cache, auto func,
+                          auto... args) -> std::shared_ptr<const Mesh> {
         if (auto mesh = cache.lock()) {
             return mesh;
         } else {
@@ -338,8 +338,9 @@ void CropWidget::initMesh() {
 }
 
 void CropWidget::createLineStripMesh() {
-    auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto vertices = std::make_shared<Buffer<vec3>>();
+    const auto linestrip =
+        std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto vertices = std::make_shared<Buffer<vec3>>();
 
     auto* vBuffer = vertices->getEditableRAMRepresentation();
 
@@ -353,7 +354,7 @@ void CropWidget::createLineStripMesh() {
         vBuffer->add(elem);
     }
 
-    auto indices = std::make_shared<IndexBuffer>();
+    const auto indices = std::make_shared<IndexBuffer>();
     auto* indexBuffer = indices->getEditableRAMRepresentation();
     indexBuffer->add({3, 0, 1, 2, 3, 0, 1});
 
@@ -385,7 +386,8 @@ void CropWidget::renderAxis(size_t axisIndex, dvec3 start, dvec3 stop, const dma
         // apply custom transformation
         const auto m = glm::scale(dvec3{scale_.get()});
 
-        auto draw = [&](auto& drawObject, unsigned int pickID, double value, const dmat4& rot) {
+        const auto draw = [&](auto& drawObject, unsigned int pickID, double value,
+                              const dmat4& rot) {
             const auto worldMatrix{glm::translate(glm::mix(start, stop, value)) * m * rot};
             const auto normalMatrix{glm::inverseTranspose(dmat3{worldMatrix})};
             shader_.setUniform("geometry.dataToWorld", worldMatrix);
@@ -440,7 +442,7 @@ void CropWidget::renderAxis(size_t axisIndex, dvec3 start, dvec3 stop, const dma
                     glm::toMat4(glm::rotation(dvec3{-1.0, 0.0, 0.0}, dmat3{1.0}[axisIndex]));
             }
 
-            auto draw = [&](double value) {
+            const auto draw = [&](double value) {
                 dmat4 worldMatrix{rotMatrix};
                 worldMatrix[3] = dvec4{offset + basis[axisIndex] * value, 1.0};
                 linestrip_->setWorldMatrix(worldMatrix);

@@ -37,7 +37,7 @@ class ButtonGroupProperty;
 
 class IVW_MODULE_QTWIDGETS_API ButtonGroupPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    ButtonGroupPropertyWidgetQt(ButtonGroupProperty* property);
+    explicit ButtonGroupPropertyWidgetQt(ButtonGroupProperty* property);
 
 private:
     ButtonGroupProperty* property_;

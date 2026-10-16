@@ -69,7 +69,7 @@ void exposePropertyOwner(pybind11::module& m) {
             "__setattr__",
             [](py::object po, py::object key, py::object value) {
                 const auto isProperty = [&]() {
-                    auto pyProperty =
+                    const auto pyProperty =
                         py::module_::import("inviwopy").attr("properties").attr("Property");
                     return py::isinstance(po.attr(key), pyProperty);
                 };
@@ -88,8 +88,8 @@ void exposePropertyOwner(pybind11::module& m) {
                     return path;
                 };
 
-                auto builtins = py::module_::import("builtins");
-                auto type = builtins.attr("type");
+                const auto builtins = py::module_::import("builtins");
+                const auto type = builtins.attr("type");
 
                 const auto skey = py::str(key).cast<std::string>();
                 const auto owner = po.cast<PropertyOwner*>();
@@ -107,7 +107,7 @@ void exposePropertyOwner(pybind11::module& m) {
                     }
                 }
 
-                auto object = builtins.attr("object");
+                const auto object = builtins.attr("object");
                 object.attr("__setattr__")(po, key, value);
             },
             py::return_value_policy::reference)

@@ -122,14 +122,14 @@ protected:
 
 private:
     struct Curve {
-        Curve(LinkDialogGraphicsScene* scene);
+        explicit Curve(LinkDialogGraphicsScene* scene);
         void clear();
         void start(QPointF start, QPointF end);
         void update(QPointF start, QPointF end);
         std::unique_ptr<DialogCurveGraphicsItem> linkCurve_;
         LinkDialogGraphicsScene* scene_;
 
-        operator bool() { return linkCurve_ != nullptr; }
+        explicit operator bool() { return linkCurve_ != nullptr; }
     };
 
     Curve curve_;

@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeCameraProperty(pybind11::module& main, pybind11::module& properties);
+void exposeCameraProperty(pybind11::module& main, const pybind11::module& properties);
 
 }  // namespace inviwo

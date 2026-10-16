@@ -63,7 +63,7 @@ namespace inviwo {
 
 class GLFWContextHolder : public ContextHolder {
 public:
-    GLFWContextHolder(GLFWwindow* win) : win_{win} {}
+    explicit GLFWContextHolder(GLFWwindow* win) : win_{win} {}
     virtual void activate() override { glfwMakeContextCurrent(win_); }
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
         auto res =

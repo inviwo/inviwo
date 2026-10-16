@@ -81,7 +81,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
 
             const auto dims = srcRAM->getDimensions();
 
-            auto dstRAM = std::make_shared<VolumeRAMPrecision<DstType>>(
+            const auto dstRAM = std::make_shared<VolumeRAMPrecision<DstType>>(
                 dims, swizzlemasks::rgba, InterpolationType::Linear, srcRAM->getWrapping());
 
             auto newVolume = std::make_shared<Volume>(dstRAM);
@@ -111,7 +111,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
             auto maxval(std::numeric_limits<double>::lowest());
 
             auto newData = dstRAM->getView();
-            auto func = [&](const size3_t& pos) {
+            const auto func = [&](const size3_t& pos) {
                 const dvec3 world{m * dvec4((dvec3(pos) + dvec3(0.5)) * resDim, 1.0)};
 
                 const auto center = 2.0 * s.sample(world);
@@ -137,7 +137,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
             util::forEachVoxelParallel(dims, func);
 
             // Make range symmetric
-            auto rangeMax = std::max(std::abs(minval), std::abs(maxval));
+            const auto rangeMax = std::max(std::abs(minval), std::abs(maxval));
 
             switch (postProcessing) {
                 case VolumeLaplacianPostProcessing::Normalized:

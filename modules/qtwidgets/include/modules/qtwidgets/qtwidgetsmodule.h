@@ -42,7 +42,7 @@ class TFMenuHelper;
 
 class IVW_MODULE_QTWIDGETS_API QtWidgetsModule : public InviwoModule {
 public:
-    QtWidgetsModule(InviwoApplication* app);
+    explicit QtWidgetsModule(InviwoApplication* app);
     virtual ~QtWidgetsModule();
 
     TFHelpWindow* getTFHelpWindow() const;

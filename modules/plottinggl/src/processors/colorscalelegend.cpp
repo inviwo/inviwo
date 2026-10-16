@@ -247,7 +247,7 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.majorTicks_.style.set(plot::TickData::Style::Outside);
     axis_.setCurrentStateAsDefault();
 
-    auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
+    const auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
 
     labelType_.onChange(updateFunc);
     title_.onChange(updateFunc);
@@ -266,8 +266,8 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
                               ? legendSize_.get()
                               : glm::yx(legendSize_.get());
 
-        auto lpos = 0.5f * vec2{size + 2 * ivec2{margin_}} +
-                    initialPos * vec2{dimensions - size - 2 * ivec2{margin_}};
+        const auto lpos = 0.5f * vec2{size + 2 * ivec2{margin_}} +
+                          initialPos * vec2{dimensions - size - 2 * ivec2{margin_}};
 
         return std::make_tuple(lpos, size);
     }();
@@ -443,8 +443,8 @@ std::vector<ButtonGroupProperty::Button> ColorScaleLegend::buttons() {
 void ColorScaleLegend::setPlacement(Placement placement) {
     using enum AxisProperty::Orientation;
 
-    auto setPositions = [&](AxisProperty::Orientation orientation, bool mirror,
-                            const vec2& legendPos, bool inside) {
+    const auto setPositions = [&](AxisProperty::Orientation orientation, bool mirror,
+                                  const vec2& legendPos, bool inside) {
         const NetworkLock lock(this);
         position_.set(legendPos);
         margin_.set(inside ? 10 : 90);

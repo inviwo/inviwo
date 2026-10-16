@@ -48,7 +48,7 @@ public:
     static const unsigned SpatialDimensions = 4;
     using type = ReturnType;
 
-    Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
+    explicit Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
     virtual ~Spatial4DSampler() = default;
 
     virtual ReturnType sample(const dvec4& pos,
@@ -107,8 +107,9 @@ template <typename ReturnType>
 ReturnType Spatial4DSampler<ReturnType>::sample(const dvec4& pos, CoordinateSpace space) const {
     auto dataPos = dvec3(pos);
     if (space != CoordinateSpace::Data) {
-        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
-        auto p = m * dvec4(static_cast<dvec3>(pos), 1.0);
+        const auto m =
+            spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
+        const auto p = m * dvec4(static_cast<dvec3>(pos), 1.0);
         dataPos = dvec3(p) / p.w;
     }
 
@@ -124,8 +125,9 @@ template <typename ReturnType>
 bool Spatial4DSampler<ReturnType>::withinBounds(const dvec4& pos, CoordinateSpace space) const {
     auto dataPos = dvec3(pos);
     if (space != CoordinateSpace::Data) {
-        auto m = spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
-        auto p = m * dvec4(static_cast<dvec3>(dataPos), 1.0);
+        const auto m =
+            spatialEntity_->getCoordinateTransformer().getMatrix(space, CoordinateSpace::Data);
+        const auto p = m * dvec4(static_cast<dvec3>(dataPos), 1.0);
         dataPos = dvec3(p) / p.w;
     }
 

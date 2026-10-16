@@ -194,7 +194,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
 
     auto* optionLayout = sequenceEditorView_->getOptionLayout();
     // Settings for the controller
-    auto* factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+    const auto* factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
     for (auto* property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
@@ -219,7 +219,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
             [this, animationLabelView](auto val) {
                 if (vScrolling_) return;
                 const util::KeepTrueWhileInScope scrolling(&vScrolling_);
-                auto* vs = animationView_->verticalScrollBar();
+                const auto* vs = animationView_->verticalScrollBar();
                 auto* ls = animationLabelView->verticalScrollBar();
 
                 const double vSize = vs->maximum() - vs->minimum() + vs->pageStep();
@@ -233,7 +233,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                 if (vScrolling_) return;
                 const util::KeepTrueWhileInScope scrolling(&vScrolling_);
                 auto* vs = animationView_->verticalScrollBar();
-                auto* ls = animationLabelView->verticalScrollBar();
+                const auto* ls = animationLabelView->verticalScrollBar();
 
                 const double vSize = vs->maximum() - vs->minimum() + vs->pageStep();
                 const double lSize = ls->maximum() - ls->minimum() + ls->pageStep();
@@ -312,7 +312,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
     // Double click if less than 0.5 seconds since last press
     auto isKeyDoublePressed = [lastKeyEventTimestamp =
                                    std::chrono::system_clock::now()]() mutable -> bool {
-        auto timestamp = std::chrono::system_clock::now();
+        const auto timestamp = std::chrono::system_clock::now();
         const std::chrono::duration<double> doublePressThreshold(0.500);
         const bool isDoublePress = (timestamp - lastKeyEventTimestamp) < doublePressThreshold;
         lastKeyEventTimestamp = timestamp;
@@ -416,7 +416,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         end->setToolTip("To End");
         mainWindow_->addAction(end);
         connect(end, &QAction::triggered, [&]() {
-            auto endTime = controller_.getAnimation().getLastTime();
+            const auto endTime = controller_.getAnimation().getLastTime();
             controller_.eval(controller_.getCurrentTime(), endTime);
         });
     }
@@ -434,7 +434,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
                     case MenuItemType::copy:
                     case MenuItemType::del:   return !animationEditor_->selectedItems().empty();
                     case MenuItemType::paste: {
-                        auto* clipboard = QApplication::clipboard();
+                        const auto* clipboard = QApplication::clipboard();
                         const auto* mimeData = clipboard->mimeData();
                         return mimeData->hasFormat(
                                    QString::fromUtf8(AnimationEditorQt::mimeKeyframes)) ||
@@ -481,7 +481,7 @@ void AnimationEditorDockWidgetQt::importAnimation() {
             auto deserializer =
                 app->getWorkspaceManager()->createWorkspaceDeserializer(anim, fileName);
             controller_.pause();
-            auto animations = manager_.import(deserializer);
+            const auto animations = manager_.import(deserializer);
             for (auto animation : animations) {
                 animations_.add(std::move(animation));
             }
@@ -511,8 +511,8 @@ void AnimationEditorDockWidgetQt::onStateChanged(AnimationController*, Animation
 void AnimationEditorDockWidgetQt::onAnimationChanged(AnimationController*, Animation*,
                                                      Animation* newAnim) {
 
-    if (auto it = animations_.find(newAnim); it != animations_.end()) {
-        auto selectedIndex = static_cast<int>(std::distance(animations_.begin(), it));
+    if (const auto it = animations_.find(newAnim); it != animations_.end()) {
+        const auto selectedIndex = static_cast<int>(std::distance(animations_.begin(), it));
         if (animationsList_->currentIndex() != selectedIndex) {
             animationsList_->setCurrentIndex(selectedIndex);
         }

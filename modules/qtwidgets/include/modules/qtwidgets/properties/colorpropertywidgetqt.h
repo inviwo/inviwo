@@ -74,7 +74,7 @@ namespace inviwo {
 template <typename T>
 class ColorPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    ColorPropertyWidgetQt(OrdinalProperty<T>* property);
+    explicit ColorPropertyWidgetQt(OrdinalProperty<T>* property);
     virtual ~ColorPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
@@ -190,8 +190,8 @@ void ColorPropertyWidgetQt<T>::offsetColorDialog() {
         mainFrame = mainWindow->frameGeometry();
     }
 
-    int x = mainFrame.left() + rightOffset;
-    int y = mainFrame.top() + topOffset;
+    const int x = mainFrame.left() + rightOffset;
+    const int y = mainFrame.top() + topOffset;
     colorDialog_->move(x + offsetX, y + offsetY);
     offsetX += 150;
     offsetY += 50;
@@ -207,7 +207,7 @@ struct ColorConverter {};
 template <>
 struct ColorConverter<ivec3> {
     static QColor toQColor(const ivec3& color) {
-        auto c = glm::clamp(color, ivec3(0), ivec3(255));
+        const auto c = glm::clamp(color, ivec3(0), ivec3(255));
         return QColor(c.r, c.g, c.b);
     }
     static ivec3 toGLM(const QColor& color) {
@@ -217,7 +217,7 @@ struct ColorConverter<ivec3> {
 template <>
 struct ColorConverter<ivec4> {
     static QColor toQColor(const ivec4& color) {
-        auto c = glm::clamp(color, ivec4(0), ivec4(255));
+        const auto c = glm::clamp(color, ivec4(0), ivec4(255));
         return QColor(c.r, c.g, c.b, c.a);
     }
     static ivec4 toGLM(const QColor& color) {
@@ -227,7 +227,7 @@ struct ColorConverter<ivec4> {
 template <>
 struct ColorConverter<vec3> {
     static QColor toQColor(const vec3& color) {
-        auto c = ivec3{255.0f * glm::clamp(color, vec3(0.0), vec3(1.0))};
+        const auto c = ivec3{255.0f * glm::clamp(color, vec3(0.0), vec3(1.0))};
         return QColor(c.r, c.g, c.b);
     }
     static vec3 toGLM(const QColor& color) {
@@ -237,7 +237,7 @@ struct ColorConverter<vec3> {
 template <>
 struct ColorConverter<vec4> {
     static QColor toQColor(const vec4& color) {
-        auto c = ivec4{255.0f * glm::clamp(color, vec4(0.0), vec4(1.0))};
+        const auto c = ivec4{255.0f * glm::clamp(color, vec4(0.0), vec4(1.0))};
         return QColor(c.r, c.g, c.b, c.a);
     }
     static vec4 toGLM(const QColor& color) {
@@ -247,7 +247,7 @@ struct ColorConverter<vec4> {
 template <>
 struct ColorConverter<dvec3> {
     static QColor toQColor(const dvec3& color) {
-        auto c = ivec3{255.0 * glm::clamp(color, dvec3(0.0), dvec3(1.0))};
+        const auto c = ivec3{255.0 * glm::clamp(color, dvec3(0.0), dvec3(1.0))};
         return QColor(c.r, c.g, c.b);
     }
     static vec3 toGLM(const QColor& color) {
@@ -257,7 +257,7 @@ struct ColorConverter<dvec3> {
 template <>
 struct ColorConverter<dvec4> {
     static QColor toQColor(const dvec4& color) {
-        auto c = ivec4{255.0 * glm::clamp(color, dvec4(0.0), dvec4(1.0))};
+        const auto c = ivec4{255.0 * glm::clamp(color, dvec4(0.0), dvec4(1.0))};
         return QColor(c.r, c.g, c.b, c.a);
     }
     static vec4 toGLM(const QColor& color) {
@@ -271,14 +271,14 @@ void ColorPropertyWidgetQt<T>::updateFromProperty() {
     currentColor_ = detail::ColorConverter<T>::toQColor(ordinalProperty_->get());
     updateButton();
 
-    auto rep = static_cast<ColorLineEdit::ColorRepresentation>(
+    const auto rep = static_cast<ColorLineEdit::ColorRepresentation>(
         ordinalProperty_->template getMetaData<IntMetaData>(
             "representation", static_cast<int>(util::DefaultColorRepresentation<T>::value)));
 
     colorLineEdit_->setColor(ordinalProperty_->get(), rep);
 
     if (colorDialog_) {
-        QSignalBlocker block{colorDialog_};
+        const QSignalBlocker block{colorDialog_};
         colorDialog_->setWindowTitle(utilqt::toQString(property_->getDisplayName()));
         colorDialog_->setCurrentColor(currentColor_);
     }
@@ -301,7 +301,8 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
 
     auto actionGroup = new QActionGroup(representationMenu);
 
-    auto createAction = [&](const QString& title, ColorLineEdit::ColorRepresentation colorRep) {
+    const auto createAction = [&](const QString& title,
+                                  ColorLineEdit::ColorRepresentation colorRep) {
         auto action = representationMenu->addAction(title);
         action->setCheckable(true);
         action->setChecked(colorRep == rep);
@@ -332,8 +333,8 @@ void ColorPropertyWidgetQt<T>::setPropertyValue() {
 
 template <typename T>
 void ColorPropertyWidgetQt<T>::updateButton() {
-    QColor topColor = currentColor_.lighter();
-    QColor bottomColor = currentColor_.darker();
+    const QColor topColor = currentColor_.lighter();
+    const QColor bottomColor = currentColor_.darker();
 
     btnColor_->setStyleSheet(QString("QToolButton {"
                                      "    border: 1px solid transparent;"

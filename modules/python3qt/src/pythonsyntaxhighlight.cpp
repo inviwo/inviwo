@@ -78,7 +78,7 @@ constexpr const std::array pythonKeywords = {
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighlight(
     SyntaxHighlighter& sh, PythonSyntaxHighlight& settings) {
 
-    QColor bgColor = utilqt::toQColor(settings.backgroundColor);
+    const QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 
     QTextCharFormat defaultFormat;
     defaultFormat.setBackground(bgColor);
@@ -130,7 +130,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonOutputSyntaxHighlight(
     SyntaxHighlighter& sh, PythonSyntaxHighlight& settings) {
 
-    QColor bgColor = utilqt::toQColor(settings.backgroundColor);
+    const QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 
     QTextCharFormat defaultFormat;
     defaultFormat.setBackground(bgColor);

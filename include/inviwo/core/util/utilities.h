@@ -44,9 +44,9 @@ class ProcessorWidget;
 
 namespace util {
 
-IVW_CORE_API void saveNetwork(ProcessorNetwork* network, std::string_view filename);
+IVW_CORE_API void saveNetwork(const ProcessorNetwork* network, std::string_view filename);
 
-IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
+IVW_CORE_API void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::path& dir,
                                   std::string_view name = "UPN", std::string_view ext = ".png",
                                   bool onlyActiveCanvases = false);
 

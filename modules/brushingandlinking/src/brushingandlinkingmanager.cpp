@@ -142,7 +142,7 @@ bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
 
 bool BrushingAndLinkingManager::isTargetModified(BrushingTarget target,
                                                  BrushingModifications modifications) const {
-    if (auto it = modifications_.find(target); it != modifications_.end()) {
+    if (const auto it = modifications_.find(target); it != modifications_.end()) {
         return !(it->second & modifications).empty();
     }
 
@@ -182,10 +182,10 @@ void BrushingAndLinkingManager::clearIndices(BrushingAction action, BrushingTarg
                         action);
     }
 
-    auto clearMap = [target, index = getActionIndex(action)](auto& selections) {
+    const auto clearMap = [target, index = getActionIndex(action)](auto& selections) {
         return std::visit(
             [target](auto& map) {
-                auto it = map.find(target);
+                const auto it = map.find(target);
                 if (it == map.end()) {
                     return false;
                 }
@@ -230,7 +230,7 @@ bool BrushingAndLinkingManager::contains(uint32_t idx, BrushingAction action,
     const int actionIdx = getActionIndex(action);
     return std::visit(
         [&](const auto& map) {
-            auto it = map.find(target);
+            const auto it = map.find(target);
             if (it == map.end()) {
                 return false;
             }
@@ -566,14 +566,14 @@ void BrushingAndLinkingManager::propagate(BrushingAction action,
 const BitSet* BrushingAndLinkingManager::getBitSet(BrushingAction action,
                                                    BrushingTarget target) const {
     return std::visit(util::overloaded{[target](const BitSetTargets& map) -> const BitSet* {
-                                           auto it = map.find(target);
+                                           const auto it = map.find(target);
                                            if (it == map.end()) {
                                                return nullptr;
                                            }
                                            return &it->second;
                                        },
                                        [target](const IndexListTargets& map) -> const BitSet* {
-                                           auto it = map.find(target);
+                                           const auto it = map.find(target);
                                            if (it == map.end()) {
                                                return nullptr;
                                            }

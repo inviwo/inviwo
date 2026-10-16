@@ -85,16 +85,16 @@ MeshColorFromNormals::MeshColorFromNormals()
 }
 
 void MeshColorFromNormals::process() {
-    auto inMesh = inport_.getData();
+    const auto inMesh = inport_.getData();
 
-    auto mesh = std::shared_ptr<Mesh>(inMesh->clone());
+    const auto mesh = std::shared_ptr<Mesh>(inMesh->clone());
     while (auto cbuf = mesh->getBuffer(BufferType::ColorAttrib)) {
         mesh->removeBuffer(cbuf);
     }
 
     if (auto normalsBuffer = mesh->getBuffer(BufferType::NormalAttrib)) {
-        auto newBuf = std::shared_ptr<BufferBase>(normalsBuffer->clone());
-        auto transform = transform_.get();
+        const auto newBuf = std::shared_ptr<BufferBase>(normalsBuffer->clone());
+        const auto transform = transform_.get();
         if (transform != Transform::None) {
             newBuf->getEditableRepresentation<BufferRAM>()->dispatch<void>([transform](auto ram) {
                 using T = util::PrecisionValueType<decltype(ram)>;

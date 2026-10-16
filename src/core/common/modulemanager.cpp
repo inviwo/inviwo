@@ -57,7 +57,7 @@ void topologicalSort(std::vector<ModuleContainer>& containers) {
                      std::unordered_set<std::string>& visited,
                      std::unordered_set<std::string>& tmpVisited,
                      std::vector<std::string>& sorted) -> void {
-        auto it = std::ranges::find(containers, lname, &ModuleContainer::identifier);
+        const auto it = std::ranges::find(containers, lname, &ModuleContainer::identifier);
         if (it == containers.end()) {
             throw Exception(SourceContext{}, "Missing module dependency {}", lname);
         }
@@ -147,8 +147,8 @@ void ModuleManager::registerModules(std::vector<ModuleContainer> inviwoModules,
     ModuleContainer::updateGraph(inviwoModules_);
 
     if (progressCallback) progressCallback("Loading Capabilities");
-    for (auto& cont : inviwoModules_) {
-        if (auto* inviwoModule = cont.getModule()) {
+    for (const auto& cont : inviwoModules_) {
+        if (const auto* inviwoModule = cont.getModule()) {
             for (auto& capability : inviwoModule->getCapabilities()) {
                 capability->retrieveStaticInfo();
                 capability->printInfo();
@@ -170,7 +170,8 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
 
 #ifdef __APPLE__
     // Executable path is inviwo.app/Content/MacOs
-    std::filesystem::path enabledModulesFilePath(exepath / "../../.." / enabledModuleFileName);
+    const std::filesystem::path enabledModulesFilePath(exepath / "../../.." /
+                                                       enabledModuleFileName);
 #else
     std::filesystem::path enabledModulesFilePath(exepath / enabledModuleFileName);
 #endif
@@ -254,9 +255,9 @@ void ModuleManager::reloadModules() {
 
     ModuleContainer::updateGraph(inviwoModules_);
 
-    for (auto& cont : inviwoModules_) {
+    for (const auto& cont : inviwoModules_) {
         if (!cont.isProtectedModule()) {
-            if (auto* inviwoModule = cont.getModule()) {
+            if (const auto* inviwoModule = cont.getModule()) {
                 for (auto& capability : inviwoModule->getCapabilities()) {
                     capability->retrieveStaticInfo();
                     capability->printInfo();
@@ -295,7 +296,7 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 
     const auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
-    auto valid = [&](const std::filesystem::path& file) {
+    const auto valid = [&](const std::filesystem::path& file) {
         const auto name = file.filename().generic_string();
         return libraryTypes.contains(file.extension()) &&
                (name.find("inviwo-module") != std::string::npos ||
@@ -373,7 +374,7 @@ std::vector<InviwoModule*> ModuleManager::getModulesByAlias(std::string_view ali
 }
 
 InviwoModuleFactoryObject* ModuleManager::getFactoryObject(std::string_view identifier) const {
-    auto it = std::ranges::find_if(
+    const auto it = std::ranges::find_if(
         inviwoModules_, [&](const auto& cont) { return iCaseCmp(cont.identifier(), identifier); });
     // Check if dependent module is of correct version
     if (it != inviwoModules_.end()) {
@@ -482,7 +483,7 @@ std::filesystem::path ModuleManager::locateModule(const InviwoModule& m) const {
     if (moduleLocator_) {
         return moduleLocator_(m);
     } else {
-        auto path = filesystem::findBasePath() / "modules" / toLower(m.getIdentifier());
+        const auto path = filesystem::findBasePath() / "modules" / toLower(m.getIdentifier());
         return path.lexically_normal();
     }
 }

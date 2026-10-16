@@ -32,6 +32,6 @@
 
 namespace inviwo {
 
-void exposeBaseProperties(pybind11::module& m);
+void exposeBaseProperties(const pybind11::module& m);
 
 }  // namespace inviwo

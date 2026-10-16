@@ -35,7 +35,7 @@ namespace inviwo {
 
 class IVW_MODULE_DATAFRAMEPYTHON_API DataFramePythonModule : public InviwoModule {
 public:
-    DataFramePythonModule(InviwoApplication* app);
+    explicit DataFramePythonModule(InviwoApplication* app);
     virtual ~DataFramePythonModule() = default;
 };
 

@@ -162,7 +162,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
 
     color_.onChange([&]() {
         if (dataFrame_.hasData()) {
-            auto index = color_.getSelectedValue();
+            const auto index = color_.getSelectedValue();
             auto colorCol = index >= 0 ? dataFrame_.getData()->getColumn(index).get() : nullptr;
             for (auto& p : plots_) {
                 p->setColorData(colorCol);
@@ -175,8 +175,8 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     labels_.addProperties(fontColor_, fontFace_, fontSize_, fontFaceStats_, statsFontSize_);
     fontColor_.setSemantics(PropertySemantics::Color);
 
-    auto updateLabels = [&]() { labelsTextures_.clear(); };
-    auto updateStatsLabels = [&]() { statsTextures_.clear(); };
+    const auto updateLabels = [&]() { labelsTextures_.clear(); };
+    const auto updateStatsLabels = [&]() { statsTextures_.clear(); };
     fontFace_.onChange(updateLabels);
     fontSize_.onChange(updateLabels);
     fontColor_.onChange(updateLabels);
@@ -216,7 +216,7 @@ void ScatterPlotMatrixProcessor::process() {
         }
 
         indexToRowMap_ = [&]() {
-            auto iCol = dataFrame_.getData()->getIndexColumn();
+            const auto iCol = dataFrame_.getData()->getIndexColumn();
             auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
             indexToRow.reserve(indexCol.size());
@@ -235,12 +235,12 @@ void ScatterPlotMatrixProcessor::process() {
         createStatsLabels();
     }
 
-    std::unique_ptr<IndexBuffer> indicies = nullptr;
+    const std::unique_ptr<IndexBuffer> indicies = nullptr;
     if (brushing_.isConnected() || initialSetup) {
-        auto transformIdsToRows = [&](const BitSet& b) {
+        const auto transformIdsToRows = [&](const BitSet& b) {
             BitSet rows;
-            for (auto id : b) {
-                auto it = indexToRowMap_.find(id);
+            for (const auto id : b) {
+                const auto it = indexToRowMap_.find(id);
                 if (it != indexToRowMap_.end()) {
                     rows.add(it->second);
                 }
@@ -257,7 +257,7 @@ void ScatterPlotMatrixProcessor::process() {
     }
 
     utilgl::activateAndClearTarget(outport_);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     const size2_t dims = outport_.getDimensions();
     const size2_t extent = dims / numParams_;
@@ -298,8 +298,8 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
     if (outport_.hasData()) {
         auto& dataFrame = *dataFrame_.getData();
 
-        auto colorCol = [&]() -> std::shared_ptr<const Column> {
-            auto idx = color_.get();
+        const auto colorCol = [&]() -> std::shared_ptr<const Column> {
+            const auto idx = color_.get();
             if (idx == -1) {
                 return nullptr;
             } else {
@@ -346,11 +346,11 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
                 const auto res = statsutil::linearRegresion(*(*x)->getBuffer(), *(*y)->getBuffer());
 
                 const auto str = fmt::format("corr ρ = {:.2g}\nr² = {:.2g}", res.corr, res.r2);
-                auto tex = util::createTextTexture(textRenderer_, str, fontColor_);
+                const auto tex = util::createTextTexture(textRenderer_, str, fontColor_);
                 statsTextures_.push_back(tex);
 
-                auto tex2 = std::make_shared<Texture2D>(size2_t(1, 1), GL_RGBA, GL_RGBA, GL_FLOAT,
-                                                        GL_LINEAR);
+                const auto tex2 = std::make_shared<Texture2D>(size2_t(1, 1), GL_RGBA, GL_RGBA,
+                                                              GL_FLOAT, GL_LINEAR);
                 auto v = res.r2;
                 if (res.corr < 0) {
                     v = -v;
@@ -376,15 +376,15 @@ void ScatterPlotMatrixProcessor::createLabels() {
         auto& dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             if (!isIncluded(*x)) continue;
-            auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
+            const auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
             labelsTextures_.push_back(tex);
         }
     }
 }
 
 bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
-    std::string displayName = col->getHeader();
-    std::string identifier = util::stripIdentifier(displayName);
+    const std::string displayName = col->getHeader();
+    const std::string identifier = util::stripIdentifier(displayName);
 
     auto prop = parameters_.getPropertyByIdentifier(identifier);
     if (prop) {

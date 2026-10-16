@@ -106,7 +106,7 @@ private:
 
 void WorkspaceInfoLoader::operator()() {
     try {
-        auto annotations = std::make_shared<WorkspaceAnnotationsQt>(filename_, app_);
+        const auto annotations = std::make_shared<WorkspaceAnnotationsQt>(filename_, app_);
         app_->dispatchFrontAndForget([l = shared_from_this(), annotations] {
             l->workspaceInfoLoaded(WorkspaceInfo{annotations});
         });
@@ -170,8 +170,8 @@ TreeItem* TreeItem::child(int row) const {
 
 TreeItem* TreeItem::findChild(std::string_view caption) const {
     auto qCaption = utilqt::toQString(caption);
-    auto it = std::find_if(children_.begin(), children_.end(),
-                           [&](auto& child) { return child->caption_ == qCaption; });
+    const auto it = std::find_if(children_.begin(), children_.end(),
+                                 [&](auto& child) { return child->caption_ == qCaption; });
     if (it != children_.end()) {
         return it->get();
     } else {
@@ -224,9 +224,9 @@ QVariant TreeItem::data(int column, int role) const {
     } else {
         switch (role) {
             case Qt::DisplayRole:
-            case Qt::ToolTipRole:                                  return caption_;
+            case Qt::ToolTipRole: return caption_;
             case static_cast<int>(WorkspaceTreeModel::Role::Type): return static_cast<int>(type_);
-            default:                                               return {};
+            default: return {};
         }
     }
 }  // namespace inviwo
@@ -270,8 +270,8 @@ WorkspaceTreeModel::~WorkspaceTreeModel() = default;
 QModelIndex WorkspaceTreeModel::index(int row, int column, const QModelIndex& parent) const {
     if (parent.isValid() && parent.column() != 0) return QModelIndex();
 
-    TreeItem* parentItem = getItem(parent);
-    TreeItem* childItem = parentItem->child(row);
+    const TreeItem* parentItem = getItem(parent);
+    const TreeItem* childItem = parentItem->child(row);
 
     if (childItem) return createIndex(row, column, childItem);
     return QModelIndex();
@@ -330,7 +330,7 @@ void WorkspaceTreeModel::updateCategory(TreeItem* item,
         if (match) return;
     }
 
-    QModelIndex index = getIndex(item);
+    const QModelIndex index = getIndex(item);
 
     if (item->childCount() > 0) {
         beginRemoveRows(index, 0, item->childCount() - 1);
@@ -345,8 +345,8 @@ void WorkspaceTreeModel::updateCategory(TreeItem* item,
 }
 
 void WorkspaceTreeModel::addEntry(TreeItem* parent, std::unique_ptr<TreeItem> child) {
-    QModelIndex index = getIndex(parent);
-    int pos = parent->childCount();
+    const QModelIndex index = getIndex(parent);
+    const int pos = parent->childCount();
     beginInsertRows(index, pos, pos);
     parent->addChild(std::move(child));
     endInsertRows();
@@ -387,7 +387,7 @@ void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) 
             items.push_back(std::make_unique<TreeItem>(
                 filename, app_,
                 [this](TreeItem* item) {
-                    auto id = getIndex(item);
+                    const auto id = getIndex(item);
                     dataChanged(id, id);
                 },
                 false));
@@ -401,7 +401,7 @@ void WorkspaceTreeModel::updateRestoreEntries() {
 
     if (!std::filesystem::is_directory(restores)) return;
 
-    std::filesystem::directory_iterator it(restores);
+    const std::filesystem::directory_iterator it(restores);
 
     std::vector<std::filesystem::path> files{};
     std::copy_if(it, end(it), std::back_inserter(files), [](const std::filesystem::path& path) {
@@ -420,7 +420,7 @@ void WorkspaceTreeModel::updateRestoreEntries() {
                        return std::make_unique<TreeItem>(
                            path, app_,
                            [this](TreeItem* item) {
-                               auto id = getIndex(item);
+                               const auto id = getIndex(item);
                                dataChanged(id, id);
                            },
                            true);
@@ -442,7 +442,7 @@ void WorkspaceTreeModel::updateCustomEntries() {
 
         auto section = std::make_unique<TreeItem>(name, Type::SubSection);
 
-        std::filesystem::directory_iterator it(path);
+        const std::filesystem::directory_iterator it(path);
 
         std::vector<std::filesystem::path> files{};
         std::copy_if(it, end(it), std::back_inserter(files), [](const std::filesystem::path& path) {
@@ -459,7 +459,7 @@ void WorkspaceTreeModel::updateCustomEntries() {
             section->addChild(std::make_unique<TreeItem>(
                 path, app_,
                 [this](TreeItem* item) {
-                    auto id = getIndex(item);
+                    const auto id = getIndex(item);
                     dataChanged(id, id);
                 },
                 false));
@@ -474,12 +474,12 @@ void WorkspaceTreeModel::updateCustomEntries() {
 void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pathType,
                                        bool recursive) {
 
-    auto addFile = [this](const std::filesystem::path& filePath, TreeItem& section) {
+    const auto addFile = [this](const std::filesystem::path& filePath, TreeItem& section) {
         if (filePath.extension() != ".inv") return;
         section.addChild(std::make_unique<TreeItem>(
             filePath, app_,
             [this](TreeItem* item) {
-                auto id = getIndex(item);
+                const auto id = getIndex(item);
                 dataChanged(id, id);
             },
             true));
@@ -487,16 +487,16 @@ void WorkspaceTreeModel::updateModules(std::string_view category, ModulePath pat
 
     std::vector<std::unique_ptr<TreeItem>> items;
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-        auto path = inviwoModule.getPath(pathType);
+        const auto path = inviwoModule.getPath(pathType);
         if (!std::filesystem::is_directory(path)) continue;
 
         auto section = std::make_unique<TreeItem>(inviwoModule.getIdentifier(), Type::SubSection);
         if (recursive) {
-            for (auto filePath : filesystem::getDirectoryContentsRecursively(path)) {
+            for (const auto& filePath : filesystem::getDirectoryContentsRecursively(path)) {
                 addFile(path / filePath, *section);
             }
         } else {
-            for (auto filePath : filesystem::getDirectoryContents(path)) {
+            for (const auto& filePath : filesystem::getDirectoryContents(path)) {
                 addFile(path / filePath, *section);
             }
         }

@@ -212,7 +212,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
         std::vector<vec3> normals;
         std::vector<vec4> colors;
         std::vector<int> surfaceIndices;
-        auto indexBufferRam = std::make_shared<IndexBufferRAM>();
+        const auto indexBufferRam = std::make_shared<IndexBufferRAM>();
 
         const T* src = ram->getDataTyped();
 
@@ -269,7 +269,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume,
 
         IVW_ASSERT(positions.size() == normals.size(), "positions_ and normals_ must be equal");
 
-        auto mesh = std::make_shared<Mesh>();
+        const auto mesh = std::make_shared<Mesh>();
         mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
         mesh->addBuffer(BufferType::NormalAttrib, util::makeBuffer(std::move(normals)));
         mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));

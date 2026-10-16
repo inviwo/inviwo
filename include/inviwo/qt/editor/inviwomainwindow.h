@@ -75,7 +75,7 @@ class ProcessorDocs;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow {
 public:
-    InviwoMainWindow(InviwoApplication* app);
+    explicit InviwoMainWindow(InviwoApplication* app);
     virtual ~InviwoMainWindow();
 
     void showWindow();

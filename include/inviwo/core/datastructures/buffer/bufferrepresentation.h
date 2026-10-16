@@ -63,8 +63,8 @@ public:
     BufferTarget getBufferTarget() const;
 
 protected:
-    BufferRepresentation(BufferUsage usage = BufferUsage::Static,
-                         BufferTarget target = BufferTarget::Data);
+    explicit BufferRepresentation(BufferUsage usage = BufferUsage::Static,
+                                  BufferTarget target = BufferTarget::Data);
     BufferRepresentation(const BufferRepresentation& rhs) = default;
     BufferRepresentation& operator=(const BufferRepresentation& that) = default;
 

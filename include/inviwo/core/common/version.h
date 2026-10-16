@@ -129,11 +129,11 @@ private:
             size_t rhsBegin = 0;
 
             while (true) {
-                size_t lhsEnd = lhsPre.find_first_of(".", lhsBegin);
-                size_t rhsEnd = rhsPre.find_first_of(".", rhsBegin);
+                const size_t lhsEnd = lhsPre.find_first_of(".", lhsBegin);
+                const size_t rhsEnd = rhsPre.find_first_of(".", rhsBegin);
 
-                auto lhsPart = lhsPre.substr(lhsBegin, lhsEnd - lhsBegin);
-                auto rhsPart = rhsPre.substr(rhsBegin, rhsEnd - rhsBegin);
+                const auto lhsPart = lhsPre.substr(lhsBegin, lhsEnd - lhsBegin);
+                const auto rhsPart = rhsPre.substr(rhsBegin, rhsEnd - rhsBegin);
 
                 auto lhsNum = toNumber(lhsPart);
                 auto rhsNum = toNumber(rhsPart);
@@ -169,7 +169,7 @@ private:
     }
     static constexpr std::optional<unsigned int> toNumber(std::string_view num) {
         unsigned int result = 0;
-        for (auto c : num) {
+        for (const auto c : num) {
             if (c < '0' || c > '9') {
                 return std::nullopt;
             }
@@ -187,7 +187,7 @@ constexpr Version::Version(const char* version) : Version(std::string_view{versi
 constexpr Version::Version(std::string_view version) {
     const std::array<unsigned int*, 3> v{&major, &minor, &patch};
 
-    auto majorMinorPatch = version.substr(0, version.find_first_of("-+"));
+    const auto majorMinorPatch = version.substr(0, version.find_first_of("-+"));
 
     size_t begin = 0;
     size_t end = majorMinorPatch.find('.', 0);
@@ -220,7 +220,7 @@ constexpr Version::Version(std::string_view version) {
         std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
     }
 
-    auto buildBegin = version.find_first_of("+", 0);
+    const auto buildBegin = version.find_first_of("+", 0);
     if (buildBegin != std::string_view::npos) {
         const auto build = version.substr(buildBegin + 1);
         if (build.size() > buildBuffer.size() - 1) {

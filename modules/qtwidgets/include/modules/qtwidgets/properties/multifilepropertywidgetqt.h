@@ -49,7 +49,7 @@ class FilePathLineEditQt;
 class IVW_MODULE_QTWIDGETS_API MultiFilePropertyWidgetQt : public PropertyWidgetQt,
                                                            public FileRequestable {
 public:
-    MultiFilePropertyWidgetQt(MultiFileProperty* property);
+    explicit MultiFilePropertyWidgetQt(MultiFileProperty* property);
     virtual ~MultiFilePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

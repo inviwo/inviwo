@@ -153,7 +153,7 @@ void HelpProcessor::deserialize(Deserializer& d) {
 namespace {
 
 std::string getTypeName(std::string_view id, auto* factory) {
-    if (auto* fo = factory->getFactoryObject(id)) {
+    if (const auto* fo = factory->getFactoryObject(id)) {
         return fo->getTypeName();
     } else {
         return "";
@@ -271,7 +271,7 @@ help::HelpProcessor help::buildProcessorHelp(Processor& processor, InviwoApplica
 
     const auto& info = processor.getProcessorInfo();
     const InviwoModule* m = util::getProcessorModule(processor.getClassIdentifier(), app);
-    auto* pfo = app.getProcessorFactory()->getFactoryObject(processor.getClassIdentifier());
+    const auto* pfo = app.getProcessorFactory()->getFactoryObject(processor.getClassIdentifier());
 
     const auto sourceFile = std::filesystem::path{info.file};
     const auto candidates = m ? headerCandidates(sourceFile.lexically_relative(m->getPath()),
@@ -318,7 +318,7 @@ void link(std::string_view typeName, Document::DocumentHandle& handle) {
 Document help::toDocument(const HelpProperty& property, std::string_view path) {
     Document doc;
 
-    auto spaced = [](auto str) { return fmt::format(" {}", str); };
+    const auto spaced = [](auto str) { return fmt::format(" {}", str); };
 
     auto html = doc.append("html");
     auto body = html.append("body");
@@ -354,7 +354,7 @@ Document help::toDocument(const HelpProperty& property, std::string_view path) {
 }
 
 Document help::toDocument(const HelpProcessor& processor) {
-    auto spaced = [](auto str) { return fmt::format(" {}", str); };
+    const auto spaced = [](auto str) { return fmt::format(" {}", str); };
 
     Document doc;
 

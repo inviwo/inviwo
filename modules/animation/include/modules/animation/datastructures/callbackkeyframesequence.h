@@ -58,7 +58,7 @@ public:
     CallbackKeyframeSequence() = default;
     CallbackKeyframeSequence(const CallbackKeyframeSequence& rhs) = default;
     CallbackKeyframeSequence(CallbackKeyframeSequence&& rhs) = default;
-    CallbackKeyframeSequence(std::vector<std::unique_ptr<CallbackKeyframe>> keyframes);
+    explicit CallbackKeyframeSequence(std::vector<std::unique_ptr<CallbackKeyframe>> keyframes);
     CallbackKeyframeSequence& operator=(const CallbackKeyframeSequence& that) = default;
     CallbackKeyframeSequence& operator=(CallbackKeyframeSequence&& that) = default;
 

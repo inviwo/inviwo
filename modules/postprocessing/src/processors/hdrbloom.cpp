@@ -129,7 +129,7 @@ void HdrBloom::process() {
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
-            auto dim = outport_.getData()->getDimensions();
+            const auto dim = outport_.getData()->getDimensions();
             Image* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
@@ -153,18 +153,19 @@ void HdrBloom::process() {
 
     auto imageGL = inport_.getData()->getRepresentation<ImageGL>();
     auto colorLayer = imageGL->getColorLayerGL();
-    auto colorTex = colorLayer->getTexture()->getID();
+    const auto colorTex = colorLayer->getTexture()->getID();
 
     // This geometry is actually never used in the shader
     const auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
-    utilgl::GlBoolState depth(GL_DEPTH_TEST, false);
+    const utilgl::GlBoolState depth(GL_DEPTH_TEST, false);
     glActiveTexture(GL_TEXTURE0);
 
     // --- HIGHPASS ---
     bright_.fbo.activate();
-    utilgl::ViewportState viewport(ivec4(0, 0, bright_.tex.getWidth(), bright_.tex.getHeight()));
+    const utilgl::ViewportState viewport(
+        ivec4(0, 0, bright_.tex.getWidth(), bright_.tex.getHeight()));
     glBindTexture(GL_TEXTURE_2D, colorTex);
     highPass_.activate();
     highPass_.setUniform("threshold", threshold_.get());
@@ -172,7 +173,7 @@ void HdrBloom::process() {
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // --- BLUR ---
-    Texture2D* input_tex = &bright_.tex;
+    const Texture2D* input_tex = &bright_.tex;
     blur_.activate();
     blur_.setUniform("texSource", 0);
     for (int i = 0; i < levels_; i++) {
@@ -200,7 +201,8 @@ void HdrBloom::process() {
     compose_.activate();
 
     // Blend bloom results onto colorchannel of outport.
-    utilgl::BlendModeEquationState blendEqn{GL_ONE, GL_ONE, GL_ONE, GL_ONE, GL_FUNC_ADD, GL_MAX};
+    const utilgl::BlendModeEquationState blendEqn{GL_ONE, GL_ONE,      GL_ONE,
+                                                  GL_ONE, GL_FUNC_ADD, GL_MAX};
 
     compose_.setUniform("bloomStrength", strength_.get());
     compose_.setUniform("bloomRadius", radius_.get());

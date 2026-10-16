@@ -79,7 +79,8 @@ void recursiveTopologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, const std::string& lname,
     std::unordered_set<std::string>& visited, std::unordered_set<std::string>& tmpVisited,
     std::vector<std::string>& sorted) {
-    auto it = std::find_if(start, end, [&](const auto& a) { return toLower(a->name) == lname; });
+    const auto it =
+        std::find_if(start, end, [&](const auto& a) { return toLower(a->name) == lname; });
     if (it == end) {  // This dependency has not been loaded
         return;
     }
@@ -92,7 +93,7 @@ void recursiveTopologicalModuleFactoryObjectSort(
     tmpVisited.insert(lname);
 
     for (const auto& dependency : (*it)->dependencies) {
-        auto ldep = toLower(dependency.first);
+        const auto ldep = toLower(dependency.first);
         recursiveTopologicalModuleFactoryObjectSort(start, end, ldep, visited, tmpVisited, sorted);
     }
     visited.insert(lname);
@@ -110,7 +111,7 @@ void topologicalModuleFactoryObjectSort(
     std::unordered_set<std::string> tmpVisited;
     std::vector<std::string> sorted;
     for (auto it = start; it != end; ++it) {
-        auto lname = toLower((*it)->name);
+        const auto lname = toLower((*it)->name);
         if (visited.find(lname) == visited.end()) {
             recursiveTopologicalModuleFactoryObjectSort(start, end, lname, visited, tmpVisited,
                                                         sorted);

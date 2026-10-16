@@ -108,7 +108,7 @@ TEST(Nifti1, avg152T1_LR) {
         util::getModuleByTypeOrThrow<NiftiModule>().getPath(ModulePath::TestVolumes) /
         "avg152T1_LR_nifti.nii.gz";
     NiftiReader reader;
-    auto vol = reader.readData(filename)->front();
+    const auto vol = reader.readData(filename)->front();
     ASSERT_EQ(size3_t(91, 109, 91), vol->getDimensions()) << "Dimension mismatch";
 
     ASSERT_EQ(dvec2(0, 255), vol->dataMap.dataRange);
@@ -175,7 +175,7 @@ TEST(Nifti1, avg152T1_RL) {
         util::getModuleByTypeOrThrow<NiftiModule>().getPath(ModulePath::TestVolumes) /
         "avg152T1_RL_nifti.hdr.gz";
     NiftiReader reader;
-    auto vol = reader.readData(filename)->front();
+    const auto vol = reader.readData(filename)->front();
     ASSERT_EQ(size3_t(91, 109, 91), vol->getDimensions()) << "Dimension mismatch";
 
     ASSERT_EQ(dvec2(0, 255), vol->dataMap.dataRange);
@@ -244,7 +244,7 @@ TEST(Nifti1, zstat1) {
         util::getModuleByTypeOrThrow<NiftiModule>().getPath(ModulePath::TestVolumes) /
         "zstat1.nii.gz";
     NiftiReader reader;
-    auto vol = reader.readData(filename)->front();
+    const auto vol = reader.readData(filename)->front();
     ASSERT_EQ(size3_t(64, 64, 21), vol->getDimensions()) << "Dimension mismatch";
 
     ASSERT_EQ(DataFormatId::Float32, vol->getDataFormat()->getId());

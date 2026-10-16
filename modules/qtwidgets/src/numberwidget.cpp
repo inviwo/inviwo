@@ -244,7 +244,7 @@ void BaseNumberWidget::mouseMoveEvent(QMouseEvent* event) {
             }
         } else if (mode_ == NumberWidgetConfig::Interaction::Dragging) {
             auto deltaStep = static_cast<double>(delta);
-            if (auto modifiers = QGuiApplication::queryKeyboardModifiers();
+            if (const auto modifiers = QGuiApplication::queryKeyboardModifiers();
                 modifiers != state_.modifiers) {
                 initDragValue();
                 state_.previousPos = event->pos();
@@ -408,7 +408,7 @@ void BaseNumberWidget::updateHoverState(QPoint mousepos) {
         return;
     }
 
-    if (auto hoverState = getHoverState(mousepos); hoverState != state_.hover) {
+    if (const auto hoverState = getHoverState(mousepos); hoverState != state_.hover) {
         state_.hover = hoverState;
         update();
 

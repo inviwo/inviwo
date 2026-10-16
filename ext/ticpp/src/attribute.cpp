@@ -103,7 +103,7 @@ const char* TiXmlAttributeSet::Parse(const char* p, TiXmlParsingData* data) {
     p = TiXmlBase::SkipWhiteSpace(p);
     if (!p || !*p) return nullptr;
 
-    auto alloc = sentinel.value.get_allocator();
+    const auto alloc = sentinel.value.get_allocator();
     auto attribute = pmr_make_unique<TiXmlAttribute>(alloc);
 
     const char* pErr = p;

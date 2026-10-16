@@ -69,7 +69,7 @@ std::shared_ptr<VolumeRepresentation> RawVolumeRAMLoader::createRepresentation(
 void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                               const VolumeRepresentation& src,
                                               std::stop_token stop) const {
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
+    const auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (src.getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(src.getDimensions());

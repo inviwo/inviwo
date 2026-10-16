@@ -160,7 +160,7 @@ public:
         const Element& element() const;
         Element& element();
 
-        operator bool() const;
+        explicit operator bool() const;
         DocumentHandle& operator+=(std::string_view content);
 
     private:

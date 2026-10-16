@@ -162,11 +162,11 @@ RandomMeshGenerator::RandomMeshGenerator()
 void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
-    auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
-    auto randSize = [&]() { return size_.get() * randVec3(0.1f, 1.0f); };
-    auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
-    auto randDir = [&]() { return glm::normalize(randVec3()); };
-    auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
+    const auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
+    const auto randSize = [&]() { return size_.get() * randVec3(0.1f, 1.0f); };
+    const auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
+    const auto randDir = [&]() { return glm::normalize(randVec3()); };
+    const auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
 
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified();
 
@@ -211,7 +211,7 @@ void RandomMeshGenerator::process() {
         }
     }
 
-    auto mesh = std::make_shared<BasicMesh>();
+    const auto mesh = std::make_shared<BasicMesh>();
     if (enablePicking_) addPickingBuffer(*mesh, 0);
 
     size_t i = 0;
@@ -221,21 +221,21 @@ void RandomMeshGenerator::process() {
         o = glm::rotate(o, box.rotation.y, vec3(0, 1, 0));
         o = glm::rotate(o, box.rotation.z, vec3(0, 0, 1));
         o = glm::scale(o, box.scale);
-        auto mesh2 = meshutil::cube(o, box.color);
+        const auto mesh2 = meshutil::cube(o, box.color);
         if (enablePicking_) addPickingBuffer(*mesh2, boxPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& sphere : spheres_) {
-        auto mesh2 = meshutil::sphere(sphere.center, sphere.radius, sphere.color);
+        const auto mesh2 = meshutil::sphere(sphere.center, sphere.radius, sphere.color);
         if (enablePicking_) addPickingBuffer(*mesh2, spherePicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& cylinder : cylinders_) {
-        auto mesh2 =
+        const auto mesh2 =
             meshutil::cylinder(cylinder.start, cylinder.end, cylinder.color, cylinder.radius);
         if (enablePicking_) addPickingBuffer(*mesh2, cylinderPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
@@ -243,15 +243,15 @@ void RandomMeshGenerator::process() {
 
     i = 0;
     for (const auto& cone : cones_) {
-        auto mesh2 = meshutil::cone(cone.start, cone.end, cone.color, cone.radius);
+        const auto mesh2 = meshutil::cone(cone.start, cone.end, cone.color, cone.radius);
         if (enablePicking_) addPickingBuffer(*mesh2, conePicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
 
     i = 0;
     for (const auto& torus : toruses_) {
-        auto mesh2 = meshutil::torus(torus.center, torus.up, torus.radius1, torus.radius2,
-                                     ivec2(32, 8), torus.color);
+        const auto mesh2 = meshutil::torus(torus.center, torus.up, torus.radius1, torus.radius2,
+                                           ivec2(32, 8), torus.color);
         if (enablePicking_) addPickingBuffer(*mesh2, torusPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
@@ -302,8 +302,9 @@ vec3 RandomMeshGenerator::randVec3(const float min, const float max) {
 
 void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
     // Add picking ids
-    auto bufferRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
-    auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
+    const auto bufferRAM =
+        std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
+    const auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
     auto& data = bufferRAM->getDataContainer();
     std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
     mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);

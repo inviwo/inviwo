@@ -99,7 +99,7 @@ void GridPlanes::process() {
 
     auto& ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None)->getDataContainer();
 
-    if (auto transform = basis_.getData()) {
+    if (const auto transform = basis_.getData()) {
         mesh->setModelMatrix(transform->getModelMatrix());
         mesh->setWorldMatrix(transform->getWorldMatrix());
     }
@@ -126,17 +126,17 @@ void GridPlanes::process() {
         start[c] = extent.x;
         end[c] = extent.y;
 
-        for (auto v : vals[b]) {
+        for (const auto v : vals[b]) {
             start[b] = v;
             end[b] = v;
-            auto i0 = mesh->addVertex(start, color);
-            auto i1 = mesh->addVertex(end, color);
+            const auto i0 = mesh->addVertex(start, color);
+            const auto i1 = mesh->addVertex(end, color);
             ib.push_back(i0);
             ib.push_back(i1);
         }
     };
 
-    auto createGrid = [&](unsigned a, unsigned b, unsigned c) {
+    const auto createGrid = [&](unsigned a, unsigned b, unsigned c) {
         if (!enable_.get(a)) return;
         createLines(a, b, c);
         createLines(a, c, b);

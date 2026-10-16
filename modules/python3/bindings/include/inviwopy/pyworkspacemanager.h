@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeWorkspaceManager(pybind11::module& m);
+void exposeWorkspaceManager(const pybind11::module& m);
 
 }  // namespace inviwo

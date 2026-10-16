@@ -50,16 +50,17 @@ auto VolumeReuseCache::get(const VolumeConfig& config)
     }
     config_ = config.orDefault();
 
-    auto it = std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
+    const auto it =
+        std::ranges::find_if(cache_, [](const auto& elem) { return elem.use_count() == 1; });
     if (it != cache_.end()) {
-        auto volume = *it;
+        const auto volume = *it;
         volume->getMetaDataMap()->removeAll();
         volume->clearHistograms();
         volume->setConfig(config_);
 
         return {volume, status};
     } else {
-        auto volume = std::make_shared<Volume>(config_);
+        const auto volume = std::make_shared<Volume>(config_);
         cache_.push_back(volume);
         return {volume, status};
     }

@@ -248,7 +248,7 @@ void Property::updateWidgets() {
 bool Property::hasWidgets() const { return !propertyWidgets_.empty(); }
 
 Property& Property::propertyModified() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     onChangeCallback_.invokeAll();
     setModified();
 

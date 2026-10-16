@@ -48,9 +48,9 @@ public:
      * @param nativeVirtualKey Platform dependent scancode of pressed key
      * @param utfText Unicode representation of pressed keys
      */
-    KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
-                  KeyModifiers modifiers = KeyModifiers(flags::empty),
-                  uint32_t nativeVirtualKey = 0, std::string_view utfText = "");
+    explicit KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
+                           KeyModifiers modifiers = KeyModifiers(flags::empty),
+                           uint32_t nativeVirtualKey = 0, std::string_view utfText = "");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;

@@ -123,7 +123,7 @@ pybind11::array toNpArray(const std::vector<T>& v) {
         strides.pop_back();
     }
 
-    bool readOnly = false;
+    const bool readOnly = false;
     if (readOnly) {
         return pybind11::array(pyutil::toNumPyFormat(df), shape, strides, v.data());
     } else {

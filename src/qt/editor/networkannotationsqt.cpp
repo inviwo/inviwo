@@ -103,7 +103,7 @@ void NetworkAnnotationsQt::onNetworkAnnotationChanged(NetworkAnnotation& annotat
 
 std::optional<size_t> NetworkAnnotationsQt::getIndex(const QGraphicsItem* item) const {
     if (const auto* annotation = qgraphicsitem_cast<const NetworkAnnotationGraphicsItem*>(item)) {
-        if (auto it = std::ranges::find(annotationGraphicItems_, annotation);
+        if (const auto it = std::ranges::find(annotationGraphicItems_, annotation);
             it != annotationGraphicItems_.end()) {
             return static_cast<size_t>(std::distance(annotationGraphicItems_.begin(), it));
         }

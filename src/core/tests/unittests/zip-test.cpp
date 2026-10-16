@@ -120,7 +120,7 @@ void forwadTest(Zipped&& iter) {
     using util::detailzip::proxy;
 
     // Iterator default constructible
-    Iter defaultConstruct{};
+    const Iter defaultConstruct{};
 
     // Iterator requirements
     Iter copy{defaultConstruct};
@@ -129,25 +129,25 @@ void forwadTest(Zipped&& iter) {
 
     {
         auto i = iter.begin();
-        auto j = iter.end();
+        const auto j = iter.end();
         EXPECT_FALSE(i == j);
         for (size_t c = 0; c < ints.size(); ++c) {
-            auto ref = proxy<int, D>{ints[c], ds[c]};
+            const auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
-            Iter& i2 = ++i;
+            const Iter& i2 = ++i;
             EXPECT_EQ(i2, i);
         }
     }
     {
         auto i = iter.begin();
-        auto j = iter.end();
+        const auto j = iter.end();
         EXPECT_FALSE(i == j);
         // InputIterator requirements
         EXPECT_EQ(true, i != j);
         EXPECT_EQ(false, i == j);
-        typename Iter::value_type vt1 = *i;
-        typename Iter::value_type vt2 = *i++;
-        auto ref = proxy<int, D>{1, D{10}};
+        const typename Iter::value_type vt1 = *i;
+        const typename Iter::value_type vt2 = *i++;
+        const auto ref = proxy<int, D>{1, D{10}};
         EXPECT_EQ(ref, vt1);
         EXPECT_EQ(ref, vt2);
 
@@ -161,13 +161,13 @@ void forwadTest(Zipped&& iter) {
     // same as InputIterator + multi pass
     {
         auto i = iter.begin();
-        auto j = iter.end();
+        const auto j = iter.end();
         EXPECT_FALSE(i == j);
         for (size_t c = 0; c < ints.size(); ++c) {
-            auto ref = proxy<int, D>{ints[c], ds[c]};
+            const auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
-            Iter i1 = i;
-            Iter i2 = i++;
+            const Iter i1 = i;
+            const Iter i2 = i++;
             EXPECT_EQ(i2, i1);
         }
     }
@@ -178,44 +178,44 @@ void bidirectionalTest(Zipped&& iter) {
     using util::detailzip::proxy;
     {
         auto i = iter.begin();
-        auto j = iter.end();
+        const auto j = iter.end();
         EXPECT_FALSE(i == j);
         std::advance(i, 2);
 
-        auto ref0 = proxy<int, D>{3, D{30}};
+        const auto ref0 = proxy<int, D>{3, D{30}};
         EXPECT_EQ(ref0, *i);
 
         using Iter = typename std::decay_t<decltype(iter)>::iterator;
         // BidirectionalIterator requirements
-        Iter& i4 = --i;
+        const Iter& i4 = --i;
 
-        auto ref1 = proxy<int, D>{2, D{20}};
+        const auto ref1 = proxy<int, D>{2, D{20}};
         EXPECT_EQ(ref1, *i4);
         EXPECT_EQ(ref1, *i);
 
-        typename Iter::value_type vt1 = *i;
-        typename Iter::value_type vt2 = *i--;
+        const typename Iter::value_type vt1 = *i;
+        const typename Iter::value_type vt2 = *i--;
 
         EXPECT_EQ(ref1, vt1);
         EXPECT_EQ(ref1, vt2);
 
-        auto ref2 = proxy<int, D>{1, D{10}};
+        const auto ref2 = proxy<int, D>{1, D{10}};
         EXPECT_EQ(ref2, *i);
     }
     {
-        auto i = iter.begin();
+        const auto i = iter.begin();
         auto j1 = iter.end();
         auto j2 = iter.end();
         j2--;
         --j1;
 
         for (int c = static_cast<int>(ints.size()) - 1; c >= 1; --c) {
-            auto ref3 = proxy<int, D>{ints[c], ds[c]};
+            const auto ref3 = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref3, *j1);
             EXPECT_EQ(ref3, *j2);
             EXPECT_EQ(true, j1 == j2);
 
-            auto val = *j2--;
+            const auto val = *j2--;
             EXPECT_EQ(true, val == *j1);
             --j1;
 
@@ -238,54 +238,54 @@ void randomAccessTest(Zipped&& iter) {
 
         {
             auto i = iter.begin();
-            Iter& i1 = i += n;
-            auto ref = proxy<int, D>{ints[n], ds[n]};
+            const Iter& i1 = i += n;
+            const auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, *i1);
         }
 
         {
-            auto i = iter.begin();
-            Iter i2 = i + n;
-            Iter i3 = n + i;
-            auto ref = proxy<int, D>{ints[n], ds[n]};
+            const auto i = iter.begin();
+            const Iter i2 = i + n;
+            const Iter i3 = n + i;
+            const auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, *i2);
             EXPECT_EQ(ref, *i3);
         }
         {
-            auto i = iter.end();
-            Iter i5 = i - (n + 1);
-            auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
+            const auto i = iter.end();
+            const Iter i5 = i - (n + 1);
+            const auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
             EXPECT_EQ(ref, *i5);
         }
         {
             auto i = iter.end();
-            Iter& i4 = i -= (n + 1);
-            auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
+            const Iter& i4 = i -= (n + 1);
+            const auto ref = proxy<int, D>{ints[ints.size() - n - 1], ds[ints.size() - n - 1]};
             EXPECT_EQ(ref, *i4);
         }
     }
     {
-        auto j = iter.end();
+        const auto j = iter.end();
         auto i = iter.begin();
         for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
-            DT size = j - i;
+            DT const size = j - i;
             EXPECT_EQ(5 - n, size);
             ++i;
         }
     }
 
     {
-        auto i = iter.begin();
+        const auto i = iter.begin();
         for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
-            typename Iter::reference vr1 = i[n];
-            auto ref = proxy<int, D>{ints[n], ds[n]};
+            const typename Iter::reference vr1 = i[n];
+            const auto ref = proxy<int, D>{ints[n], ds[n]};
             EXPECT_EQ(ref, vr1);
             EXPECT_EQ(ref, i[n]);
         }
     }
     {
-        auto i = iter.begin();
-        auto j = iter.end();
+        const auto i = iter.begin();
+        const auto j = iter.end();
         EXPECT_TRUE(i < j);
         EXPECT_FALSE(i > j);
         EXPECT_TRUE(i <= j);

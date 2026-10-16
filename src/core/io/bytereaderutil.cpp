@@ -57,7 +57,7 @@ size_t chunkSizeFor(size_t elementSize) {
 }  // namespace
 
 void util::reverseByteOrder(void* dest, size_t bytes, size_t elementSize) {
-    auto temp = std::make_unique<char[]>(elementSize);
+    const auto temp = std::make_unique<char[]>(elementSize);
 
     for (std::size_t i = 0; i < bytes; i += elementSize) {
         for (std::size_t j = 0; j < elementSize; j++) {

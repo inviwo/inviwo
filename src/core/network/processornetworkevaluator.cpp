@@ -138,7 +138,7 @@ void ProcessorNetworkEvaluator::evaluate() {
 
                 try {
                     // call onChange for all invalid inports
-                    for (auto* inport : processor->getInports()) {
+                    for (const auto* inport : processor->getInports()) {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {

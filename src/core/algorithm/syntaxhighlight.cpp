@@ -165,7 +165,7 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
 
     // Flush a [start, i) range of "plain" characters into the token list,
     // merging with the previous Default token when possible.
-    auto emitDefault = [&](size_t start) {
+    const auto emitDefault = [&](size_t start) {
         if (start >= i) return;
         std::string_view text = code.substr(start, i - start);
         if (!tokens.empty() && tokens.back().kind == TokenKind::Default) {

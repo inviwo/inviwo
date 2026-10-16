@@ -68,8 +68,8 @@ auto partitionConnections(const std::vector<PortConnection>& connections,
     std::unordered_map<Outport*, std::vector<Inport*>> outConnections;
 
     for (const auto& c : connections) {
-        auto out = util::contains(selected, c.getOutport()->getProcessor());
-        auto in = util::contains(selected, c.getInport()->getProcessor());
+        const auto out = util::contains(selected, c.getOutport()->getProcessor());
+        const auto in = util::contains(selected, c.getInport()->getProcessor());
         if (out && in) {
             internal.push_back(c);
         } else if (!out && in) {
@@ -91,8 +91,8 @@ auto partitionLinks(const std::vector<PropertyLink>& links, const std::vector<Pr
     std::unordered_map<Property*, std::vector<Property*>> outLinks;
 
     for (const auto& l : links) {
-        auto out = util::contains(selected, l.getSource()->getOwner()->getProcessor());
-        auto in = util::contains(selected, l.getDestination()->getOwner()->getProcessor());
+        const auto out = util::contains(selected, l.getSource()->getOwner()->getProcessor());
+        const auto in = util::contains(selected, l.getDestination()->getOwner()->getProcessor());
         if (out && in) {
             internal.push_back(l);
         } else if (!out && in) {
@@ -105,7 +105,7 @@ auto partitionLinks(const std::vector<PropertyLink>& links, const std::vector<Pr
     return {internal, inLinks, outLinks};
 }
 
-std::string superPortIdentifier(Port* port) {
+std::string superPortIdentifier(const Port* port) {
     auto portIdentifier = port->getIdentifier();
     // Make first letter uppercase for readability when combined with processor
     // display name
@@ -165,11 +165,11 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         const auto links = network.getLinks();
 
         auto* app = network.getApplication();
-        auto* pf = app->getProcessorFactory();
+        const auto* pf = app->getProcessorFactory();
 
-        auto comp = std::make_shared<CompositeProcessor>("composite", "Composite", app);
+        const auto comp = std::make_shared<CompositeProcessor>("composite", "Composite", app);
         auto* meta = comp->createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
-        auto center = util::getCenterPosition(selected);
+        const auto center = util::getCenterPosition(selected);
         meta->setPosition(center);
 
         auto& subNetwork = comp->getSubNetwork();
@@ -185,13 +185,13 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
         const auto [internalConnections, inConnections, outConnections] =
             partitionConnections(connections, selected);
 
-        for (auto c : internalConnections) {
+        for (const auto c : internalConnections) {
             subNetwork.addConnection(c);
         }
 
         for (const auto& [outport, inports] : inConnections) {
             const auto portId = outport->getClassIdentifier();
-            if (auto metaSource =
+            if (const auto metaSource =
                     addMetaSource<CompositeSourceBase>(inports, subNetwork, portId, pf)) {
                 network.addConnection(outport, &metaSource->getSuperInport());
             } else {
@@ -201,7 +201,8 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
 
         for (const auto& [outport, inports] : outConnections) {
             const auto portId = outport->getClassIdentifier();
-            if (auto metasink = addMetaSink<CompositeSinkBase>(outport, subNetwork, portId, pf)) {
+            if (const auto metasink =
+                    addMetaSink<CompositeSinkBase>(outport, subNetwork, portId, pf)) {
                 for (auto* inport : inports) {
                     network.addConnection(&metasink->getSuperOutport(), inport);
                 }
@@ -236,7 +237,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
 void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
     try {
         // Make sure we delete the composite as the last thing we do, after any locks
-        auto holder = composite.shared_from_this();
+        const auto holder = composite.shared_from_this();
         auto& network = *composite.getNetwork();
         auto& subNetwork = composite.getSubNetwork();
         const NetworkLock lock(&network);
@@ -248,7 +249,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         // Gather Links
         auto subLinks = subNetwork.getLinks();
-        for (auto& l : network.getLinks()) {
+        for (const auto& l : network.getLinks()) {
             if (l.getSource()->getOwner()->getProcessor() == &composite) {
                 if (auto* orgSource = composite.getSubProperty(l.getSource())) {
                     network.removeLink(l);
@@ -264,13 +265,13 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
 
         // Move Processors
         for (auto* p : subProcessors) {
-            auto* sink = dynamic_cast<CompositeSinkBase*>(p);
-            auto* source = dynamic_cast<CompositeSourceBase*>(p);
+            const auto* sink = dynamic_cast<CompositeSinkBase*>(p);
+            const auto* source = dynamic_cast<CompositeSourceBase*>(p);
             if (!sink && !source) {
                 network.addProcessor(subNetwork.removeProcessor(p));
             }
         }
-        auto* meta =
+        const auto* meta =
             composite.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
@@ -298,7 +299,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
         }
 
         // Links
-        for (auto& l : subLinks) {
+        for (const auto& l : subLinks) {
             network.addLink(l);
         }
 
@@ -385,14 +386,14 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         const auto links = network.getLinks();
 
         auto* app = network.getApplication();
-        auto* pf = app->getProcessorFactory();
+        const auto* pf = app->getProcessorFactory();
 
         const auto id = fmt::format("{}{}Sequence", selected.front()->getIdentifier(),
                                     selected.size() > 1 ? "Etc" : "");
         const auto name = fmt::format("{}{} Sequence", selected.front()->getDisplayName(),
                                       selected.size() > 1 ? " Etc" : "");
-        auto sequence = std::make_shared<SequenceProcessor>(id, name, app);
-        auto center = util::getCenterPosition(selected);
+        const auto sequence = std::make_shared<SequenceProcessor>(id, name, app);
+        const auto center = util::getCenterPosition(selected);
         util::setPosition(sequence.get(), center);
 
         auto& subNetwork = sequence->getSubNetwork();
@@ -408,19 +409,19 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
         const auto [internalConnections, inConnections, outConnections] =
             partitionConnections(connections, selected);
 
-        for (auto c : internalConnections) {
+        for (const auto c : internalConnections) {
             subNetwork.addConnection(c);
         }
 
         for (const auto& [outport, inports] : inConnections) {
             const auto portId = outport->getClassIdentifier();
-            if (auto metaSource = addMetaSequenceSource<SequenceCompositeSourceBase>(
+            if (const auto metaSource = addMetaSequenceSource<SequenceCompositeSourceBase>(
                     inports, subNetwork, portId, pf)) {
 
                 auto& superInport = metaSource->getSuperInport();
                 if (superInport.canConnectTo(outport)) {
                     network.addConnection(outport, &superInport);
-                } else if (auto converter = metaSource->createConverter()) {
+                } else if (const auto converter = metaSource->createConverter()) {
                     if (!converter->getInports().empty() && !converter->getOutports().empty()) {
                         auto* converterInport = converter->getInports().front();
                         auto* converterOutport = converter->getOutports().front();
@@ -446,8 +447,8 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 
         for (const auto& [outport, inports] : outConnections) {
             const auto portId = inports.front()->getClassIdentifier();
-            if (auto metaSink = addMetaSequenceSink<SequenceCompositeSinkBase>(outport, subNetwork,
-                                                                               portId, pf)) {
+            if (const auto metaSink = addMetaSequenceSink<SequenceCompositeSinkBase>(
+                    outport, subNetwork, portId, pf)) {
 
                 auto& superOutport = metaSink->getSuperOutport();
                 for (auto* inport : inports) {
@@ -455,7 +456,7 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
                         network.addConnection(&superOutport, inport);
                     }
                 }
-                if (auto converter = metaSink->createConverter()) {
+                if (const auto converter = metaSink->createConverter()) {
                     if (!converter->getInports().empty() && !converter->getOutports().empty()) {
                         auto* converterInport = converter->getInports().front();
                         auto* converterOutport = converter->getOutports().front();
@@ -513,7 +514,7 @@ void util::replaceSelectionWithSequenceProcessor(ProcessorNetwork& network) {
 void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
     try {
         // Make sure we delete the composite as the last thing we do, after any locks
-        auto holder = sequence.shared_from_this();
+        const auto holder = sequence.shared_from_this();
         auto& network = *sequence.getNetwork();
         auto& subNetwork = sequence.getSubNetwork();
         const NetworkLock lock(&network);
@@ -525,7 +526,7 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
 
         // Gather Links
         auto subLinks = subNetwork.getLinks();
-        for (auto& l : network.getLinks()) {
+        for (const auto& l : network.getLinks()) {
             if (l.getSource()->getOwner()->getProcessor() == &sequence) {
                 if (auto* orgSource = sequence.getSubProperty(l.getSource())) {
                     network.removeLink(l);
@@ -541,13 +542,14 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
 
         // Move Processors
         for (auto* p : subProcessors) {
-            auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p);
-            auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p);
+            const auto* sink = dynamic_cast<SequenceCompositeSinkBase*>(p);
+            const auto* source = dynamic_cast<SequenceCompositeSourceBase*>(p);
             if (!sink && !source) {
                 network.addProcessor(subNetwork.removeProcessor(p));
             }
         }
-        auto* meta = sequence.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+        const auto* meta =
+            sequence.createMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
         util::offsetPosition(subProcessors, meta->getPosition());
         util::setSelected(subProcessors, true);
 
@@ -563,7 +565,7 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
                             const auto inports =
                                 converter->getOutports().front()->getConnectedInports() |
                                 std::ranges::to<std::vector>();
-                            auto keepAlive = network.removeProcessor(converter);
+                            const auto keepAlive = network.removeProcessor(converter);
                             for (auto* inport : inports) {
                                 network.addConnection(subConnection.getOutport(), inport);
                             }
@@ -596,7 +598,7 @@ void util::expandSequenceProcessorIntoNetwork(SequenceProcessor& sequence) {
         }
 
         // Links
-        for (auto& l : subLinks) {
+        for (const auto& l : subLinks) {
             network.addLink(l);
         }
 

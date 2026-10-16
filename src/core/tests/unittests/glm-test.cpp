@@ -391,80 +391,80 @@ TEST(GLMTest, MatVectorize) {
 
     // min
     {
-        auto minval_vv = glm::min(a, b);
+        const auto minval_vv = glm::min(a, b);
         EXPECT_EQ(minval_vv, a);
     }
     {
-        auto minval_vs1 = glm::min(a, 10.0f);
+        const auto minval_vs1 = glm::min(a, 10.0f);
         EXPECT_EQ(minval_vs1, a);
     }
     {
-        auto minval_vs2 = glm::min(b, 2.0f);
+        const auto minval_vs2 = glm::min(b, 2.0f);
         EXPECT_EQ(minval_vs2, a);
     }
     {
-        auto minval_sv1 = glm::min(10.f, a);
+        const auto minval_sv1 = glm::min(10.f, a);
         EXPECT_EQ(minval_sv1, a);
     }
     {
-        auto minval_sv2 = glm::min(2.0f, b);
+        const auto minval_sv2 = glm::min(2.0f, b);
         EXPECT_EQ(minval_sv2, a);
     }
 
     // max
     {
 
-        auto maxval_vv = glm::max(a, b);
+        const auto maxval_vv = glm::max(a, b);
         EXPECT_EQ(maxval_vv, b);
     }
     {
-        auto maxval_vs1 = glm::max(a, 1.0f);
+        const auto maxval_vs1 = glm::max(a, 1.0f);
         EXPECT_EQ(maxval_vs1, a);
     }
     {
-        auto maxval_vs2 = glm::max(a, 4.0f);
+        const auto maxval_vs2 = glm::max(a, 4.0f);
         EXPECT_EQ(maxval_vs2, b);
     }
     {
-        auto maxval_sv1 = glm::max(1.f, a);
+        const auto maxval_sv1 = glm::max(1.f, a);
         EXPECT_EQ(maxval_sv1, a);
     }
     {
-        auto maxval_sv2 = glm::max(4.0f, a);
+        const auto maxval_sv2 = glm::max(4.0f, a);
         EXPECT_EQ(maxval_sv2, b);
     }
 
     // mix
     {
-        auto mixval = glm::mix(a, b, 0.5f);
-        mat mixres{3, 3, 3, 3, 3, 3};
+        const auto mixval = glm::mix(a, b, 0.5f);
+        const mat mixres{3, 3, 3, 3, 3, 3};
         EXPECT_EQ(mixval, mixres);
     }
 
     // clamp
     {
-        auto clamp = glm::clamp(b, 2.0f, 6.0f);
+        const auto clamp = glm::clamp(b, 2.0f, 6.0f);
         EXPECT_EQ(clamp, b);
     }
     {
-        auto clamp = glm::clamp(a, 4.0f, 6.0f);
+        const auto clamp = glm::clamp(a, 4.0f, 6.0f);
         EXPECT_EQ(clamp, b);
     }
     {
-        auto clamp = glm::clamp(b, 0.0f, 2.0f);
+        const auto clamp = glm::clamp(b, 0.0f, 2.0f);
         EXPECT_EQ(clamp, a);
     }
 
     {
-        auto clamp = glm::clamp(b, a, c);
+        const auto clamp = glm::clamp(b, a, c);
         EXPECT_EQ(clamp, b);
     }
     {
-        auto clamp = glm::clamp(a, b, c);
+        const auto clamp = glm::clamp(a, b, c);
         EXPECT_EQ(clamp, b);
     }
     {
-        auto clamp = glm::clamp(c, a, b);
+        const auto clamp = glm::clamp(c, a, b);
         EXPECT_EQ(clamp, b);
     }
 }

@@ -65,7 +65,7 @@ VolumeToSpatialSampler::VolumeToSpatialSampler()
 }
 
 void VolumeToSpatialSampler::process() {
-    auto sampler = std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
+    const auto sampler = std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
     sampler_.setData(sampler);
 }
 

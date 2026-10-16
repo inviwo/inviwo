@@ -52,7 +52,7 @@ class InviwoModule;
  */
 class IVW_CORE_API ModuleManager {
 public:
-    ModuleManager(InviwoApplication* app);
+    explicit ModuleManager(InviwoApplication* app);
     ModuleManager(const ModuleManager& rhs) = delete;
     ModuleManager& operator=(const ModuleManager& that) = delete;
     ~ModuleManager();

@@ -49,8 +49,9 @@ bool PropertyConverterManager::registerObject(PropertyConverter* converter) {
 }
 
 bool PropertyConverterManager::unRegisterObject(PropertyConverter* converter) {
-    auto it = converters_.find(std::make_pair(converter->getSourcePropertyClassIdenetifier(),
-                                              converter->getDestinationPropertyClassIdenetifier()));
+    const auto it =
+        converters_.find(std::make_pair(converter->getSourcePropertyClassIdenetifier(),
+                                        converter->getDestinationPropertyClassIdenetifier()));
     if (it != converters_.end()) {
         converters_.erase(it);
         return true;
@@ -74,7 +75,7 @@ const PropertyConverter* PropertyConverterManager::getConverter(
     std::string_view srcClassIdentifier, std::string_view dstClassIdentifier) const {
     if (srcClassIdentifier == dstClassIdentifier) return &identityConverter_;
 
-    auto converter = converters_.find(
+    const auto converter = converters_.find(
         std::make_pair(std::string{srcClassIdentifier}, std::string{dstClassIdentifier}));
     if (converter != converters_.end()) {
         return converter->second;

@@ -71,7 +71,7 @@ struct DataOutportBase : DataOutportInterface<T> {
         if constexpr (Flat && requires {
                           { getElements()->size() } -> std::convertible_to<size_t>;
                       }) {
-            if (auto data = getElements()) {
+            if (const auto data = getElements()) {
                 return data->size();
             } else {
                 return 0;
@@ -102,7 +102,7 @@ template <typename T, typename Alloc>
 struct DataOutportFlat<DataOutport<std::vector<T, Alloc>>>
     : DataOutportBase<DataOutport<std::vector<T, Alloc>>, T, true> {
     virtual std::shared_ptr<const T> getElement(size_t i) const final {
-        if (auto data = this->getElements()) {
+        if (const auto data = this->getElements()) {
             if (i < data->size()) {
                 return std::shared_ptr<const T>(data, &(*data)[i]);
             }
@@ -129,7 +129,7 @@ template <typename T, typename Alloc>
 struct DataOutportFlat<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>>
     : DataOutportBase<DataOutport<std::vector<std::shared_ptr<T>, Alloc>>, T, true> {
     virtual std::shared_ptr<const T> getElement(size_t i) const final {
-        if (auto data = this->getElements()) {
+        if (const auto data = this->getElements()) {
             if (i < data->size()) {
                 return (*data)[i];
             }
@@ -156,7 +156,7 @@ template <typename T>
 struct DataOutportFlat<DataOutport<DataSequence<T>>>
     : DataOutportBase<DataOutport<DataSequence<T>>, T, true> {
     virtual std::shared_ptr<const T> getElement(size_t i) const final {
-        if (auto data = this->getElements()) {
+        if (const auto data = this->getElements()) {
             if (i < data->size()) {
                 return (*data)[i];
             }

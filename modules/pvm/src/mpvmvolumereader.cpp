@@ -72,7 +72,7 @@ MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(
 
 namespace {
 
-void gatherVolumes(std::shared_ptr<inviwo::VolumeRAM>& dest,
+void gatherVolumes(const std::shared_ptr<inviwo::VolumeRAM>& dest,
                    std::vector<std::shared_ptr<inviwo::Volume>>& volumes) {
 
     const auto srcPtrs = volumes | std::views::transform([](const auto& vol) {
@@ -100,7 +100,7 @@ void gatherVolumes(std::shared_ptr<inviwo::VolumeRAM>& dest,
 }  // namespace
 
 std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& filePath) {
-    auto fileDirectory = filePath.parent_path();
+    const auto fileDirectory = filePath.parent_path();
 
     // Read the mpvm file content
     std::string textLine;
@@ -125,7 +125,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
     for (size_t i = 0; i < files.size(); i++) {
-        auto newVol = PVMVolumeReader::readPVMData(fileDirectory / files[i]);
+        const auto newVol = PVMVolumeReader::readPVMData(fileDirectory / files[i]);
         if (newVol) {
             volumes.push_back(newVol);
         } else {
@@ -144,7 +144,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Make sure dimension and format match
     const DataFormatBase* format = volumes[0]->getDataFormat();
-    size3_t mdim = volumes[0]->getDimensions();
+    const size3_t mdim = volumes[0]->getDimensions();
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
             log::warn(

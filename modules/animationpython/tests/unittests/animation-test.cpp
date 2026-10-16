@@ -68,12 +68,12 @@ playing = ivwanimation.AnimationState.Playing
 rendering = ivwanimation.AnimationState.Rendering
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto paused = dict["paused"].cast<animation::AnimationState>();
-    auto playing = dict["playing"].cast<animation::AnimationState>();
-    auto rendering = dict["rendering"].cast<animation::AnimationState>();
+    const auto paused = dict["paused"].cast<animation::AnimationState>();
+    const auto playing = dict["playing"].cast<animation::AnimationState>();
+    const auto rendering = dict["rendering"].cast<animation::AnimationState>();
 
     EXPECT_EQ(animation::AnimationState::Paused, paused);
     EXPECT_EQ(animation::AnimationState::Playing, playing);
@@ -91,12 +91,12 @@ loop = ivwanimation.PlaybackMode.Loop
 swing = ivwanimation.PlaybackMode.Swing
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto once = dict["once"].cast<animation::PlaybackMode>();
-    auto loop = dict["loop"].cast<animation::PlaybackMode>();
-    auto swing = dict["swing"].cast<animation::PlaybackMode>();
+    const auto once = dict["once"].cast<animation::PlaybackMode>();
+    const auto loop = dict["loop"].cast<animation::PlaybackMode>();
+    const auto swing = dict["swing"].cast<animation::PlaybackMode>();
 
     EXPECT_EQ(animation::PlaybackMode::Once, once);
     EXPECT_EQ(animation::PlaybackMode::Loop, loop);
@@ -113,11 +113,11 @@ fwd = ivwanimation.PlaybackDirection.Forward
 bwd = ivwanimation.PlaybackDirection.Backward
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto fwd = dict["fwd"].cast<animation::PlaybackDirection>();
-    auto bwd = dict["bwd"].cast<animation::PlaybackDirection>();
+    const auto fwd = dict["fwd"].cast<animation::PlaybackDirection>();
+    const auto bwd = dict["bwd"].cast<animation::PlaybackDirection>();
 
     EXPECT_EQ(animation::PlaybackDirection::Forward, fwd);
     EXPECT_EQ(animation::PlaybackDirection::Backward, bwd);
@@ -133,11 +133,11 @@ pause = ivwanimation.ControlAction.Pause
 jump = ivwanimation.ControlAction.Jump
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto pause = dict["pause"].cast<animation::ControlAction>();
-    auto jump = dict["jump"].cast<animation::ControlAction>();
+    const auto pause = dict["pause"].cast<animation::ControlAction>();
+    const auto jump = dict["jump"].cast<animation::ControlAction>();
 
     EXPECT_EQ(animation::ControlAction::Pause, pause);
     EXPECT_EQ(animation::ControlAction::Jump, jump);
@@ -154,12 +154,12 @@ cubic = ivwanimation.EasingType.Cubic
 bounce = ivwanimation.EasingType.Bounce
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto linear = dict["linear"].cast<EasingType>();
-    auto cubic = dict["cubic"].cast<EasingType>();
-    auto bounce = dict["bounce"].cast<EasingType>();
+    const auto linear = dict["linear"].cast<EasingType>();
+    const auto cubic = dict["cubic"].cast<EasingType>();
+    const auto bounce = dict["bounce"].cast<EasingType>();
 
     EXPECT_EQ(EasingType::linear, linear);
     EXPECT_EQ(EasingType::cubic, cubic);
@@ -181,11 +181,11 @@ time = kf.time
 value = kf.value
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto time = dict["time"].cast<double>();
-    auto value = dict["value"].cast<double>();
+    const auto time = dict["time"].cast<double>();
+    const auto value = dict["value"].cast<double>();
 
     EXPECT_DOUBLE_EQ(1.5, time);
     EXPECT_DOUBLE_EQ(42.0, value);
@@ -204,7 +204,7 @@ time = kf.time
 value = kf.value
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(2.5, dict["time"].cast<double>());
@@ -222,7 +222,7 @@ time = kf.time
 value = kf.value
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(3.0, dict["time"].cast<double>());
@@ -241,7 +241,7 @@ kf.selected = True
 sel_after = kf.selected
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_FALSE(dict["sel_before"].cast<bool>());
@@ -262,11 +262,11 @@ kf.easeIn = None
 ease_none = kf.easeIn
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_TRUE(dict["ease_before"].is_none());
-    auto easeAfter = dict["ease_after"].cast<EasingType>();
+    const auto easeAfter = dict["ease_after"].cast<EasingType>();
     EXPECT_EQ(EasingType::cubic, easeAfter);
     EXPECT_TRUE(dict["ease_none"].is_none());
 }
@@ -286,15 +286,15 @@ lookUp = kf.lookUp
 direction = kf.direction
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(2.0, dict["time"].cast<double>());
     // Just verify they are accessible as vec3
-    auto lookFrom = dict["lookFrom"].cast<vec3>();
-    auto lookTo = dict["lookTo"].cast<vec3>();
-    auto lookUp = dict["lookUp"].cast<vec3>();
-    auto direction = dict["direction"].cast<vec3>();
+    const auto lookFrom = dict["lookFrom"].cast<vec3>();
+    const auto lookTo = dict["lookTo"].cast<vec3>();
+    const auto lookUp = dict["lookUp"].cast<vec3>();
+    const auto direction = dict["direction"].cast<vec3>();
     (void)lookFrom;
     (void)lookTo;
     (void)lookUp;
@@ -313,7 +313,7 @@ action = kf.action
 jumpTime = kf.jumpTime
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(5.0, dict["time"].cast<double>());
@@ -332,7 +332,7 @@ action = kf.action
 jumpTime = kf.jumpTime
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(animation::ControlAction::Pause, dict["action"].cast<animation::ControlAction>());
@@ -349,7 +349,7 @@ kf = ivwanimation.ButtonKeyframe(1.0)
 time = kf.time
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(1.0, dict["time"].cast<double>());
@@ -371,7 +371,7 @@ kf = ivwanimation.CallbackKeyframe(4.0, do_=do_func)
 time = kf.time
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(4.0, dict["time"].cast<double>());
@@ -387,10 +387,10 @@ kf = ivwanimation.FloatKeyframe(1.5, 42.0)
 r = repr(kf)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto r = dict["r"].cast<std::string>();
+    const auto r = dict["r"].cast<std::string>();
     EXPECT_TRUE(r.find("FloatKeyframe") != std::string::npos);
     EXPECT_TRUE(r.find("1.5") != std::string::npos);
 }
@@ -409,7 +409,7 @@ seq = ivwanimation.FloatKeyframeSequence()
 size = len(seq)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -425,7 +425,7 @@ seq = ivwanimation.ControlKeyframeSequence()
 size = len(seq)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -441,7 +441,7 @@ seq = ivwanimation.ButtonKeyframeSequence()
 size = len(seq)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -459,7 +459,7 @@ seq.selected = True
 sel_after = seq.selected
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_FALSE(dict["sel_before"].cast<bool>());
@@ -483,7 +483,7 @@ size = len(track)
 empty = track.empty
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_TRUE(dict["enabled"].cast<bool>());
@@ -506,7 +506,7 @@ enabled = track.enabled
 priority = track.priority
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ("MyTrack", dict["name"].cast<std::string>());
@@ -525,7 +525,7 @@ kf = track.addKeyframe(1.0)
 size_after = len(track)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(1u, dict["size_after"].cast<size_t>());
@@ -545,7 +545,7 @@ size = len(track)
 times = track.getAllTimes()
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(1u, dict["size"].cast<size_t>());  // 1 sequence, 3 keyframes
@@ -573,7 +573,7 @@ nextTime = track.getNextTime(2.0)
 noPrev = track.getPrevTime(0.5)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(1.0, dict["firstTime"].cast<double>());
@@ -593,10 +593,10 @@ track = ivwanimation.ControlTrack()
 r = repr(track)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto r = dict["r"].cast<std::string>();
+    const auto r = dict["r"].cast<std::string>();
     EXPECT_TRUE(r.find("ControlTrack") != std::string::npos);
 }
 
@@ -611,7 +611,7 @@ name = track.name
 size = len(track)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -633,7 +633,7 @@ size = len(anim)
 empty = anim.empty
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ("TestAnim", dict["name"].cast<std::string>());
@@ -651,7 +651,7 @@ anim = ivwanimation.Animation()
 name = anim.name
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ("Animation", dict["name"].cast<std::string>());
@@ -668,7 +668,7 @@ anim.name = "NewName"
 name = anim.name
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ("NewName", dict["name"].cast<std::string>());
@@ -685,7 +685,7 @@ firstTime_empty = anim.firstTime
 lastTime_empty = anim.lastTime
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(0.0, dict["firstTime_empty"].cast<double>());
@@ -702,10 +702,10 @@ anim = ivwanimation.Animation("MyAnim")
 r = repr(anim)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto r = dict["r"].cast<std::string>();
+    const auto r = dict["r"].cast<std::string>();
     EXPECT_TRUE(r.find("Animation") != std::string::npos);
     EXPECT_TRUE(r.find("MyAnim") != std::string::npos);
 }
@@ -721,7 +721,7 @@ anim.clear()
 size = len(anim)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -742,7 +742,7 @@ time = ats.time
 state = ats.state
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(2.5, dict["time"].cast<double>());
@@ -762,7 +762,7 @@ time = ats.time
 state = ats.state
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(5.0, dict["time"].cast<double>());
@@ -785,11 +785,11 @@ time = kf.time
 value = kf.value
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(1.0, dict["time"].cast<double>());
-    auto val = dict["value"].cast<vec3>();
+    const auto val = dict["value"].cast<vec3>();
     EXPECT_FLOAT_EQ(1.0f, val.x);
     EXPECT_FLOAT_EQ(2.0f, val.y);
     EXPECT_FLOAT_EQ(3.0f, val.z);
@@ -809,7 +809,7 @@ kf = ivwanimation.InvalidationKeyframe(3.0)
 time = kf.time
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_DOUBLE_EQ(3.0, dict["time"].cast<double>());
@@ -831,7 +831,7 @@ size = len(seq)
 path = seq.path
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(0u, dict["size"].cast<size_t>());
@@ -855,11 +855,11 @@ classId = interp.classIdentifier
 r = repr(interp)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto displayName = dict["displayName"].cast<std::string>();
-    auto classId = dict["classId"].cast<std::string>();
+    const auto displayName = dict["displayName"].cast<std::string>();
+    const auto classId = dict["classId"].cast<std::string>();
 
     EXPECT_FALSE(displayName.empty());
     EXPECT_FALSE(classId.empty());
@@ -916,10 +916,10 @@ types = [
 count = len(types)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
-    auto count = dict["count"].cast<size_t>();
+    const auto count = dict["count"].cast<size_t>();
     EXPECT_EQ(35u, count);
 }
 
@@ -981,7 +981,7 @@ anim.clear()
 network.removeProcessor(proc)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(1u, dict["numTracks"].cast<size_t>());
@@ -990,9 +990,9 @@ network.removeProcessor(proc)
     EXPECT_DOUBLE_EQ(0.0, times[0]);
     EXPECT_DOUBLE_EQ(2.0, times[1]);
 
-    auto val0 = dict["val_at_0"].cast<float>();
-    auto val2 = dict["val_at_2"].cast<float>();
-    auto val1 = dict["val_at_1"].cast<float>();
+    const auto val0 = dict["val_at_0"].cast<float>();
+    const auto val2 = dict["val_at_2"].cast<float>();
+    const auto val1 = dict["val_at_1"].cast<float>();
 
     EXPECT_FLOAT_EQ(1.0f, val0);
     EXPECT_FLOAT_EQ(10.0f, val2);
@@ -1060,15 +1060,15 @@ anim.clear()
 network.removeProcessor(proc)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     py::eval<py::eval_statements>(source, dict);
 
     EXPECT_EQ(3u, dict["numTimes"].cast<size_t>());
 
-    auto val0 = dict["val_at_0"].cast<float>();
-    auto val1 = dict["val_at_1"].cast<float>();
-    auto val2 = dict["val_at_2"].cast<float>();
-    auto val05 = dict["val_at_05"].cast<float>();
+    const auto val0 = dict["val_at_0"].cast<float>();
+    const auto val1 = dict["val_at_1"].cast<float>();
+    const auto val2 = dict["val_at_2"].cast<float>();
+    const auto val05 = dict["val_at_05"].cast<float>();
 
     EXPECT_FLOAT_EQ(1.0f, val0);
     EXPECT_FLOAT_EQ(5.0f, val1);

@@ -289,7 +289,7 @@ T VolumeRAM::posToIndex(const glm::tvec3<T, glm::defaultp>& pos,
 template <typename T>
 T VolumeRAM::periodicPosToIndex(const glm::tvec3<T, glm::defaultp>& posIn,
                                 const glm::tvec3<T, glm::defaultp>& dim) {
-    glm::tvec3<T, glm::defaultp> pos = posIn % dim;
+    const glm::tvec3<T, glm::defaultp> pos = posIn % dim;
     return pos.x + (pos.y * dim.x) + (pos.z * dim.x * dim.y);
 }
 

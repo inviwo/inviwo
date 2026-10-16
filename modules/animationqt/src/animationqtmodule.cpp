@@ -148,11 +148,11 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
     using namespace animation;
 
     if (auto win = utilqt::getApplicationMainWindow()) {
-        QString animationMenuName("Animation");
+        const QString animationMenuName("Animation");
         QMenu* menu = nullptr;
         // Find view menu
         auto menus = win->menuBar()->findChildren<QMenu*>();
-        auto viewMenuIt = std::find_if(menus.begin(), menus.end(), [](auto& m) {
+        const auto viewMenuIt = std::find_if(menus.begin(), menus.end(), [](auto& m) {
             return m->title().compare(QObject::tr("&View"), Qt::CaseInsensitive) == 0;
         });
 
@@ -175,7 +175,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory]() {
                 // The first time the callback is called we will create the widget. And then replace
                 // this action with the toggleViewAction from the new widget.
-                util::OnScopeExit onExit([action]() { delete action; });
+                const util::OnScopeExit onExit([action]() { delete action; });
                 auto widget = factory();
                 win->addDockWidget(area, widget);
                 widget->hide();

@@ -58,7 +58,7 @@ void LayerBoundingBox::process() {
     using BBoxMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexCoordBuffer<2>,
                                buffertraits::ColorsBuffer>;
 
-    auto mesh = std::make_shared<BBoxMesh>();
+    const auto mesh = std::make_shared<BBoxMesh>();
     mesh->setModelMatrix(layer_.getData()->getModelMatrix());
     mesh->setWorldMatrix(layer_.getData()->getWorldMatrix());
 
@@ -67,7 +67,7 @@ void LayerBoundingBox::process() {
                        {vec3(1.0, 1.0, 0.0), vec2(1.0, 1.0), color_.get()},
                        {vec3(0.0, 1.0, 0.0), vec2(0.0, 1.0), color_.get()}});
 
-    auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     indices->add({3, 0, 1, 2, 3, 0, 1});
 
     outport_.setData(mesh);

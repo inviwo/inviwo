@@ -155,9 +155,9 @@ struct ProcessorTraits<SequenceCompositeSink<InportType, OutportSequenceType>> {
         using sequenceType = typename OutportSequenceType::type;
         using outType = typename sequenceType::type;
         static_assert(std::is_same_v<inType, outType>, "type mismatch");
-        auto name = fmt::format("{} Meta Sink", DataTraits<inType>::dataName());
-        auto id = util::appendIfNotEmpty(PortTraits<InportType>::classIdentifier(),
-                                         SequenceCompositeSinkBase::identifierSuffix());
+        const auto name = fmt::format("{} Meta Sink", DataTraits<inType>::dataName());
+        const auto id = util::appendIfNotEmpty(PortTraits<InportType>::classIdentifier(),
+                                               SequenceCompositeSinkBase::identifierSuffix());
         return {
             id,                 // Class identifier
             name,               // Display name
@@ -210,7 +210,7 @@ void SequenceCompositeSink<InportType, OutportSequenceType>::sync(
     SequenceCompositeSinkBase* source) {
 
     if (source) {
-        if (auto* typedSource =
+        if (const auto* typedSource =
                 dynamic_cast<SequenceCompositeSink<InportType, OutportSequenceType>*>(source)) {
             superOutport_ = typedSource->superOutport_;
             addPortToGroup(superOutport_.get(), "default");

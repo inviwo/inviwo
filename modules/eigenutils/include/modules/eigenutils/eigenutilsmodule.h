@@ -38,7 +38,7 @@ class InviwoApplication;
 
 class IVW_MODULE_EIGENUTILS_API EigenUtilsModule : public InviwoModule {
 public:
-    EigenUtilsModule(InviwoApplication* app);
+    explicit EigenUtilsModule(InviwoApplication* app);
 };
 
 }  // namespace inviwo

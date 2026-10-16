@@ -53,7 +53,7 @@ public:
 
 class IVW_CORE_API CanvasContextHolder : public ContextHolder {
 public:
-    CanvasContextHolder(Canvas* canvas);
+    explicit CanvasContextHolder(Canvas* canvas);
     virtual void activate() override;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual Canvas::ContextID activeContext() const override;

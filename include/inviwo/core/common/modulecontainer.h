@@ -49,7 +49,7 @@ class SharedLibrary;
 
 class IVW_CORE_API ModuleContainer {
 public:
-    ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo);
+    explicit ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo);
     ModuleContainer(const std::filesystem::path& libFile, bool runtimeReload);
 
     ModuleContainer(const ModuleContainer&) = delete;

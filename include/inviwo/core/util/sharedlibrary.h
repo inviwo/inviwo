@@ -70,7 +70,7 @@ IVW_CORE_API std::vector<std::filesystem::path> getLibrarySearchPaths();
  */
 class IVW_CORE_API SharedLibrary {
 public:
-    SharedLibrary(const std::filesystem::path& filePath);
+    explicit SharedLibrary(const std::filesystem::path& filePath);
     SharedLibrary(const SharedLibrary& rhs) = delete;
     SharedLibrary& operator=(const SharedLibrary& that) = delete;
     SharedLibrary(SharedLibrary&& rhs) noexcept;

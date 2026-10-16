@@ -79,7 +79,7 @@ TransformationList* TransformationList::clone() const { return new Transformatio
 dmat4 TransformationList::getMatrix() const {
     dmat4 total{1.0};
     for (const auto& p : *this) {
-        if (auto* prop = dynamic_cast<transform::TransformProperty*>(p)) {
+        if (const auto* prop = dynamic_cast<transform::TransformProperty*>(p)) {
             total = prop->getMatrix() * total;
         }
     }
@@ -285,7 +285,7 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
     addProperties(matrix);
 
     port.onChange([this]() {
-        if (auto data = port.getData()) {
+        if (const auto data = port.getData()) {
             matrix.set(*data);
         } else {
             matrix.set(dmat4{1.0});
@@ -299,7 +299,7 @@ PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
     addProperties(matrix);
 
     port.onChange([this]() {
-        if (auto data = port.getData()) {
+        if (const auto data = port.getData()) {
             matrix.set(*data);
         } else {
             matrix.set(dmat4{1.0});
@@ -320,7 +320,7 @@ void PortTransformProperty::setOwner(PropertyOwner* owner) {
 }
 
 dmat4 PortTransformProperty::getMatrix() const {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         return *data;
     } else {
         return dmat4{1.0};

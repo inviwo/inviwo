@@ -71,7 +71,7 @@ VolumeSequenceToSpatial4DSampler::VolumeSequenceToSpatial4DSampler()
 }
 
 void VolumeSequenceToSpatial4DSampler::process() {
-    auto sampler =
+    const auto sampler =
         std::make_shared<VolumeSequenceSampler>(volumeSequence_.getData(), allowLooping_.get());
     sampler_.setData(sampler);
 }

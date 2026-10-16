@@ -75,7 +75,7 @@ public:
     TypedMeshBufferBase() = default;
     virtual ~TypedMeshBufferBase() = default;
 
-    TypedMeshBufferBase(Mesh& mesh) { mesh.addBuffer(bi(), buffer_); }
+    explicit TypedMeshBufferBase(Mesh& mesh) { mesh.addBuffer(bi(), buffer_); }
 
     // Convenience functions
     auto getTypedRAMRepresentation() const { return buffer_->getRAMRepresentation(); }

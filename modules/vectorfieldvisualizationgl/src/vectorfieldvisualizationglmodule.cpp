@@ -98,14 +98,15 @@ bool VectorFieldVisualizationGLModule::Converter::convert(TxElement* root) {
     const std::vector<std::pair<std::string, std::string>> volumeGLrepl = {
         {"Vector3DCurl", "vector3dcurl.frag"}, {"Vector3DDivergence", "vector3ddivergence.frag"}};
     for (const auto& i : volumeGLrepl) {
-        xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),
-                                              xml::Kind::inport("org.inviwo.VolumeInport")},
-                                             i.second + "inport",
-                                             "inputVolume"};
-        xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + i.first),
-                                               xml::Kind::outport("org.inviwo.VolumeOutport")},
-                                              i.second + "outport",
-                                              "outputVolume"};
+        const xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),
+                                                    xml::Kind::inport("org.inviwo.VolumeInport")},
+                                                   i.second + "inport",
+                                                   "inputVolume"};
+        const xml::IdentifierReplacement outport = {
+            {xml::Kind::processor("org.inviwo." + i.first),
+             xml::Kind::outport("org.inviwo.VolumeOutport")},
+            i.second + "outport",
+            "outputVolume"};
         repl.push_back(inport);
         repl.push_back(outport);
     }

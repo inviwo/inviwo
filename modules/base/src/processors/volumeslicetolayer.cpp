@@ -156,7 +156,7 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     const auto layerdim = sliceDimensions(voldim, axis);
 
-    auto layerram = std::make_shared<LayerRAMPrecision<T>>(
+    const auto layerram = std::make_shared<LayerRAMPrecision<T>>(
         LayerReprConfig{.dimensions = layerdim,
                         .format = vrprecision->getDataFormat(),
                         .swizzleMask = vrprecision->getSwizzleMask(),
@@ -174,30 +174,30 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
         case CartesianCoordinateAxis::X: {
             const util::IndexMapper3D vm(voldim);
             const util::IndexMapper2D im(layerdim);
-            auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
+            const auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
             for (size_t z = 0; z < voldim.z; z++) {
                 for (size_t y = 0; y < voldim.y; y++) {
-                    auto offsetVolume = vm(x, y, z);
-                    auto offsetImage = im(z, y);
+                    const auto offsetVolume = vm(x, y, z);
+                    const auto offsetImage = im(z, y);
                     layerdata[offsetImage] = voldata[offsetVolume];
                 }
             }
             break;
         }
         case CartesianCoordinateAxis::Y: {
-            auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
+            const auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
             const size_t dataSize = voldim.x;
             const size_t initialStartPos = y * voldim.x;
             for (size_t j = 0; j < voldim.z; j++) {
-                auto offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
-                auto offsetImage = j * voldim.x;
+                const auto offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                const auto offsetImage = j * voldim.x;
                 std::copy(voldata + offsetVolume, voldata + offsetVolume + dataSize,
                           layerdata + offsetImage);
             }
             break;
         }
         case CartesianCoordinateAxis::Z: {
-            auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
+            const auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
             const size_t dataSize = voldim.x * voldim.y;
             const size_t initialStartPos = z * voldim.x * voldim.y;
             std::copy(voldata + initialStartPos, voldata + initialStartPos + dataSize, layerdata);
@@ -210,7 +210,7 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 }  // namespace
 
 void VolumeSliceToLayer::process() {
-    auto vol = inport_.getData();
+    const auto vol = inport_.getData();
 
     const auto dims = vol->getDimensions();
     const auto slicePos = size3_t{dvec3{dims} * static_cast<double>(sliceNumber_.get()) /
@@ -237,12 +237,12 @@ void VolumeSliceToLayer::process() {
             break;
     }
 
-    auto layer = vol->getRepresentation<VolumeRAM>()
-                     ->dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
-                         [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
-                             return extractSlice(vrprecision, sliceAlongAxis_, slicePosition_,
-                                                 sliceNumber_.get() - 1);
-                         });
+    const auto layer = vol->getRepresentation<VolumeRAM>()
+                           ->dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
+                               [&]<typename T>(const VolumeRAMPrecision<T>* vrprecision) {
+                                   return extractSlice(vrprecision, sliceAlongAxis_, slicePosition_,
+                                                       sliceNumber_.get() - 1);
+                               });
     layer->setWorldMatrix(vol->getWorldMatrix());
     outport_.setData(layer);
 }

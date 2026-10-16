@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
-    auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
+    const auto consoleLogger = std::make_shared<inviwo::ConsoleLogger>();
     logger.registerLogger(consoleLogger);
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");

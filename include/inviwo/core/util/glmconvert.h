@@ -63,7 +63,7 @@ inline constexpr To glm_convert(From x) {
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 1) {
         // Vector to Vector conversion
         To res(static_cast<typename To::value_type>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i]);
         return res;
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 0) {
@@ -77,13 +77,13 @@ inline constexpr To glm_convert(From x) {
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
         // Mat to Vector conversion
         To res(static_cast<typename To::value_type>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i][0]);
         return res;
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
         // Vector to Mat conversion
         To res(static_cast<typename To::value_type>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i][0] = static_cast<typename To::value_type>(x[i]);
         return res;
     }
@@ -173,13 +173,13 @@ constexpr auto bigger() {
     } else if constexpr (std::is_same_v<short, T>) {
         return int(0);
     } else if constexpr (std::is_same_v<int, T>) {
-        long long v{0};
+        const long long v{0};
         return v;
     } else if constexpr (std::is_same_v<long, T>) {
         if constexpr (sizeof(long) == sizeof(long long)) {
             return double{};
         } else {
-            long long v{0};
+            const long long v{0};
             return v;
         }
     } else if constexpr (std::is_same_v<long long, T>) {
@@ -309,7 +309,7 @@ constexpr To glm_convert_normalized(From x) {
         // 12 Vector to Vector
         typedef typename To::value_type T;
         To res(static_cast<T>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = glm_convert_normalized<T>(x[i]);
         return res;
 
@@ -324,7 +324,7 @@ constexpr To glm_convert_normalized(From x) {
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
         // Mat to Vector conversion
         To res(static_cast<typename To::value_type>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) {
             res[i] = glm_convert_normalized<typename To::value_type>(x[i][0]);
         }
@@ -332,7 +332,7 @@ constexpr To glm_convert_normalized(From x) {
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
         // Vector to Mat conversion
         To res(static_cast<typename To::value_type>(0));
-        size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
+        const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) {
             res[i][0] = glm_convert_normalized<typename To::value_type>(x[i]);
         }

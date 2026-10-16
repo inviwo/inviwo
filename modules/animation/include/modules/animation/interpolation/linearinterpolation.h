@@ -119,9 +119,9 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;
 
-    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-        return time < key->getTime();
-    });
+    const auto it =
+        std::upper_bound(keys.begin(), keys.end(), to,
+                         [](const auto& time, const auto& key) { return time < key->getTime(); });
 
     const auto& prev = *(*std::prev(it));
     const auto& next = *(*it);

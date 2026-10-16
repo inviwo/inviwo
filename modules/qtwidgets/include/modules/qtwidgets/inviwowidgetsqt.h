@@ -44,7 +44,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API IvwLineEdit : public QLineEdit {
     Q_OBJECT
 public:
-    IvwLineEdit(QWidget* parent);
+    explicit IvwLineEdit(QWidget* parent);
     virtual ~IvwLineEdit();
 
     QSize sizeHint() const;
@@ -53,7 +53,7 @@ public:
 class IVW_MODULE_QTWIDGETS_API IvwPushButton : public QPushButton {
     Q_OBJECT
 public:
-    IvwPushButton(QWidget* parent);
+    explicit IvwPushButton(QWidget* parent);
     virtual ~IvwPushButton();
 
     QSize sizeHint() const;
@@ -63,7 +63,7 @@ public:
 class IVW_MODULE_QTWIDGETS_API IvwComboBox : public QComboBox {
     Q_OBJECT
 public:
-    IvwComboBox(QWidget* parent);
+    explicit IvwComboBox(QWidget* parent);
     virtual ~IvwComboBox();
 
     QSize sizeHint() const;

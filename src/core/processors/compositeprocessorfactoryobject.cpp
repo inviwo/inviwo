@@ -38,7 +38,7 @@ CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::file
     : ProcessorFactoryObject(makeProcessorInfo(file), "inviwo::CompositeProcessor"), file_{file} {}
 
 std::shared_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) const {
-    auto pi = getProcessorInfo();
+    const auto pi = getProcessorInfo();
     return std::make_shared<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
 }
 
@@ -49,9 +49,9 @@ Document CompositeProcessorFactoryObject::getMetaInformation() const {
 ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(
     const std::filesystem::path& file) {
 
-    auto pi = ProcessorTraits<CompositeProcessor>::getProcessorInfo();
+    const auto pi = ProcessorTraits<CompositeProcessor>::getProcessorInfo();
     auto name = file.stem().string();
-    auto id = pi.classIdentifier + util::stripIdentifier(file.string());
+    const auto id = pi.classIdentifier + util::stripIdentifier(file.string());
 
     Deserializer d{file};
     std::string tags;

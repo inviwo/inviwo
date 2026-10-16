@@ -35,8 +35,8 @@ namespace inviwo {
 class Image;
 
 std::shared_ptr<Image> ImageReuseCache::getUnused() {
-    auto it = std::find_if(imageCache_.begin(), imageCache_.end(),
-                           [](const auto& elem) { return elem.use_count() == 1; });
+    const auto it = std::find_if(imageCache_.begin(), imageCache_.end(),
+                                 [](const auto& elem) { return elem.use_count() == 1; });
     if (it != imageCache_.end()) {
         auto res = *it;
         imageCache_.erase(it);

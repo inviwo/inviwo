@@ -37,7 +37,7 @@
 namespace inviwo::util {
 
 CameraFactory* getCameraFactory() { return getCameraFactory(InviwoApplication::getPtr()); }
-CameraFactory* getCameraFactory(InviwoApplication* app) {
+CameraFactory* getCameraFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getCameraFactory();
 }
@@ -53,7 +53,7 @@ CameraFactory* getCameraFactory(Property* property) {
 DataReaderFactory* getDataReaderFactory() {
     return getDataReaderFactory(InviwoApplication::getPtr());
 }
-DataReaderFactory* getDataReaderFactory(InviwoApplication* app) {
+DataReaderFactory* getDataReaderFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getDataReaderFactory();
 }
@@ -69,7 +69,7 @@ DataReaderFactory* getDataReaderFactory(Property* property) {
 DataWriterFactory* getDataWriterFactory() {
     return getDataWriterFactory(InviwoApplication::getPtr());
 }
-DataWriterFactory* getDataWriterFactory(InviwoApplication* app) {
+DataWriterFactory* getDataWriterFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getDataWriterFactory();
 }
@@ -83,7 +83,7 @@ DataWriterFactory* getDataWriterFactory(Property* property) {
 }
 
 DialogFactory* getDialogFactory() { return getDialogFactory(InviwoApplication::getPtr()); }
-DialogFactory* getDialogFactory(InviwoApplication* app) {
+DialogFactory* getDialogFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getDialogFactory();
 }
@@ -99,7 +99,7 @@ DialogFactory* getDialogFactory(Property* property) {
 MeshDrawerFactory* getMeshDrawerFactory() {
     return getMeshDrawerFactory(InviwoApplication::getPtr());
 }
-MeshDrawerFactory* getMeshDrawerFactory(InviwoApplication* app) {
+MeshDrawerFactory* getMeshDrawerFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getMeshDrawerFactory();
 }
@@ -113,7 +113,7 @@ MeshDrawerFactory* getMeshDrawerFactory(Property* property) {
 }
 
 MetaDataFactory* getMetaDataFactory() { return getMetaDataFactory(InviwoApplication::getPtr()); }
-MetaDataFactory* getMetaDataFactory(InviwoApplication* app) {
+MetaDataFactory* getMetaDataFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getMetaDataFactory();
 }
@@ -127,7 +127,7 @@ MetaDataFactory* getMetaDataFactory(Property* property) {
 }
 
 InportFactory* getInportFactory() { return getInportFactory(InviwoApplication::getPtr()); }
-InportFactory* getInportFactory(InviwoApplication* app) {
+InportFactory* getInportFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getInportFactory();
 }
@@ -141,7 +141,7 @@ InportFactory* getInportFactory(Property* property) {
 }
 
 OutportFactory* getOutportFactory() { return getOutportFactory(InviwoApplication::getPtr()); }
-OutportFactory* getOutportFactory(InviwoApplication* app) {
+OutportFactory* getOutportFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getOutportFactory();
 }
@@ -157,7 +157,7 @@ OutportFactory* getOutportFactory(Property* property) {
 PortInspectorFactory* getPortInspectorFactory() {
     return getPortInspectorFactory(InviwoApplication::getPtr());
 }
-PortInspectorFactory* getPortInspectorFactory(InviwoApplication* app) {
+PortInspectorFactory* getPortInspectorFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getPortInspectorFactory();
 }
@@ -171,7 +171,7 @@ PortInspectorFactory* getPortInspectorFactory(Property* property) {
 }
 
 ProcessorFactory* getProcessorFactory() { return getProcessorFactory(InviwoApplication::getPtr()); }
-ProcessorFactory* getProcessorFactory(InviwoApplication* app) {
+ProcessorFactory* getProcessorFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getProcessorFactory();
 }
@@ -187,7 +187,7 @@ ProcessorFactory* getProcessorFactory(Property* property) {
 ProcessorWidgetFactory* getProcessorWidgetFactory() {
     return getProcessorWidgetFactory(InviwoApplication::getPtr());
 }
-ProcessorWidgetFactory* getProcessorWidgetFactory(InviwoApplication* app) {
+ProcessorWidgetFactory* getProcessorWidgetFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getProcessorWidgetFactory();
 }
@@ -203,7 +203,7 @@ ProcessorWidgetFactory* getProcessorWidgetFactory(Property* property) {
 PropertyConverterManager* getPropertyConverterManager() {
     return getPropertyConverterManager(InviwoApplication::getPtr());
 }
-PropertyConverterManager* getPropertyConverterManager(InviwoApplication* app) {
+PropertyConverterManager* getPropertyConverterManager(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getPropertyConverterManager();
 }
@@ -217,7 +217,7 @@ PropertyConverterManager* getPropertyConverterManager(Property* property) {
 }
 
 PropertyFactory* getPropertyFactory() { return getPropertyFactory(InviwoApplication::getPtr()); }
-PropertyFactory* getPropertyFactory(InviwoApplication* app) {
+PropertyFactory* getPropertyFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getPropertyFactory();
 }
@@ -233,7 +233,7 @@ PropertyFactory* getPropertyFactory(Property* property) {
 PropertyWidgetFactory* getPropertyWidgetFactory() {
     return getPropertyWidgetFactory(InviwoApplication::getPtr());
 }
-PropertyWidgetFactory* getPropertyWidgetFactory(InviwoApplication* app) {
+PropertyWidgetFactory* getPropertyWidgetFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getPropertyWidgetFactory();
 }
@@ -249,7 +249,7 @@ PropertyWidgetFactory* getPropertyWidgetFactory(Property* property) {
 RepresentationMetaFactory* getRepresentationMetaFactory() {
     return getRepresentationMetaFactory(InviwoApplication::getPtr());
 }
-RepresentationMetaFactory* getRepresentationMetaFactory(InviwoApplication* app) {
+RepresentationMetaFactory* getRepresentationMetaFactory(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getRepresentationMetaFactory();
 }
@@ -265,7 +265,8 @@ RepresentationMetaFactory* getRepresentationMetaFactory(Property* property) {
 RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() {
     return getRepresentationConverterMetaFactory(InviwoApplication::getPtr());
 }
-RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(InviwoApplication* app) {
+RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
+    const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getRepresentationConverterMetaFactory();
 }
@@ -282,7 +283,7 @@ ResourceManager* getResourceManager() {
     if (!InviwoApplication::isInitialized()) return nullptr;
     return getResourceManager(InviwoApplication::getPtr());
 }
-ResourceManager* getResourceManager(InviwoApplication* app) {
+ResourceManager* getResourceManager(const InviwoApplication* app) {
     if (!app) return nullptr;
     return app->getResourceManager();
 }

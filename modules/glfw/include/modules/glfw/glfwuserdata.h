@@ -44,7 +44,7 @@ enum class GLFWUserDataId { Window, Interaction, Other };
  */
 class IVW_MODULE_GLFW_API GLFWUserData {
 public:
-    GLFWUserData(GLFWwindow* win);
+    explicit GLFWUserData(GLFWwindow* win);
 
     template <typename T>
     void set(GLFWUserDataId id, T* ptr) {

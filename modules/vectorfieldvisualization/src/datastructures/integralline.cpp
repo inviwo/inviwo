@@ -46,7 +46,7 @@ const std::vector<dvec3>& IntegralLine::getPositions() const { return positions_
 std::vector<dvec3>& IntegralLine::getPositions() { return positions_; }
 
 std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) const {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
@@ -54,7 +54,7 @@ std::shared_ptr<const BufferBase> IntegralLine::getMetaDataBuffer(const std::str
 }
 
 std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string& name) {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
@@ -62,7 +62,7 @@ std::shared_ptr<BufferBase> IntegralLine::getMetaDataBuffer(const std::string& n
 }
 
 void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<BufferBase> buffer) {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     if (it != metaData_.end()) {
         throw Exception(SourceContext{}, "Meta data with name already exists: {}", name);
     }
@@ -71,7 +71,7 @@ void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<Bu
 
 void IntegralLine::reverse() {
     std::reverse(positions_.begin(), positions_.end());
-    for (auto& m : metaData_) {
+    for (const auto& m : metaData_) {
         util::reverse(*m.second);
     }
 }
@@ -81,7 +81,7 @@ const std::map<std::string, std::shared_ptr<BufferBase>>& IntegralLine::getMetaD
 }
 
 bool IntegralLine::hasMetaData(const std::string& name) const {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     return it != metaData_.end();
 }
 
@@ -131,7 +131,7 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
         distNext += glm::distance(*prev, *next);
     }
 
-    double x = (d - distPrev) / (distNext - distPrev);
+    const double x = (d - distPrev) / (distNext - distPrev);
     return Interpolation<dvec3, double>::linear(*prev, *next, x);
 }
 

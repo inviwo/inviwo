@@ -50,9 +50,9 @@
 namespace inviwo {
 
 PortInspector* PortInspectorManager::borrow(Outport* outport) {
-    auto it = std::find_if(unusedInspectors_.begin(), unusedInspectors_.end(), [&](const auto& pi) {
-        return pi->getPortClassName() == outport->getClassIdentifier();
-    });
+    const auto it = std::find_if(
+        unusedInspectors_.begin(), unusedInspectors_.end(),
+        [&](const auto& pi) { return pi->getPortClassName() == outport->getClassIdentifier(); });
     if (it != unusedInspectors_.end()) {
         return it->get();
     } else {
@@ -66,9 +66,9 @@ PortInspector* PortInspectorManager::borrow(Outport* outport) {
     }
 }
 std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* outport) {
-    auto it = std::find_if(unusedInspectors_.begin(), unusedInspectors_.end(), [&](const auto& pi) {
-        return pi->getPortClassName() == outport->getClassIdentifier();
-    });
+    const auto it = std::find_if(
+        unusedInspectors_.begin(), unusedInspectors_.end(),
+        [&](const auto& pi) { return pi->getPortClassName() == outport->getClassIdentifier(); });
     if (it != unusedInspectors_.end()) {
         auto pi = std::move(*it);
         unusedInspectors_.erase(it);
@@ -114,8 +114,8 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 }
 
 void PortInspectorManager::removeNetwork(PortInspector* portInspector, ProcessorNetwork* network) {
-    auto processors = portInspector->getProcessors();
-    for (auto& processor : processors) {
+    const auto processors = portInspector->getProcessors();
+    for (const auto& processor : processors) {
         network->removeProcessor(processor.get());
     }
 }
@@ -150,14 +150,14 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
     try {
         if (auto portInspector = getPortInspector(outport)) {
             auto network = app_->getProcessorNetwork();
-            NetworkLock lock(network);
+            const NetworkLock lock(network);
 
             // Setup the widget
             CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
             canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(true);
             auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
                 ProcessorWidgetMetaData::classIdentifier);
-            auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
+            const auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
             widgetMeta->setDimensions(ivec2(size, size));
             widgetMeta->setPosition(pos);
             widgetMeta->setVisible(false);
@@ -193,17 +193,17 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
 
     const auto portId = outport->getPath();
     auto network = app_->getProcessorNetwork();
-    NetworkLock lock(network);
+    const NetworkLock lock(network);
     {
-        auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
-                               [&](const auto& item) { return item.first == portId; });
+        const auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
+                                     [&](const auto& item) { return item.first == portId; });
         if (it != portInspectors_.end()) {
             removePortInspector(it);
             portInspectors_.erase(it);
         }
     }
     {
-        auto it = embeddedProcessors_.find(portId);
+        const auto it = embeddedProcessors_.find(portId);
         if (it != embeddedProcessors_.end()) {
             for (const auto& id : it->second) {
                 network->removeProcessor(id);
@@ -235,26 +235,26 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
                 canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
                 auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
                     ProcessorWidgetMetaData::classIdentifier);
-                auto size = app_->getSystemSettings().portInspectorSize_.get();
+                const auto size = app_->getSystemSettings().portInspectorSize_.get();
                 widgetMeta->setDimensions(ivec2(size, size));
                 widgetMeta->setVisible(false);
 
                 auto network = app_->getProcessorNetwork();
                 {
                     // Add processors to the network
-                    NetworkLock lock(network);
+                    const NetworkLock lock(network);
                     insertNetwork(portInspector, network, outport, false);
                 }  // Network will unlock and evaluate here.
 
                 // clone the image since removing the port inspector processors from the network
                 // will cause a re-evaluation and thus resize this image to 8x8 pixel
-                if (auto img = canvasProcessor->getImage()) {
+                if (const auto img = canvasProcessor->getImage()) {
                     image.reset(img->clone());
                 }
 
                 {
                     // remove the network...
-                    NetworkLock lock(network);
+                    const NetworkLock lock(network);
                     removeNetwork(portInspector, network);
                     canvasProcessor->setEvaluateWhenHidden(false);
                 }
@@ -272,7 +272,7 @@ void PortInspectorManager::clear() {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     auto network = app_->getProcessorNetwork();
-    NetworkLock lock(network);
+    const NetworkLock lock(network);
     for (auto it = portInspectors_.begin(); it != portInspectors_.end(); ++it) {
         removePortInspector(it);
     }

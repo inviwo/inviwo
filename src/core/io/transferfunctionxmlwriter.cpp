@@ -52,7 +52,7 @@ std::pmr::string TransferFunctionXMLWriter::toXML(const TransferFunction& tf) {
         colormap.SetAttribute("space", "rgb");
         colormap.SetAttribute("name", "Inviwo TransferFunction");
 
-        for (auto p : tf) {
+        for (const auto& p : tf) {
             TxElement point("Point");
             point.SetAttribute("x", fmt::to_string(p.getPosition()));
             point.SetAttribute("o", fmt::to_string(p.getAlpha()));

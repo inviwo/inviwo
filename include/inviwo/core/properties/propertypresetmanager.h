@@ -54,7 +54,7 @@ using PropertyPresetTypes = flags::flags<PropertyPresetType>;
  */
 class IVW_CORE_API PropertyPresetManager {
 public:
-    PropertyPresetManager(InviwoApplication* app);
+    explicit PropertyPresetManager(InviwoApplication* app);
     virtual ~PropertyPresetManager() = default;
 
     bool loadPreset(const std::string& name, Property* property, PropertyPresetType type) const;

@@ -323,7 +323,7 @@ std::pair<std::optional<Intersection>, std::optional<Intersection>> createIsoLin
                 const size_t lineIndex = intersection1->line;
                 closeLineLoop(*intersection1, *intersection2, cache.lines[lineIndex]);
             } else {
-                auto update =
+                const auto update =
                     mergeLines(*intersection1, *intersection2, edge1, edge2,
                                cache.lines[intersection1->line], cache.lines[intersection2->line]);
                 cache.lines[update.oldIndex].clear();
@@ -370,13 +370,14 @@ constexpr auto dispatcher = []<typename T>(const LayerRAM* in, const IsoValueCol
     const auto data = ram->getView();
     const auto dim = ram->getDimensions();
 
-    auto sample = [data, dataMap = in->getOwner()->dataMap, channel, im = util::IndexMapper2D(dim),
-                   sampleTrafo = getSampleTransform<T>(isoValues.getMode())](size_t x, size_t y) {
-        return sampleTrafo(dataMap, data[im(x, y)], channel);
-    };
+    const auto sample =
+        [data, dataMap = in->getOwner()->dataMap, channel, im = util::IndexMapper2D(dim),
+         sampleTrafo = getSampleTransform<T>(isoValues.getMode())](size_t x, size_t y) {
+            return sampleTrafo(dataMap, data[im(x, y)], channel);
+        };
 
     LineCache lineCache;
-    auto mesh = std::make_shared<Mesh>();
+    const auto mesh = std::make_shared<Mesh>();
 
     for (const auto&& [isoValue, isoColor] :
          isoValues | std::views::transform([](auto& p) { return p.getData(); })) {
@@ -407,7 +408,7 @@ constexpr auto dispatcher = []<typename T>(const LayerRAM* in, const IsoValueCol
                 std::array<vec2, 5> outPos{vec2{x, y}, vec2{x + 1, y}, vec2{x + 1, y + 1},
                                            vec2{x, y + 1}, vec2{x, y}};
 
-                auto calcPosition = [&](int edge) {
+                const auto calcPosition = [&](int edge) {
                     const auto t = (isoValue - values[edge]) / (values[edge + 1] - values[edge]);
                     return Interpolation<vec2, float>::linear(outPos[edge], outPos[edge + 1],
                                                               static_cast<float>(t));

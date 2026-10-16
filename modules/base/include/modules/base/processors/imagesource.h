@@ -50,7 +50,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
+    explicit ImageSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~ImageSource() = default;
 
     virtual std::shared_ptr<Image> transform(std::shared_ptr<Layer> layer) override;

@@ -111,7 +111,7 @@ void TransferFunctionLayerReaderWrapper::onRegister(DataReader* reader) {
 }
 void TransferFunctionLayerReaderWrapper::onUnRegister(DataReader* reader) {
     if (auto layerReader = dynamic_cast<DataReaderType<Layer>*>(reader)) {
-        if (auto it = layerToTFMap_.find(layerReader); it != layerToTFMap_.end()) {
+        if (const auto it = layerToTFMap_.find(layerReader); it != layerToTFMap_.end()) {
             factory_->unRegisterObject(it->second.get());
             layerToTFMap_.erase(it);
         }

@@ -49,12 +49,12 @@ void VerticalLabel::paintEvent(QPaintEvent*) {
 }
 
 QSize VerticalLabel::minimumSizeHint() const {
-    QSize s = QLabel::minimumSizeHint();
+    const QSize s = QLabel::minimumSizeHint();
     return QSize(s.height(), s.width());
 }
 
 QSize VerticalLabel::sizeHint() const {
-    QSize s = QLabel::sizeHint();
+    const QSize s = QLabel::sizeHint();
     return QSize(s.height(), s.width());
 }
 

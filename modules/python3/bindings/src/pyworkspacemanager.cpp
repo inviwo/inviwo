@@ -57,7 +57,7 @@ struct WorkspaceManagerOnClearChangedCallbackHolder {
 
 }  // namespace
 
-void exposeWorkspaceManager(pybind11::module& m) {
+void exposeWorkspaceManager(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::classh<WorkspaceManagerOnModifiedCallbackHolder>(m,
@@ -105,7 +105,7 @@ void exposeWorkspaceManager(pybind11::module& m) {
             "loadFromString",
             [](WorkspaceManager* wm, const std::string& xml, const std::filesystem::path& refPath,
                WorkspaceSaveMode mode) {
-                std::pmr::string pxml{xml.begin(), xml.end()};
+                const std::pmr::string pxml{xml.begin(), xml.end()};
                 wm->load(pxml, refPath, rethrowHandler, mode);
             },
             py::arg("xml"), py::arg("refPath") = std::filesystem::path{},
@@ -142,7 +142,7 @@ void exposeWorkspaceManager(pybind11::module& m) {
         .def(
             "createWorkspaceDeserializer",
             [](WorkspaceManager* wm, const std::string& xml, const std::filesystem::path& refPath) {
-                std::pmr::string pxml{xml.begin(), xml.end()};
+                const std::pmr::string pxml{xml.begin(), xml.end()};
                 return wm->createWorkspaceDeserializerAndInfo(pxml, refPath).first;
             },
             py::arg("xml"), py::arg("refPath") = std::filesystem::path{},

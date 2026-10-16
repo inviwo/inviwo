@@ -110,7 +110,7 @@ std::shared_ptr<Volume> gradientVolume(
             std::array<double, 6> samples{};
             for (auto&& [pos, dest] : std::views::zip(positions, samples)) {
                 grid::dispatch<dispatching::filter::All>(srcFmt, [&]<typename T> {
-                    auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
+                    const auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
                     const auto val = static_cast<double>(util::glmcomp(src[im(pos)], channel));
                     dest = dm.mapFromDataTo<DataMapper::Space::Value>(val);
                 });

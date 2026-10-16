@@ -48,7 +48,7 @@ class Canvas;
  */
 class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget, public ProcessorNetworkObserver {
 public:
-    CanvasProcessorWidget(Processor* p);
+    explicit CanvasProcessorWidget(Processor* p);
     virtual Canvas* getCanvas() const = 0;
 
 protected:

@@ -82,16 +82,16 @@ constexpr auto dispatcher = []<typename T>(
                      ivec3(0, 0, 0)));
     }
 
-    size3_t newOffset_DimsU = static_cast<size3_t>(glm::max(newOffset_Dims, ivec3(0, 0, 0)));
-    size_t initialStartPos = (newOffset_DimsU.z * (dataDims.x * dataDims.y)) +
-                             (newOffset_DimsU.y * dataDims.x) + newOffset_DimsU.x;
-    size3_t dimsWithBorder = dim + correctBorder.llf + correctBorder.urb;
-    size3_t copyDimsWithoutBorder = static_cast<size3_t>(
+    const size3_t newOffset_DimsU = static_cast<size3_t>(glm::max(newOffset_Dims, ivec3(0, 0, 0)));
+    const size_t initialStartPos = (newOffset_DimsU.z * (dataDims.x * dataDims.y)) +
+                                   (newOffset_DimsU.y * dataDims.x) + newOffset_DimsU.x;
+    const size3_t dimsWithBorder = dim + correctBorder.llf + correctBorder.urb;
+    const size3_t copyDimsWithoutBorder = static_cast<size3_t>(
         glm::max(static_cast<ivec3>(copyDataDims + correctBorder.llf + correctBorder.urb) -
                      static_cast<ivec3>(trueBorder.llf) - static_cast<ivec3>(trueBorder.urb),
                  ivec3(1, 1, 1)));
     // per row
-    size_t dataSize =
+    const size_t dataSize =
         copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSizeInBytes());
     // allocate space
     auto newVolume = std::make_shared<VolumeRAMPrecision<T>>(
@@ -116,10 +116,10 @@ constexpr auto dispatcher = []<typename T>(
 #pragma omp parallel for
 #endif
         for (int j = 0; j < static_cast<int>(copyDimsWithoutBorder.y); j++) {
-            size_t volumePos = (j * dataDims.x) + (i * dataDims.x * dataDims.y);
-            size_t subVolumePos = ((j + trueBorder.llf.y) * dimsWithBorder.x) +
-                                  ((i + trueBorder.llf.z) * dimsWithBorder.x * dimsWithBorder.y) +
-                                  trueBorder.llf.x;
+            const size_t volumePos = (j * dataDims.x) + (i * dataDims.x * dataDims.y);
+            const size_t subVolumePos =
+                ((j + trueBorder.llf.y) * dimsWithBorder.x) +
+                ((i + trueBorder.llf.z) * dimsWithBorder.x * dimsWithBorder.y) + trueBorder.llf.x;
             std::memcpy(dst + subVolumePos, (src + volumePos + initialStartPos), dataSize);
         }
     }

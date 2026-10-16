@@ -74,7 +74,7 @@ Frame::~Frame() {
 Frame::operator bool() const { return frame != nullptr; }
 
 void Frame::makeWritable() {
-    if (auto ret = av_frame_make_writable(frame); ret < 0) {
+    if (const auto ret = av_frame_make_writable(frame); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Could not make video frame writable {}",
                                 Error{ret});
     }

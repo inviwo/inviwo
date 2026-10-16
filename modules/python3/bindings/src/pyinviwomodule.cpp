@@ -52,7 +52,7 @@ namespace inviwo {
 #include <warn/ignore/attributes>
 class ProcessorFactoryObjectPythonWrapper : public ProcessorFactoryObject {
 public:
-    ProcessorFactoryObjectPythonWrapper(pybind11::object pfo)
+    explicit ProcessorFactoryObjectPythonWrapper(pybind11::object pfo)
         : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject*>()->getProcessorInfo(),
                                  "PythonProcessor"}
         , pfo_(pfo) {}
@@ -82,7 +82,7 @@ public:
 };
 #include <warn/pop>
 
-void exposeInviwoModule(pybind11::module& m) {
+void exposeInviwoModule(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::classh<Version>(m, "Version")

@@ -53,9 +53,9 @@ AbstractButton::AbstractButton(std::string_view label, Processor& processor, Ren
     widgetExtent_ = extent;
     setLabelBold(true);
 
-    std::vector<std::filesystem::path> btnFiles = {"button-normal.png", "button-pressed.png",
-                                                   "button-checked.png", "button-halo.png",
-                                                   "button-border.png"};
+    const std::vector<std::filesystem::path> btnFiles = {"button-normal.png", "button-pressed.png",
+                                                         "button-checked.png", "button-halo.png",
+                                                         "button-border.png"};
     // normal, pressed, checked, corresponding halo (3x) and border (3x)
     uiTextureMap_ = {{0, 1, 2, 3, 3, 3, 4, 4, 4}};
     uiTextures_ = uiRenderer_->createUITextures(
@@ -67,9 +67,9 @@ ivec2 AbstractButton::computeLabelPos(int descent) const {
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        ivec2 labelOrigin(ivec2(glm::floor(vec2(getWidgetExtentScaled()) * 0.5f + 0.5f)));
+        const ivec2 labelOrigin(ivec2(glm::floor(vec2(getWidgetExtentScaled()) * 0.5f + 0.5f)));
         // compute offset for vertical alignment in the center
-        vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
+        const vec2 labelOffset(-labelSize.x * 0.5f, -labelSize.y * 0.5f);
 
         return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
     }

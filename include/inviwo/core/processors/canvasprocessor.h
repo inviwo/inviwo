@@ -57,7 +57,7 @@ class IVW_CORE_API CanvasProcessor : public Processor,
                                      public Exporter,
                                      public ImageExporter {
 public:
-    CanvasProcessor(InviwoApplication* app);
+    explicit CanvasProcessor(InviwoApplication* app);
     virtual ~CanvasProcessor();
 
     virtual void process() override;

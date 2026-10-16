@@ -45,12 +45,12 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
 public:
-    WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
+    explicit WorkspaceAnnotationsQt(InviwoApplication* app = util::getInviwoApplication());
     WorkspaceAnnotationsQt(const QImage& network,
                            const std::vector<std::pair<std::string, QImage>>& canvasImages,
                            InviwoApplication* app = util::getInviwoApplication());
-    WorkspaceAnnotationsQt(const std::filesystem::path& path,
-                           InviwoApplication* app = util::getInviwoApplication());
+    explicit WorkspaceAnnotationsQt(const std::filesystem::path& path,
+                                    InviwoApplication* app = util::getInviwoApplication());
 
     virtual ~WorkspaceAnnotationsQt() = default;
 

@@ -157,7 +157,8 @@ NetworkSearch::NetworkSearch(InviwoMainWindow* win)
                  const auto& moduleMap =
                      std::any_cast<const std::unordered_map<std::string, std::string>&>(anyData);
                  bool moduleMatch = false;
-                 if (auto mit = moduleMap.find(p.getClassIdentifier()); mit != moduleMap.end()) {
+                 if (const auto mit = moduleMap.find(p.getClassIdentifier());
+                     mit != moduleMap.end()) {
                      moduleMatch |= find(mit->second, s);
                  }
                  return moduleMatch;
@@ -301,7 +302,7 @@ std::unordered_map<std::string, std::string> NetworkSearch::getModuleMap(InviwoA
 }
 
 bool NetworkSearch::find(std::string_view cont, std::string_view s) {
-    auto icomp = [](std::string::value_type l1, std::string::value_type r1) {
+    const auto icomp = [](std::string::value_type l1, std::string::value_type r1) {
         return std::tolower(l1) == std::tolower(r1);
     };
     return std::search(cont.begin(), cont.end(), s.begin(), s.end(), icomp) != cont.end();

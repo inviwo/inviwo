@@ -167,44 +167,46 @@ CSVReader& CSVReader::setHandleEmptyFields(EmptyField emptyField) {
 CSVReader::EmptyField CSVReader::getHandleEmptyFields() const { return emptyField_; }
 
 bool CSVReader::setOption(std::string_view key, std::any value) {
-    if (auto* delimiters = std::any_cast<std::string>(&value); delimiters && key == "Delimiters") {
+    if (const auto* delimiters = std::any_cast<std::string>(&value);
+        delimiters && key == "Delimiters") {
         setDelimiters(*delimiters);
         return true;
-    } else if (auto* stripQuotes = std::any_cast<bool>(&value);
+    } else if (const auto* stripQuotes = std::any_cast<bool>(&value);
                stripQuotes && key == "StripQuotes") {
         setStripQuotes(*stripQuotes);
         return true;
-    } else if (auto* firstRowHeader = std::any_cast<bool>(&value);
+    } else if (const auto* firstRowHeader = std::any_cast<bool>(&value);
                firstRowHeader && key == "FirstRowHeader") {
         setFirstRowHeader(*firstRowHeader);
         return true;
-    } else if (auto* firstColIndices = std::any_cast<bool>(&value);
+    } else if (const auto* firstColIndices = std::any_cast<bool>(&value);
                firstColIndices && key == "FirstColIndices") {
         setFirstColIndices(*firstColIndices);
         return true;
-    } else if (auto* unitsInHeaders = std::any_cast<bool>(&value);
+    } else if (const auto* unitsInHeaders = std::any_cast<bool>(&value);
                unitsInHeaders && key == "UnitsInHeaders") {
         setUnitsInHeaders(*unitsInHeaders);
         return true;
-    } else if (auto* unitRegexp = std::any_cast<std::string>(&value);
+    } else if (const auto* unitRegexp = std::any_cast<std::string>(&value);
                unitRegexp && key == "UnitRegexp") {
         setUnitRegexp(*unitRegexp);
         return true;
-    } else if (auto* doublePrecision = std::any_cast<bool>(&value);
+    } else if (const auto* doublePrecision = std::any_cast<bool>(&value);
                doublePrecision && key == "DoublePrecision") {
         setEnableDoublePrecision(*doublePrecision);
         return true;
-    } else if (auto* rows = std::any_cast<size_t>(&value); rows && key == "NumberOfExampleRows") {
+    } else if (const auto* rows = std::any_cast<size_t>(&value);
+               rows && key == "NumberOfExampleRows") {
         setNumberOfExampleRows(*rows);
         return true;
-    } else if (auto* locale = std::any_cast<std::string>(&value); locale && key == "Locale") {
+    } else if (const auto* locale = std::any_cast<std::string>(&value); locale && key == "Locale") {
         setLocale(*locale);
         return true;
-    } else if (auto* emptyField = std::any_cast<EmptyField>(&value);
+    } else if (const auto* emptyField = std::any_cast<EmptyField>(&value);
                emptyField && key == "HandleEmptyFields") {
         setHandleEmptyFields(*emptyField);
         return true;
-    } else if (auto* filters = std::any_cast<csvfilters::Filters>(&value);
+    } else if (const auto* filters = std::any_cast<csvfilters::Filters>(&value);
                filters && key == "Filters") {
         setFilters(*filters);
         return true;
@@ -244,7 +246,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& file
     auto file = openAndCacheIfUrl(fileName);
 
     file.seekg(0, std::ios::end);
-    std::streampos len = file.tellg();
+    const std::streampos len = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {
@@ -267,7 +269,7 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
 
     for (size_t first = 0; first < str.size();) {
         size_t second = first;
-        size_t startPart = part;
+        const size_t startPart = part;
         bool quoted = false;
         while (true) {
             second = str.find_first_of(lookFor, second);
@@ -323,12 +325,12 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
 
 template <typename T>
 std::optional<T> toNumberLocale(std::string_view str) {
-    SafeCStr cstr{str};
+    const SafeCStr cstr{str};
     if constexpr (std::is_same_v<T, double>) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
         errno = 0;
-        double val = strtod(cstr.c_str(), &end);
+        const double val = strtod(cstr.c_str(), &end);
         std::swap(errno, errno_save);
         if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
             return val;
@@ -339,7 +341,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
         errno = 0;
-        float val = strtof(cstr.c_str(), &end);
+        const float val = strtof(cstr.c_str(), &end);
         std::swap(errno, errno_save);
 
         if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
@@ -351,7 +353,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
         errno = 0;
-        long val = strtol(cstr.c_str(), &end, 10);
+        const long val = strtol(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
 
         if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
@@ -367,7 +369,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         char* end = nullptr;
         typename std::remove_reference<decltype(errno)>::type errno_save = errno;
         errno = 0;
-        unsigned long val = strtoul(cstr.c_str(), &end, 10);
+        const unsigned long val = strtoul(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
 
         if (errno_save == 0 && static_cast<size_t>(end - cstr.c_str()) == str.size()) {
@@ -403,7 +405,7 @@ std::optional<T> toNumber(std::string_view str, bool cLocale) {
         if (!cLocale) return toNumberLocale<T>(str);
 
         T val;
-        auto res = std::from_chars(str.data(), str.data() + str.size(), val);
+        const auto res = std::from_chars(str.data(), str.data() + str.size(), val);
         if (res.ec == std::errc() && res.ptr == (str.data() + str.size())) {
             return val;
         } else {
@@ -521,7 +523,7 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
     const std::vector<std::string>& headers) const {
 
     const bool cLocale = locale_ == "C";
-    std::regex re{unitRegexp_};
+    const std::regex re{unitRegexp_};
     std::smatch m;
 
     std::vector<std::function<void(std::string_view, size_t, size_t)>> appenders;
@@ -540,12 +542,12 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
             appenders.push_back(addColumn<std::uint32_t, true>(
                 df, headerCopy, unit, CSVReader::EmptyField::Throw, cLocale));
         } else if (stripQuotes_ && counts.string > 0) {
-            auto col = df.addCategoricalColumn(header);
+            const auto col = df.addCategoricalColumn(header);
             appenders.emplace_back([f = col->addMany()](std::string_view str, size_t, size_t) {
                 f(util::stripQuotes(str));
             });
         } else if (counts.string > 0) {
-            auto col = df.addCategoricalColumn(header);
+            const auto col = df.addCategoricalColumn(header);
             appenders.emplace_back(
                 [f = col->addMany()](std::string_view str, size_t, size_t) { f(str); });
         } else if (doublePrecision_ && counts.real > 0) {
@@ -555,12 +557,12 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
         } else if (counts.integer > 0) {
             appenders.push_back(addColumn<int>(df, headerCopy, unit, emptyField_, cLocale));
         } else if (stripQuotes_) {
-            auto col = df.addCategoricalColumn(header);
+            const auto col = df.addCategoricalColumn(header);
             appenders.emplace_back([f = col->addMany()](std::string_view str, size_t, size_t) {
                 f(util::stripQuotes(str));
             });
         } else {
-            auto col = df.addCategoricalColumn(header);
+            const auto col = df.addCategoricalColumn(header);
             appenders.emplace_back(
                 [f = col->addMany()](std::string_view str, size_t, size_t) { f(str); });
         }
@@ -571,7 +573,7 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
 
 bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHeader) const {
 
-    auto filterRow = [&](bool neutralValue) {
+    const auto filterRow = [&](bool neutralValue) {
         return [&, neutral = neutralValue](const auto& f) {
             if (!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) {
                 return f.filter(row, lineNumber);
@@ -580,7 +582,8 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
         };
     };
 
-    auto filterItems = [&](const std::vector<csvfilters::ItemFilter>& filters, bool neutralValue) {
+    const auto filterItems = [&](const std::vector<csvfilters::ItemFilter>& filters,
+                                 bool neutralValue) {
         const bool cLocale = locale_ == "C";
         bool retval = false;
         util::parse(
@@ -610,7 +613,7 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
         return retval;
     };
 
-    auto filterApplicable = [&](auto& filters) {
+    const auto filterApplicable = [&](auto& filters) {
         return !filters.empty() &&
                (!firstRowHeader_ || std::any_of(filters.begin(), filters.end(), [&](auto& f) {
                    return (f.filterOnHeader == filterOnHeader);
@@ -642,16 +645,17 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     if (!config::charconv || locale_ != "C") {
         // We need to use the C locale here to force use of decimal "."
         auto prevLocale = std::setlocale(LC_ALL, nullptr);
-        std::string prev{prevLocale ? prevLocale : ""};
+        const std::string prev{prevLocale ? prevLocale : ""};
         if (!std::setlocale(LC_ALL, locale_.c_str())) {
             log::warn("Failed to set locale {}", locale_);
         }
         cleanup.setAction([prev]() { std::setlocale(LC_ALL, prev.c_str()); });
     }
 
-    std::string content{std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
+    const std::string content{std::istreambuf_iterator<char>(stream),
+                              std::istreambuf_iterator<char>()};
     std::string_view trimmed{content};
-    if (auto pos = trimmed.find_last_not_of(" \f\n\r\t\v"); pos != std::string_view::npos) {
+    if (const auto pos = trimmed.find_last_not_of(" \f\n\r\t\v"); pos != std::string_view::npos) {
         trimmed = trimmed.substr(0, pos + 1);
     }
 

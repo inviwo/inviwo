@@ -68,7 +68,7 @@ Texture2D::Texture2D(size2_t dimensions, GLenum format, GLenum internalFormat, G
 Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glDeleteSync(syncObj);
             syncObj = 0;
@@ -92,7 +92,7 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
         initialize(nullptr);
 
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-            std::scoped_lock lock{syncMutex};
+            const std::scoped_lock lock{syncMutex};
             if (syncObj != 0) {
                 glDeleteSync(syncObj);
                 syncObj = 0;

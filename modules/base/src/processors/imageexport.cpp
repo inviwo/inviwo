@@ -112,7 +112,7 @@ void ImageExport::sendResizeEvent() {
 }
 
 const Layer* ImageExport::getData() {
-    if (auto img = port_.getData()) {
+    if (const auto img = port_.getData()) {
         return img->getColorLayer();
     }
     return nullptr;

@@ -56,7 +56,7 @@ namespace {
 
 std::expected<std::pair<std::string_view, amira::DataSpec>, std::string> getDataSpecForType(
     const amira::AmiraMeshHeader& header, std::string_view type) {
-    if (auto it = header.dataSpecs.find(type); it == header.dataSpecs.end()) {
+    if (const auto it = header.dataSpecs.find(type); it == header.dataSpecs.end()) {
         return std::unexpected(format("Missing data specifier for type '{}'", type));
     } else {
         return *it;
@@ -123,7 +123,7 @@ void parseTriangleIndices(Mesh& mesh, std::string_view data, const amira::DataSp
                                             // correct windedness
                                             std::swap(triIndices[0], triIndices[1]);
                                         }
-                                        for (auto index : triIndices) {
+                                        for (const auto index : triIndices) {
                                             // Assumption: indices for triangles are starting at 1
                                             indices.emplace_back(index - 1);
                                         }
@@ -192,7 +192,7 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
     enum class MeshType : std::uint8_t { Unspecified, Lines, Triangles };
 
     MeshType meshType = MeshType::Unspecified;
-    if (auto it = header.parameters.find("ContentType"); it == header.parameters.end()) {
+    if (const auto it = header.parameters.find("ContentType"); it == header.parameters.end()) {
         throw DataReaderException(SourceContext{}, "Missing ContentType, expected uniform: {}",
                                   path);
     } else if (iCaseCmp(it->second, "HxTriangularGrid")) {
@@ -212,9 +212,9 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
         throw DataReaderException(SourceContext{}, "Data section not found: {}", path);
     }
 
-    auto locateData = [&](std::string_view key, int identifier) {
+    const auto locateData = [&](std::string_view key, int identifier) {
         const std::string id = fmt::format("@{}", identifier);
-        if (auto pos = data.find(id, dataSectionOffset); pos != std::string_view::npos) {
+        if (const auto pos = data.find(id, dataSectionOffset); pos != std::string_view::npos) {
             // data starts after the identifier followed by a newline character
             return data.find('\n', pos) + 1;
         } else {

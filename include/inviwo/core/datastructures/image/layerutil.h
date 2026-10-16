@@ -41,7 +41,7 @@ namespace util {
 template <typename T>
 glm::vec<4, T> applySwizzleMask(const glm::vec<4, T>& value, const SwizzleMask& swizzlemask) {
 
-    auto swizzle = [&](ImageChannel channel) {
+    const auto swizzle = [&](ImageChannel channel) {
         switch (channel) {
             case ImageChannel::Zero: return T{0};
             case ImageChannel::One:

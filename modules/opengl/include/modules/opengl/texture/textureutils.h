@@ -92,7 +92,7 @@ IVW_MODULE_OPENGL_API void clearCurrentTarget();
 IVW_MODULE_OPENGL_API void deactivateCurrentTarget();
 
 IVW_MODULE_OPENGL_API void updateAndActivateTarget(ImageOutport& targetOutport,
-                                                   ImageInport& sourceInport);
+                                                   const ImageInport& sourceInport);
 
 // Bind textures with glenum
 IVW_MODULE_OPENGL_API void bindTexture(const Layer& layer, GLenum texUnit);
@@ -189,18 +189,18 @@ IVW_MODULE_OPENGL_API void unbindTextures(const ImageOutport& outport);
 IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, GLenum texUnit);
 IVW_MODULE_OPENGL_API void bindTexture(const TextureBase& texture, const TextureUnit& texUnit);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont,
                                               const TextureBase& texture,
                                               std::string_view samplerID);
 
 IVW_MODULE_OPENGL_API void bindTexture(TransferFunctionProperty& tf, const TextureUnit& texUnit);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont,
                                               TransferFunctionProperty& tf);
 
 IVW_MODULE_OPENGL_API void bindTexture(IsoTFProperty& property, const TextureUnit& texUnit);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(const Shader& shader, TextureUnitContainer& cont,
                                               IsoTFProperty& property);
 
 // Volume texture bindings

@@ -150,15 +150,15 @@ DistanceTransformRAM::DistanceTransformRAM()
 DistanceTransformRAM::~DistanceTransformRAM() = default;
 
 void DistanceTransformRAM::process() {
-    auto calc = [upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                                     : upsampleFactorVec3_.get(),
-                 threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-                 square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
-                 dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(),
-                 volume =
-                     volumePort_.getData()](pool::Progress progress) -> std::shared_ptr<Volume> {
-        auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
-        auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
+    const auto calc =
+        [upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                             : upsampleFactorVec3_.get(),
+         threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+         square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
+         dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(),
+         volume = volumePort_.getData()](pool::Progress progress) -> std::shared_ptr<Volume> {
+        const auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
+        const auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
 
         util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,
                                       flip, square, scale, progress);

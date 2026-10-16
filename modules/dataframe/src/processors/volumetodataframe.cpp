@@ -127,11 +127,12 @@ void VolumeToDataFrame::process() {
                               (rangeY_.getEnd() - rangeY_.getStart()) *
                               (rangeZ_.getEnd() - rangeZ_.getStart());
 
-            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
+            const auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
             std::vector<std::vector<float>*> channelBuffer_;
             const auto numCh = volume->getDataFormat()->getComponents();
             for (size_t c = 0; c < numCh; c++) {
-                auto col = dataFrame->addColumn<float>(fmt::format("Channel {}", c + 1), size);
+                const auto col =
+                    dataFrame->addColumn<float>(fmt::format("Channel {}", c + 1), size);
                 channelBuffer_.push_back(
                     &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
             }
@@ -202,7 +203,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::XDir: {
             const auto size = rangeX_.getEnd() - rangeY_.getStart();
-            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
+            const auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([this, dataFrame,
                                                                     size](const auto vr) {
@@ -213,7 +214,7 @@ void VolumeToDataFrame::process() {
                 for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
                     for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
                         const std::string name = "y:" + toString(ind.y) + " z:" + toString(ind.z);
-                        auto col = dataFrame->addColumn<ValueType>(name, size);
+                        const auto col = dataFrame->addColumn<ValueType>(name, size);
                         auto& line = col->getTypedBuffer()
                                          ->getEditableRAMRepresentation()
                                          ->getDataContainer();
@@ -230,7 +231,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::YDir: {
             const auto size = rangeY_.getEnd() - rangeY_.getStart();
-            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
+            const auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
@@ -240,7 +241,7 @@ void VolumeToDataFrame::process() {
                     size3_t ind;
                     for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
                         for (ind.z = rangeZ_.getStart(); ind.z < rangeZ_.getEnd(); ind.z++) {
-                            auto col = dataFrame->addColumn<ValueType>(
+                            const auto col = dataFrame->addColumn<ValueType>(
                                 "x:" + toString(ind.x) + " z:" + toString(ind.z), size);
                             auto& line = col->getTypedBuffer()
                                              ->getEditableRAMRepresentation()
@@ -258,7 +259,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::ZDir: {
             const auto size = rangeZ_.getEnd() - rangeZ_.getStart();
-            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
+            const auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
@@ -268,7 +269,7 @@ void VolumeToDataFrame::process() {
                     size3_t ind;
                     for (ind.x = rangeX_.getStart(); ind.x < rangeX_.getEnd(); ind.x++) {
                         for (ind.y = rangeY_.getStart(); ind.y < rangeY_.getEnd(); ind.y++) {
-                            auto col = dataFrame->addColumn<ValueType>(
+                            const auto col = dataFrame->addColumn<ValueType>(
                                 "x:" + toString(ind.x) + " y:" + toString(ind.y), size);
                             auto& line = col->getTypedBuffer()
                                              ->getEditableRAMRepresentation()

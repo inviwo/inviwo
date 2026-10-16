@@ -127,9 +127,9 @@ void GL_APIENTRY openGLDebugMessageCallback(GLenum esource, GLenum etype, GLuint
     log::report(toLogLevel(severity), error);
 
     if (InviwoApplication::isInitialized()) {
-        if (auto* openglSettings =
+        if (const auto* openglSettings =
                 InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()) {
-            auto mode = openglSettings->debugMessages_.getSelectedValue();
+            const auto mode = openglSettings->debugMessages_.getSelectedValue();
             if (mode == debug::Mode::DebugSynchronous) {
                 const auto debugbreak = openglSettings->breakOnMessage_.getSelectedValue();
                 if (severity >= debugbreak) util::debugBreak();
@@ -212,7 +212,7 @@ bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
 
     using enum debug::Severity;
 
-    auto set = [](bool n, bool l, bool m, bool h) {
+    const auto set = [](bool n, bool l, bool m, bool h) {
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Notification), 0, nullptr, n);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Low), 0, nullptr, l);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, toGL(Medium), 0, nullptr, m);
@@ -235,9 +235,9 @@ bool configureOpenGLDebugMessages(utilgl::debug::Severity severity) {
 }
 
 void handleOpenGLDebugMode(Canvas::ContextID context) {
-    auto* openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
-    auto mode = openglSettings->debugMessages_.getSelectedValue();
-    auto severity = openglSettings->debugSeverity_.getSelectedValue();
+    const auto* openglSettings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
+    const auto mode = openglSettings->debugMessages_.getSelectedValue();
+    const auto severity = openglSettings->debugSeverity_.getSelectedValue();
     setOpenGLDebugMode(mode, severity);
     if (mode != debug::Mode::Off) {
         logDebugMode(mode, severity, context);

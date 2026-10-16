@@ -55,7 +55,7 @@ MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
 void MeshRAM::update(bool editable) {
     bufferRAM_.clear();
 
-    Mesh* owner = static_cast<Mesh*>(this->getOwner());
+    const Mesh* owner = static_cast<Mesh*>(this->getOwner());
     if (editable) {
         for (const auto& elem : owner->getBuffers())
             bufferRAM_.push_back(elem.second->getEditableRepresentation<BufferRAM>());

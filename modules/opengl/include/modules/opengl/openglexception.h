@@ -44,8 +44,8 @@ public:
 
 class IVW_MODULE_OPENGL_API OpenGLInitException : public ModuleInitException {
 public:
-    OpenGLInitException(std::string_view message = "",
-                        SourceContext context = std::source_location::current());
+    explicit OpenGLInitException(std::string_view message = "",
+                                 SourceContext context = std::source_location::current());
 };
 
 }  // namespace inviwo

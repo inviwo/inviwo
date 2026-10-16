@@ -65,20 +65,20 @@ void PythonWorkspaceScriptMenu::onScriptAdded(std::string_view key, std::string_
     addScriptMenuItem(key);
 }
 void PythonWorkspaceScriptMenu::onScriptRemoved(std::string_view key, std::string_view) {
-    if (auto it = menuItems_.find(key); it != menuItems_.end()) {
+    if (const auto it = menuItems_.find(key); it != menuItems_.end()) {
         menuItems_.erase(it);
     }
-    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+    if (const auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         scriptEditors_.erase(it);
     }
 }
 void PythonWorkspaceScriptMenu::onScriptSaved(std::string_view key, std::string_view) {
-    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+    if (const auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         it->second->setWindowModified(false);
     }
 }
 void PythonWorkspaceScriptMenu::onScriptUpdate(std::string_view key, std::string_view script) {
-    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+    if (const auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         it->second->setSource(script);
     }
 }
@@ -155,7 +155,7 @@ PythonEditorWidget* PythonWorkspaceScriptMenu::newScriptEditor(const std::string
 }
 
 void PythonWorkspaceScriptMenu::openEditor(const std::string& key) {
-    if (auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
+    if (const auto it = scriptEditors_.find(key); it != scriptEditors_.end() && it->second) {
         it->second->show();
         it->second->raise();
     } else if (auto script = scripts_.getScript(key)) {

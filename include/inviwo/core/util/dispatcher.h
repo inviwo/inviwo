@@ -84,7 +84,7 @@ public:
     template <typename T>
     Handle add(T&& callback) {
         auto shared = std::make_shared<Callback>(std::forward<T>(callback));
-        auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
+        const auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
         // CAS loop: load current vector, copy-and-modify, try to swap
         for (;;) {
             std::shared_ptr<const std::vector<std::weak_ptr<Callback>>> currentVec;
@@ -122,7 +122,7 @@ public:
 
         bool hasExpired = false;
         for (auto& wcb : *currentVec) {
-            if (auto cb = wcb.lock()) {
+            if (const auto cb = wcb.lock()) {
                 std::invoke(*cb, std::forward<A>(args)...);
             } else {
                 hasExpired = true;
@@ -130,7 +130,7 @@ public:
         }
 
         if (hasExpired) {
-            auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
+            const auto newVec = std::make_shared<std::vector<std::weak_ptr<Callback>>>();
             newVec->reserve(currentVec->size());
             std::ranges::copy_if(*currentVec, std::back_inserter(*newVec),
                                  [](const std::weak_ptr<Callback>& wcb) { return !wcb.expired(); });

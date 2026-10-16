@@ -76,7 +76,7 @@ void exposeNetwork(py::module& m) {
     py::classh<ProcessorNetwork>(m, "ProcessorNetwork")
         .def_property_readonly("processors",
                                [](ProcessorNetwork& net) {
-                                   auto range = net.processorRange();
+                                   const auto range = net.processorRange();
                                    return ProcessorVecWrapper(range.begin(), range.end());
                                })
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,

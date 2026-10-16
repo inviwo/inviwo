@@ -74,8 +74,8 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& f
     if (!volume) return nullptr;
 
     // Print information
-    size3_t dim = volume->getDimensions();
-    size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSizeInBytes());
+    const size3_t dim = volume->getDimensions();
+    const size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSizeInBytes());
     log::info("Loaded volume: {} size: {}", filePath, ByteSize{bytes});
     printMetaInfo(*volume, "description");
     printMetaInfo(*volume, "courtesy");
@@ -99,7 +99,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    auto file = localFile.string();  // convert to string before changing locale
+    const auto file = localFile.string();  // convert to string before changing locale
 
     auto locale = setlocale(LC_ALL, nullptr);  // save current locale
     setlocale(LC_ALL, "C");  // pvm files are always written with a dot as decimal separator
@@ -108,7 +108,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
                       &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
     setlocale(LC_ALL, locale);
 
-    util::OnScopeExit release([&]() { free(pvmdata); });
+    const util::OnScopeExit release([&]() { free(pvmdata); });
 
     if (!pvmdata) {
         throw DataReaderException(SourceContext{}, "Error: Could not read data in PVM file: {:?g}",
@@ -140,7 +140,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
         }
     }();
 
-    auto volRAM = createVolumeRAM(size3_t(udim), format, data.release());
+    const auto volRAM = createVolumeRAM(size3_t(udim), format, data.release());
     auto volume = std::make_shared<Volume>(volRAM);
 
     dmat3 basis(2.0);

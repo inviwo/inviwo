@@ -89,7 +89,7 @@ void VolumeBoundaryPlanes::process() {
     const dmat3 worldNormal = glm::transpose(glm::inverse(vol->getWorldMatrix()));
     const double sign = flipPlanes_ ? -1.0 : 1.0;
 
-    auto planes = std::make_shared<std::vector<Plane>>();
+    const auto planes = std::make_shared<std::vector<Plane>>();
 
     for (unsigned int i = 0; i < 3; i++) {
         planes->emplace_back(vec3{p0}, vec3{worldNormal * (-sign * basis[i])});

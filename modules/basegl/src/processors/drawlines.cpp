@@ -125,7 +125,7 @@ DrawLines::~DrawLines() = default;
 void DrawLines::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     {
-        utilgl::GlBoolState linesmooth(GL_LINE_SMOOTH, false);
+        const utilgl::GlBoolState linesmooth(GL_LINE_SMOOTH, false);
 
         lineShader_.activate();
         lineShader_.setUniform("color", lineColor_);
@@ -152,7 +152,7 @@ void DrawLines::eventDraw(Event* event) {
     if (!drawModeEnabled_) return;
 
     auto mouseEvent = static_cast<MouseEvent*>(event);
-    auto line = mouseEvent->ndc();
+    const auto line = mouseEvent->ndc();
 
     addPoint(vec2(line.x, line.y));
     invalidate(InvalidationLevel::InvalidOutput);

@@ -127,20 +127,20 @@ void MultiInput::setSorting(Sorting sSortOrder) {
             // No additional action needed
             break;
         case Sorting::ProcessorIdentifier:
-            for (auto* port : outports) {
+            for (const auto* port : outports) {
                 callbacks.emplace_back(port->getProcessor()->onIdentifierChange(
                     [this](std::string_view, std::string_view) { sortInputChanged(); }));
             }
             break;
         case Sorting::ProcessorDisplayName:
-            for (auto* port : outports) {
+            for (const auto* port : outports) {
                 callbacks.emplace_back(port->getProcessor()->onDisplayNameChange(
                     [this](std::string_view, std::string_view) { sortInputChanged(); }));
             }
             break;
 
         case Sorting::ProcessorXPosition:
-            for (auto* port : outports) {
+            for (const auto* port : outports) {
                 util::getMetaData(port->getProcessor())->addObserver(this);
             }
             break;
@@ -219,7 +219,7 @@ void MultiInput::propagateEvent(Event* event, Processor* p, Outport* source) {
 }
 
 size_t MultiInput::indexOf(Outport* to) const {
-    auto portIt = std::ranges::find(outports, to);
+    const auto portIt = std::ranges::find(outports, to);
     return static_cast<size_t>(std::ranges::distance(outports.begin(), portIt));
 }
 
@@ -271,7 +271,7 @@ void SequenceInput::addPorts(Processor* p) { p->addPort(inport); }
 void SequenceInput::removePorts(Processor* p) { p->removePort(&inport); }
 
 size_t SequenceInput::size() const {
-    if (auto input = inport.getData()) {
+    if (const auto input = inport.getData()) {
         return input->size();
     }
     return 0;
@@ -281,7 +281,7 @@ void SequenceInput::setSorting(Sorting) {}
 
 const std::vector<std::shared_ptr<const Image>>& SequenceInput::getData() {
     data.clear();
-    if (auto seq = inport.getData()) {
+    if (const auto seq = inport.getData()) {
         data.insert(data.end(), seq->begin(), seq->end());
     }
     return data;
@@ -313,7 +313,7 @@ size_t SequenceInput::indexOf(Outport*) { return 0; }
 bool SequenceInput::updateLabels(std::vector<std::string>& labels, std::string_view format) const {
     bool modified = false;
 
-    if (auto seq = inport.getData()) {
+    if (const auto seq = inport.getData()) {
         if (labels.size() != seq->size()) {
             labels.resize(seq->size());
             modified |= true;
@@ -422,7 +422,7 @@ void SplitterPositions::enforceOrder(size_t changedIndex) {
 
     // push everything to the left if necessary
     double sliderPos = position(changedIndex);
-    for (auto i : std::views::iota(0uz, changedIndex) | std::views::reverse) {
+    for (const auto i : std::views::iota(0uz, changedIndex) | std::views::reverse) {
         if (position(i) + minSize >= sliderPos) {
             set(i, sliderPos - minSize);
         }
@@ -431,7 +431,7 @@ void SplitterPositions::enforceOrder(size_t changedIndex) {
 
     // push everything to the right if necessary
     sliderPos = position(changedIndex);
-    for (auto i : std::views::iota(changedIndex + 1, nSplitters_)) {
+    for (const auto i : std::views::iota(changedIndex + 1, nSplitters_)) {
         if (sliderPos >= position(i) - minSize) {
             set(i, sliderPos + minSize);
         }
@@ -705,7 +705,7 @@ void Layout::propagateEvent(Event* event, Outport* source) {
         input_.propagateSizes();
 
     } else {
-        auto propagated = eventTransformer_.propagateEvent(event, source);
+        const auto propagated = eventTransformer_.propagateEvent(event, source);
         if (!propagated) {
             input_.propagateEvent(event, this, source);
         }

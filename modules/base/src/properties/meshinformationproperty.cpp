@@ -270,7 +270,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
     allocateBufferProps<IndexBufferInformationProperty>(&indexBuffers_, "indexbuffer",
                                                         numIndexBuffers);
 
-    auto updateBufferProperty = [](auto* prop, const auto& elem, const std::string& name) {
+    const auto updateBufferProperty = [](auto* prop, const auto& elem, const std::string& name) {
         prop->setDisplayName(name);
         prop->updateFromBuffer(elem.first, *(elem.second.get()));
     };

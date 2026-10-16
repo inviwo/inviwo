@@ -49,7 +49,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
-    ImageSourceSeries(InviwoApplication* app);
+    explicit ImageSourceSeries(InviwoApplication* app);
     virtual ~ImageSourceSeries() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

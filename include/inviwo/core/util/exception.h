@@ -49,8 +49,8 @@ using ExceptionContext = SourceContext;
 
 class IVW_CORE_API Exception : public std::runtime_error {
 public:
-    Exception(std::string_view message = "",
-              SourceContext context = std::source_location::current());
+    explicit Exception(std::string_view message = "",
+                       SourceContext context = std::source_location::current());
     Exception(fmt::string_view format, fmt::format_args&& args, SourceContext context);
     template <typename... Args>
     Exception(SourceContext context, fmt::format_string<Args...> format, Args&&... args)

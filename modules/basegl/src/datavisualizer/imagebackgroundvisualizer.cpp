@@ -112,7 +112,7 @@ std::vector<Processor*> ImageBackgroundVisualizer::addVisualizerNetwork(
 std::vector<Processor*> ImageBackgroundVisualizer::addSourceAndVisualizerNetwork(
     const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
+    const auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     net->addLink(sourceAndOutport.first->getPropertyByIdentifier("imageDimension_"),

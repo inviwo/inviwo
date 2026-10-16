@@ -155,25 +155,25 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
 }
 
 void StreamRibbonsDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
+    const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
         if (sampler_.isConnected())
             return sampler_.getData();
         else
             return std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
     }();
 
-    auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
+    const auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
         if (vorticitySampler_.isConnected())
             return vorticitySampler_.getData();
         else
             return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
     }();
 
-    auto mesh = std::make_shared<BasicMesh>();
+    const auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(sampler->getModelMatrix());
     mesh->setWorldMatrix(sampler->getWorldMatrix());
 
-    auto m =
+    const auto m =
         streamLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
     double maxVelocity = 0;
     double maxVorticity = 0;
@@ -181,24 +181,25 @@ void StreamRibbonsDeprecated::process() {
     const TransferFunction& tf = tf_.get();
     tracer.addMetaDataSampler("vorticity", vorticitySampler);
     //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
-    mat3 invBasis{1};
+    const mat3 invBasis{1};
     std::vector<BasicMesh::Vertex> vertices;
 
-    bool hasColors = colors_.hasData();
+    const bool hasColors = colors_.hasData();
     size_t lineId = 0;
 
     for (const auto& seeds : seedPoints_) {
         for (auto& p : (*seeds)) {
-            vec4 P = m * vec4(p, 1.0f);
+            const vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec3(P));
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData<dvec3>("velocity").begin();
             auto vorticity = line.getMetaData<dvec3>("vorticity").begin();
 
-            auto size = line.getPositions().size();
+            const auto size = line.getPositions().size();
             if (size <= 1) continue;
-            auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
+            const auto indexBuffer =
+                mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             indexBuffer->getDataContainer().reserve(size);
 
             vec4 c{0};
@@ -213,17 +214,17 @@ void StreamRibbonsDeprecated::process() {
 
             for (size_t i = 0; i < size; i++) {
                 auto vort = invBasis * glm::normalize(vec3(*vorticity));
-                auto velo = invBasis * glm::normalize(vec3(*velocity));
-                auto N = glm::normalize(glm::cross(vort, velo));
+                const auto velo = invBasis * glm::normalize(vec3(*velocity));
+                const auto N = glm::normalize(glm::cross(vort, velo));
                 vort *= (0.5f * ribbonWidth_.get());
-                auto velocityMagnitude = glm::length(*velocity);
-                auto vortictyMagnitude = glm::length(*vorticity);
+                const auto velocityMagnitude = glm::length(*velocity);
+                const auto vortictyMagnitude = glm::length(*vorticity);
 
                 maxVelocity = std::max(maxVelocity, velocityMagnitude);
                 maxVorticity = std::max(maxVorticity, vortictyMagnitude);
 
-                vec3 p0 = vec3(*position) - vort;
-                vec3 p1 = vec3(*position) + vort;
+                const vec3 p0 = vec3(*position) - vort;
+                const vec3 p1 = vec3(*position) + vort;
 
                 float d;
                 switch (coloringMethod_.get()) {

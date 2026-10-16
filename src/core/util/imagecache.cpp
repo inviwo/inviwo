@@ -53,14 +53,14 @@ std::shared_ptr<const Image> ImageCache::getImage(const size2_t dimensions) cons
 
     if (!valid_) {
         // Resize all map data once
-        for (auto& elem : cache_) {
+        for (const auto& elem : cache_) {
             master_->copyRepresentationsTo(elem.second.get());
         }
         valid_ = true;
     }
 
     // look for size in cache_
-    auto it = cache_.find(dimensions);
+    const auto it = cache_.find(dimensions);
     if (it != cache_.end()) {
         return it->second;
     } else {
@@ -86,7 +86,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
     std::vector<std::shared_ptr<Image>> unusedImages;
 
     for (auto it = cache_.begin(); it != cache_.end();) {
-        auto dim = std::find(dimensions.begin(), dimensions.end(), it->first);
+        const auto dim = std::find(dimensions.begin(), dimensions.end(), it->first);
         if (dim == dimensions.end() || it->first == master_->getDimensions()) {
             unusedImages.push_back(std::move(it->second));
             it = cache_.erase(it);
@@ -97,17 +97,17 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
     }
 
     // dimensions now contains missing sizes only
-    for (auto dim : dimensions) {
+    for (const auto dim : dimensions) {
         if (dim == master_->getDimensions()) continue;
 
         if (!unusedImages.empty()) {
-            auto img = unusedImages.back();
+            const auto img = unusedImages.back();
             unusedImages.pop_back();
             img->setDimensions(dim);
             cache_[dim] = img;
             valid_ = false;
         } else {
-            auto newImage = std::shared_ptr<Image>(master_->clone());
+            const auto newImage = std::shared_ptr<Image>(master_->clone());
             newImage->setDimensions(dim);
             cache_[newImage->getDimensions()] = newImage;
             valid_ = false;
@@ -124,7 +124,7 @@ bool ImageCache::hasImage(const size2_t dimensions) {
 void ImageCache::addImage(std::shared_ptr<Image> image) { cache_[image->getDimensions()] = image; }
 
 std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
-    auto it = cache_.find(dimensions);
+    const auto it = cache_.find(dimensions);
     if (it != cache_.end()) {
         auto ptr = it->second;
         cache_.erase(it);
@@ -135,7 +135,7 @@ std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
 }
 
 std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& dimensions) {
-    auto it =
+    const auto it =
         std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
             return !util::contains(dimensions, elem.first);
         });

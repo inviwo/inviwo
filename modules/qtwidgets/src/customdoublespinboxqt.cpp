@@ -59,8 +59,8 @@ void CustomDoubleSpinBoxQt::setDecimals(int decimals) {
     displayDecimals_ = decimals;
     // Block so that no signals are sent
     // since the value does not change
-    QSignalBlocker block{this};
-    double val = value();
+    const QSignalBlocker block{this};
+    const double val = value();
     QDoubleSpinBox::setDecimals(decimals);
     cachedSizeHint_ = QDoubleSpinBox::sizeHint();
     QDoubleSpinBox::setDecimals(std::numeric_limits<double>::max_exponent);

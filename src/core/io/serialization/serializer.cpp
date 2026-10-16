@@ -71,7 +71,7 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
         attr = path.generic_string<char, std::char_traits<char>,
                                    std::pmr::polymorphic_allocator<char>>(attr.get_allocator());
     } else {
-        auto nodeSwitch = switchToNewNode(key);
+        const auto nodeSwitch = switchToNewNode(key);
         auto& attr = rootElement_->AddAttribute(SerializeConstants::ContentAttribute);
         attr = path.generic_string<char, std::char_traits<char>,
                                    std::pmr::polymorphic_allocator<char>>(attr.get_allocator());
@@ -80,7 +80,7 @@ void Serializer::serialize(std::string_view key, const std::filesystem::path& pa
 
 void Serializer::serialize(std::string_view key, const Serializable& sObj) {
     auto alloc = doc_->getAllocator();
-    NodeSwitch nodeSwitch{
+    const NodeSwitch nodeSwitch{
         *this, rootElement_->LinkEndChild(alloc.new_object<TiXmlElement>(key))->ToElement()};
     sObj.serialize(*this);
 }
@@ -114,7 +114,7 @@ void Serializer::serialize(std::string_view key, std::string_view data,
     if (target == SerializationTarget::Attribute) {
         rootElement_->AddAttribute(key, data);
     } else {
-        auto nodeSwitch = switchToNewNode(key);
+        const auto nodeSwitch = switchToNewNode(key);
         rootElement_->AddAttribute(SerializeConstants::ContentAttribute, data);
     }
 }

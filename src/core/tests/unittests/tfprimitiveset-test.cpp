@@ -40,7 +40,7 @@
 namespace inviwo {
 
 TEST(TFSampling, empty) {
-    TransferFunction tf;
+    const TransferFunction tf;
 
     EXPECT_EQ(vec4(0.0f), tf.sample(0.0));
     EXPECT_EQ(vec4(0.0f), tf.sample(0.3));
@@ -49,7 +49,7 @@ TEST(TFSampling, empty) {
 
 TEST(TFSampling, constant) {
     vec4 color{1.0f, 0.0f, 0.5f, 1.0f};
-    TransferFunction tf{{{0.5, color}}};
+    const TransferFunction tf{{{0.5, color}}};
 
     EXPECT_EQ(color, tf.sample(0.0));
     EXPECT_EQ(color, tf.sample(0.3));
@@ -64,7 +64,7 @@ TEST(TFSampling, constant) {
 TEST(TFSampling, step) {
     vec4 color1{0.0f, 1.0f, 0.0f, 0.5f};
     vec4 color2{1.0f, 0.0f, 0.5f, 1.0f};
-    TransferFunction tf{{{0.4999, color1}, {0.5, color2}}};
+    const TransferFunction tf{{{0.4999, color1}, {0.5, color2}}};
 
     EXPECT_EQ(color1, tf.sample(0.4));
     EXPECT_EQ(color2, tf.sample(0.6));
@@ -73,7 +73,7 @@ TEST(TFSampling, step) {
 TEST(TFSampling, linear) {
     vec4 color1{0.0f, 1.0f, 0.0f, 0.5f};
     vec4 color2{1.0f, 0.0f, 0.5f, 1.0f};
-    TransferFunction tf{{{0.25, color1}, {0.75, color2}}};
+    const TransferFunction tf{{{0.25, color1}, {0.75, color2}}};
 
     EXPECT_EQ(color1, tf.sample(0.0));
     EXPECT_EQ(color1, tf.sample(0.25));

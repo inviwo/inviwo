@@ -248,7 +248,7 @@ namespace {
 bool updateV0(TxElement* root) {
     bool res = false;
 
-    auto makerulesV1 = []() {
+    const auto makerulesV1 = []() {
         std::vector<xml::IdentifierReplacement> repl = {
             // MeshRenderProcessorGL
             {{xml::Kind::processor("org.inviwo.GeometryRenderGL"),
@@ -365,14 +365,16 @@ bool updateV0(TxElement* root) {
             {"VolumeMerger", "volumemerger.frag"}};
 
         for (const auto& i : volumeGLrepl) {
-            xml::IdentifierReplacement inport = {{xml::Kind::processor("org.inviwo." + i.first),
-                                                  xml::Kind::inport("org.inviwo.VolumeInport")},
-                                                 i.second + "inport",
-                                                 "inputVolume"};
-            xml::IdentifierReplacement outport = {{xml::Kind::processor("org.inviwo." + i.first),
-                                                   xml::Kind::outport("org.inviwo.VolumeOutport")},
-                                                  i.second + "outport",
-                                                  "outputVolume"};
+            const xml::IdentifierReplacement inport = {
+                {xml::Kind::processor("org.inviwo." + i.first),
+                 xml::Kind::inport("org.inviwo.VolumeInport")},
+                i.second + "inport",
+                "inputVolume"};
+            const xml::IdentifierReplacement outport = {
+                {xml::Kind::processor("org.inviwo." + i.first),
+                 xml::Kind::outport("org.inviwo.VolumeOutport")},
+                i.second + "outport",
+                "outputVolume"};
             repl.push_back(inport);
             repl.push_back(outport);
         }
@@ -380,7 +382,7 @@ bool updateV0(TxElement* root) {
         return repl;
     };
 
-    auto replV1 = makerulesV1();
+    const auto replV1 = makerulesV1();
     res |= xml::changeIdentifiers(root, replV1);
 
     return res;
@@ -508,7 +510,7 @@ bool updateV5(TxElement* root) {
                 alpha->ToElement()->SetAttribute("identifier", "alpha");
                 alpha->ToElement()->SetAttribute("type", "org.inviwo.FloatProperty");
                 if (auto* value = alpha->FirstChildElement()) {
-                    auto a = value->GetAttribute("w");
+                    const auto a = value->GetAttribute("w");
                     value->SetAttribute("content", a);
                     color->Parent()->LinkEndChild(alpha);
                 }

@@ -83,11 +83,11 @@ void CanvasGL::update() { renderLayer(); }
 void CanvasGL::setupDebug() { utilgl::handleOpenGLDebugMode(activeContext()); }
 
 void CanvasGL::renderLayer() {
-    if (auto image = image_.lock()) {
+    if (const auto image = image_.lock()) {
         if (auto layer = image->getLayer(layerType_, layerIdx_)) {
 
             if (auto layerGL = layer->getRepresentation<LayerGL>()) {
-                TextureUnit textureUnit;
+                const TextureUnit textureUnit;
                 layerGL->bindTexture(textureUnit.getEnum());
                 renderTexture(textureUnit.getUnitNumber());
                 layerGL->unbindTexture();
@@ -167,7 +167,7 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord) const {
 double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const {
     const dvec2 coords = glm::clamp(normalizedScreenCoordinate, dvec2(0.0), dvec2(1.0));
 
-    if (auto image = image_.lock()) {
+    if (const auto image = image_.lock()) {
         const dvec2 depthDims{image->getDimensions() - size2_t(1, 1)};
         const size2_t coordDepth{depthDims * coords};
         const auto depth = image->readPixel(coordDepth, LayerType::Depth).x;
@@ -178,7 +178,7 @@ double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate
 }
 
 size2_t CanvasGL::getImageDimensions() const {
-    if (auto image = image_.lock()) {
+    if (const auto image = image_.lock()) {
         return image->getDimensions();
     } else {
         return getCanvasDimensions();

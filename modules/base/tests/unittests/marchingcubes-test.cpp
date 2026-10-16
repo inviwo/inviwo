@@ -68,27 +68,29 @@ std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
 }
 
 TEST(Marchingcubes, empty) {
-    auto vol = std::shared_ptr<Volume>(
+    const auto vol = std::shared_ptr<Volume>(
         util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t&) { return 0.0f; }));
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto mesh = util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
-    auto& pos = getBufferData<vec3>(*mesh, 0);
-    auto& ind = getBufferIndexData(*mesh, 0);
+    const auto mesh =
+        util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto& pos = getBufferData<vec3>(*mesh, 0);
+    const auto& ind = getBufferIndexData(*mesh, 0);
     EXPECT_EQ(pos.size(), 0);
     EXPECT_EQ(ind.size(), 0);
 }
 
 TEST(Marchingcubes, full) {
-    auto vol = std::shared_ptr<Volume>(
+    const auto vol = std::shared_ptr<Volume>(
         util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t&) { return 1.0f; }));
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto mesh = util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
-    auto& pos = getBufferData<vec3>(*mesh, 0);
-    auto& ind = getBufferIndexData(*mesh, 0);
+    const auto mesh =
+        util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto& pos = getBufferData<vec3>(*mesh, 0);
+    const auto& ind = getBufferIndexData(*mesh, 0);
     EXPECT_EQ(pos.size(), 0);
     EXPECT_EQ(ind.size(), 0);
 }
@@ -100,11 +102,11 @@ TEST(Marchingcubes, one) {
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto order = [](auto& a, auto& b) {
+    const auto order = [](auto& a, auto& b) {
         return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + 3,
                                             glm::value_ptr(b), glm::value_ptr(b) + 3);
     };
-    auto map = [](auto&& vec) {
+    const auto map = [](auto&& vec) {
         std::transform(glm::value_ptr(vec), glm::value_ptr(vec) + 3, glm::value_ptr(vec),
                        [](auto x) { return x > 1.0f ? x - 1.0f : x; });
         return vec;
@@ -113,7 +115,7 @@ TEST(Marchingcubes, one) {
     const vec3 center{0.5f};
 
     for (auto& v : voxels) {
-        auto vol = std::shared_ptr<Volume>(
+        const auto vol = std::shared_ptr<Volume>(
             util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t& ind) {
                 if (ind == v) {
                     return 1.0f;
@@ -121,7 +123,7 @@ TEST(Marchingcubes, one) {
                     return 0.0f;
                 }
             }));
-        auto mesh =
+        const auto mesh =
             util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
         auto& pos = getBufferData<vec3>(*mesh, 0);
         auto& ind = getBufferIndexData(*mesh, 0);
@@ -140,12 +142,12 @@ TEST(Marchingcubes, one) {
 
         EXPECT_EQ(vals, spos);
 
-        auto triNormal = glm::triangleNormal(pos[ind[0]], pos[ind[1]], pos[ind[2]]);
+        const auto triNormal = glm::triangleNormal(pos[ind[0]], pos[ind[1]], pos[ind[2]]);
         EXPECT_TRUE(glm::dot(triNormal, (center - vert)) > 0.0);
     }
 
     for (auto& v : voxels) {
-        auto vol = std::shared_ptr<Volume>(
+        const auto vol = std::shared_ptr<Volume>(
             util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t& ind) {
                 if (ind != v) {
                     return 1.0f;
@@ -153,7 +155,7 @@ TEST(Marchingcubes, one) {
                     return 0.0f;
                 }
             }));
-        auto mesh =
+        const auto mesh =
             util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
         auto& pos = getBufferData<vec3>(*mesh, 0);
         auto& ind = getBufferIndexData(*mesh, 0);
@@ -172,7 +174,7 @@ TEST(Marchingcubes, one) {
 
         EXPECT_EQ(vals, spos);
 
-        auto triNormal = glm::triangleNormal(pos[ind[0]], pos[ind[1]], pos[ind[2]]);
+        const auto triNormal = glm::triangleNormal(pos[ind[0]], pos[ind[1]], pos[ind[2]]);
         EXPECT_TRUE(glm::dot(triNormal, (center - vert)) < 0.0);
     }
 }
@@ -184,11 +186,11 @@ TEST(Marchingcubes, two) {
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto order = [](auto& a, auto& b) {
+    const auto order = [](auto& a, auto& b) {
         return std::lexicographical_compare(glm::value_ptr(a), glm::value_ptr(a) + 3,
                                             glm::value_ptr(b), glm::value_ptr(b) + 3);
     };
-    auto map = [](auto&& vec) {
+    const auto map = [](auto&& vec) {
         std::transform(glm::value_ptr(vec), glm::value_ptr(vec) + 3, glm::value_ptr(vec),
                        [](auto x) { return x > 1.0f ? x - 1.0f : x; });
         return vec;
@@ -203,7 +205,7 @@ TEST(Marchingcubes, two) {
         for (auto& v2 : voxels) {
             if (v1 == v2) continue;
 
-            auto vol = std::shared_ptr<Volume>(
+            const auto vol = std::shared_ptr<Volume>(
                 util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t& ind) {
                     if (ind == v1 || ind == v2) {
                         return 1.0f;
@@ -211,16 +213,16 @@ TEST(Marchingcubes, two) {
                         return 0.0f;
                     }
                 }));
-            auto mesh =
+            const auto mesh =
                 util::marchingCubesOpt(vol, isoValues, PrimitiveSetMode::Relative, false, false);
 
-            auto& pos = getBufferData<vec3>(*mesh, 0);
-            auto& ind = getBufferIndexData(*mesh, 0);
+            const auto& pos = getBufferData<vec3>(*mesh, 0);
+            const auto& ind = getBufferIndexData(*mesh, 0);
 
-            vec3 fv1(v1);
-            vec3 fv2(v2);
+            const vec3 fv1(v1);
+            const vec3 fv2(v2);
 
-            auto l2 = glm::compAdd((v2 - v1) * (v2 - v1));
+            const auto l2 = glm::compAdd((v2 - v1) * (v2 - v1));
 
             if (l2 == 1) {
                 ++n1nn;
@@ -260,13 +262,14 @@ TEST(Marchingcubes, two) {
 }
 
 TEST(Marchingcubes, minimal) {
-    auto v = std::shared_ptr<Volume>(util::makeSingleVoxelVolume(size3_t{3}));
+    const auto v = std::shared_ptr<Volume>(util::makeSingleVoxelVolume(size3_t{3}));
 
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
-    auto mesh2 = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto mesh2 =
+        util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
 
     ASSERT_EQ(mesh1->getNumberOfBuffers(), 4);
     ASSERT_EQ(mesh2->getNumberOfBuffers(), 4);
@@ -274,8 +277,8 @@ TEST(Marchingcubes, minimal) {
     EXPECT_EQ(mesh1->getBuffers()[0].first.type, BufferType::PositionAttrib);
     EXPECT_EQ(mesh2->getBuffers()[0].first.type, BufferType::PositionAttrib);
 
-    auto buffer1 = mesh1->getBuffers()[0].second;
-    auto buffer2 = mesh2->getBuffers()[0].second;
+    const auto buffer1 = mesh1->getBuffers()[0].second;
+    const auto buffer2 = mesh2->getBuffers()[0].second;
 
     ASSERT_EQ(buffer1->getDataFormat(), DataVec3Float32::get());
     ASSERT_EQ(buffer2->getDataFormat(), DataVec3Float32::get());
@@ -310,13 +313,14 @@ TEST(Marchingcubes, minimal) {
 }
 
 TEST(Marchingcubes, sphere) {
-    auto v = std::shared_ptr<Volume>(util::makeSphericalVolume(size3_t{5}));
+    const auto v = std::shared_ptr<Volume>(util::makeSphericalVolume(size3_t{5}));
 
     const std::vector<TFPrimitiveData> isoValues{
         {.pos = 0.5, .color = vec4{0.5f, 0.0f, 0.0f, 1.0f}}};
 
-    auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
-    auto mesh2 = util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto mesh1 = util::marchingcubes(v, isoValues, PrimitiveSetMode::Relative, false, false);
+    const auto mesh2 =
+        util::marchingCubesOpt(v, isoValues, PrimitiveSetMode::Relative, false, false);
 
     ASSERT_EQ(mesh1->getNumberOfBuffers(), 4);
     ASSERT_EQ(mesh2->getNumberOfBuffers(), 4);
@@ -324,8 +328,8 @@ TEST(Marchingcubes, sphere) {
     EXPECT_EQ(mesh1->getBuffers()[0].first.type, BufferType::PositionAttrib);
     EXPECT_EQ(mesh2->getBuffers()[0].first.type, BufferType::PositionAttrib);
 
-    auto buffer1 = mesh1->getBuffers()[0].second;
-    auto buffer2 = mesh2->getBuffers()[0].second;
+    const auto buffer1 = mesh1->getBuffers()[0].second;
+    const auto buffer2 = mesh2->getBuffers()[0].second;
 
     ASSERT_EQ(buffer1->getDataFormat(), DataVec3Float32::get());
     ASSERT_EQ(buffer2->getDataFormat(), DataVec3Float32::get());

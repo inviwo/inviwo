@@ -83,7 +83,7 @@ void TFEditorControlPoint::paint(QPainter* painter,
 }
 
 TFMoveMode TFEditorControlPoint::moveMode() const {
-    if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
+    if (const auto* tfe = qobject_cast<TFEditor*>(scene())) {
         return tfe->getMoveMode();
     }
     return TFMoveMode::Free;

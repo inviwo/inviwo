@@ -84,15 +84,15 @@ void KeyframeWidgetQt::paint(QPainter* painter,
                              QPointF(0, -trackHeight / 4));
     Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(220, 220, 220));
     Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(128, 128, 128));
-    QBrush brush = QBrush(Gradient);
+    const QBrush brush = QBrush(Gradient);
     painter->setPen(pen);
     painter->setBrush(brush);
-    auto penWidth = pen.widthF();
-    int hs = static_cast<int>((keyframeWidth - penWidth) / 2.0f);
-    QPoint p[4] = {{-hs, 0},
-                   {0, -trackHeight / 2 + trackHeightNudge},
-                   {hs, 0},
-                   {0, trackHeight / 2 - trackHeightNudge}};
+    const auto penWidth = pen.widthF();
+    const auto hs = (keyframeWidth - penWidth) / 2.0;
+    QPointF p[4] = {{-hs, 0.0},
+                    {0.0, -trackHeight / 2.0 + trackHeightNudge},
+                    {hs, 0.0},
+                    {0.0, trackHeight / 2.0 - trackHeightNudge}};
     painter->drawPolygon(p, 4);
 }
 
@@ -104,7 +104,7 @@ bool KeyframeWidgetQt::islocked() const { return isEditing_; }
 
 void KeyframeWidgetQt::onKeyframeTimeChanged(Keyframe*, Seconds) {
     if (!isEditing_) {
-        KeyframeWidgetQtLock lock(this);
+        const KeyframeWidgetQtLock lock(this);
         const auto newPos = mapToParent(mapFromScene(timeToScenePos(keyframe_.getTime()), 0.0));
         if (newPos != pos()) {
             setPos(newPos);
@@ -136,7 +136,7 @@ QVariant KeyframeWidgetQt::itemChange(GraphicsItemChange change, const QVariant&
 
     } else if (change == ItemScenePositionHasChanged) {
         if (!isEditing_) {
-            KeyframeWidgetQtLock lock(this);
+            const KeyframeWidgetQtLock lock(this);
             keyframe_.setTime(scenePosToTime(value.toPointF().x()));
         }
     } else if (change == ItemSelectedChange) {

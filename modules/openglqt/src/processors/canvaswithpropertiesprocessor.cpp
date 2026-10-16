@@ -159,19 +159,19 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 
     pwObserver_->position = [this](ProcessorWidgetMetaData* m) {
         if (m->getPosition() != position_.get()) {
-            Property::OnChangeBlocker blocker{position_};
+            const Property::OnChangeBlocker blocker{position_};
             position_.set(m->getPosition());
         }
     };
     pwObserver_->dimension = [this](ProcessorWidgetMetaData* m) {
         if (m->getDimensions() != dimensions_.get()) {
-            Property::OnChangeBlocker blocker{dimensions_};
+            const Property::OnChangeBlocker blocker{dimensions_};
             dimensions_.set(m->getDimensions());
         }
     };
     pwObserver_->visible = [this](ProcessorWidgetMetaData* m) {
         if (m->isVisible() != visible_.get()) {
-            Property::OnChangeBlocker blocker{visible_};
+            const Property::OnChangeBlocker blocker{visible_};
             visible_.set(m->isVisible());
         }
         isSink_.update();
@@ -180,13 +180,13 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     };
     pwObserver_->fullScreen = [this](ProcessorWidgetMetaData* m) {
         if (m->isFullScreen() != fullScreen_.get()) {
-            Property::OnChangeBlocker blocker{fullScreen_};
+            const Property::OnChangeBlocker blocker{fullScreen_};
             fullScreen_.set(m->isFullScreen());
         }
     };
     pwObserver_->onTop = [this](ProcessorWidgetMetaData* m) {
         if (m->isOnTop() != onTop_.get()) {
-            Property::OnChangeBlocker blocker{onTop_};
+            const Property::OnChangeBlocker blocker{onTop_};
             onTop_.set(m->isOnTop());
         }
     };
@@ -279,7 +279,7 @@ std::optional<std::filesystem::path> CanvasWithPropertiesProcessor::exportFile(
     const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
-    if (auto data = inport_.getData()) {
+    if (const auto data = inport_.getData()) {
         if (const auto* layer = data->getLayer(layerType_, layerIndex_)) {
             return util::saveData(*layer, path, name, candidateExtensions, overwrite);
         }

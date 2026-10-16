@@ -119,7 +119,7 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
             }
             Mat res;
             for (int i = 0; i < Cols; ++i) {
-                auto col = list[i].cast<pybind11::list>();
+                const auto col = list[i].cast<pybind11::list>();
                 if (col.size() != Rows) {
                     throw std::invalid_argument{fmt::format(
                         "Invalid number of rows: got {}, expected {}", col.size(), Rows)};

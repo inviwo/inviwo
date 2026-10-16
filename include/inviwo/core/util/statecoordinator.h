@@ -57,7 +57,7 @@ public:
      * This function should be called whenever the outcome of the updater might change.
      */
     void update() {
-        auto value = updater_();
+        const auto value = updater_();
         if (value != value_) {
             value_ = value;
             notifier_(value_);

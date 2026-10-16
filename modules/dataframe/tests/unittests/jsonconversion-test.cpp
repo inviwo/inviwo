@@ -146,13 +146,13 @@ TEST(JSONConversion, DataFrameToDataFrame) {
     }
     EXPECT_EQ(ColumnType::Categorical, dataframe.getColumn("species")->getColumnType());
 
-    auto sepalLengthCol = result.getColumn("sepalLength");
-    auto petalLengthCol = result.getColumn("petalLength");
-    auto petalWidthCol = result.getColumn("petalWidth");
-    auto speciesCol = result.getColumn("species");
+    const auto sepalLengthCol = result.getColumn("sepalLength");
+    const auto petalLengthCol = result.getColumn("petalLength");
+    const auto petalWidthCol = result.getColumn("petalWidth");
+    const auto speciesCol = result.getColumn("species");
 
     bool isMatching = true;
-    for (auto row : std::ranges::iota_view{size_t{0}, result.getNumberOfRows()}) {
+    for (const auto row : std::ranges::iota_view{size_t{0}, result.getNumberOfRows()}) {
         isMatching &= util::almostEqual(sepalLength[row], sepalLengthCol->getAsDouble(row));
         isMatching &= util::almostEqual(petalLength[row], petalLengthCol->getAsDouble(row));
         isMatching &=

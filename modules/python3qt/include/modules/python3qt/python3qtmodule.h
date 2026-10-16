@@ -43,7 +43,8 @@ class InviwoApplication;
 
 class IVW_MODULE_PYTHON3QT_API PythonAbortException : public Exception {
 public:
-    PythonAbortException(const std::string& message = "", SourceContext context = SourceContext());
+    explicit PythonAbortException(const std::string& message = "",
+                                  SourceContext context = SourceContext());
     virtual ~PythonAbortException() noexcept = default;
 };
 
@@ -51,7 +52,7 @@ class PythonMenu;
 
 class IVW_MODULE_PYTHON3QT_API Python3QtModule : public InviwoModule {
 public:
-    Python3QtModule(InviwoApplication* app);
+    explicit Python3QtModule(InviwoApplication* app);
     virtual ~Python3QtModule();
 
     void abortPythonEvaluation();

@@ -40,11 +40,11 @@ namespace util {
 
 InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
 
-InviwoApplication* getInviwoApplication(ProcessorNetwork* network) {
+InviwoApplication* getInviwoApplication(const ProcessorNetwork* network) {
     return network ? network->getApplication() : nullptr;
 }
 
-InviwoApplication* getInviwoApplication(Processor* processor) {
+InviwoApplication* getInviwoApplication(const Processor* processor) {
     return processor ? getInviwoApplication(processor->getNetwork()) : nullptr;
 }
 

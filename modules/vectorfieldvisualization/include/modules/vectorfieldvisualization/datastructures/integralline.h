@@ -137,7 +137,7 @@ std::shared_ptr<Buffer<T>> IntegralLine::createMetaData(const std::string& name)
 
 template <typename T>
 const std::vector<T>& IntegralLine::getMetaData(const std::string& name) const {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     if (it == metaData_.end()) {
         throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
@@ -154,11 +154,11 @@ const std::vector<T>& IntegralLine::getMetaData(const std::string& name) const {
 
 template <typename T>
 std::vector<T>& IntegralLine::getMetaData(const std::string& name, bool create) {
-    auto it = metaData_.find(name);
+    const auto it = metaData_.find(name);
     if (it == metaData_.end() && !create) {
         throw Exception(SourceContext{}, "No meta data with name: {}", name);
     } else if (it == metaData_.end()) {
-        auto md = createMetaData<T>(name);
+        const auto md = createMetaData<T>(name);
         return md->getEditableRAMRepresentation()->getDataContainer();
     }
     auto askedDF = DataFormat<T>::get();

@@ -150,14 +150,14 @@ StreamLinesDeprecated::~StreamLinesDeprecated() {}
 
 void StreamLinesDeprecated::process() {
 
-    auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
+    const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
         if (sampler_.isConnected())
             return sampler_.getData();
         else
             return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
     }();
 
-    auto mesh = std::make_shared<BasicMesh>();
+    const auto mesh = std::make_shared<BasicMesh>();
 
     mesh->setModelMatrix(sampler->getModelMatrix());
     mesh->setWorldMatrix(sampler->getWorldMatrix());
@@ -179,11 +179,11 @@ void StreamLinesDeprecated::process() {
 
         for (const auto& seeds : seedPoints_) {
             util::forEachParallel(*seeds, [&](const auto& p, size_t i) {
-                vec4 P = m * vec4(p, 1.0f);
+                const vec4 P = m * vec4(p, 1.0f);
                 IntegralLine line = tracer.traceFrom(vec3(P));
-                auto size = line.getPositions().size();
+                const auto size = line.getPositions().size();
                 if (size > 1) {
-                    std::lock_guard<std::mutex> lock(mutex);
+                    const std::lock_guard<std::mutex> lock(mutex);
                     lines->push_back(line, startID + i);
                 };
             });
@@ -193,9 +193,9 @@ void StreamLinesDeprecated::process() {
         size_t startID = 0;
         for (const auto& seeds : seedPoints_) {
             for (const auto& p : *seeds.get()) {
-                vec4 P = m * vec4(p, 1.0f);
+                const vec4 P = m * vec4(p, 1.0f);
                 IntegralLine line = tracer.traceFrom(vec3(P));
-                auto size = line.getPositions().size();
+                const auto size = line.getPositions().size();
                 if (size > 1) {
                     lines->push_back(line, startID);
                 }
@@ -208,21 +208,22 @@ void StreamLinesDeprecated::process() {
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData<dvec3>("velocity").begin();
 
-        auto size = line.getPositions().size();
+        const auto size = line.getPositions().size();
         if (size <= 1) continue;
 
-        auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+        const auto indexBuffer =
+            mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
 
         indexBuffer->add(0);
 
         for (size_t i = 0; i < size; i++) {
-            vec3 pos(*position);
-            vec3 v(*velocity);
+            const vec3 pos(*position);
+            const vec3 v(*velocity);
 
-            float l = glm::length(vec3(*velocity));
-            float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
+            const float l = glm::length(vec3(*velocity));
+            const float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
             maxVelocity = std::max(maxVelocity, l);
-            auto c = vec4(tf_.get().sample(d));
+            const auto c = vec4(tf_.get().sample(d));
 
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 

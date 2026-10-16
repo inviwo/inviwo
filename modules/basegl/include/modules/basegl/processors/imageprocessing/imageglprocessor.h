@@ -59,8 +59,9 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor {
 public:
-    ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
-    ImageGLProcessor(std::string_view fragmentShader, bool buildShader = true);
+    explicit ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
+                              bool buildShader = true);
+    explicit ImageGLProcessor(std::string_view fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
 
     virtual void initializeResources() final;

@@ -68,7 +68,7 @@ d.add{0}Column('{0}Col')
 )delim",
                                                classname);
 
-        auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+        const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
         py::eval<py::eval_statements>(source, dict);
 
@@ -76,7 +76,7 @@ d.add{0}Column('{0}Col')
 
         ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-        auto col = dataframe.getColumn(1);
+        const auto col = dataframe.getColumn(1);
         auto expectedFormat = DataFormat<T>::get();
         EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
             << "Dataformat mismatch";
@@ -102,11 +102,11 @@ d = ivwdataframe.DataFrame()
 d2 = ivwdataframe.DataFrame(10)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
-    auto dataframe = dict["d"].cast<DataFrame>();
+    const auto dataframe = dict["d"].cast<DataFrame>();
     auto dataframe2 = dict["d2"].cast<DataFrame>();
 
     EXPECT_EQ(1, dataframe.getNumberOfColumns()) << "DataFrame contains more than index column";
@@ -140,7 +140,7 @@ d.addCategoricalColumn('{}')
 )delim",
                                            colname);
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
@@ -148,7 +148,7 @@ d.addCategoricalColumn('{}')
 
     ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
@@ -170,7 +170,7 @@ d.updateIndex()
 )delim",
                                            colname);
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
@@ -178,7 +178,7 @@ d.updateIndex()
 
     ASSERT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     auto expectedFormat = DataFormat<uint32_t>::get();
     EXPECT_EQ(expectedFormat->getId(), col->getBuffer()->getDataFormat()->getId())
         << "Dataformat mismatch";
@@ -211,7 +211,7 @@ d.updateIndex()
 )delim",
                                            colName);
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
@@ -220,7 +220,7 @@ d.updateIndex()
     EXPECT_EQ(2, dataframe.getNumberOfColumns()) << "Incorrect number of columns";
     EXPECT_EQ(3, dataframe.getNumberOfRows()) << "Incorrect number of rows";
 
-    auto col = dataframe.getColumn(1);
+    const auto col = dataframe.getColumn(1);
     EXPECT_EQ(colName, col->getHeader());
     EXPECT_EQ(3, col->getSize()) << "Column row count incorrect";
 }
@@ -246,7 +246,7 @@ col.set(2, 6)
 d.updateIndex()
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
@@ -256,12 +256,13 @@ d.updateIndex()
 
     py::eval<py::eval_single_statement>(fmt::format("value = col.get({})", rowIndex), dict);
 
-    auto pyValue = dict["value"].cast<int>();
+    const auto pyValue = dict["value"].cast<int>();
     EXPECT_EQ(5, pyValue) << "Wrong data value in int column";
 
-    auto indexcol = dataframe.getIndexColumn();
-    auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
-    auto intcol = std::dynamic_pointer_cast<const TemplateColumn<int>>(dataframe.getColumn(2));
+    const auto indexcol = dataframe.getIndexColumn();
+    const auto floatcol = std::dynamic_pointer_cast<TemplateColumn<float>>(dataframe.getColumn(1));
+    const auto intcol =
+        std::dynamic_pointer_cast<const TemplateColumn<int>>(dataframe.getColumn(2));
 
     ASSERT_TRUE(floatcol) << "column not found";
     ASSERT_TRUE(intcol) << "column not found";

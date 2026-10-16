@@ -91,7 +91,7 @@ void VolumeShifter::process() {
 
     const auto offset = ivec3(offset_.get() * vec3(inport_.getData()->getDimensions()));
 
-    auto volumeRam =
+    const auto volumeRam =
         inport_.getData()->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<VolumeRAM>>(
             [&offset](auto vr) {
                 using ValueType = util::PrecisionValueType<decltype(vr)>;
@@ -99,7 +99,7 @@ void VolumeShifter::process() {
                 const auto src = vr->getDataTyped();
                 const auto dim = ivec3(vr->getDimensions());
                 const int size = glm::compMul(dim);
-                util::IndexMapper<3, int> im(dim);
+                const util::IndexMapper<3, int> im(dim);
 
                 auto vol = std::make_shared<VolumeRAMPrecision<ValueType>>(
                     vr->getDimensions(), vr->getSwizzleMask(), vr->getInterpolation(),
@@ -113,7 +113,7 @@ void VolumeShifter::process() {
                 return vol;
             });
 
-    auto vol = std::make_shared<Volume>(volumeRam);
+    const auto vol = std::make_shared<Volume>(volumeRam);
     vol->copyMetaDataFrom(*(inport_.getData()));
     vol->dataMap = inport_.getData()->dataMap;
     vol->setModelMatrix(inport_.getData()->getModelMatrix());

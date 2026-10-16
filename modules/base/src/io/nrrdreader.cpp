@@ -258,12 +258,12 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         if (line[0] == '#') continue;
 
         // Determine separator: ":=" for key-value pairs, ":" for fields
-        auto colonEq = line.find(":=");
+        const auto colonEq = line.find(":=");
         if (colonEq != std::string::npos) {
             // key-value pair (not a field specification, skip)
             continue;
         }
-        auto colon = line.find(':');
+        const auto colon = line.find(':');
         if (colon == std::string::npos) continue;
 
         const auto key = toLower(util::trim(line.substr(0, colon)));
@@ -290,7 +290,7 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
 
         } else if (key == "space directions") {
             state.spaceDirections.emplace();
-            auto tokens = splitRespectingParens(value);
+            const auto tokens = splitRespectingParens(value);
             for (const auto& t : tokens) {
                 auto vec = parseVector(t);
                 if (vec) {
@@ -321,8 +321,8 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
         } else if (key == "byte skip" || key == "byteskip") {
             state.byteSkip = parse<size_t>(value, "byte skip");
         } else if (key == "kinds") {
-            auto tokens = splitRespectingParens(value);
-            for (auto& t : tokens) {
+            const auto tokens = splitRespectingParens(value);
+            for (const auto& t : tokens) {
                 state.kinds.emplace_back(util::trim(t));
             }
         }
@@ -477,7 +477,7 @@ std::shared_ptr<Layer> NrrdLayerReader::readData(const std::filesystem::path& fi
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto state = parseNrrdHeader(localPath);
+    const auto state = parseNrrdHeader(localPath);
     const auto spatialDims = state.spatialDims();
 
     if (spatialDims != 2) {
@@ -496,8 +496,8 @@ std::shared_ptr<Layer> NrrdLayerReader::readData(const std::filesystem::path& fi
 
     const size_t bytes = dimensions.x * dimensions.y * state.format->getSizeInBytes();
 
-    auto layerRAM = createLayerRAM(dimensions, LayerType::Color, state.format, swizzle,
-                                   InterpolationType::Linear, wrapping2d::clampAll);
+    const auto layerRAM = createLayerRAM(dimensions, LayerType::Color, state.format, swizzle,
+                                         InterpolationType::Linear, wrapping2d::clampAll);
 
     if (compression == Compression::Enabled) {
         util::readCompressedBytesIntoBuffer(dataPath, dataOff, bytes, state.byteOrder,
@@ -528,7 +528,7 @@ std::shared_ptr<Volume> NrrdVolumeReader::readData(const std::filesystem::path& 
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto state = parseNrrdHeader(localPath);
+    const auto state = parseNrrdHeader(localPath);
     const auto spatialDims = state.spatialDims();
 
     if (spatialDims == 4) {
@@ -562,9 +562,9 @@ std::shared_ptr<Volume> NrrdVolumeReader::readData(const std::filesystem::path& 
     volume->setBasis(basis);
     volume->setOffset(offset);
 
-    auto volumeDisk = std::make_shared<VolumeDisk>(localPath, dimensions, state.format,
-                                                   swizzlemasks::defaultData(state.components),
-                                                   InterpolationType::Linear, wrapping3d::clampAll);
+    const auto volumeDisk = std::make_shared<VolumeDisk>(
+        localPath, dimensions, state.format, swizzlemasks::defaultData(state.components),
+        InterpolationType::Linear, wrapping3d::clampAll);
     auto loader =
         std::make_unique<RawVolumeRAMLoader>(dataPath, dataOff, state.byteOrder, compression);
     volumeDisk->setLoader(loader.release());
@@ -603,7 +603,7 @@ std::shared_ptr<VolumeSequence> NrrdVolumeSequenceReader::readData(
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto state = parseNrrdHeader(localPath);
+    const auto state = parseNrrdHeader(localPath);
     const auto spatialDims = state.spatialDims();
 
     if (spatialDims < 3 || spatialDims > 4) {
@@ -635,7 +635,7 @@ std::shared_ptr<VolumeSequence> NrrdVolumeSequenceReader::readData(
         volume->setBasis(basis);
         volume->setOffset(offset);
 
-        auto volumeDisk = std::make_shared<VolumeDisk>(
+        const auto volumeDisk = std::make_shared<VolumeDisk>(
             localPath, dimensions, state.format, swizzlemasks::defaultData(state.components),
             InterpolationType::Linear, wrapping3d::clampAll);
         auto loader = std::make_unique<RawVolumeRAMLoader>(dataPath, dataOff + t * bytesPerVolume,

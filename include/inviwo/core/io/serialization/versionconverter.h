@@ -51,7 +51,7 @@ class IVW_CORE_API NodeVersionConverter : public VersionConverter {
 public:
     template <typename T>
     NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
-    NodeVersionConverter(std::function<bool(TxElement*)> fun);
+    explicit NodeVersionConverter(std::function<bool(TxElement*)> fun);
 
     virtual ~NodeVersionConverter() = default;
     virtual bool convert(TxElement* root);
@@ -72,7 +72,7 @@ class IVW_CORE_API TraversingVersionConverter : public VersionConverter {
 public:
     template <typename T>
     TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
-    TraversingVersionConverter(std::function<bool(TxElement*)> fun);
+    explicit TraversingVersionConverter(std::function<bool(TxElement*)> fun);
     virtual ~TraversingVersionConverter() {}
 
     /**
@@ -325,7 +325,7 @@ IVW_CORE_API bool changeIdentifiers(TxElement* root,
 
 IVW_CORE_API TxElement* createNode(std::string_view desc, TxElement* parent = nullptr);
 
-IVW_CORE_API void logNode(TxElement* root);
+IVW_CORE_API void logNode(const TxElement* root);
 
 IVW_CORE_API bool renamePortIdentifier(TxElement* root, std::string_view processorClassId,
                                        std::string_view portIdentifier,

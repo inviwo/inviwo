@@ -50,7 +50,7 @@ public:
      * Method to test if both source and destination properties are valid, eg not nullptr
      * @return false if at least one of the properties is null
      */
-    operator bool() const;
+    explicit operator bool() const;
 
     Property* getSource() const { return src_; }
     Property* getDestination() const { return dst_; }

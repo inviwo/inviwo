@@ -123,10 +123,10 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     menu->addSeparator();
 
     auto* importIso = menu->addAction("&Import Isovalues...");
-    auto* exportIso = menu->addAction("&Export Isovalues...");
+    const auto* exportIso = menu->addAction("&Export Isovalues...");
     importIso->setEnabled(!property_->getReadOnly());
     connect(importIso, &QAction::triggered, this, [this]() {
-        if (auto iso = util::importIsoValueCollectionDialog()) {
+        if (const auto iso = util::importIsoValueCollectionDialog()) {
             const NetworkLock lock{property_};
             isoProperty()->get() = *iso;
         }

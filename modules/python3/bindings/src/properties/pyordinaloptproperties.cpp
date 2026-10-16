@@ -56,7 +56,7 @@ struct OrdinalOptPropertyHelper {
         namespace py = pybind11;
         using P = OrdinalOptProperty<T>;
 
-        auto classname = Defaultvalues<T>::getName() + "OptProperty";
+        const auto classname = Defaultvalues<T>::getName() + "OptProperty";
 
         py::classh<P, Property> prop(m, classname.c_str());
         prop.def(py::init([](std::string_view identifier, std::string_view name, Document help,

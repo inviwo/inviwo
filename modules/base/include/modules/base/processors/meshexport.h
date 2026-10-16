@@ -46,7 +46,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API MeshExport : public DataExport<Mesh, MeshInport> {
 public:
-    MeshExport(InviwoApplication* app);
+    explicit MeshExport(InviwoApplication* app);
     virtual ~MeshExport() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

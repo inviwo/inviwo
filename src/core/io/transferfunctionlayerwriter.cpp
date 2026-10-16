@@ -69,7 +69,7 @@ std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
     tf->interpolateAndStoreColors(data);
 
     // Convert to UINT8
-    auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(size2_t{data.size(), 1});
+    const auto dst = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(size2_t{data.size(), 1});
     auto layer = std::make_unique<Layer>(dst);
 
     const auto dstView = dst->getView();
@@ -85,7 +85,7 @@ std::unique_ptr<Layer> toUint8Layer(const TransferFunction* tf) {
 void TransferFunctionLayerWriter::writeData(const TransferFunction* tf,
                                             const std::filesystem::path& filePath) const {
 
-    auto uint8Layer = toUint8Layer(tf);
+    const auto uint8Layer = toUint8Layer(tf);
     layerWriter_->setOverwrite(Overwrite::Yes);
     layerWriter_->writeData(uint8Layer.get(), filePath);
 }
@@ -93,7 +93,7 @@ void TransferFunctionLayerWriter::writeData(const TransferFunction* tf,
 std::unique_ptr<std::vector<unsigned char>> TransferFunctionLayerWriter::writeDataToBuffer(
     const TransferFunction* tf, std::string_view fileExtension) const {
 
-    auto uint8Layer = toUint8Layer(tf);
+    const auto uint8Layer = toUint8Layer(tf);
     return layerWriter_->writeDataToBuffer(uint8Layer.get(), fileExtension);
 }
 
@@ -114,7 +114,7 @@ void TransferFunctionLayerWriterWrapper::onRegister(DataWriter* writer) {
 }
 void TransferFunctionLayerWriterWrapper::onUnRegister(DataWriter* writer) {
     if (auto* layerWriter = dynamic_cast<DataWriterType<Layer>*>(writer)) {
-        if (auto it = layerToTFMap_.find(layerWriter); it != layerToTFMap_.end()) {
+        if (const auto it = layerToTFMap_.find(layerWriter); it != layerToTFMap_.end()) {
             factory_->unRegisterObject(it->second.get());
             layerToTFMap_.erase(it);
         }

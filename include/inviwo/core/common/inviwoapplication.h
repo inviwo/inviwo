@@ -115,7 +115,7 @@ class InviwoApplicationCallbacks;
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
     InviwoApplication();
-    InviwoApplication(std::string_view displayName);
+    explicit InviwoApplication(std::string_view displayName);
     InviwoApplication(int argc, char** argv, std::string_view displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
@@ -253,7 +253,7 @@ public:
      *
      * @see ResourceManager
      */
-    ResourceManager* getResourceManager();
+    ResourceManager* getResourceManager() const;
 
     /** @name Factories */
     ///@{
@@ -549,12 +549,12 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     -> std::future<std::invoke_result_t<F, Args...>> {
     using return_type = std::invoke_result_t<F, Args...>;
 
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
+    const auto task = std::make_shared<std::packaged_task<return_type()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
     std::future<return_type> res = task->get_future();
     {
-        std::unique_lock<std::mutex> lock(queue_.mutex);
+        const std::unique_lock<std::mutex> lock(queue_.mutex);
         queue_.tasks.emplace([task]() { (*task)(); });
     }
 
@@ -562,7 +562,9 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     return res;
 }
 
-inline ResourceManager* InviwoApplication::getResourceManager() { return resourceManager_.get(); }
+inline ResourceManager* InviwoApplication::getResourceManager() const {
+    return resourceManager_.get();
+}
 
 inline CameraFactory* InviwoApplication::getCameraFactory() const { return cameraFactory_.get(); }
 

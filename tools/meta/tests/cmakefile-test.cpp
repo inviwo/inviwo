@@ -108,8 +108,8 @@ set(test_files
     for (auto& cmd : cmakefile.commands()) {
         EXPECT_EQ(cmd.identifier, "set");
 
-        auto args = inviwo::meta::Range{++(cmd.args().begin()), cmd.args().end()};
-        for (auto& arg : args) {
+        const auto args = inviwo::meta::Range{++(cmd.args().begin()), cmd.args().end()};
+        for (const auto& arg : args) {
             EXPECT_EQ(arg.value, "file.cpp");
             EXPECT_EQ(arg.value, "file.cpp");
         }

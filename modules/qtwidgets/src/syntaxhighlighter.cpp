@@ -63,10 +63,10 @@ const QTextCharFormat& SyntaxHighlighter::defaultFormat() const { return default
 void SyntaxHighlighter::highlightBlock(const QString& text) {
     setFormat(0, static_cast<int>(text.size()), defaultFormat_);
 
-    for (auto& rule : rules_) {
+    for (const auto& rule : rules_) {
         auto it = rule.pattern.globalMatch(text);
         while (it.hasNext()) {
-            auto m = it.next();
+            const auto m = it.next();
             setFormat(static_cast<int>(m.capturedStart()), static_cast<int>(m.capturedLength()),
                       rule.format);
         }
@@ -75,13 +75,13 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
     setCurrentBlockState(0);
     const auto prevState = previousBlockState();
 
-    for (auto& rule : multiblockRules_) {
+    for (const auto& rule : multiblockRules_) {
 
         int startIndex = 0;
         int currPos = 0;
 
         if (prevState <= 0) {
-            if (auto beginMatch = rule.begin.match(text); beginMatch.hasMatch()) {
+            if (const auto beginMatch = rule.begin.match(text); beginMatch.hasMatch()) {
                 startIndex = static_cast<int>(beginMatch.capturedStart());
                 currPos = static_cast<int>(beginMatch.capturedEnd());
             } else {
@@ -92,7 +92,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
         }
 
         while (startIndex >= 0) {
-            auto endMatch = rule.end.match(text, currPos);
+            const auto endMatch = rule.end.match(text, currPos);
             int commentLength;
 
             if (endMatch.hasMatch()) {
@@ -103,7 +103,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
             }
             setFormat(startIndex, commentLength, rule.format);
 
-            if (auto beginMatch = rule.begin.match(text, startIndex + commentLength);
+            if (const auto beginMatch = rule.begin.match(text, startIndex + commentLength);
                 beginMatch.hasMatch()) {
                 startIndex = static_cast<int>(beginMatch.capturedStart());
                 currPos = static_cast<int>(beginMatch.capturedEnd());
@@ -132,7 +132,7 @@ void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view patt
 
 void SyntaxHighlighter::addPatterns(QTextCharFormat format,
                                     std::span<const std::string_view> patterns) {
-    for (auto pattern : patterns) {
+    for (const auto pattern : patterns) {
         rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
     }
 }
@@ -141,7 +141,7 @@ void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
                                                 std::span<const std::string_view> patterns,
                                                 std::string_view formatStr) {
     for (auto pattern : patterns) {
-        auto str = utilqt::toQString(fmt::format(fmt::runtime(formatStr), pattern));
+        const auto str = utilqt::toQString(fmt::format(fmt::runtime(formatStr), pattern));
         rules_.push_back(Rule{format, QRegularExpression{str}});
     }
 }

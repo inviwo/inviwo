@@ -53,14 +53,14 @@ TEST(StatsUtilsTest, init) {
     vecY.emplace_back(70);
     vecY.emplace_back(65);
     vecY.emplace_back(70);
-    auto res = statsutil::linearRegresion(X, Y);
+    const auto res = statsutil::linearRegresion(X, Y);
 
     EXPECT_NEAR(0.64383561643835918, res.k, 1E-12) << " value of K";
     EXPECT_NEAR(26.780821917808225, res.m, 1E-12) << " value of m";
     EXPECT_NEAR(0.48032180908893229, res.r2, 1E-12) << " value of r";
 
     // https://en.wikipedia.org/wiki/Percentile
-    auto data = std::vector<double>({20., 15., 50., 40., 35.});
+    const auto data = std::vector<double>({20., 15., 50., 40., 35.});
     auto percentiles = statsutil::percentiles(data, {0.05, .30, 0.40, 0.5, 1.0});
     EXPECT_DOUBLE_EQ(15., percentiles[0]) << " 5 percentile";
     EXPECT_DOUBLE_EQ(20., percentiles[1]) << " 30 percentile";

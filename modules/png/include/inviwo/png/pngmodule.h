@@ -37,7 +37,7 @@ class InviwoApplication;
 
 class IVW_MODULE_PNG_API pngModule : public InviwoModule {
 public:
-    pngModule(InviwoApplication* app);
+    explicit pngModule(InviwoApplication* app);
     virtual ~pngModule() = default;
 };
 

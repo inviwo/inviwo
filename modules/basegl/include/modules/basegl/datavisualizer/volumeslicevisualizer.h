@@ -47,7 +47,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASEGL_API VolumeSliceVisualizer : public DataVisualizer {
 public:
-    VolumeSliceVisualizer(InviwoApplication* app);
+    explicit VolumeSliceVisualizer(InviwoApplication* app);
     virtual ~VolumeSliceVisualizer() = default;
 
     virtual std::string getName() const override;

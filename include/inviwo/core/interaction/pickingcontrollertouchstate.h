@@ -45,7 +45,7 @@ class PickingManager;
  */
 class IVW_CORE_API PickingControllerTouchState {
 public:
-    PickingControllerTouchState(PickingManager* pickingManager = nullptr);
+    explicit PickingControllerTouchState(PickingManager* pickingManager = nullptr);
     PickingControllerTouchState(PickingControllerTouchState&&);
     PickingControllerTouchState(const PickingControllerTouchState&) = delete;
     PickingControllerTouchState& operator=(const PickingControllerTouchState&) = delete;

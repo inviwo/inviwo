@@ -157,7 +157,7 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
 
     // check if a representation exists and return it
     std::unique_lock<std::mutex> lock(mutex_);
-    auto it = representations_.find(std::type_index(typeid(T)));
+    const auto it = representations_.find(std::type_index(typeid(T)));
     if (it != representations_.end()) {
         it->second->update(editable);
         return dynamic_cast<T*>(it->second.get());
@@ -165,7 +165,7 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
 
     // no representation exists, create one
     lock.unlock();
-    auto representation = detail::createGroupRepresentation<Repr, T>();
+    const auto representation = detail::createGroupRepresentation<Repr, T>();
     if (!representation) {
         throw Exception(SourceContext{},
                         "Trying to create an invalid group representation: {} for data {}",

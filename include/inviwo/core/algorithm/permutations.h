@@ -45,7 +45,7 @@ template <typename T>
 std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 1) {
     std::vector<T> res(static_cast<size_t>((end - start) / step));
     std::generate(res.begin(), res.end(), [i = start, step]() mutable {
-        auto tmp = i;
+        const auto tmp = i;
         i += step;
         return static_cast<T>(tmp);
     });
@@ -195,7 +195,7 @@ Combinations(std::span<T, N>, size_t) -> Combinations<T>;
 template <typename T>
 class IndexProduct {
 public:
-    IndexProduct(std::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
+    explicit IndexProduct(std::span<T> sizes) : sizes{sizes}, indices(sizes.size(), 0) {}
 
     bool next() {
         const ptrdiff_t n = indices.size();

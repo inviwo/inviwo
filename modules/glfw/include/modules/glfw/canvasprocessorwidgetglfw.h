@@ -39,7 +39,7 @@ class CanvasProcessor;
 
 class IVW_MODULE_GLFW_API CanvasProcessorWidgetGLFW : public CanvasProcessorWidget {
 public:
-    CanvasProcessorWidgetGLFW(Processor* p);
+    explicit CanvasProcessorWidgetGLFW(Processor* p);
     virtual ~CanvasProcessorWidgetGLFW();
 
     virtual void setVisible(bool visible) override;

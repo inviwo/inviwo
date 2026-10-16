@@ -44,7 +44,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
         wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
     }
 
-    auto lastWrapper = wrappers_.back();
+    const auto lastWrapper = wrappers_.back();
 
     auto infsTime = std::count_if(
         wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper>& w) -> bool {
@@ -74,13 +74,13 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
 
     bool firstAndLastAreSame = true;
     if (volumeSequence->size() >= 2) {
-        auto firstVol = volumeSequence->front();
-        auto lastVol = volumeSequence->back();
+        const auto firstVol = volumeSequence->front();
+        const auto lastVol = volumeSequence->back();
         auto firstVolRam = firstVol->getRepresentation<VolumeRAM>();
         auto firstData = static_cast<const char*>(firstVolRam->getData());
         auto lastData =
             static_cast<const char*>(lastVol->getRepresentation<VolumeRAM>()->getData());
-        auto dataSize1 = firstVolRam->getNumberOfBytes();
+        const auto dataSize1 = firstVolRam->getNumberOfBytes();
 
         for (size_t i = 0; i < dataSize1 && firstAndLastAreSame; i++) {
             firstAndLastAreSame &= firstData[i] == lastData[i];
@@ -94,24 +94,24 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     }
 
     if (infsTime == size && infsDuration == size) {
-        double dur = 1.0 / (static_cast<double>(size) - 1.0);
+        const double dur = 1.0 / (static_cast<double>(size) - 1.0);
         double t = 0;
-        for (auto& w : wrappers_) {
+        for (const auto& w : wrappers_) {
             w->duration_ = dur;
             w->timestamp_ = t;
             t += dur;
         }
     } else if (infsTime == size && infsDuration == 0) {
         double t = 0;
-        for (auto& w : wrappers_) {
+        for (const auto& w : wrappers_) {
             w->timestamp_ = t;
             t += w->duration_;
         }
     } else {  // timestamps are set
 
         if (infsDuration == size) {  // we do not have durations
-            for (auto& w : wrappers_) {
-                if (auto next = w->next_.lock()) {
+            for (const auto& w : wrappers_) {
+                if (const auto next = w->next_.lock()) {
                     w->duration_ = next->timestamp_ - w->timestamp_;
                 }
             }
@@ -123,7 +123,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     }
 
     totDuration_ = 0;
-    for (auto& w : wrappers_) {
+    for (const auto& w : wrappers_) {
         totDuration_ += w->duration_;
     }
 
@@ -134,7 +134,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
 VolumeSequenceSampler::~VolumeSequenceSampler() {}
 
 dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
-    auto spatialPos = dvec3(pos);
+    const auto spatialPos = dvec3(pos);
     double t = pos.w;
 
     if (t < timeRange_.x || t > timeRange_.y) {
@@ -153,15 +153,15 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
         wrappers_.begin(), wrappers_.end(), t,
         [](double t2, const std::shared_ptr<Wrapper> a) { return t2 < a->timestamp_; });
     --it;
-    auto wrapper = *it;
+    const auto wrapper = *it;
 
-    auto val0 = dvec3(wrapper->sampler_.sample(spatialPos));
+    const auto val0 = dvec3(wrapper->sampler_.sample(spatialPos));
     if (wrapper->next_.expired()) {
         return val0;
     }
-    auto val1 = dvec3(wrapper->next_.lock()->sampler_.sample(spatialPos));
+    const auto val1 = dvec3(wrapper->next_.lock()->sampler_.sample(spatialPos));
 
-    double x = (t - wrapper->timestamp_) / wrapper->duration_;
+    const double x = (t - wrapper->timestamp_) / wrapper->duration_;
     return Interpolation<dvec3>::linear(val0, val1, x);
 }
 

@@ -46,7 +46,7 @@ class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
     friend class Processor;
 
 public:
-    ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
+    explicit ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
     virtual ~ProcessorNetworkEvaluator();
     void setExceptionHandler(EvaluationErrorHandler handler);
 

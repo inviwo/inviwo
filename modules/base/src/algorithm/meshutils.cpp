@@ -74,9 +74,9 @@ namespace inviwo::meshutil {
 namespace detail {
 
 vec3 orthvec(const vec3& vec) {
-    vec3 u(1.0f, 0.0f, 0.0f);
-    vec3 n = glm::normalize(vec);
-    float p = glm::dot(u, n);
+    const vec3 u(1.0f, 0.0f, 0.0f);
+    const vec3 n = glm::normalize(vec);
+    const float p = glm::dot(u, n);
     if (std::abs(p) != 1.0f) {
         return glm::normalize(u - p * n);
     } else {
@@ -117,7 +117,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
         const vec3 odir = detail::orthvec(dir);
 
         BasicMesh tube{};
-        auto inds = tube.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        const auto inds = tube.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         for (std::uint32_t j = 0; j < segments; ++j) {
             const auto k = static_cast<float>(j);
             const vec3 o = glm::rotate(odir, static_cast<float>(j) * angle, dir);
@@ -143,17 +143,17 @@ std::shared_ptr<BasicMesh> disk(const vec3& center, const vec3& normal, const ve
                                 const float& radius, const size_t& segments) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    vec3 orth = detail::orthvec(normal);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const vec3 orth = detail::orthvec(normal);
 
     mesh->addVertex(center, normal, vec3(0.5f, 0.5f, 0.0f), color);
 
-    vec3 tc = vec3(0.5f, 0.5f, 0.0f);
-    vec3 tn = vec3(0.0f, 0.0f, 1.0f);
-    vec3 to = vec3(0.5f, 0.0f, 0.0f);
+    const vec3 tc = vec3(0.5f, 0.5f, 0.0f);
+    const vec3 tn = vec3(0.0f, 0.0f, 1.0f);
+    const vec3 to = vec3(0.5f, 0.0f, 0.0f);
     vec3 p;
     vec3 t;
-    double angle = 2.0 * std::numbers::pi / segments;
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
@@ -171,16 +171,16 @@ std::shared_ptr<BasicMesh> cone(const vec3& start, const vec3& stop, const vec4&
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
 
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-    vec3 e1 = glm::normalize(stop - start);
-    vec3 e2 = detail::orthvec(e1);
-    vec3 e3 = glm::cross(e1, e2);
-    mat3 basis(e1, e2, e3);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const vec3 e1 = glm::normalize(stop - start);
+    const vec3 e2 = detail::orthvec(e1);
+    const vec3 e3 = glm::cross(e1, e2);
+    const mat3 basis(e1, e2, e3);
 
-    float height = glm::length(stop - start);
-    float ratio = radius / height;
+    const float height = glm::length(stop - start);
+    const float ratio = radius / height;
 
-    double angle = 2.0 * std::numbers::pi / segments;
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
@@ -225,22 +225,22 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
     std::vector<BasicMesh::Vertex> vertices;
     vertices.reserve(segments * 2);
 
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     inds->getDataContainer().reserve(6 * segments);
-    vec3 e1 = glm::normalize(stop - start);
-    vec3 e2 = detail::orthvec(e1);
-    vec3 e3 = glm::cross(e1, e2);
-    mat3 basis(e1, e2, e3);
+    const vec3 e1 = glm::normalize(stop - start);
+    const vec3 e2 = detail::orthvec(e1);
+    const vec3 e3 = glm::cross(e1, e2);
+    const mat3 basis(e1, e2, e3);
 
-    double angle = 2.0 * std::numbers::pi / segments;
+    const double angle = 2.0 * std::numbers::pi / static_cast<double>(segments);
     const auto ns = static_cast<std::uint32_t>(segments);
     for (std::uint32_t i = 0; i < ns; ++i) {
         // first vertex at base
-        double x = cos(i * angle);
-        double y = sin(i * angle);
-        vec3 normal = basis * vec3(0.0, x, y);
-        vec3 dir = basis * vec3(0.0, x * radius, y * radius);
-        vec3 texCoord = vec3(static_cast<float>(i) / segments, 0.0, 0.0);
+        const double x = cos(i * angle);
+        const double y = sin(i * angle);
+        const vec3 normal = basis * vec3(0.0, x, y);
+        const vec3 dir = basis * vec3(0.0, x * radius, y * radius);
+        const vec3 texCoord = vec3(static_cast<float>(i) / static_cast<double>(segments), 0.0, 0.0);
 
         // vertex at base
         vertices.push_back({start + dir, normal, texCoord, color});
@@ -261,8 +261,8 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
 
     // add end caps
     if (caps) {
-        auto startcap = disk(start, -e1, color, radius, segments);
-        auto endcap = disk(stop, e1, color, radius, segments);
+        const auto startcap = disk(start, -e1, color, radius, segments);
+        const auto endcap = disk(stop, e1, color, radius, segments);
 
         mesh->append(startcap.get());
         mesh->append(endcap.get());
@@ -277,7 +277,7 @@ std::shared_ptr<BasicMesh> point(vec3 position, vec4 color) {
 
     mesh->addVertex(position, vec3{0.0f}, vec3{0.0f}, color);
 
-    auto inds = mesh->addIndexBuffer(DrawType::Points, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Points, ConnectivityType::None);
     inds->add(0);
 
     return mesh;
@@ -291,7 +291,7 @@ std::shared_ptr<BasicMesh> line(vec3 start, vec3 stop, vec4 color) {
     mesh->addVertex(start, normal, vec3{0.0f, 0.0f, 0.0f}, color);
     mesh->addVertex(stop, normal, vec3{1.0f, 0.0f, 0.0f}, color);
 
-    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
     inds->add({0, 1});
 
     return mesh;
@@ -301,7 +301,7 @@ std::shared_ptr<BasicMesh> circle(vec3 center, vec3 normal, vec4 color, float ra
                                   size_t segments) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Loop);
+    const auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Loop);
     const vec3 orth = detail::orthvec(normal);
 
     vec3 t{0.0f};
@@ -323,13 +323,13 @@ std::shared_ptr<BasicMesh> line(const vec3& start, const vec3& stop, const vec3&
                                 const float& width /*= 1.0f*/, const ivec2& inres /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
-    vec3 direction = stop - start;
-    vec3 up = glm::cross(glm::normalize(direction), normal);
+    const vec3 direction = stop - start;
+    const vec3 up = glm::cross(glm::normalize(direction), normal);
 
-    vec3 startCornerPoint = start - 0.5f * width * up;
-    ivec2 res = inres + ivec2(1);
+    const vec3 startCornerPoint = start - 0.5f * width * up;
+    const ivec2 res = inres + ivec2(1);
 
     for (int j = 0; j < res.y; j++) {
         for (int i = 0; i < res.x; i++) {
@@ -403,13 +403,13 @@ std::shared_ptr<BasicMesh> arrow(const vec3& start, const vec3& stop, const vec4
     mesh->setModelMatrix(mat4(1.f));
 
     const vec3 mid = glm::mix(start, stop, 1.0f - arrowfraction);
-    auto cylinderpart = cylinder(start, mid, color, radius, segments);
+    const auto cylinderpart = cylinder(start, mid, color, radius, segments);
     mesh->append(cylinderpart.get());
 
-    auto diskpart = disk(mid, glm::normalize(start - stop), color, arrowRadius, segments);
+    const auto diskpart = disk(mid, glm::normalize(start - stop), color, arrowRadius, segments);
     mesh->append(diskpart.get());
 
-    auto conepart = cone(mid, stop, color, arrowRadius, segments);
+    const auto conepart = cone(mid, stop, color, arrowRadius, segments);
     mesh->append(conepart.get());
 
     return mesh;
@@ -477,20 +477,20 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
 
     std::vector<BasicMesh::Vertex> vertices;
     vertices.reserve(spheremesh.size() * 8);
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     inds->getDataContainer().reserve(sphereind.size() * 8 * 3);
 
     vec3 quad(0);
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset =
+                const glm::uint32_t idxOffset =
                     static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
 
                 vec3 normal;
                 vec3 vertex;
                 vec3 tcoord;
-                vec4 color((quad + 1.0f) / 2.0f, 1.0f);
+                const vec4 color((quad + 1.0f) / 2.0f, 1.0f);
                 for (auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
@@ -516,7 +516,7 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
 
 std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const vec4& color,
                                   std::shared_ptr<BasicMesh> mesh) {
-    std::vector<vec2> spheremesh = {
+    const std::vector<vec2> spheremesh = {
         {glm::half_pi<float>(), 0.0f},
         {glm::half_pi<float>(), glm::half_pi<float>()},
         {0.0f, 0.0f},
@@ -555,7 +555,7 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
         {glm::half_pi<float>(), std::atan(6.0f)},
         {std::atan(6.0f), glm::half_pi<float>()}};
 
-    std::vector<uvec3> sphereind = {
+    const std::vector<uvec3> sphereind = {
         {0, 10, 4},   {4, 11, 5},   {5, 12, 6},   {6, 13, 7},   {7, 14, 8},   {8, 15, 9},
         {9, 16, 2},   {10, 17, 11}, {11, 18, 12}, {12, 19, 13}, {13, 20, 14}, {14, 21, 15},
         {15, 22, 16}, {17, 23, 18}, {18, 24, 19}, {19, 25, 20}, {20, 26, 21}, {21, 27, 22},
@@ -576,19 +576,19 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
 
     std::vector<BasicMesh::Vertex> vertices;
     vertices.reserve(spheremesh.size() * 8);
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     inds->getDataContainer().reserve(sphereind.size() * 8 * 3);
 
     vec3 quad(0);
     for (quad.x = -1.0f; quad.x <= 1.0f; quad.x += 2.0f) {
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
-                glm::uint32_t idxOffset =
+                const glm::uint32_t idxOffset =
                     static_cast<std::uint32_t>(vertices.size()) + globalIndexOffset;
                 vec3 normal;
                 vec3 vertex;
                 vec3 tcoord;
-                for (auto& elem : spheremesh) {
+                for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
                     tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
@@ -596,11 +596,11 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.x, idxOffset + elem.y, idxOffset + elem.z});
                     }
                 } else {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.z, idxOffset + elem.y, idxOffset + elem.x});
                     }
                 }
@@ -612,12 +612,12 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
 }
 
 static vec3 V(const mat4& m, const vec3 v) {
-    vec4 V = m * vec4(v, 1);
+    const vec4 V = m * vec4(v, 1);
     return vec3(V) / V.w;
 }
 
 static vec3 N(const mat4& m, const vec3 v) {
-    vec4 V = m * vec4(v, 0);
+    const vec4 V = m * vec4(v, 0);
     return vec3(V);
 }
 
@@ -625,7 +625,7 @@ std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1));
 
-    auto indices = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto indices = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     // Front back
     mesh->addVertices({{V(m, vec3(0, 0, 0)), N(m, vec3(0, 0, -1)), vec3(0, 0, 0), color},
@@ -797,23 +797,26 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
 }
 
 std::shared_ptr<BasicMesh> coordindicator(const vec3& center, const float& size) {
-    size_t segments = 16;
-    float bsize = size * 1.0f;
-    float fsize = size * 1.2f;
-    float radius = size * 0.08f;
-    float arrowpart = 0.12f;
-    float arrowRadius = 2.0f * radius;
+    const size_t segments = 16;
+    const float bsize = size * 1.0f;
+    const float fsize = size * 1.2f;
+    const float radius = size * 0.08f;
+    const float arrowpart = 0.12f;
+    const float arrowRadius = 2.0f * radius;
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
 
-    auto xarrow = arrow(center - vec3(bsize, 0.0f, 0.0f), center + vec3(fsize, 0.0f, 0.0f),
-                        vec4(1.0f, 0.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
-    auto yarrow = arrow(center - vec3(0.0f, bsize, 0.0f), center + vec3(0.0f, fsize, 0.0f),
-                        vec4(0.0f, 1.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
-    auto zarrow = arrow(center - vec3(0.0f, 0.0f, bsize), center + vec3(0.0f, 0.0f, fsize),
-                        vec4(0.0f, 0.0f, 1.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
+    const auto xarrow =
+        arrow(center - vec3(bsize, 0.0f, 0.0f), center + vec3(fsize, 0.0f, 0.0f),
+              vec4(1.0f, 0.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
+    const auto yarrow =
+        arrow(center - vec3(0.0f, bsize, 0.0f), center + vec3(0.0f, fsize, 0.0f),
+              vec4(0.0f, 1.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
+    const auto zarrow =
+        arrow(center - vec3(0.0f, 0.0f, bsize), center + vec3(0.0f, 0.0f, fsize),
+              vec4(0.0f, 0.0f, 1.0f, 1.0f), radius, arrowpart, arrowRadius, segments);
 
-    auto sphere = colorsphere(center, 0.7f * size);
+    const auto sphere = colorsphere(center, 0.7f * size);
 
     mesh->append(sphere.get());
     mesh->append(xarrow.get());
@@ -836,7 +839,7 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisAndOffset, const vec4& c
                        {vec3(1.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), color},
                        {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color}});
 
-    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
     inds->add({0, 1, 0, 2, 0, 3, 1, 6, 1, 4, 2, 5, 2, 4, 3, 5, 3, 6, 5, 7, 6, 7, 4, 7});
 
     return mesh;
@@ -857,16 +860,16 @@ std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisAndOffset
                        {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color},
                        {vec3(0.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), color}});
 
-    auto inds1 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto inds1 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     inds1->add({3, 0, 1, 2, 3, 0, 1});
 
-    auto inds2 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto inds2 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     inds2->add({7, 4, 5, 6, 7, 4, 5});
 
-    auto inds3 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto inds3 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     inds3->add({3, 0, 4, 7, 3, 0, 4});
 
-    auto inds4 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    const auto inds4 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
     inds4->add({2, 1, 5, 6, 2, 1, 2});
 
     return mesh;
@@ -877,10 +880,10 @@ std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, 
                                  const ivec2& subdivisions, vec4 color) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     vec3 side;
-    auto up = glm::normalize(up_);
+    const auto up = glm::normalize(up_);
     if (std::abs(std::abs(glm::dot(up, vec3(0, 1, 0))) - 1) <
         std::numeric_limits<float>::epsilon()) {
         side = vec3(1, 0, 0);
@@ -888,29 +891,29 @@ std::shared_ptr<BasicMesh> torus(const vec3& center, const vec3& up_, float r1, 
         side = glm::normalize(glm::cross(up, vec3(0, 1, 0)));
     }
 
-    auto numVertex = subdivisions.x * subdivisions.y;
+    const auto numVertex = subdivisions.x * subdivisions.y;
 
     for (int i = 0; i < subdivisions.x; i++) {
-        auto axis =
+        const auto axis =
             glm::rotate(side, static_cast<float>(i * 2 * std::numbers::pi / subdivisions.x), up);
-        auto centerP = center + axis * r1;
+        const auto centerP = center + axis * r1;
 
-        auto N = glm::normalize(glm::cross(axis, up));
+        const auto N = glm::normalize(glm::cross(axis, up));
 
-        int startI = i * subdivisions.y;
-        int startJ = ((i + 1) % subdivisions.x) * subdivisions.y;
+        const int startI = i * subdivisions.y;
+        const int startJ = ((i + 1) % subdivisions.x) * subdivisions.y;
 
         for (int j = 0; j < subdivisions.y; j++) {
-            auto axis2 =
+            const auto axis2 =
                 glm::rotate(axis, static_cast<float>(j * 2 * std::numbers::pi / subdivisions.y), N);
-            auto VP = centerP + axis2 * r2;
+            const auto VP = centerP + axis2 * r2;
 
             mesh->addVertex(VP, axis2, N, color);
 
-            int i0 = startI + j;
-            int i1 = startI + j + 1;
-            int j0 = startJ + j;
-            int j1 = startJ + j + 1;
+            const int i0 = startI + j;
+            const int i1 = startI + j + 1;
+            const int j0 = startJ + j;
+            const int j1 = startJ + j + 1;
 
             inds->add(i0 % numVertex);
             inds->add(j0 % numVertex);
@@ -930,7 +933,7 @@ std::shared_ptr<BasicMesh> square(const vec3& center, const vec3& normal, const 
                                   const ivec2& segments /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     const vec3 right = detail::orthvec(normal);
     const vec3 up = glm::cross(right, normal);
@@ -973,14 +976,14 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     auto& vertVector = mesh->getTypedDataContainer<buffertraits::PositionsBuffer>();
     auto& colorVector = mesh->getTypedDataContainer<buffertraits::ColorsBuffer>();
 
-    auto off = static_cast<unsigned int>(vertVector.size());
+    const auto off = static_cast<unsigned int>(vertVector.size());
     vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());
     colorVector.insert(colorVector.end(), 8, color);
 
     mesh->setModelMatrix(glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));
 
-    auto ib = std::make_shared<IndexBufferRAM>();
-    auto indices = std::make_shared<IndexBuffer>(ib);
+    const auto ib = std::make_shared<IndexBufferRAM>();
+    const auto indices = std::make_shared<IndexBuffer>(ib);
     ib->add({off + 0, off + 1, off + 1, off + 3, off + 3, off + 2, off + 2, off + 0});  // front
     ib->add({off + 4, off + 5, off + 5, off + 7, off + 7, off + 6, off + 6, off + 4});  // back
     ib->add({off + 0, off + 4, off + 1, off + 5, off + 2, off + 6, off + 3, off + 7});  // sides
@@ -1001,7 +1004,7 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     // Set identity matrix
     mesh->setModelMatrix(mat4(1.f));
 
-    auto corners = [](const auto& origin, const auto& v1, const auto& v2, const auto& v3) {
+    const auto corners = [](const auto& origin, const auto& v1, const auto& v2, const auto& v3) {
         return std::array{
             origin,      origin + v1,      origin + v2,      origin + v1 + v2,
             origin + v3, origin + v1 + v3, origin + v2 + v3, origin + v1 + v2 + v3,
@@ -1014,13 +1017,13 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     constexpr std::array<std::array<size_t, 4>, 6> faces = {
         {{0, 2, 3, 1}, {4, 5, 7, 6}, {0, 1, 5, 4}, {1, 3, 7, 5}, {3, 2, 6, 7}, {0, 4, 6, 2}}};
 
-    auto calcNnormal = [&](const std::array<size_t, 4>& inds) {
+    const auto calcNnormal = [&](const std::array<size_t, 4>& inds) {
         const auto a = positions[inds[1]] - positions[inds[0]];
         const auto b = positions[inds[3]] - positions[inds[0]];
         return glm::normalize(glm::cross(a, b));
     };
 
-    auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    const auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     auto& indices = indexBuffer->getDataContainer();
 
     std::vector<vec3> positionVertices;
@@ -1034,7 +1037,7 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     for (auto& face : faces) {
         const auto normal = calcNnormal(face);
         const auto ind = static_cast<uint32_t>(positionVertices.size());
-        for (auto i : face) {
+        for (const auto i : face) {
             positionVertices.emplace_back(positions[i]);
             colorVertices.emplace_back(colors[i]);
             normalVertices.emplace_back(normal);

@@ -61,7 +61,7 @@ std::shared_ptr<Volume> CImgVolumeReader::readData(const std::filesystem::path& 
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto volumeDisk = std::make_shared<VolumeDisk>(localPath);
+    const auto volumeDisk = std::make_shared<VolumeDisk>(localPath);
     volumeDisk->setLoader(new CImgVolumeRAMLoader(localPath));
     return std::make_shared<Volume>(volumeDisk);
 }
@@ -94,7 +94,7 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
 void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                                const VolumeRepresentation& src,
                                                std::stop_token) const {
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
+    const auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     const auto fileName = findFile(sourceFile_);
     cimgutil::updateVolume(*volumeDst, fileName);

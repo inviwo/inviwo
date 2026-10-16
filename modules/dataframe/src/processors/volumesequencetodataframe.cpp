@@ -134,8 +134,8 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     auto volumeSequence = inport_.getVectorData();
     auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
 
-    auto dims = first->getDimensions();
-    size_t size = dims.x * dims.y * dims.z;
+    const auto dims = first->getDimensions();
+    const size_t size = dims.x * dims.y * dims.z;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -148,7 +148,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     const auto threshold = threshold_.get();
 
     if (omitOutliers) {
-        for (auto vol : volumeSequence) {
+        for (const auto& vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
             if (vol->getDataFormat()->getComponents() != 1)
                 log::warn("This volume is omitted because it has more than one channel.");
@@ -215,7 +215,7 @@ void VolumeSequenceToDataFrame::process() {
     const size_t size = dims.x * dims.y * dims.z;
     const auto indexMapper = util::IndexMapper3D(dims);
 
-    auto dataFrame = std::make_shared<DataFrame>(static_cast<std::uint32_t>(
+    const auto dataFrame = std::make_shared<DataFrame>(static_cast<std::uint32_t>(
         reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size));
 
     for (auto&& [port, volume] : data) {
@@ -228,8 +228,8 @@ void VolumeSequenceToDataFrame::process() {
         }
         const auto numCh = volume->getDataFormat()->getComponents();
         for (size_t c = 0; c < numCh; c++) {
-            auto identifier = port->getProcessor()->getIdentifier();
-            auto col = dataFrame->addColumn<float>(
+            const auto identifier = port->getProcessor()->getIdentifier();
+            const auto col = dataFrame->addColumn<float>(
                 identifier, reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size);
             channelBuffer_.push_back(
                 &col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());

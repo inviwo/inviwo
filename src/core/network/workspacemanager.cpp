@@ -78,7 +78,7 @@ private:
 
 class WorkspaceConverter : public VersionConverter {
 public:
-    WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
+    explicit WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
 
     virtual bool convert(TxElement* root) override {
 
@@ -202,7 +202,7 @@ void WorkspaceManager::save(std::ostream& stream, const std::filesystem::path& r
     serializer.setWorkspaceSaveMode(mode);
 
     if (mode != WorkspaceSaveMode::Undo) {
-        InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
+        const InviwoSetupInfo info(*app_, *app_->getProcessorNetwork(), &mbr);
         serializer.serialize("InviwoSetup", info);
     }
 
@@ -362,7 +362,7 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
         if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier())) {
             if (moduleInfo->version < inviwoModule.getVersion()) {
-                auto converter = inviwoModule.getConverter(moduleInfo->version);
+                const auto converter = inviwoModule.getConverter(moduleInfo->version);
                 deserializer.convertVersion(converter.get());
                 log::message(
                     deserializer, LogLevel::Warn,

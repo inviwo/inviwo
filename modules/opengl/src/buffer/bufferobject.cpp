@@ -251,7 +251,7 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     // errors (OpenCL sharing) so ensure at least one byte
     glBufferData(target_, sizeInBytes <= 0 ? 1 : sizeInBytes, data, usageGL_);
 
-    if (auto err = glGetError(); err != GL_NO_ERROR) {
+    if (const auto err = glGetError(); err != GL_NO_ERROR) {
         throw OpenGLException(SourceContext{}, "Unable to create buffer of type: {}. Error: {}",
                               targetName(target_), getGLErrorString(err));
     }
@@ -280,7 +280,7 @@ void BufferObject::upload(const void* data, GLsizeiptr sizeInBytes, SizePolicy p
 void BufferObject::download(void* data) const {
     bind();
     // Map data
-    void* gldata = glMapBuffer(target_, GL_READ_ONLY);
+    const void* gldata = glMapBuffer(target_, GL_READ_ONLY);
 
     // Copy data if valid pointer
     if (gldata) {

@@ -143,7 +143,7 @@ bool MouseEventMatcher::operator()(Event* e) {
                 if (modifiers_ == KeyModifiers(flags::any) ||
                     match(matching_, modifiers_, me->modifiers())) {
                     if (me->buttonState() != MouseButton::None) {
-                        for (auto s : me->buttonState()) {
+                        for (const auto s : me->buttonState()) {
                             if (buttons_.value & s) {
                                 return true;
                             }

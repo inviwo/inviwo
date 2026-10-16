@@ -45,7 +45,7 @@ class OrdinalAnimationProperty;
 
 class IVW_MODULE_BASE_API BaseModule : public InviwoModule {
 public:
-    BaseModule(InviwoApplication* app);
+    explicit BaseModule(InviwoApplication* app);
 
     virtual int getVersion() const override;
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
@@ -60,7 +60,7 @@ private:
 
     class Converter : public VersionConverter {
     public:
-        Converter(int version);
+        explicit Converter(int version);
         virtual bool convert(TxElement* root) override;
 
     private:

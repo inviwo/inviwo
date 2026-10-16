@@ -87,7 +87,8 @@ class NetworkVisitorExit {};
  */
 template <typename... Funcs>
 struct LambdaNetworkVisitor : NetworkVisitor, Funcs... {
-    LambdaNetworkVisitor(Funcs&&... args) : NetworkVisitor{}, Funcs{std::forward<Funcs>(args)}... {}
+    explicit LambdaNetworkVisitor(Funcs&&... args)
+        : NetworkVisitor{}, Funcs{std::forward<Funcs>(args)}... {}
     using Funcs::operator()...;
 
     template <typename T>

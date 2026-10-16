@@ -62,7 +62,7 @@ SphereConfig::SphereConfig(std::string_view identifier, std::string_view display
 
 void SphereConfig::bind(TextureUnitContainer& cont) {
     if (useMetaColor) {
-        auto& unit = cont.emplace_back();
+        const auto& unit = cont.emplace_back();
         utilgl::bindTexture(metaColor, unit);
         unitNumber = unit.getUnitNumber();
     } else {

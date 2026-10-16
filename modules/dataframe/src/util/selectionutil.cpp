@@ -86,7 +86,7 @@ BitSet boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
     // 1. Determine selection along x-axis
     // 2. Determine selection along y-axis using the subset from 1
 
-    auto selectedIndicesX = rangeSelection(xAxis, start[0], end[0]);
+    const auto selectedIndicesX = rangeSelection(xAxis, start[0], end[0]);
 
 #include <warn/push>
 #include <warn/ignore/conversion>  // Ignore double->float warnings
@@ -99,7 +99,7 @@ BitSet boxSelect(const dvec2& start, const dvec2& end, const BufferBase* xAxis,
             BitSet selected;
             // Avoid conversions in the loop
             const auto [tmin, tmax] = adjustLimits<ValueType>(min, max);
-            for (auto ind : selectedIndicesX) {
+            for (const auto ind : selectedIndicesX) {
                 if (data[ind] < tmin || data[ind] > tmax) {
                     continue;
                 } else {

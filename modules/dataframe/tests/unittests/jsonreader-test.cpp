@@ -43,7 +43,7 @@ namespace inviwo {
 // Tests for confirming Inviwo integration. The json library is heavily tested.
 
 TEST(JSONnoData, file) {
-    util::TempFileHandle tmpFile("", ".json");
+    const util::TempFileHandle tmpFile("", ".json");
 
     JSONDataFrameReader reader;
     EXPECT_THROW(reader.readData(tmpFile.getFileName()), inviwo::FileException);
@@ -63,9 +63,9 @@ TEST(JSONdata, numRows) {
         }
     )"));
 
-    JSONDataFrameReader reader;
+    const JSONDataFrameReader reader;
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
@@ -82,9 +82,9 @@ TEST(JSONdata, nullItem) {
         }
     )"));
 
-    JSONDataFrameReader reader;
+    const JSONDataFrameReader reader;
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 
@@ -108,9 +108,9 @@ TEST(JSONdata, nullColumn) {
         }
     )"));
 
-    JSONDataFrameReader reader;
+    const JSONDataFrameReader reader;
 
-    auto dataframe = reader.readData(ss);
+    const auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 

@@ -41,7 +41,7 @@ class TrackWidgetQt;
 
 class IVW_MODULE_ANIMATIONQT_API TrackWidgetQtFactoryObject {
 public:
-    TrackWidgetQtFactoryObject(const std::string& classIdentifier);
+    explicit TrackWidgetQtFactoryObject(const std::string& classIdentifier);
     virtual ~TrackWidgetQtFactoryObject() = default;
 
     virtual std::unique_ptr<TrackWidgetQt> create(Track&) const = 0;
@@ -57,7 +57,7 @@ public:
     // Requires a static classIdentifier() method on T
     TrackWidgetQtFactoryObjectTemplate() : TrackWidgetQtFactoryObject(T::classIdentifier()) {}
 
-    TrackWidgetQtFactoryObjectTemplate(const std::string& classIdentifier)
+    explicit TrackWidgetQtFactoryObjectTemplate(const std::string& classIdentifier)
         : TrackWidgetQtFactoryObject(classIdentifier) {}
     virtual ~TrackWidgetQtFactoryObjectTemplate() = default;
 

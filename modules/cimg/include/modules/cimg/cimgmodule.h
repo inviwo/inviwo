@@ -42,7 +42,7 @@ class InviwoApplication;
 
 class IVW_MODULE_CIMG_API CImgModule : public InviwoModule {
 public:
-    CImgModule(InviwoApplication* app);
+    explicit CImgModule(InviwoApplication* app);
 
     virtual ~CImgModule() override;
 

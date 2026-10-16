@@ -106,8 +106,6 @@ private:
     OptionProperty<size_t> timeDimension_;
     DoubleProperty dt_;
     IntSizeTProperty cacheSize_;
-
-    bool dirty_;
 };
 
 }  // namespace inviwo::hdf5

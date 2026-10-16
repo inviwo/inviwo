@@ -274,15 +274,15 @@ Document MultiFileProperty::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = Property::getDescription();
-    auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
+    const auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
     std::filesystem::path currentPath;
     // compile compact list of selected files, binning all files of the same directory
 
     StrBuffer buff;
     for (const auto& elem : files_.value) {
-        auto dir = elem.parent_path();
-        auto filename = elem.filename();
+        const auto dir = elem.parent_path();
+        const auto filename = elem.filename();
         if (dir != currentPath) {
             currentPath = dir;
             buff.append("<b>{}</b><br/>", dir.string());

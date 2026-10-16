@@ -98,8 +98,8 @@ using FileElement = std::variant<Command, Comment, Space, LineEnding>;
 class INVIWO_META_API CMakeFile {
 public:
     CMakeFile() = default;
-    CMakeFile(const std::filesystem::path& path);
-    CMakeFile(std::string_view string);
+    explicit CMakeFile(const std::filesystem::path& path);
+    explicit CMakeFile(std::string_view string);
     std::ostream& print(std::ostream& os) const;
 
     using filter_t = bool (*)(const FileElement&);

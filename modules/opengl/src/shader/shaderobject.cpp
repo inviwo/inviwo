@@ -127,16 +127,16 @@ struct Psm {
         using namespace sml;
 
         // actions
-        auto print = [](Char c, State& s) {
+        const auto print = [](Char c, State& s) {
             s.output << *c.curr;
             ++s.column;
         };
-        auto nl = [](State& s) {
+        const auto nl = [](State& s) {
             s.lnr.addLine(s.key, ++s.lines);
             s.column = 0;
         };
-        auto il = [](State& s) { ++s.lines; };
-        auto include = [](Char c, State& s) {
+        const auto il = [](State& s) { ++s.lines; };
+        const auto include = [](Char c, State& s) {
             auto pathBegin = std::find(c.curr, c.end, '"');
             if (pathBegin == c.end) {
                 throw OpenGLException{
@@ -169,11 +169,11 @@ struct Psm {
             }
         };
 
-        auto replace = [](Char c, State& s) {
+        const auto replace = [](Char c, State& s) {
             using Placeholder = typename ShaderSegment::Placeholder;
             const auto lineEnd = std::find(c.curr, c.end, '\n');
 
-            std::string_view line{&*c.curr, static_cast<size_t>(lineEnd - c.curr)};
+            const std::string_view line{&*c.curr, static_cast<size_t>(lineEnd - c.curr)};
             const auto placeholder = Placeholder{util::trim(line), ""};
             const auto it = s.replacements.find(placeholder);
             if (it != s.replacements.end()) {
@@ -192,16 +192,16 @@ struct Psm {
             }
         };
 
-        auto onError = [](Errors& err) { err.exception = std::current_exception(); };
+        const auto onError = [](Errors& err) { err.exception = std::current_exception(); };
 
         // guards
-        auto blank = [](Char c) { return std::isblank(*c.curr); };
-        auto eol = [](Char c) { return *c.curr == '\n'; };
-        auto slash = [](Char c) { return *c.curr == '/'; };
-        auto star = [](Char c) { return *c.curr == '*'; };
-        auto inc = [](Char c) { return c.peek("#include"); };
+        const auto blank = [](Char c) { return std::isblank(*c.curr); };
+        const auto eol = [](Char c) { return *c.curr == '\n'; };
+        const auto slash = [](Char c) { return *c.curr == '/'; };
+        const auto star = [](Char c) { return *c.curr == '*'; };
+        const auto inc = [](Char c) { return c.peek("#include"); };
 
-        auto repl = [](Char c, State& s) {
+        const auto repl = [](Char c, State& s) {
             for (auto& [key, val] : s.replacements) {
                 if (c.peek(key.key)) return true;
             }
@@ -264,7 +264,7 @@ void utilgl::parseShaderSource(
         replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
-    size_t lines = 0;
+    const size_t lines = 0;
     psm::State state{output, lnr, key, replacements, getSource, lines};
     psm::Errors errors;
 
@@ -302,7 +302,7 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     LGL_ERROR_CLASS;
 
     // Help developer to spot errors
-    auto resourceType = ShaderType::typeFromString(resource_->key());
+    const auto resourceType = ShaderType::typeFromString(resource_->key());
     if (resourceType != shaderType_) {
         log::warn("File extension does not match shader type: {}\n    expected extension: {}",
                   resource_->key(), shaderType_.extension());
@@ -342,7 +342,7 @@ ShaderObject::ShaderObject(ShaderObject&& rhs) noexcept
     , resourceCallbacks_{} {
 
     rhs.resourceCallbacks_.clear();
-    for (auto& resource : includeResources_) {
+    for (const auto& resource : includeResources_) {
         resourceCallbacks_.push_back(
             resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
     }
@@ -367,7 +367,7 @@ ShaderObject& ShaderObject::operator=(ShaderObject&& that) noexcept {
         that.resourceCallbacks_.clear();
         resourceCallbacks_.clear();
 
-        for (auto& resource : includeResources_) {
+        for (const auto& resource : includeResources_) {
             resourceCallbacks_.push_back(
                 resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
         }
@@ -413,7 +413,7 @@ void ShaderObject::create() {
     if (id_ != 0) return;
     id_ = glCreateShader(shaderType_);
     if (id_ == 0) {
-        if (auto err = glGetError(); err != GL_NO_ERROR) {
+        if (const auto err = glGetError(); err != GL_NO_ERROR) {
             throw OpenGLException(SourceContext{}, "Unable to create shader of type: {}. Error: {}",
                                   shaderType_.name(), getGLErrorString(err));
         } else {
@@ -426,7 +426,8 @@ void ShaderObject::create() {
 void ShaderObject::preprocess() {
     resourceCallbacks_.clear();
     lnr_.clear();
-    auto holdOntoResources = includeResources_;  // Don't release until we have processed again.
+    const auto holdOntoResources =
+        includeResources_;  // Don't release until we have processed again.
     includeResources_.clear();
 
     std::ostringstream source;
@@ -450,10 +451,10 @@ std::string ShaderObject::getPreprocessed() const {
         });
     }
 
-    auto getSource =
+    const auto getSource =
         [includeResources = std::vector<std::shared_ptr<const ShaderResource>>{}](
             std::string_view path) mutable -> std::optional<std::pair<std::string, std::string>> {
-        auto inc = ShaderManager::getPtr()->getShaderResource(path);
+        const auto inc = ShaderManager::getPtr()->getShaderResource(path);
         if (!inc) {
             throw OpenGLException(SourceContext{},
                                   "Include file '{}' not found in shader search paths.", path);
@@ -475,7 +476,7 @@ namespace {
 
 const OpenGLCapabilities& getOpenGLCapabilities() {
     if (auto* app = util::getInviwoApplication()) {
-        if (auto* capa = app->getCapabilitiesByType<OpenGLCapabilities>()) {
+        if (const auto* capa = app->getCapabilitiesByType<OpenGLCapabilities>()) {
             return *capa;
         }
     }
@@ -494,18 +495,10 @@ void ShaderObject::addDefines(std::ostringstream& source) {
     for (const auto& se : shaderExtensions_) {
         source << "#extension " << se.first << " : ";
         switch (se.second) {
-            case ExtensionBehavior::Enable:
-                source << "enable";
-                break;
-            case ExtensionBehavior::Require:
-                source << "require";
-                break;
-            case ExtensionBehavior::Warn:
-                source << "warn";
-                break;
-            case ExtensionBehavior::Disable:
-                source << "disable";
-                break;
+            case ExtensionBehavior::Enable: source << "enable"; break;
+            case ExtensionBehavior::Require: source << "require"; break;
+            case ExtensionBehavior::Warn: source << "warn"; break;
+            case ExtensionBehavior::Disable: source << "disable"; break;
         }
         source << "\n";
         lnr_.addLine("Extensions", 0);
@@ -554,11 +547,11 @@ void ShaderObject::addDefines(std::ostringstream& source) {
         }
     }
 
-    for (auto decl : outDeclarations_) {
+    for (const auto& decl : outDeclarations_) {
         source << decl.toString() << "\n";
         lnr_.addLine("Out Declaration", 0);
     }
-    for (auto decl : inDeclarations_) {
+    for (const auto& decl : inDeclarations_) {
         source << decl.toString() << "\n";
         lnr_.addLine("In Declaration", 0);
     }
@@ -581,9 +574,9 @@ void ShaderObject::parseSource(std::ostringstream& output) {
     resourceCallbacks_.push_back(
         resource_->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
 
-    auto getSource =
+    const auto getSource =
         [this](std::string_view path) -> std::optional<std::pair<std::string, std::string>> {
-        auto inc = ShaderManager::getPtr()->getShaderResource(path);
+        const auto inc = ShaderManager::getPtr()->getShaderResource(path);
         if (!inc) {
             throw OpenGLException(SourceContext{},
                                   "Include file '{}' not found in shader search paths.", path);
@@ -637,7 +630,7 @@ void ShaderObject::upload() {
     create();
     const char* source = sourceProcessed_.c_str();
     glShaderSource(id_, 1, &source, nullptr);
-    if (auto err = glGetError(); err != GL_NO_ERROR) {
+    if (const auto err = glGetError(); err != GL_NO_ERROR) {
         throw OpenGLException(SourceContext{}, "Unable to upload shader source for {}. Error: {}",
                               resource_->key(), getGLErrorString(err));
     }
@@ -746,8 +739,8 @@ void ShaderObject::addOutDeclaration(std::string_view name, int location, std::s
 }
 
 void ShaderObject::addOutDeclaration(const OutDeclaration& decl) {
-    auto it = util::find_if(outDeclarations_,
-                            [&](const OutDeclaration& elem) { return elem.name == decl.name; });
+    const auto it = util::find_if(
+        outDeclarations_, [&](const OutDeclaration& elem) { return elem.name == decl.name; });
     if (it != outDeclarations_.end()) {
         *it = decl;
     } else {
@@ -766,8 +759,8 @@ void ShaderObject::ShaderObject::addInDeclaration(std::string_view name, int loc
     addInDeclaration(InDeclaration{std::string{name}, location, std::string{type}});
 }
 void ShaderObject::addInDeclaration(const InDeclaration& decl) {
-    auto it = util::find_if(inDeclarations_,
-                            [&](const InDeclaration& elem) { return elem.name == decl.name; });
+    const auto it = util::find_if(
+        inDeclarations_, [&](const InDeclaration& elem) { return elem.name == decl.name; });
     if (it != inDeclarations_.end()) {
         *it = decl;
     } else {

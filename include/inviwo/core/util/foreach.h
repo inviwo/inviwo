@@ -98,10 +98,10 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
     const auto s = iterable.size();
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
-        size_t start = (s * job) / jobs;
-        size_t end = (s * (job + 1)) / jobs;
-        auto a = std::begin(iterable) + start;
-        auto b = std::begin(iterable) + end;
+        const size_t start = (s * job) / jobs;
+        const size_t end = (s * (job + 1)) / jobs;
+        const auto a = std::begin(iterable) + start;
+        const auto b = std::begin(iterable) + end;
         auto future = dispatchPool([a, b, start, c = callback, onTaskDone = onTaskDone]() {
             detail::foreach (a, b, c, start);
             onTaskDone();

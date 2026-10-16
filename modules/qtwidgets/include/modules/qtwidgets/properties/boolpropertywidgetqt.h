@@ -42,7 +42,7 @@ class EditableLabelQt;
 
 class IVW_MODULE_QTWIDGETS_API BoolPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    BoolPropertyWidgetQt(BoolProperty* property);
+    explicit BoolPropertyWidgetQt(BoolProperty* property);
     virtual ~BoolPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;

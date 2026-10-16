@@ -62,8 +62,8 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
 
     void process() override {
-        auto data = std::make_shared<DataSequence<T>>();
-        for (auto item : inport_) {
+        const auto data = std::make_shared<DataSequence<T>>();
+        for (const auto item : inport_) {
             data->push_back(item);
         }
         outport_.setData(data);
@@ -91,8 +91,8 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
 
     void process() override {
-        auto data = std::make_shared<DataSequence<Image>>();
-        for (auto item : inport_) {
+        const auto data = std::make_shared<DataSequence<Image>>();
+        for (const auto item : inport_) {
             data->push_back(item);
         }
         outport_.setData(data);

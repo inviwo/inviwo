@@ -70,61 +70,61 @@ InviwoModule::InviwoModule(InviwoApplication* app, std::string_view identifier)
 
 InviwoModule::~InviwoModule() {
     // unregister everything...
-    for (auto& elem : cameras_) {
+    for (const auto& elem : cameras_) {
         app_->getCameraFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : dataReaders_) {
+    for (const auto& elem : dataReaders_) {
         app_->getDataReaderFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : dataWriters_) {
+    for (const auto& elem : dataWriters_) {
         app_->getDataWriterFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : dialogs_) {
+    for (const auto& elem : dialogs_) {
         app_->getDialogFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : drawers_) {
+    for (const auto& elem : drawers_) {
         app_->getMeshDrawerFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : metadata_) {
+    for (const auto& elem : metadata_) {
         app_->getMetaDataFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : inports_) {
+    for (const auto& elem : inports_) {
         app_->getInportFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : outports_) {
+    for (const auto& elem : outports_) {
         app_->getOutportFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : portInspectors_) {
+    for (const auto& elem : portInspectors_) {
         app_->getPortInspectorFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : processors_) {
+    for (const auto& elem : processors_) {
         app_->getProcessorFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : processorWidgets_) {
+    for (const auto& elem : processorWidgets_) {
         app_->getProcessorWidgetFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : propertyConverters_) {
+    for (const auto& elem : propertyConverters_) {
         app_->getPropertyConverterManager()->unRegisterObject(elem.get());
     }
-    for (auto& elem : properties_) {
+    for (const auto& elem : properties_) {
         app_->getPropertyFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : propertyWidgets_) {
+    for (const auto& elem : propertyWidgets_) {
         app_->getPropertyWidgetFactory()->unRegisterObject(elem.get());
     }
-    for (auto& unRegFunctor : representationUnRegFunctors_) {
+    for (const auto& unRegFunctor : representationUnRegFunctors_) {
         unRegFunctor();
     }
-    for (auto& elem : representationFactories_) {
+    for (const auto& elem : representationFactories_) {
         app_->getRepresentationMetaFactory()->unRegisterObject(elem.get());
     }
-    for (auto& unRegFunctor : representationConvertersUnRegFunctors_) {
+    for (const auto& unRegFunctor : representationConvertersUnRegFunctors_) {
         unRegFunctor();
     }
-    for (auto& elem : representationConverterFactories_) {
+    for (const auto& elem : representationConverterFactories_) {
         app_->getRepresentationConverterMetaFactory()->unRegisterObject(elem.get());
     }
-    for (auto& elem : dataVisualizers_) {
+    for (const auto& elem : dataVisualizers_) {
         app_->getDataVisualizerManager()->unRegisterObject(elem.get());
     }
     for (auto* elem : settings_) {
@@ -143,7 +143,7 @@ const std::filesystem::path& InviwoModule::getPath() const { return moduleRoot_;
 std::filesystem::path InviwoModule::getPath(ModulePath type) const {
     const auto& basePath = getPath();
     // clang-format off
-    auto path = [&](){
+    auto const path = [&](){
         switch (type) {
             case ModulePath::Data:               return basePath / "data";
             case ModulePath::Images:             return basePath / "data/images";
@@ -231,7 +231,7 @@ const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueT
 const std::vector<Settings*>& InviwoModule::getSettings() const { return settings_; }
 
 std::string InviwoModule::getDescription() const {
-    if (auto* item = app_->getModuleManager().getFactoryObject(identifier_)) {
+    if (const auto* item = app_->getModuleManager().getFactoryObject(identifier_)) {
         return item->description;
     }
     return "No description available";

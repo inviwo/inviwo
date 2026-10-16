@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
         LogCentral logCentral;
         LogCentral::init(&logCentral);
 
-        auto logCounter = std::make_shared<LogErrorCounter>();
+        const auto logCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(logCounter);
 
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
@@ -105,8 +105,8 @@ int main(int argc, char** argv) {
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.
 
-        size_t warnCount = logCounter->getWarnCount();
-        size_t errCount = logCounter->getErrorCount();
+        const size_t warnCount = logCounter->getWarnCount();
+        const size_t errCount = logCounter->getErrorCount();
 
         ::testing::InitGoogleTest(&argc, argv);
         ConfigurableGTestEventListener::setup();
@@ -116,8 +116,8 @@ int main(int argc, char** argv) {
             log::error("Some unit tests did not pass, see console output for details");
         }
 
-        size_t warnCountAfter = logCounter->getWarnCount();
-        size_t errCountAfter = logCounter->getErrorCount();
+        const size_t warnCountAfter = logCounter->getWarnCount();
+        const size_t errCountAfter = logCounter->getErrorCount();
 
         if (warnCount != warnCountAfter) {
             log::warn("The integration test runs generated {} warnings",

@@ -48,8 +48,8 @@ struct IVW_CORE_API NetworkEdge {
     NetworkEdge() = default;
     NetworkEdge(std::string src, std::string dst);
 
-    NetworkEdge(const PropertyLink& link);
-    NetworkEdge(const PortConnection& connection);
+    explicit NetworkEdge(const PropertyLink& link);
+    explicit NetworkEdge(const PortConnection& connection);
 
     PortConnection toConnection(const ProcessorNetwork& net) const;
     PropertyLink toLink(const ProcessorNetwork& net) const;

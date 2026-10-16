@@ -72,7 +72,7 @@ namespace inviwo {
 SuperPropertyMimeData::SuperPropertyMimeData(std::vector<Property*> someProperties)
     : QMimeData{}, properties{someProperties} {
 
-    auto str = utilqt::toQString(fmt::format(
+    const auto str = utilqt::toQString(fmt::format(
         "{}", fmt::join(util::transformRange(properties, [](Property* p) { return p->getPath(); }),
                         ", ")));
 
@@ -122,7 +122,7 @@ public:
     // Overrides
     virtual QModelIndex index(int row, int column,
                               const QModelIndex& parent = QModelIndex()) const override {
-        if (auto* owner = toOwner(parent)) {
+        if (const auto* owner = toOwner(parent)) {
             return createIndex(row, column, owner);
         } else {
             return createIndex(row, column, nullptr);
@@ -174,7 +174,7 @@ public:
     virtual QVariant data(const QModelIndex& index, int role) const override {
         if (!index.isValid()) return {};
 
-        auto name = [](auto* item) {
+        const auto name = [](auto* item) {
             if (!item->getDisplayName().empty()) {
                 return utilqt::toQString(item->getDisplayName());
             } else {
@@ -182,7 +182,7 @@ public:
             }
         };
 
-        auto visible = [](Property* prop) {
+        const auto visible = [](Property* prop) {
             if (prop->getVisible()) {
                 return QIcon(":/svgicons/canvas-show.svg");
             } else {
@@ -190,7 +190,7 @@ public:
             }
         };
 
-        auto readOnly = [](Property* prop) {
+        const auto readOnly = [](Property* prop) {
             if (prop->getReadOnly()) {
                 return QIcon(":/svgicons/locked.svg");
             } else {
@@ -198,7 +198,7 @@ public:
             }
         };
 
-        auto tooltip = [](Property* prop) {
+        const auto tooltip = [](Property* prop) {
             Document desc{};
             auto html = desc.append("html");
             html.append("head").append("style", R"(
@@ -309,7 +309,7 @@ public:
         if (indexes.empty()) return nullptr;
 
         std::vector<Property*> props;
-        for (auto index : indexes) {
+        for (const auto index : indexes) {
             if (auto prop = toProperty(index)) {
                 props.push_back(prop);
             }
@@ -344,7 +344,7 @@ public:
     }
 
     virtual void onSetDisplayName(Property* property, const std::string&) override {
-        QModelIndex pos = index(property);
+        const QModelIndex pos = index(property);
         dataChanged(pos, pos, {Qt::DisplayRole});
     }
 
@@ -397,15 +397,15 @@ protected:
         auto parent = property->getOwner();
         IVW_ASSERT(parent, "Should always be a parent for a property");
 
-        auto pos = position(parent->getProperties(), property);
+        const auto pos = position(parent->getProperties(), property);
         return index(pos, 0, index(parent));
     }
     QModelIndex index(PropertyOwner* owner) const {
         if (auto parent = owner->getOwner()) {
-            auto pos = position(parent->getProperties(), dynamic_cast<Property*>(owner));
+            const auto pos = position(parent->getProperties(), dynamic_cast<Property*>(owner));
             return index(pos, 0, index(parent));
         } else {
-            auto pos = position(processors_, dynamic_cast<Processor*>(owner));
+            const auto pos = position(processors_, dynamic_cast<Processor*>(owner));
             return index(pos, 0, QModelIndex{});
         }
     }
@@ -516,7 +516,7 @@ public:
         if (role != Qt::EditRole) return false;
 
         if (index.column() == column::name) {
-            if (auto str = value.toString(); !str.isEmpty()) {
+            if (const auto str = value.toString(); !str.isEmpty()) {
                 if (auto property = toProperty(index)) {
                     property->setDisplayName(utilqt::fromQString(str));
                     return true;
@@ -553,7 +553,7 @@ public:
         }
 
         for (auto prop : toRemove) {
-            auto i = index(prop);
+            const auto i = index(prop);
 
             beginRemoveRows(i.parent(), i.row(), i.row());
             cp_.removeSuperProperty(cp_.getSubProperty(prop));
@@ -647,7 +647,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
 
     auto layout = new QGridLayout();
 
-    auto config = [&](QTreeView* tree) {
+    const auto config = [&](QTreeView* tree) {
         tree->header()->hide();
         tree->setUniformRowHeights(true);
         tree->setAnimated(true);
@@ -706,12 +706,12 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
 
     connect(subTree->selectionModel(), &QItemSelectionModel::selectionChanged, this,
             [subTree, add](const QItemSelection&, const QItemSelection&) {
-                bool empty = subTree->selectionModel()->selectedIndexes().empty();
+                const bool empty = subTree->selectionModel()->selectedIndexes().empty();
                 add->setDisabled(empty);
             });
 
     connect(add, &QToolButton::clicked, this, [subTree, subModel, superModel]() {
-        for (auto index : subTree->selectionModel()->selectedIndexes()) {
+        for (const auto index : subTree->selectionModel()->selectedIndexes()) {
             if (auto prop = subModel->toProperty(index)) {
                 superModel->cp_.addSuperProperty(prop);
             }

@@ -140,7 +140,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     addProperties(margins_, axisMargin_, plotImageSize_, rangeMode_, customRanges_, axisStyle_,
                   xAxis_, yAxis_, imageInteraction_);
 
-    auto updateCallback = [&]() { updateViewport(); };
+    const auto updateCallback = [&]() { updateViewport(); };
 
     margins_.onChange(updateCallback);
     axisMargin_.onChange(updateCallback);
@@ -148,7 +148,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     xAxis_.setCaption("x");
     yAxis_.setCaption("y");
 
-    auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
+    const auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
         auto func = [&]() {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
                 const util::KeepTrueWhileInScope b(&propertyUpdate_);
@@ -181,7 +181,7 @@ void ImagePlotProcessor::process() {
 
     utilgl::activateTargetAndClearOrCopySource(outport_, bgInport_);
 
-    utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+    const utilgl::DepthFuncState depthfunc(GL_ALWAYS);
 
     const auto dims = outport_.getDimensions();
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
@@ -200,7 +200,7 @@ void ImagePlotProcessor::process() {
 
     const auto bounds = calcImageBounds(dims);
     // ensure that the image is rendered in the background with maximum depth
-    mat4 m = glm::translate(vec3(0.0f, 0.0f, 2.0f));
+    const mat4 m = glm::translate(vec3(0.0f, 0.0f, 2.0f));
     imgRenderer_.renderToRect(*imgInport_.getData(), bounds.pos, bounds.extent, dims,
                               LayerType::Color, m);
 
@@ -227,7 +227,7 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (imageInteraction_.get() && imgInport_.isConnected()) {
-            bool overlayHandlesEvent =
+            const bool overlayHandlesEvent =
                 (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
                     imgInport_.propagateEvent(newEvent);
                 }));
@@ -245,7 +245,7 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
 
 void ImagePlotProcessor::updateViewport() {
     updateViewport(imgDims_, true);
-    auto bounds = calcImageBounds(imgDims_);
+    const auto bounds = calcImageBounds(imgDims_);
     viewport_ = ivec4(bounds.pos, bounds.extent.x, bounds.extent.y);
     plotImageSize_.set(bounds.extent);
     onStatusChange();
@@ -254,7 +254,7 @@ void ImagePlotProcessor::updateViewport() {
 void ImagePlotProcessor::updateViewport(size2_t dim, bool force) {
     if (!force && (imgDims_ == dim)) return;  // no changes
 
-    auto bounds = calcImageBounds(dim);
+    const auto bounds = calcImageBounds(dim);
     viewport_ = ivec4(bounds.pos, bounds.extent.x, bounds.extent.y);
     plotImageSize_.set(bounds.extent);
 
@@ -290,7 +290,7 @@ void ImagePlotProcessor::adjustRanges() {
     dvec2 offset(0.0);
     dvec2 basisLen(1.0);
 
-    if (auto image = imgInport_.getData()) {
+    if (const auto image = imgInport_.getData()) {
         dims = image->getDimensions();
         if (auto layer = image->getColorLayer()) {
             for (size_t i = 0; i < 2; ++i) {
@@ -300,7 +300,7 @@ void ImagePlotProcessor::adjustRanges() {
         }
     }
 
-    util::KeepTrueWhileInScope b(&propertyUpdate_);
+    const util::KeepTrueWhileInScope b(&propertyUpdate_);
     switch (rangeMode_.get()) {
         case AxisRangeMode::ImageDims:
             xAxis_.range_.set(dvec2(0.0, dims.x));

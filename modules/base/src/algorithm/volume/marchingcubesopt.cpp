@@ -114,7 +114,7 @@ marching::Config::Config()
                 static_cast<FaceId>(std::distance(faces.begin(), it2))};
     })}
     , nodeNeighbours{util::make_array<8>([&](size_t i) -> std::array<NodeId, 3> {
-        auto distance2 = [](const size3_t& a, const size3_t& b) {
+        const auto distance2 = [](const size3_t& a, const size3_t& b) {
             return glm::compAdd((a - b) * (a - b));
         };
         std::array<NodeId, 3> nn{};
@@ -144,7 +144,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     // Check which edges that are involved add group neighboring nodes
     for (NodeId i = 0; i < 8; ++i) {
         if (corners[i]) {
-            for (NodeId j : nodeNeighbours[i]) {
+            for (const NodeId j : nodeNeighbours[i]) {
                 if (!corners[j]) {
                     edgeMap[i].push_back(j);
                 } else {
@@ -157,25 +157,25 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     // Create groups of neighboring edges and nodes
     std::unordered_map<NodeId, std::vector<EdgeId>> edgeGroups;
     std::unordered_map<NodeId, std::vector<NodeId>> nodeGroups;
-    for (auto item : edgeMap) {
-        NodeId i = item.first;
-        NodeId groupId = groups.find(i);
+    for (const auto item : edgeMap) {
+        const NodeId i = item.first;
+        const NodeId groupId = groups.find(i);
         nodeGroups[groupId].push_back(i);
-        for (NodeId j : item.second) {
+        for (const NodeId j : item.second) {
             edgeGroups[groupId].push_back(nodeIdsToEdgeId[i][j]);
         }
     }
 
     std::vector<Triangle> triangles;
     for (auto item : edgeGroups) {
-        NodeId groupId = item.first;
+        const NodeId groupId = item.first;
         std::vector<EdgeId>& edgeGroup = item.second;
 
         // Sort edges in a circle by following the cube faces, needed for the triangulation
         auto it = edgeGroup.begin();
         while (it + 1 != edgeGroup.end()) {
             // find an edge that share a face with *it
-            auto nit = std::find_if(it + 1, edgeGroup.end(), [&](auto edge) {
+            const auto nit = std::find_if(it + 1, edgeGroup.end(), [&](auto edge) {
                 auto& faces1 = edgeIdToFaceIds[*it];
                 auto& faces2 = edgeIdToFaceIds[edge];
                 return faces1[0] == faces2[0] || faces1[0] == faces2[1] || faces1[1] == faces2[0] ||
@@ -185,23 +185,23 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
             ++it;
         }
         dvec3 groupNormal{0.0};
-        for (NodeId i : nodeGroups[groupId]) {
+        for (const NodeId i : nodeGroups[groupId]) {
             groupNormal += dvec3{0.5, 0.5, 0.5} - dvec3(vertices[i]);
         }
 
         // apply the triangulations
         for (auto& triangle : triangulations.at(edgeGroup.size())) {
-            auto e0 = edgeGroup[triangle[0]];
-            auto e1 = edgeGroup[triangle[1]];
-            auto e2 = edgeGroup[triangle[2]];
+            const auto e0 = edgeGroup[triangle[0]];
+            const auto e1 = edgeGroup[triangle[1]];
+            const auto e2 = edgeGroup[triangle[2]];
 
-            auto p0 = 0.5 * (dvec3(vertices[edges[e0][0]]) + dvec3(vertices[edges[e0][1]]));
-            auto p1 = 0.5 * (dvec3(vertices[edges[e1][0]]) + dvec3(vertices[edges[e1][1]]));
-            auto p2 = 0.5 * (dvec3(vertices[edges[e2][0]]) + dvec3(vertices[edges[e2][1]]));
+            const auto p0 = 0.5 * (dvec3(vertices[edges[e0][0]]) + dvec3(vertices[edges[e0][1]]));
+            const auto p1 = 0.5 * (dvec3(vertices[edges[e1][0]]) + dvec3(vertices[edges[e1][1]]));
+            const auto p2 = 0.5 * (dvec3(vertices[edges[e2][0]]) + dvec3(vertices[edges[e2][1]]));
 
             // check that the orientation is right
-            auto triNormal = glm::triangleNormal(p0, p1, p2);
-            auto proj = glm::dot(groupNormal, triNormal);
+            const auto triNormal = glm::triangleNormal(p0, p1, p2);
+            const auto proj = glm::dot(groupNormal, triNormal);
             if (flip ? proj > 0.0 : proj < 0.0) {
                 triangles.push_back({e0, e1, e2});
             } else {
@@ -224,9 +224,9 @@ std::vector<marching::Config::EdgeId> marching::Config::calcEdges(std::bitset<8>
     // Check which edges that are involved add group neighboring nodes
     for (NodeId i = 0; i < 8; ++i) {
         if (corners[i]) {
-            for (NodeId j : nodeNeighbours[i]) {
+            for (const NodeId j : nodeNeighbours[i]) {
                 if (!corners[j]) {
-                    auto edge = nodeIdsToEdgeId[i][j];
+                    const auto edge = nodeIdsToEdgeId[i][j];
                     res.push_back(edge);
                 }
             }
@@ -246,9 +246,9 @@ std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, b
     const std::array<int, 12> edgeToCache = {{0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5}};
     for (NodeId i = 0; i < 8; ++i) {
         if (corners[i]) {
-            for (NodeId j : nodeNeighbours[i]) {
+            for (const NodeId j : nodeNeighbours[i]) {
                 if (!corners[j]) {
-                    auto edge = nodeIdsToEdgeId[i][j];
+                    const auto edge = nodeIdsToEdgeId[i][j];
                     res[edgeToCache[edge]] = 1;
                 }
             }
@@ -263,7 +263,7 @@ class VCache {
 public:
     enum CacheName { xCacheCurr, xCacheNext, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext };
     enum CachePosName { xCurr0, xCurr1, xNext0, xNext1, yCurr, yNext, zCurr, zNext };
-    VCache(const size2_t& dim) : cIm{dim} {
+    explicit VCache(const size2_t& dim) : cIm{dim} {
         cache[xCacheCurr].resize(dim.x * dim.y);
         cache[xCacheNext].resize(dim.x * dim.y);
         cache[yCacheCurr].resize(dim.x * dim.y);
@@ -458,11 +458,11 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume,
                                        std::function<void(float)> progressCallback,
                                        std::function<bool(const size3_t&)> maskingCallback) {
 
-    auto indexBuffer = std::make_shared<IndexBuffer>();
-    auto vertexBuffer = std::make_shared<Buffer<vec3>>();
-    auto colorBuffer = std::make_shared<Buffer<vec4>>();
-    auto normalBuffer = std::make_shared<Buffer<vec3>>();
-    auto metaBuffer = std::make_shared<Buffer<int>>();
+    const auto indexBuffer = std::make_shared<IndexBuffer>();
+    const auto vertexBuffer = std::make_shared<Buffer<vec3>>();
+    const auto colorBuffer = std::make_shared<Buffer<vec4>>();
+    const auto normalBuffer = std::make_shared<Buffer<vec3>>();
+    const auto metaBuffer = std::make_shared<Buffer<int>>();
 
     auto* indexRAM = indexBuffer->getEditableRAMRepresentation();
     auto& indices = indexRAM->getDataContainer();

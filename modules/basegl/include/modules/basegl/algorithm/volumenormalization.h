@@ -53,7 +53,7 @@ class Volume;
 class IVW_MODULE_BASEGL_API VolumeNormalization {
 public:
     template <typename Callback>
-    VolumeNormalization(Callback C) : VolumeNormalization() {
+    explicit VolumeNormalization(Callback C) : VolumeNormalization() {
         shader_.onReload(C);
     }
     VolumeNormalization();

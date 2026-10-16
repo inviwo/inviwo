@@ -66,9 +66,9 @@ public:
      * 'geometry', etc.
      * @see FileProperty
      */
-    DataSource(DataReaderFactory* rf = util::getDataReaderFactory(),
-               const std::filesystem::path& filePath = {},
-               std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataSource(DataReaderFactory* rf = util::getDataReaderFactory(),
+                        const std::filesystem::path& filePath = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
     virtual ~DataSource() = default;
 
     virtual void process() override;
@@ -187,7 +187,7 @@ void DataSource<DataType, PortType, ReaderType>::load() {
             rf_->template getReaderForTypeAndExtension<ReaderType>(sext, filePath.get())) {
         configureReader(*reader);
         try {
-            auto data = transform(reader->readData(filePath.get()));
+            const auto data = transform(reader->readData(filePath.get()));
             port_.setData(data);
             if (deserialized_) {
                 dataDeserialized(data);

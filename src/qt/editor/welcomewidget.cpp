@@ -167,7 +167,7 @@ std::string markdownToHtml(std::string_view markdown) {
 
 class ChangeLog : public QTextBrowser {
 public:
-    ChangeLog(QWidget* parent) : QTextBrowser(parent), fileWatcher_{this} {
+    explicit ChangeLog(QWidget* parent) : QTextBrowser(parent), fileWatcher_{this} {
         setObjectName("Changelog");
         setFrameShape(QFrame::NoFrame);
         setTextInteractionFlags(Qt::TextBrowserInteraction);
@@ -231,7 +231,7 @@ protected:
         if (type == QTextDocument::ImageResource) {
             const auto path = ":/" + name.path();
             if (QFile{path}.exists()) {
-                auto img = QImage{path};
+                const auto img = QImage{path};
 
                 if (width() == 0) return img;
 
@@ -262,9 +262,9 @@ bool contains(std::string_view str, std::string_view substr) {
 
 auto annotationMatcher = [](auto getter) {
     return [getter](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
-        QVariant variant = utilqt::getData(i, Role::Annotations);
+        const QVariant variant = utilqt::getData(i, Role::Annotations);
         if (variant.isValid()) {
-            WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+            const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
             return contains(std::invoke(getter, *info.annotations), str);
         } else {
             return false;
@@ -282,7 +282,7 @@ auto matcher = [](Role role) {
 
 class WorkspaceFilter : public QSortFilterProxyModel {
 public:
-    WorkspaceFilter(QObject* parent = nullptr)
+    explicit WorkspaceFilter(QObject* parent = nullptr)
         : QSortFilterProxyModel(parent)
         , dsl_{{{"file", "f", "file name", true, matcher(Role::Name)},
                 {"path", "/", "file path", true, matcher(Role::Path)},
@@ -297,9 +297,9 @@ public:
                 {"processors", "p",
                  "search processor identifiers, display names, and class identifiers", false,
                  [](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
-                     QVariant variant = utilqt::getData(i, Role::Annotations);
+                     const QVariant variant = utilqt::getData(i, Role::Annotations);
                      if (variant.isValid()) {
-                         WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+                         const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
                          for (const auto& item : info.annotations->getProcessorList()) {
                              if (contains(item.type, str) || contains(item.identifier, str) ||
                                  contains(item.displayName, str)) {
@@ -311,7 +311,7 @@ public:
                  }}}} {}
 
     bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const override {
-        auto index = sourceModel()->index(source_row, 0, source_parent);
+        const auto index = sourceModel()->index(source_row, 0, source_parent);
         return dsl_.match(index);
     }
 
@@ -400,7 +400,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                           QSizePolicy::MinimumExpanding);
 
         {  // left column: workspace filter, list of recently used workspaces, and examples
-            auto loadFile = [this](const QString& filename, bool isExample) {
+            const auto loadFile = [this](const QString& filename, bool isExample) {
                 const auto action = util::getModifierAction(QApplication::keyboardModifiers());
                 const auto file = utilqt::toPath(filename);
                 switch (action) {
@@ -416,7 +416,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                         break;
                 }
             };
-            auto updateLoadButtons = [this](const QModelIndex& index) {
+            const auto updateLoadButtons = [this](const QModelIndex& index) {
                 updateDetails(index);
                 disconnect(loadConnection_);
                 disconnect(appendConnection_);
@@ -459,7 +459,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             // record user-driven expand/collapse so it can be restored across rebuilds and
             // restarts; suppressed while searching, see expandTreeView()
-            auto trackExpansion = [this](bool expand, bool fromGrid) {
+            const auto trackExpansion = [this](bool expand, bool fromGrid) {
                 return [this, expand, fromGrid](const QModelIndex& viewIndex) {
                     if (searchActive_) return;
                     const auto sourceIdx = toSource(viewIndex, fromGrid);
@@ -480,21 +480,24 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 model_, &WorkspaceTreeModel::dataChanged, this,
                 [this](const QModelIndex& topLeft, const QModelIndex&, const QVector<int>&) {
                     if (detailsIndex_.isValid() && topLeft.isValid()) {
-                        auto detailsFile = utilqt::fromQString(
+                        const auto detailsFile = utilqt::fromQString(
                             utilqt::getData(detailsIndex_, Role::FilePath).toString());
-                        auto changedFile = utilqt::fromQString(
+                        const auto changedFile = utilqt::fromQString(
                             utilqt::getData(topLeft, Role::FilePath).toString());
 
                         if (detailsFile == changedFile) {
                             const QFileInfo info(
                                 utilqt::getData(detailsIndex_, Role::FilePath).toString());
-                            QVariant variant = utilqt::getData(detailsIndex_, Role::Annotations);
+                            const QVariant variant =
+                                utilqt::getData(detailsIndex_, Role::Annotations);
                             if (variant.isValid()) {
-                                WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
-                                auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
+                                const WorkspaceInfo workspaceInfo =
+                                    qvariant_cast<WorkspaceInfo>(variant);
+                                const auto doc =
+                                    createDetailsDocument(info, *workspaceInfo.annotations);
                                 details_->setHtml(utilqt::toQString(doc));
                             } else {
-                                auto doc = createDetailsDocument(info);
+                                const auto doc = createDetailsDocument(info);
                                 details_->setHtml(utilqt::toQString(doc));
                             }
                         }
@@ -542,7 +545,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             expandCollapse.addFile(":/svgicons/treelist-collapse.svg", QSize(), QIcon::Normal,
                                    QIcon::On);
 
-            auto createToolButton = [&](auto text, QIcon icon, auto callback) {
+            const auto createToolButton = [&](auto text, QIcon icon, auto callback) {
                 auto btn = new QToolButton();
                 btn->setToolTip(text);
                 btn->setIcon(icon);
@@ -624,9 +627,9 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             auto buttonLayout = new QHBoxLayout();
             buttonLayout->setSpacing(6);
-            auto createButton = [&](const QString& str, const QString& iconpath,
-                                    const QString& toolTip, const QString& objName,
-                                    auto&& function) {
+            const auto createButton = [&](const QString& str, const QString& iconpath,
+                                          const QString& toolTip, const QString& objName,
+                                          auto&& function) {
                 auto button = new QToolButton(leftWidget);
                 button->setText(str);
                 button->setIcon(QIcon(iconpath));
@@ -733,7 +736,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     handle(1)->setAttribute(Qt::WA_Hover);
 
     // hide changelog on screens with less width than 1400
-    auto getScreen = []() { return utilqt::getApplicationMainWindow()->screen(); };
+    const auto getScreen = []() { return utilqt::getApplicationMainWindow()->screen(); };
 
     if (getScreen()->size().width() < 1400) {
         setSizes(QList<int>({1, 0}));
@@ -765,9 +768,10 @@ void WelcomeWidget::setFilterString(std::string_view str) {
 
 void WelcomeWidget::selectFirstLeaf() {
     // select first leaf node
-    QTreeView* view = workspaceGridView_->isVisible() ? static_cast<QTreeView*>(workspaceGridView_)
-                                                      : static_cast<QTreeView*>(workspaceTreeView_);
-    auto gridIndex = findFirstLeaf(view->model());
+    const QTreeView* view = workspaceGridView_->isVisible()
+                                ? static_cast<QTreeView*>(workspaceGridView_)
+                                : static_cast<QTreeView*>(workspaceTreeView_);
+    const auto gridIndex = findFirstLeaf(view->model());
     view->selectionModel()->setCurrentIndex(gridIndex, QItemSelectionModel::ClearAndSelect);
 
     // Seems we don't get any notification about the current item changing when we clear it.
@@ -824,9 +828,10 @@ void WelcomeWidget::applyExpandedPaths(const QSet<QString>& paths) {
             if (utilqt::getData(sourceIdx, Role::Type) == WorkspaceTreeModel::Type::File) continue;
 
             if (target.contains(nodePath(sourceIdx))) {
-                if (auto filterIdx = filterModel_->mapFromSource(sourceIdx); filterIdx.isValid()) {
+                if (const auto filterIdx = filterModel_->mapFromSource(sourceIdx);
+                    filterIdx.isValid()) {
                     workspaceTreeView_->expand(filterIdx);
-                    if (auto gridIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
+                    if (const auto gridIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
                         gridIdx.isValid()) {
                         workspaceGridView_->expand(gridIdx);
                     }
@@ -853,11 +858,11 @@ void WelcomeWidget::ensureSelectionVisible() {
 
 void WelcomeWidget::showEvent(QShowEvent* event) {
     const auto expandSection = [this](std::string_view section) {
-        auto modelIdx = model_->getCategoryIndex(section);
-        if (auto filterIdx = filterModel_->mapFromSource(modelIdx); filterIdx.isValid()) {
+        const auto modelIdx = model_->getCategoryIndex(section);
+        if (const auto filterIdx = filterModel_->mapFromSource(modelIdx); filterIdx.isValid()) {
             workspaceTreeView_->expandRecursively(filterIdx);
 
-            if (auto proxyIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
+            if (const auto proxyIdx = workspaceGridView_->proxy().mapFromSource(filterIdx);
                 proxyIdx.isValid()) {
                 workspaceGridView_->expandRecursively(proxyIdx);
             }
@@ -902,13 +907,13 @@ void WelcomeWidget::hideEvent(QHideEvent* event) {
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
     if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9) &&
         event->modifiers().testFlag(Qt::ControlModifier)) {
-        int number = [key = event->key()]() {
+        const int number = [key = event->key()]() {
             if (key == Qt::Key_0) return 9;
             return key - Qt::Key_1;
         }();
-        auto index = model_->getCategoryIndex(WorkspaceTreeModel::recent);
-        if (auto selIndex = filterModel_->mapFromSource(index); selIndex.isValid()) {
-            if (auto wsIndex = filterModel_->index(number, 0, selIndex); wsIndex.isValid()) {
+        const auto index = model_->getCategoryIndex(WorkspaceTreeModel::recent);
+        if (const auto selIndex = filterModel_->mapFromSource(index); selIndex.isValid()) {
+            if (const auto wsIndex = filterModel_->index(number, 0, selIndex); wsIndex.isValid()) {
                 const auto filename = utilqt::getData(wsIndex, Role::FilePath).toString();
                 const auto isExample = utilqt::getData(wsIndex, Role::isExample).toBool();
                 emit loadWorkspace(utilqt::toPath(filename), isExample);
@@ -916,7 +921,7 @@ void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
             event->accept();
         }
     } else if ((event->key() == Qt::Key_Return) || (event->key() == Qt::Key_Enter)) {
-        auto action = util::getModifierAction(QApplication::queryKeyboardModifiers());
+        const auto action = util::getModifierAction(QApplication::queryKeyboardModifiers());
         if (action == ModifierAction::AppendWorkspace) {
             appendWorkspaceBtn_->animateClick();
         } else {
@@ -956,13 +961,13 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     }
 
     const QFileInfo info(utilqt::getData(index, Role::FilePath).toString());
-    QVariant variant = utilqt::getData(index, Role::Annotations);
+    const QVariant variant = utilqt::getData(index, Role::Annotations);
     if (variant.isValid()) {
-        WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
-        auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
+        const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
+        const auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
         details_->setHtml(utilqt::toQString(doc));
     } else {
-        auto doc = createDetailsDocument(info);
+        const auto doc = createDetailsDocument(info);
         details_->setHtml(utilqt::toQString(doc));
     }
     centerStackedWidget_->setCurrentIndex(1);
@@ -980,7 +985,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) const {
                 {{"style", "font-size:45pt; color:#268bd2; margin-top:0em; padding-top:0em;"}});
 
     auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
-    auto addRow = [&](std::string_view name, std::string_view value) {
+    const auto addRow = [&](std::string_view name, std::string_view value) {
         if (value.empty()) return;
         auto tr = table.append("tr");
         tr.append("td", name, {{"style", "text-align:right;padding-right:0.4em"}});
@@ -1012,7 +1017,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
                 {{"style", "font-size:45pt; color:#268bd2; margin-top:0em; padding-top:0em;"}});
 
     auto table = body.append("table", "", {{"style", "margin-bottom:1em;"}});
-    auto addRow = [&](std::string_view name, std::string_view value) {
+    const auto addRow = [&](std::string_view name, std::string_view value) {
         if (value.empty()) return;
         auto tr = table.append("tr");
         tr.append("td", name, {{"style", "text-align:right;padding-right:0.4em"}});
@@ -1030,7 +1035,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
 
     auto content = body.append("div").append("span");
     const int maxImageSize = utilqt::emToPx(this, 32);
-    auto addImage = [&content, maxImageSize](auto item) {
+    const auto addImage = [&content, maxImageSize](auto item) {
         if (!item.isValid()) return;
         auto img = content.append("table", "", {{"style", "float: left;"}});
         img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});

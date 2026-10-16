@@ -63,7 +63,7 @@ protected:
 class IVW_MODULE_CIMG_API CImgVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    CImgVolumeRAMLoader(const std::filesystem::path& sourceFile);
+    explicit CImgVolumeRAMLoader(const std::filesystem::path& sourceFile);
     virtual CImgVolumeRAMLoader* clone() const override;
     virtual ~CImgVolumeRAMLoader() = default;
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(

@@ -197,7 +197,7 @@ extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
 
 template <typename C>
 void Image::forEachLayer(C callback) {
-    for (auto& layer : colorLayers_) callback(*layer);
+    for (const auto& layer : colorLayers_) callback(*layer);
     if (depthLayer_) callback(*depthLayer_);
     if (pickingLayer_) callback(*pickingLayer_);
 }

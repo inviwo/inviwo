@@ -49,7 +49,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API TexturedIsoSurfaceComponent : public ShaderComponent {
 public:
-    TexturedIsoSurfaceComponent(std::string_view volume);
+    explicit TexturedIsoSurfaceComponent(std::string_view volume);
 
     virtual std::string_view getName() const override;
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
@@ -72,7 +72,8 @@ public:
 
 class IVW_MODULE_BASEGL_API TexturedIsosurfaceRenderer : public VolumeRaycasterBase {
 public:
-    TexturedIsosurfaceRenderer(std::string_view identifier = "", std::string_view displayName = "");
+    explicit TexturedIsosurfaceRenderer(std::string_view identifier = "",
+                                        std::string_view displayName = "");
     virtual ~TexturedIsosurfaceRenderer() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

@@ -82,7 +82,7 @@ void exposeMesh(pybind11::module& m) {
 
     auto getBuffers = [](auto buffers, auto& parent) {
         pybind11::list list;
-        for (auto& buffer : buffers) {
+        for (const auto& buffer : buffers) {
             auto tupl = py::tuple(2);
             tupl[0] = py::cast(buffer.first);
             tupl[1] = py::cast(buffer.second.get(), py::return_value_policy::reference_internal,
@@ -163,7 +163,8 @@ void exposeMesh(pybind11::module& m) {
             return str;
         });
 
-    auto buffertraits = m.def_submodule("buffertraits", "Module containing mesh buffertraits");
+    const auto buffertraits =
+        m.def_submodule("buffertraits", "Module containing mesh buffertraits");
 
     py::classh<buffertraits::PositionsBuffer3D>(buffertraits, "PositionsBuffer3D")
         .def("getVertices", &buffertraits::PositionsBuffer3D::getEditableVertices)

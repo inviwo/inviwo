@@ -159,21 +159,21 @@ void EntryExitPointsHelper::createEntryExitPoints(ImageGL& entryPoints, ImageGL&
 
     {
         // generate exit points
-        utilgl::DepthFuncState depthfunc(GL_GREATER);
-        utilgl::ClearDepth clearDepth(0.0f);
+        const utilgl::DepthFuncState depthfunc(GL_GREATER);
+        const utilgl::ClearDepth clearDepth(0.0f);
         exitPoints.activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
-        utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
+        const utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
     }
 
     {
         // generate entry points
-        utilgl::DepthFuncState depthfunc(GL_LESS);
+        const utilgl::DepthFuncState depthfunc(GL_LESS);
         entryPoints.activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
 
-        utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
+        const utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
     }
     utilgl::deactivateCurrentTarget();
@@ -200,17 +200,17 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
 
     {
         // generate exit points
-        utilgl::DepthFuncState depthfunc(GL_GREATER);
-        utilgl::ClearDepth clearDepth(0.0f);
+        const utilgl::DepthFuncState depthfunc(GL_GREATER);
+        const utilgl::ClearDepth clearDepth(0.0f);
         exitPoints.activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
-        utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
+        const utilgl::CullFaceState cull(righthanded ? GL_BACK : GL_FRONT);
         drawer.draw();
     }
 
     {
         // generate entry points
-        utilgl::DepthFuncState depthfunc(GL_LESS);
+        const utilgl::DepthFuncState depthfunc(GL_LESS);
         if (!tmpEntry_ ||
             tmpEntry_->getDataFormat() != entryPoints.getColorLayerGL()->getDataFormat()) {
             tmpEntry_.reset(new Image(entryPoints.getDimensions(),
@@ -231,7 +231,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         tmpEntryGL_->activateBuffer(ImageType::AllLayers);
         utilgl::clearCurrentTarget();
 
-        utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
+        const utilgl::CullFaceState cull(righthanded ? GL_FRONT : GL_BACK);
         drawer.draw();
     }
 

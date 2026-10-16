@@ -36,7 +36,7 @@ namespace inviwo {
 
 class IVW_MODULE_HDF5_API HDF5Module : public InviwoModule {
 public:
-    HDF5Module(InviwoApplication* app);
+    explicit HDF5Module(InviwoApplication* app);
     virtual ~HDF5Module() = default;
 };
 

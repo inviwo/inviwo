@@ -176,9 +176,9 @@ auto RaycastingComponent::getSegments() -> std::vector<Segment> {
     const auto gradient = fmt::format("{}Gradient", volume_);
     const auto gradientPrev = fmt::format("{}GradientPrev", volume_);
 
-    auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
-                                "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                                "channel"_a = "channel", "tf"_a = tf, "color"_a = "");
+    const auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
+                                      "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
+                                      "channel"_a = "channel", "tf"_a = tf, "color"_a = "");
 
     const auto stepInit =
         raycasting_.dvrReferenceMode_.get() == RaycastingProperty::DVRReferenceMode::Automatic
@@ -314,9 +314,9 @@ auto MultiRaycastingComponent::getSegments() -> std::vector<Segment> {
         const auto gradient = fmt::format("{}AllGradients[{}]", volume_, i);
         const auto gradientPrev = fmt::format("{}AllGradientsPrev[{}]", volume_, i);
 
-        auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
-                                    "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
-                                    "channel"_a = i, "tf"_a = tf, "color"_a = i);
+        const auto format = makeFormatter("volume"_a = volume_, "gradient"_a = gradient,
+                                          "gradientPrev"_a = gradientPrev, "isoparams"_a = isoparam,
+                                          "channel"_a = i, "tf"_a = tf, "color"_a = i);
 
         if (renderingType == DvrIsosurface || renderingType == Isosurface) {
             auto isoSegments = std::to_array<Segment>(

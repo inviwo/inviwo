@@ -140,9 +140,9 @@ std::string_view CameraAnimation::classIdentifier() {
 void CameraAnimation::operator()(const std::vector<std::unique_ptr<CameraKeyframe>>& keys,
                                  Seconds /*from*/, Seconds to,
                                  CameraKeyframe::value_type& out) const {
-    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-        return time < key->getTime();
-    });
+    const auto it =
+        std::upper_bound(keys.begin(), keys.end(), to,
+                         [](const auto& time, const auto& key) { return time < key->getTime(); });
 
     const auto& prev = *(*std::prev(it));
     const auto& next = *(*it);

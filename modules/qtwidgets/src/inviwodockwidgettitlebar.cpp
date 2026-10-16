@@ -105,7 +105,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn_);
     layout->setSpacing(0);
-    auto margin = utilqt::emToPx(this, 0.2);
+    const auto margin = utilqt::emToPx(this, 0.2);
     layout->setContentsMargins(margin, margin, margin, margin);
 
     setLayout(layout);
@@ -132,7 +132,7 @@ void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent*) {
 }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
-    util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
+    const util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
     if (toggle) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);
@@ -144,9 +144,9 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
 }
 
 void InviwoDockWidgetTitleBar::updateTitle() {
-    QString windowTitle = utilqt::windowTitleHelper(windowTitle_, parent_);
+    const QString windowTitle = utilqt::windowTitleHelper(windowTitle_, parent_);
     // elide window title in case it is too long to fit the label
-    QFontMetrics fontMetrics(label_->font());
+    const QFontMetrics fontMetrics(label_->font());
     label_->setText(fontMetrics.elidedText(windowTitle, Qt::ElideMiddle, label_->width() - 4));
 }
 
@@ -199,7 +199,7 @@ void InviwoDockWidgetTitleBar::allowedAreasChanged(Qt::DockWidgetAreas areas) {
         allowedDockAreas_ = areas;
         if (!isSticky()) {
             // dockwidget is non-sticky, reset allowed areas to none
-            util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
+            const util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
             parent_->setAllowedAreas(Qt::NoDockWidgetArea);
         }
     }

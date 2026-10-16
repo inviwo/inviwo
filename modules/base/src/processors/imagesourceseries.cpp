@@ -146,7 +146,7 @@ void ImageSourceSeries::process() {
     // there should always be a reader since we asked the reader for valid extensions
     IVW_ASSERT(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
 
-    auto layer = reader->readData(currentFileName);
+    const auto layer = reader->readData(currentFileName);
     outport_.setData(std::make_shared<Image>(layer));
 }
 
@@ -178,7 +178,7 @@ void ImageSourceSeries::updateProperties() {
 }
 
 void ImageSourceSeries::updateFileName() {
-    int index = currentImageIndex_.get() - 1;
+    const int index = currentImageIndex_.get() - 1;
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
     } else {

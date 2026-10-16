@@ -59,7 +59,7 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 }
 
 void LinkSettings::onRegister(PropertyFactoryObject* p) {
-    auto property = p->getClassIdentifier();
+    const auto property = p->getClassIdentifier();
     registerProperty(property);
 }
 
@@ -67,9 +67,9 @@ void LinkSettings::registerProperty(std::string_view property) {
     const bool enabled =
         (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0 ? true : false;
     // Have to check we already have a property from deserialization.
-    auto ids = "link" + dotSeperatedToPascalCase(property);
+    const auto ids = "link" + dotSeperatedToPascalCase(property);
 
-    auto it = propertyMap_.find(ids);
+    const auto it = propertyMap_.find(ids);
     if (it != propertyMap_.end()) {
         it->second->setVisible(true);
     } else {
@@ -81,16 +81,16 @@ void LinkSettings::registerProperty(std::string_view property) {
 }
 
 void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
-    auto ids = "link" + dotSeperatedToPascalCase(p->getClassIdentifier());
-    auto it = propertyMap_.find(ids);
+    const auto ids = "link" + dotSeperatedToPascalCase(p->getClassIdentifier());
+    const auto it = propertyMap_.find(ids);
     if (it != propertyMap_.end()) {
         it->second->setVisible(false);
     }
 }
 
 bool LinkSettings::isLinkable(const Property* property) const {
-    auto ids = "link" + dotSeperatedToPascalCase(property->getClassIdentifier());
-    auto it = propertyMap_.find(ids);
+    const auto ids = "link" + dotSeperatedToPascalCase(property->getClassIdentifier());
+    const auto it = propertyMap_.find(ids);
     if (it != propertyMap_.end()) {
         return it->second->get();
     }

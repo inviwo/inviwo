@@ -108,9 +108,9 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         using intype = typename InportType::type;
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
-        auto cid = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
-                                          CompositeSinkBase::identifierSuffix());
+        const auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
+        const auto cid = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
+                                                CompositeSinkBase::identifierSuffix());
         return {
             cid,                // Class identifier
             name,               // Display name

@@ -67,7 +67,7 @@ OutputContext::~OutputContext() {
 
 void OutputContext::open() {
     if (!(ctx->oformat->flags & AVFMT_NOFILE)) {
-        int ret = avio_open(&ctx->pb, filename.string().c_str(), AVIO_FLAG_WRITE);
+        const int ret = avio_open(&ctx->pb, filename.string().c_str(), AVIO_FLAG_WRITE);
         if (ret < 0) {
             throw inviwo::Exception(SourceContext{}, "Could not open '{}': {}", filename,
                                     Error{ret});
@@ -77,14 +77,14 @@ void OutputContext::open() {
 
 void OutputContext::writeHeader(AVDictionary** options) const {
     /* Write the stream header, if any. */
-    if (auto ret = avformat_write_header(ctx, options); ret < 0) {
+    if (const auto ret = avformat_write_header(ctx, options); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing header, file: {}",
                                 Error{ret});
     }
 }
 
 void OutputContext::writeTrailer() const {
-    if (auto ret = av_write_trailer(ctx); ret < 0) {
+    if (const auto ret = av_write_trailer(ctx); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error occurred when writing trailer, file: {}",
                                 Error{ret});
     }
@@ -94,7 +94,7 @@ void OutputContext::writeFrame(const Packet& pkt) const {
     /* pkt is now blank (av_interleaved_write_frame() takes ownership of
      * its contents and resets pkt), so that no unreferencing is necessary.
      * This would be different if one used av_write_frame(). */
-    if (auto ret = av_interleaved_write_frame(ctx, pkt.pkt); ret < 0) {
+    if (const auto ret = av_interleaved_write_frame(ctx, pkt.pkt); ret < 0) {
         throw inviwo::Exception(SourceContext{}, "Error while writing output packet: {}",
                                 Error(ret));
     }

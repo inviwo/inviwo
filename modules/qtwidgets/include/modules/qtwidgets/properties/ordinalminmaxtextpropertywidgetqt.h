@@ -61,7 +61,7 @@ template <typename BT, typename T>
 class OrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
 
 public:
-    OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property);
+    explicit OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxTextPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
@@ -156,8 +156,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
     const T inc = minMaxProperty_->getIncrement();
     const T sep = minMaxProperty_->getMinSeparation();
 
-    QSignalBlocker minBlock(min_);
-    QSignalBlocker maxBlock(max_);
+    const QSignalBlocker minBlock(min_);
+    const QSignalBlocker maxBlock(max_);
 
     min_->setMinValue(range.x, ConstraintBehavior::Editable);
     min_->setMaxValue(range.y - sep, ConstraintBehavior::Editable);
@@ -174,7 +174,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
-    QSignalBlocker minBlock(min_);
+    const QSignalBlocker minBlock(min_);
 
     const T min = min_->getValue();
     V value = minMaxProperty_->get();
@@ -209,7 +209,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
         minMaxProperty_->clearInitiatingWidget();
 
         {
-            QSignalBlocker maxBlock(max_);
+            const QSignalBlocker maxBlock(max_);
 
             const V newVal(minMaxProperty_->get());
             min_->setValue(newVal.x);
@@ -220,7 +220,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
 
 template <typename BT, typename T>
 void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
-    QSignalBlocker maxBlock(max_);
+    const QSignalBlocker maxBlock(max_);
 
     const T max = max_->getValue();
     V value = minMaxProperty_->get();
@@ -255,7 +255,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
         minMaxProperty_->clearInitiatingWidget();
 
         {
-            QSignalBlocker minBlock(min_);
+            const QSignalBlocker minBlock(min_);
 
             const V newVal(minMaxProperty_->get());
             min_->setValue(newVal.x);

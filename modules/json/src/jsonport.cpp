@@ -33,7 +33,7 @@
 namespace inviwo {
 
 void to_json(json& j, const JSONInport& port) {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         j = *data;
     } else {
         j.clear();
@@ -44,7 +44,7 @@ void from_json(const json&, JSONInport&) {
 }
 
 void to_json(json& j, const JSONOutport& port) {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         j = *data;
     } else {
         j.clear();

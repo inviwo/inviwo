@@ -51,7 +51,7 @@ class TextLabelOverlay;
 
 class IVW_QTEDITOR_API NetworkEditorView : public QGraphicsView, public NetworkEditorObserver {
 public:
-    NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent = nullptr);
+    explicit NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent = nullptr);
     ~NetworkEditorView();
 
     void hideNetwork(bool);

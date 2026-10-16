@@ -58,7 +58,7 @@ public:
     Frame& operator=(const Frame&) = delete;
     Frame& operator=(Frame&& that);
     ~Frame();
-    operator bool() const;
+    explicit operator bool() const;
     void makeWritable();
 
     AVFrame* frame;

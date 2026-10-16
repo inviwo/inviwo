@@ -69,7 +69,7 @@ const ProcessorInfo& ProcessorTrampoline::getProcessorInfo() const {
         if (f) {
             info_ = f().cast<ProcessorInfo>();
             if (info_->file.empty()) {
-                auto pyp = pybind11::cast(this);
+                const auto pyp = pybind11::cast(this);
                 if (pybind11::hasattr(pyp, "__inviwo_file__")) {
                     info_->file =
                         pyp.attr("__inviwo_file__").cast<std::filesystem::path>().generic_string();
@@ -95,7 +95,7 @@ void ProcessorTrampoline::serialize(Serializer& s) const {
     const pybind11::gil_scoped_acquire gil;
     const auto override = pybind11::get_override(static_cast<const Processor*>(this), "serialize");
     if (override) {
-        auto o = override.template operator()<pybind11::return_value_policy::reference>(s);
+        const auto o = override.template operator()<pybind11::return_value_policy::reference>(s);
     }
     Processor::serialize(s);
 }

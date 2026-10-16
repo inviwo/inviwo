@@ -131,7 +131,7 @@ ProcessorListFilter::ProcessorListFilter(QAbstractItemModel* model, ProcessorNet
 }
 
 bool ProcessorListFilter::filterAcceptsRow(int source_row, const QModelIndex& source_parent) const {
-    auto index = sourceModel()->index(source_row, 0, source_parent);
+    const auto index = sourceModel()->index(source_row, 0, source_parent);
     if (const auto* item = utilqt::getData(index, Role::Item).value<const Item*>()) {
         if (!item->info.visible) return false;
         if (tags_.getMatches(util::getPlatformTag(item->info.tags)) == 0) return false;

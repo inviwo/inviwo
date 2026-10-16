@@ -102,7 +102,7 @@ void ColumnMetaDataListProperty::updateForNewDataFrame(const DataFrame& dataFram
                                                        util::OverwriteState overwrite) {
     if (dataFrame.getNumberOfColumns() <= 1) return;
 
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     for (const auto&& [idx, col] : util::enumerate(dataFrame)) {
         while (idx >= size()) constructProperty(0);
         meta(idx).updateForNewColumn(*col, overwrite);
@@ -118,7 +118,7 @@ void ColumnMetaDataListProperty::updateDataFrame(DataFrame& dataFrame) const {
 
     // Iterate in reverse to be able to drop columns without affecting the order
     for (ptrdiff_t i = dataFrame.getNumberOfColumns() - 1; i >= 0; --i) {
-        auto idx = static_cast<size_t>(i);
+        const auto idx = static_cast<size_t>(i);
         if (idx < size()) {
             if (meta(idx).getDrop()) {
                 dataFrame.dropColumn(idx);

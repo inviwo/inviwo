@@ -227,7 +227,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             const size_t sliceOffset = glm::compMul(layerDims);
 
             // create matching volume representation
-            auto volumeRAM =
+            const auto volumeRAM =
                 std::make_shared<VolumeRAMPrecision<ValueType>>(size3_t{layerDims, slices.size()});
             auto volData = volumeRAM->getDataTyped();
 

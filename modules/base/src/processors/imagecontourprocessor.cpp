@@ -82,7 +82,7 @@ ImageContourProcessor::ImageContourProcessor()
 }
 
 void ImageContourProcessor::process() {
-    auto mesh =
+    const auto mesh =
         util::marchingSquares(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
                               isoValues_.get(), channel_);
     outport_.setData(mesh);

@@ -56,7 +56,7 @@ public:
     void add(const Key& key, Resource resource) {
         constexpr auto gi = groupIndex<Key>();
         auto& group = get<Key>();
-        auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
+        const auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it == group.end()) {
             notifyWillAddResource(gi, group.size(), resource);
             group.emplace_back(key, std::move(resource));
@@ -81,7 +81,7 @@ public:
         constexpr auto gi = groupIndex<Key>();
         auto& group = get<Key>();
 
-        auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
+        const auto it = std::ranges::find(group, key, &std::pair<Key, Resource>::first);
         if (it != group.end() && it->second.meta != meta) {
             notifyWillUpdateResource(gi, std::distance(group.begin(), it), it->second);
             it->second.meta = meta;

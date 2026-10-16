@@ -61,8 +61,8 @@ IVW_CORE_API size_t getNumberOfModules(InviwoApplication* app);
 IVW_CORE_API InviwoModule* getModuleByIndex(size_t index);
 IVW_CORE_API InviwoModule* getModuleByIndex(InviwoApplication* app, size_t index);
 
-IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module);
-IVW_CORE_API std::filesystem::path getModulePath(InviwoModule* module, ModulePath pathType);
+IVW_CORE_API std::filesystem::path getModulePath(const InviwoModule* module);
+IVW_CORE_API std::filesystem::path getModulePath(const InviwoModule* module, ModulePath pathType);
 
 /**
  * @brief return the path for a specific type located within the requested module

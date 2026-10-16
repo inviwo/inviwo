@@ -110,7 +110,7 @@ EventPropertyWidgetQt::~EventPropertyWidgetQt() = default;
 void EventPropertyWidgetQt::updateFromProperty() { setButtonText(); }
 
 void EventPropertyWidgetQt::clickedSlot() {
-    auto* em = eventProperty_->getEventMatcher();
+    const auto* em = eventProperty_->getEventMatcher();
     if (!em) return;
 
     matcher_ = std::unique_ptr<EventMatcher>(em->clone());
@@ -228,7 +228,7 @@ void EventPropertyWidgetQt::focusOutEvent(QFocusEvent* event) {
 }
 
 void EventPropertyWidgetQt::setButtonText() {
-    if (auto* ev = eventProperty_->getEventMatcher()) {
+    if (const auto* ev = eventProperty_->getEventMatcher()) {
         button_->setText(utilqt::toQString(ev->displayString()));
     } else {
         button_->setText("Unset");

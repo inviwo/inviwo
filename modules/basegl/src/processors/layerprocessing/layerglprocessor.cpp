@@ -76,7 +76,7 @@ void LayerGLProcessor::process() {
     }
 
     auto&& [fbo, layer] = [&]() -> decltype(auto) {
-        auto unusedIt = std::ranges::find_if(
+        const auto unusedIt = std::ranges::find_if(
             cache_, [](const std::pair<FrameBufferObject, std::shared_ptr<Layer>>& item) {
                 return item.second.use_count() == 1;
             });
@@ -84,14 +84,14 @@ void LayerGLProcessor::process() {
             return *unusedIt;
         } else {
             auto& item = cache_.emplace_back(FrameBufferObject{}, std::make_shared<Layer>(config));
-            auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
-            utilgl::Activate activateFbo{&item.first};
+            const auto* layerGL = item.second->getEditableRepresentation<LayerGL>();
+            const utilgl::Activate activateFbo{&item.first};
             item.first.attachColorTexture(layerGL->getTexture().get(), 0);
             return item;
         }
     }();
 
-    utilgl::Activate activateShader{&shader_};
+    const utilgl::Activate activateShader{&shader_};
     utilgl::setShaderUniforms(shader_, *layer, "outportParameters");
 
     TextureUnitContainer cont;
@@ -101,11 +101,11 @@ void LayerGLProcessor::process() {
 
     const auto dim = layer->getDimensions();
     {
-        utilgl::Activate activateFbo{&fbo};
-        utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
-                                       static_cast<GLsizei>(dim.y)};
-        utilgl::DepthMaskState depthMask{GL_FALSE};
-        utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
+        const utilgl::Activate activateFbo{&fbo};
+        const utilgl::ViewportState viewport{0, 0, static_cast<GLsizei>(dim.x),
+                                             static_cast<GLsizei>(dim.y)};
+        const utilgl::DepthMaskState depthMask{GL_FALSE};
+        const utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
 
         // We always need to ask for an editable representation, this will invalidate any other
         // representations

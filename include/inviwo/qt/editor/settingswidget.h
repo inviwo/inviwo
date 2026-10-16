@@ -46,7 +46,7 @@ class InviwoMainWindow;
 
 class IVW_QTEDITOR_API SettingsWidget : public InviwoDockWidget {
 public:
-    SettingsWidget(InviwoMainWindow* parent);
+    explicit SettingsWidget(InviwoMainWindow* parent);
     SettingsWidget(const QString& title, InviwoMainWindow* parent);
     virtual ~SettingsWidget();
 

@@ -61,7 +61,7 @@ Document BoolProperty::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = Property::getDescription();
-    auto t = doc.get({P{"table"}});
+    const auto t = doc.get({P{"table"}});
 
     utildoc::TableBuilder tb(t);
     tb(H("Value"), get());

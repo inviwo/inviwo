@@ -96,7 +96,7 @@ public:
     virtual void process(Shader& shader, TextureUnitContainer& cont) override {
         for (auto&& isoTF : isoTFs) {
             if (auto* tfLayer = isoTF.tf_.template getRepresentation<LayerGL>()) {
-                TextureUnit& unit = cont.emplace_back();
+                const TextureUnit& unit = cont.emplace_back();
                 tfLayer->bindTexture(unit.getEnum());
                 shader.setUniform(isoTF.tf_.getIdentifier(), unit);
             }

@@ -41,7 +41,7 @@ class InviwoApplication;
 class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule,
                                                              public glui::WidgetSupplier {
 public:
-    UserInterfaceGLModule(InviwoApplication* app);
+    explicit UserInterfaceGLModule(InviwoApplication* app);
     virtual ~UserInterfaceGLModule();
 
     glui::WidgetFactory& getGLUIWidgetFactory();

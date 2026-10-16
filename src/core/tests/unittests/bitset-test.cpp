@@ -123,20 +123,20 @@ TEST(bitset, add_iterators) {
 TEST(bitset, add_boolVec) {
     auto boolVec = [](const auto& indices) {
         std::vector<bool> v(*std::max_element(indices.begin(), indices.end()) + 1, false);
-        for (auto i : indices) {
+        for (const auto i : indices) {
             v[i] = true;
         }
         return v;
     };
 
-    auto test = [&](const std::vector<std::uint32_t>& indices, bool pushFalse) {
+    const auto test = [&](const std::vector<std::uint32_t>& indices, bool pushFalse) {
         std::vector<bool> v = boolVec(indices);
         if (pushFalse) {
             v.push_back(false);
         }
-        BitSet b{v};
+        const BitSet b{v};
         EXPECT_EQ(indices.size(), b.cardinality());
-        for (auto index : indices) {
+        for (const auto index : indices) {
             EXPECT_TRUE(b.contains(index));
         }
     };
@@ -159,13 +159,13 @@ TEST(bitset, contains) {
     EXPECT_FALSE(b.contains(42));
 
     std::vector<std::uint32_t> indices = getIndices(20);
-    BitSet b1(indices);
-    for (auto index : indices) {
+    const BitSet b1(indices);
+    for (const auto index : indices) {
         EXPECT_TRUE(b1.contains(index));
     }
 
-    BitSet b2(indices.begin(), indices.end());
-    for (auto index : indices) {
+    const BitSet b2(indices.begin(), indices.end());
+    for (const auto index : indices) {
         EXPECT_TRUE(b2.contains(index));
     }
 }
@@ -173,7 +173,7 @@ TEST(bitset, contains) {
 TEST(bitset, minmax) {
     std::vector<std::uint32_t> indices = getIndices(20);
 
-    auto b = BitSet(indices.begin(), indices.end());
+    const auto b = BitSet(indices.begin(), indices.end());
 
     EXPECT_EQ(*std::min_element(indices.begin(), indices.end()), b.min());
     EXPECT_EQ(*std::max_element(indices.begin(), indices.end()), b.max());
@@ -185,7 +185,7 @@ TEST(bitset, serialization) {
     std::stringstream ss;
     Serializer serializer{};
 
-    auto b = BitSet(indices.begin(), indices.end());
+    const auto b = BitSet(indices.begin(), indices.end());
     b.serialize(serializer);
     serializer.writeFile(ss);
 
@@ -200,7 +200,7 @@ TEST(bitset, binarySerialization) {
 
     std::stringstream ss;
 
-    auto b = BitSet(indices.begin(), indices.end());
+    const auto b = BitSet(indices.begin(), indices.end());
     b.writeData(ss);
 
     BitSet result;
@@ -210,15 +210,15 @@ TEST(bitset, binarySerialization) {
 
 TEST(bitset, iterators) {
     std::vector<std::uint32_t> indices = getIndices(5);
-    auto b = BitSet(indices.begin(), indices.end());
+    const auto b = BitSet(indices.begin(), indices.end());
 
-    for (auto index : b) {
+    for (const auto index : b) {
         EXPECT_TRUE(util::contains(indices, index));
     }
 
-    std::vector<std::uint32_t> vec(b.begin(), b.end());
+    const std::vector<std::uint32_t> vec(b.begin(), b.end());
     EXPECT_EQ(b.size(), vec.size());
-    for (auto index : vec) {
+    for (const auto index : vec) {
         EXPECT_TRUE(util::contains(indices, index));
     }
 }

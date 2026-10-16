@@ -61,7 +61,7 @@ class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
     Q_PROPERTY(double iconSize READ getIconSize WRITE setIconSize DESIGNABLE true SCRIPTABLE true)
 #endif
 public:
-    InviwoDockWidgetTitleBar(QWidget* parent = nullptr);
+    explicit InviwoDockWidgetTitleBar(QWidget* parent = nullptr);
     virtual ~InviwoDockWidgetTitleBar();
 
     virtual void paintEvent(QPaintEvent*) override;

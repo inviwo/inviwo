@@ -40,7 +40,7 @@ class InviwoApplication;
 
 class IVW_MODULE_POSTPROCESSING_API PostProcessingModule : public InviwoModule {
 public:
-    PostProcessingModule(InviwoApplication* app);
+    explicit PostProcessingModule(InviwoApplication* app);
 
     virtual int getVersion() const override;
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
@@ -48,7 +48,7 @@ public:
 private:
     class Converter : public VersionConverter {
     public:
-        Converter(int version);
+        explicit Converter(int version);
         virtual bool convert(TxElement* root) override;
 
     private:

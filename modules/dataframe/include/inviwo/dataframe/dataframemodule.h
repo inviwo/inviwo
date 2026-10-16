@@ -45,7 +45,7 @@ class IVW_MODULE_DATAFRAME_API DataFrameModule : public InviwoModule,
     using JSONSupplier<Property, PropertyTraits>::registerJSONConverter;
 
 public:
-    DataFrameModule(InviwoApplication* app);
+    explicit DataFrameModule(InviwoApplication* app);
     virtual ~DataFrameModule() = default;
 };
 

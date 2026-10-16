@@ -234,7 +234,7 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
                                   datatype, filePath);
     }
 
-    auto volume = std::make_shared<Volume>(dim, format);
+    const auto volume = std::make_shared<Volume>(dim, format);
 
     const std::string descrip(niftiImage->descrip);
     if (!descrip.empty()) {
@@ -280,11 +280,12 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
     // Compute the extent of the entire data set
     // Nifti supplies a matrix to compute the center position of the voxel.
     // Here we compute the start basis vectors spanning the data set
-    basisAndOffset[0] = niftiIndexToModel * vec4(dim[0] - 0.5f, 0.f, 0.f, 1.f) -
+    const auto fDim = vec3{dim};
+    basisAndOffset[0] = niftiIndexToModel * vec4(fDim[0] - 0.5f, 0.f, 0.f, 1.f) -
                         niftiIndexToModel * vec4(-0.5f, 0.f, 0.f, 1.f);
-    basisAndOffset[1] = niftiIndexToModel * vec4(0.f, dim[1] - 0.5f, 0.f, 1.f) -
+    basisAndOffset[1] = niftiIndexToModel * vec4(0.f, fDim[1] - 0.5f, 0.f, 1.f) -
                         niftiIndexToModel * vec4(0.f, -0.5f, 0.f, 1.f);
-    basisAndOffset[2] = niftiIndexToModel * vec4(0.f, 0.f, dim[2] - 0.5f, 1.f) -
+    basisAndOffset[2] = niftiIndexToModel * vec4(0.f, 0.f, fDim[2] - 0.5f, 1.f) -
                         niftiIndexToModel * vec4(0.f, 0.f, -0.5f, 1.f);
     basisAndOffset[3] = niftiIndexToModel * vec4(-0.5f, -0.5f, -0.5f, 1.f);
 
@@ -323,11 +324,11 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
 
     auto volumes = std::make_shared<VolumeSequence>();
     // Fixes single-volume where dim[4] has been set to zero
-    auto nTimeSteps = niftiImage->dim[4] > 0 ? niftiImage->dim[4] : 1;
+    const auto nTimeSteps = niftiImage->dim[4] > 0 ? niftiImage->dim[4] : 1;
     // Lazy loading of time steps
     for (int t = 0; t < nTimeSteps; ++t) {
         volumes->push_back(std::shared_ptr<Volume>(volume->clone()));
-        auto diskRepr = std::make_shared<VolumeDisk>(filePath, dim, format);
+        const auto diskRepr = std::make_shared<VolumeDisk>(filePath, dim, format);
         start_index[3] = t;
         diskRepr->setLoader(
             new NiftiVolumeRAMLoader(niftiImage, start_index, region_size, flipAxis));
@@ -401,7 +402,7 @@ std::shared_ptr<VolumeSequence> readNiftiFile(const std::filesystem::path& local
         }
     }
 
-    for (auto vol : *volumes) {
+    for (const auto vol : *volumes) {
         vol->dataMap = dm;
     }
 
@@ -468,7 +469,8 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
 
     auto start = start_index;
     auto region = region_size;
-    auto readBytes = nifti_read_subregion_image(nim.get(), start.data(), region.data(), &data);
+    const auto readBytes =
+        nifti_read_subregion_image(nim.get(), start.data(), region.data(), &data);
     if (readBytes < 0) {
         throw DataReaderException(SourceContext{}, "Error: Could not read data from file: {}",
                                   nim->fname);

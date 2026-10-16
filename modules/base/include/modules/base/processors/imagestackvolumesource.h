@@ -52,7 +52,7 @@ class Volume;
 
 class IVW_MODULE_BASE_API ImageStackVolumeSource : public Processor {
 public:
-    ImageStackVolumeSource(InviwoApplication* app);
+    explicit ImageStackVolumeSource(InviwoApplication* app);
     void addFileNameFilters();
     virtual ~ImageStackVolumeSource() = default;
 

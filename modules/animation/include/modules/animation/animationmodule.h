@@ -50,7 +50,7 @@ class MainAnimation;
 class IVW_MODULE_ANIMATION_API AnimationModule : public InviwoModule,
                                                  public animation::AnimationSupplier {
 public:
-    AnimationModule(InviwoApplication* app);
+    explicit AnimationModule(InviwoApplication* app);
     virtual ~AnimationModule();
 
     virtual int getVersion() const override;
@@ -100,7 +100,7 @@ private:
 
     class Converter : public VersionConverter {
     public:
-        Converter(int version) : version_(version) {}
+        explicit Converter(int version) : version_(version) {}
         virtual bool convert(TxElement* root) override;
 
     private:

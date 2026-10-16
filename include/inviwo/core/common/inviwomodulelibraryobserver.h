@@ -50,7 +50,7 @@ class InviwoApplication;
  */
 class IVW_CORE_API InviwoModuleLibraryObserver {
 public:
-    InviwoModuleLibraryObserver(InviwoApplication* app);
+    explicit InviwoModuleLibraryObserver(InviwoApplication* app);
     virtual ~InviwoModuleLibraryObserver() = default;
 
     void observe(const std::filesystem::path& file);

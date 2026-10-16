@@ -105,7 +105,7 @@ vec3 hsl2rgb(const vec3& hsl) {
     const double sat = hsl.y;
     const double lum = hsl.z;
 
-    auto f = [lum, a = sat * std::min(lum, 1.0 - lum), h = hue * 360.0 / 30.0](double n) {
+    const auto f = [lum, a = sat * std::min(lum, 1.0 - lum), h = hue * 360.0 / 30.0](double n) {
         const double k = std::fmod(n + h, 12.0);
         return lum - a * std::max(-1.0, std::min(k - 3.0, std::min(9.0 - k, 1.0)));
     };
@@ -224,7 +224,7 @@ vec3 XYZ2xyY(const vec3& xyz) {
         auto& X = xyz.x;
         auto& Y = xyz.y;
         auto& Z = xyz.z;
-        float sum = X + Y + Z;
+        const float sum = X + Y + Z;
         return vec3(X / sum, Y / sum, Y);
     }
 }
@@ -243,37 +243,37 @@ vec3 xyY2XYZ(const vec3& xyY) {
 }
 
 vec3 rgb2lab(const vec3& rgb) {
-    vec3 xyz = rgb2XYZ(rgb);
+    const vec3 xyz = rgb2XYZ(rgb);
 
     return XYZ2lab(xyz);
 }
 
 vec3 lab2rgb(const vec3& lab) {
-    vec3 xyz = lab2XYZ(lab);
+    const vec3 xyz = lab2XYZ(lab);
 
     return XYZ2rgb(xyz);
 }
 
 vec3 rgb2ycbcr(const vec3& rgb) {
-    double r = rgb.x;
-    double g = rgb.y;
-    double b = rgb.z;
+    const double r = rgb.x;
+    const double g = rgb.y;
+    const double b = rgb.z;
 
-    double y = 0.299 * r + 0.587 * g + 0.114 * b;
-    double cb = (b - y) * 0.565;
-    double cr = (r - y) * 0.713;
+    const double y = 0.299 * r + 0.587 * g + 0.114 * b;
+    const double cb = (b - y) * 0.565;
+    const double cr = (r - y) * 0.713;
 
     return vec3(static_cast<float>(y), static_cast<float>(cb), static_cast<float>(cr));
 }
 
 vec3 ycbcr2rgb(const vec3& ycbcr) {
-    double y = ycbcr.x;
-    double cb = ycbcr.y;
-    double cr = ycbcr.z;
+    const double y = ycbcr.x;
+    const double cb = ycbcr.y;
+    const double cr = ycbcr.z;
 
-    double r = glm::clamp(y + 1.402 * cr, 0.0, 1.0);
-    double g = glm::clamp(y - 0.344136 * cb - 0.714136 * cr, 0.0, 1.0);
-    double b = glm::clamp(y + 1.772 * cb, 0.0, 1.0);
+    const double r = glm::clamp(y + 1.402 * cr, 0.0, 1.0);
+    const double g = glm::clamp(y - 0.344136 * cb - 0.714136 * cr, 0.0, 1.0);
+    const double b = glm::clamp(y + 1.772 * cb, 0.0, 1.0);
 
     return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
@@ -305,12 +305,12 @@ vec3 XYZ2LuvChromaticity(const vec3& XYZ, const vec3& whitePointXYZ) {
     const double kappa = 24389.0 / 27.0;
 
     // compute u' and v' for XYZ color value
-    double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
-    double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    const double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    const double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
 
-    double yr = XYZ.y / whitePointXYZ.y;
+    const double yr = XYZ.y / whitePointXYZ.y;
     // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
-    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
+    const double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
 
     return vec3(L, u_prime, v_prime);
 }
@@ -324,22 +324,22 @@ vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ) {
     // compute u' and v' for reference white point
     // u' <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v' <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
-    double u0_prime =
+    const double u0_prime =
         4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
-    double v0_prime =
+    const double v0_prime =
         9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
 
     // compute u' and v' for XYZ color value
-    double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
-    double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    const double u_prime = 4 * XYZ.x / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
+    const double v_prime = 9 * XYZ.y / (XYZ.x + 15 * XYZ.y + 3 * XYZ.z);
 
-    double yr = XYZ.y / whitePointXYZ.y;
+    const double yr = XYZ.y / whitePointXYZ.y;
     // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
-    double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
+    const double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
     // u <- 13 * L * (u_prime - u0_prime);
-    double u = 13.0 * L * (u_prime - u0_prime);
+    const double u = 13.0 * L * (u_prime - u0_prime);
     // v <- 13 * L * (v_prime - v0_prime);
-    double v = 13.0 * L * (v_prime - v0_prime);
+    const double v = 13.0 * L * (v_prime - v0_prime);
 
     return vec3(L, u, v);
 }
@@ -353,31 +353,31 @@ vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
-    double u0 =
+    const double u0 =
         4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
-    double v0 =
+    const double v0 =
         9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
 
-    double L = Luv.x;
-    double u = Luv.y;
-    double v = Luv.z;
+    const double L = Luv.x;
+    const double u = Luv.y;
+    const double v = Luv.z;
 
     // Y <- ifelse(L > kappa * epsilon, ((L + 16) / 116) ^ 3, L / kappa);
-    double Y = ((L > kappa * epsilon) ? std::pow((L + 16) / 116, 3) : L / kappa);
+    const double Y = ((L > kappa * epsilon) ? std::pow((L + 16) / 116, 3) : L / kappa);
 
     // a <- 1 / 3 * (52 * L / (u + 13 * L * u0) - 1);
     // b <- -5*Y;
     // c <- -1/3;
     // d <- Y * (39 * L / (v + 13 * L * v0) - 5);
-    double a = 1.0 / 3.0 * (52.0 * L / (u + 13 * L * u0) - 1.0);
-    double b = -5.0 * Y;
-    double c = -1.0 / 3.0;
-    double d = Y * (39.0 * L / (v + 13 * L * v0) - 5.0);
+    const double a = 1.0 / 3.0 * (52.0 * L / (u + 13 * L * u0) - 1.0);
+    const double b = -5.0 * Y;
+    const double c = -1.0 / 3.0;
+    const double d = Y * (39.0 * L / (v + 13 * L * v0) - 5.0);
     // X <- (d - b) / (a - c);
-    double X = (d - b) / (a - c);
+    const double X = (d - b) / (a - c);
 
     // Z <- X * a + b;
-    double Z = X * a + b;
+    const double Z = X * a + b;
 
     return vec3(X, Y, Z);
 }
@@ -390,18 +390,18 @@ vec3 LuvChromaticity2XYZ(const vec3& LuvChroma, const vec3& whitePointXYZ) {
     // compute u and v for reference white point
     // u0 <- 4 * X_r / (X_r + 15 * Y_r + 3 * Z_r);
     // v0 <- 9 * Y_r / (X_r + 15 * Y_r + 3 * Z_r);
-    double u0_prime =
+    const double u0_prime =
         4 * whitePointXYZ.x / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
-    double v0_prime =
+    const double v0_prime =
         9 * whitePointXYZ.y / (whitePointXYZ.x + 15 * whitePointXYZ.y + 3 * whitePointXYZ.z);
 
-    double L = LuvChroma.x;
-    double u_prime = LuvChroma.y;
-    double v_prime = LuvChroma.z;
+    const double L = LuvChroma.x;
+    const double u_prime = LuvChroma.y;
+    const double v_prime = LuvChroma.z;
 
     // convert chromaticity to CIE Luv
-    double u = 13.0 * L * (u_prime - u0_prime);
-    double v = 13.0 * L * (v_prime - v0_prime);
+    const double u = 13.0 * L * (u_prime - u0_prime);
+    const double v = 13.0 * L * (v_prime - v0_prime);
 
     return Luv2XYZ(vec3(L, u, v));
 }

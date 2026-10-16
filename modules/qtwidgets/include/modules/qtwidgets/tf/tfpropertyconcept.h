@@ -211,22 +211,22 @@ public:
     }
 
     virtual void showExportDialog() const override {
-        if (auto* tf = getTransferFunction()) {
+        if (const auto* tf = getTransferFunction()) {
             util::exportTransferFunctionDialog(*tf);
-        } else if (auto* iso = getIsovalues()) {
+        } else if (const auto* iso = getIsovalues()) {
             util::exportIsoValueCollectionDialog(*iso);
         }
     }
 
     virtual void showImportDialog() override {
         if (auto* tf = getTransferFunction()) {
-            if (auto newTf = util::importTransferFunctionDialog()) {
-                NetworkLock lock{tfLike_};
+            if (const auto newTf = util::importTransferFunctionDialog()) {
+                const NetworkLock lock{tfLike_};
                 *tf = *newTf;
             }
         } else if (auto* iso = getIsovalues()) {
-            if (auto newIso = util::importIsoValueCollectionDialog()) {
-                NetworkLock lock{tfLike_};
+            if (const auto newIso = util::importIsoValueCollectionDialog()) {
+                const NetworkLock lock{tfLike_};
                 *iso = *newIso;
             }
         }

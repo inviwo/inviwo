@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-void exposeImageTypes(pybind11::module& m) {
+void exposeImageTypes(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::enum_<LayerType>(m, "LayerType")

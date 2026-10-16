@@ -117,7 +117,7 @@ size_t TemporalVolume::nearestIndex(Seconds time) const {
 }
 
 auto TemporalVolume::find(size_t index) const -> Item* {
-    if (auto it = cache_.find(index); it != cache_.end()) {
+    if (const auto it = cache_.find(index); it != cache_.end()) {
         return &it->second;
     }
     return nullptr;
@@ -135,7 +135,7 @@ void TemporalVolume::prefetch(size_t index,
     auto* app = util::getInviwoApplication();
     if (!app) return;
 
-    auto reuse = (item && item->reuse()) ? item->reuse()->volume : takeReuse();
+    const auto reuse = (item && item->reuse()) ? item->reuse()->volume : takeReuse();
     std::stop_source source;
     auto future = app->dispatchPool(
         [loader = loader_, index, reuse = reuse, callback, stop = source.get_token()]() mutable {
@@ -189,7 +189,7 @@ std::shared_ptr<const Volume> TemporalVolume::get(size_t index, std::stop_token 
                 return valid.volume;
             },
             [&](Pending& pending) -> std::shared_ptr<Volume> {
-                auto future = pending.future;
+                const auto future = pending.future;
 
                 lock.unlock();
                 // Poll so that our own cancellation can bail out without cancelling the shared
@@ -202,7 +202,7 @@ std::shared_ptr<const Volume> TemporalVolume::get(size_t index, std::stop_token 
                 lock.lock();
 
                 if (auto* item2 = find(index)) {
-                    if (auto* pending2 = item2->pending()) {
+                    if (const auto* pending2 = item2->pending()) {
                         if (pending2->source.stop_requested()) {
                             std::erase(lruOrder_, index);
                             if (volume) {
@@ -240,11 +240,11 @@ TemporalVolume::Frame TemporalVolume::interpolate(Seconds time, std::stop_token 
         return {.a = nullptr, .b = nullptr, .t = 0.0};
     }
     if (n == 1 || time <= ts.front()) {
-        auto volume = get(size_t{0}, stop);
+        const auto volume = get(size_t{0}, stop);
         return {.a = volume, .b = volume, .t = 0.0};
     }
     if (time >= ts.back()) {
-        auto volume = get(n - 1, stop);
+        const auto volume = get(n - 1, stop);
         return {.a = volume, .b = volume, .t = 0.0};
     }
 
@@ -291,7 +291,7 @@ void TemporalVolume::evict() const {
     while (cache_.size() > cacheSize_ && !lruOrder_.empty()) {
         const size_t lru = lruOrder_.front();
         lruOrder_.erase(lruOrder_.begin());
-        if (auto it = cache_.find(lru); it != cache_.end()) {
+        if (const auto it = cache_.find(lru); it != cache_.end()) {
             cache_.erase(it);
         }
     }
@@ -299,8 +299,8 @@ void TemporalVolume::evict() const {
 
 std::shared_ptr<Volume> TemporalVolume::takeReuse() const {
     if (cache_.size() >= cacheSize_) {
-        for (auto index : lruOrder_) {
-            if (auto rit = cache_.find(index); rit != cache_.end()) {
+        for (const auto index : lruOrder_) {
+            if (const auto rit = cache_.find(index); rit != cache_.end()) {
                 if (auto found = rit->second.visit(
                         [](Valid& valid) -> std::shared_ptr<Volume> {
                             return valid.volume.use_count() == 1 ? valid.volume : nullptr;

@@ -52,11 +52,11 @@ namespace inviwo {
 template <typename DataType, typename PortType = DataInport<DataType>>
 class DataExport : public Processor {
 public:
-    DataExport(DataWriterFactory* wf = util::getDataWriterFactory(),
-               const std::filesystem::path& file = {},
-               std::string_view contentType = FileProperty::defaultContentType);
-    DataExport(InviwoApplication* app, const std::filesystem::path& file = {},
-               std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataExport(DataWriterFactory* wf = util::getDataWriterFactory(),
+                        const std::filesystem::path& file = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
+    explicit DataExport(InviwoApplication* app, const std::filesystem::path& file = {},
+                        std::string_view contentType = FileProperty::defaultContentType);
 
     virtual ~DataExport() = default;
 
@@ -95,7 +95,7 @@ DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::fil
     , overwrite_{"overwrite", "Overwrite", "Overwrite any existing data in file"_help, false,
                  InvalidationLevel::Valid} {
 
-    for (auto& ext : wf_->getExtensionsForType<DataType>()) {
+    for (const auto& ext : wf_->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
     }
 

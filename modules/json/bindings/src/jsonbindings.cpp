@@ -60,13 +60,13 @@ namespace {
 // Convert a nlohmann::json value to a Python object (dict/list/str/...).
 // Done by serializing to a string and using Python's built in json module.
 py::object jsonToPyObject(const json& j) {
-    auto pyJson = py::module_::import("json");
+    const auto pyJson = py::module_::import("json");
     return pyJson.attr("loads")(j.dump());
 }
 
 // Convert a Python object to a nlohmann::json value via Python's json module.
 json pyObjectToJson(const py::handle& obj) {
-    auto pyJson = py::module_::import("json");
+    const auto pyJson = py::module_::import("json");
     const auto s = pyJson.attr("dumps")(obj).cast<std::string>();
     return json::parse(s);
 }

@@ -242,7 +242,7 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 
     // Determine which normalization mode should be used
     std::string getVoxel;
-    auto mode = normalizationMode_.get();
+    const auto mode = normalizationMode_.get();
     if (mode == NormalizationMode::Normalized)
         getVoxel = "getNormalizedVoxel";
     else if (mode == NormalizationMode::SignedNormalized)
@@ -336,7 +336,7 @@ void VolumeCombiner::process() {
 
     // We always need to ask for a editable representation
     // this will invalidate any other representations
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
+    const VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
     if (inport_.isChanged()) {
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
@@ -353,7 +353,7 @@ void VolumeCombiner::updateDataRange() {
     dvec2 valueRange = inport_.getData()->dataMap.valueRange;
 
     if (rangeMode_.getSelectedIdentifier() == "maxRange") {
-        auto minmax = [](const dvec2& a, const dvec2& b) {
+        const auto minmax = [](const dvec2& a, const dvec2& b) {
             return dvec2{std::min(a.x, b.x), std::max(a.y, b.y)};
         };
 

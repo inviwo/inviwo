@@ -36,15 +36,16 @@
 
 namespace inviwo {
 
-TEST(KDTreeTests, init) { KDTree<3, char, float> tree; }
+TEST(KDTreeTests, init) { const KDTree<3, char, float> tree; }
 
 TEST(KDTreeTests, randomPointsTest) {
     srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
-    int size = 1000;
+    const int size = 1000;
     for (int i = 0; i < size; i++) {
-        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
+                          rand() / float(RAND_MAX));
         tree.insert(p, i);
     }
 
@@ -57,9 +58,10 @@ TEST(KDTreeTests, minMaxTest) {
     srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
-    int size = 1000;
+    const int size = 1000;
     for (int i = 0; i < size; i++) {
-        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
+                          rand() / float(RAND_MAX));
         tree.insert(p, i);
     }
 
@@ -114,22 +116,23 @@ TEST(KDTreeTests, findNClosests) {
     srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
-    int size = 1000;
+    const int size = 1000;
     for (int i = 0; i < size; i++) {
-        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
+                          rand() / float(RAND_MAX));
         tree.insert(p, i);
     }
 
     EXPECT_EQ(tree.size(), size);
     EXPECT_FALSE(tree.empty());
 
-    glm::vec3 p(0.5f, 0.5f, 0.5f);
+    const glm::vec3 p(0.5f, 0.5f, 0.5f);
 
-    std::vector<K3DTree<int, float>::Node*> n10 = tree.findNNearest(p, 10);
+    const std::vector<K3DTree<int, float>::Node*> n10 = tree.findNNearest(p, 10);
     EXPECT_EQ(n10.size(), 10);
-    std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(p, 20);
+    const std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(p, 20);
     EXPECT_EQ(n20.size(), 20);
-    std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(p, 100);
+    const std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(p, 100);
     EXPECT_EQ(n100.size(), 100);
 }
 

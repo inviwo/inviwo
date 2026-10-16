@@ -53,7 +53,7 @@ IVW_QTEDITOR_API QImage generatePreview(Processor& processor);
  * Generate an image of a processor including port connections and port names
  */
 IVW_QTEDITOR_API QImage generatePreview(std::string_view classIdentifier,
-                                        ProcessorFactory* factory);
+                                        const ProcessorFactory* factory);
 
 /**
  * Generate an image of a processor

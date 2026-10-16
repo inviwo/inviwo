@@ -89,8 +89,8 @@ public:
         using RoaringIt = roaring::RoaringSetBitBiDirectionalIterator;
 
         friend BitSet;
-        BitSetIterator(const BitSet& b, bool exhausted = false);
-        BitSetIterator(const RoaringIt& it);
+        explicit BitSetIterator(const BitSet& b, bool exhausted = false);
+        explicit BitSetIterator(const RoaringIt& it);
 
         std::unique_ptr<RoaringIt> it_;
     };
@@ -403,8 +403,8 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    BitSet(const roaring::Roaring& roaring);
-    BitSet(roaring::Roaring&& roaring);
+    explicit BitSet(const roaring::Roaring& roaring);
+    explicit BitSet(roaring::Roaring&& roaring);
 
     void addSingle(uint32_t value_);
     void addMany(size_t size, const uint32_t* data);

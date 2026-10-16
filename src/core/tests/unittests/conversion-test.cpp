@@ -63,14 +63,14 @@ T maxv() {
 
 template <typename To, typename From>
 void testmax(std::string_view to, std::string_view from) {
-    auto res = glm_convert_normalized<To>(maxv<From>());
+    const auto res = glm_convert_normalized<To>(maxv<From>());
     EXPECT_EQ(maxv<To>(), res) << "Convert range max " << from << " (" << +maxv<From>() << ") to "
                                << to << " (" << +maxv<To>() << ")";
 }
 
 template <typename To, typename From>
 void testmin(std::string_view to, std::string_view from) {
-    auto res = glm_convert_normalized<To>(minv<From>());
+    const auto res = glm_convert_normalized<To>(minv<From>());
     EXPECT_EQ(minv<To>(), res) << "Convert range min " << from << " (" << +minv<From>() << ") to "
                                << to << " (" << +minv<To>() << ")";
 }

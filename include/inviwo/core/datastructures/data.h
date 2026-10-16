@@ -185,13 +185,13 @@ protected:
 
     template <typename F, typename T>
     decltype(auto) getLastOr(F&& f, T&& fallback) const {
-        std::scoped_lock lock(mutex_);
+        const std::scoped_lock lock(mutex_);
         return lastValidRepresentation_ ? std::invoke(std::forward<F>(f), *lastValidRepresentation_)
                                         : std::forward<T>(fallback);
     }
     template <typename F, typename T>
     void setLastAndInvalidateOther(F&& f, T&& value) {
-        std::scoped_lock lock(mutex_);
+        const std::scoped_lock lock(mutex_);
         if (lastValidRepresentation_) {
             std::invoke(std::forward<F>(f), *lastValidRepresentation_, std::forward<T>(value));
             invalidateAllOtherInternal(lastValidRepresentation_.get());
@@ -206,7 +206,7 @@ private:
     static std::shared_ptr<T> getReprInternal(D& data);
 
     std::shared_ptr<Repr> findRepr(std::type_index idx) const {
-        if (auto it = representations_.find(idx); it != representations_.end()) {
+        if (const auto it = representations_.find(idx); it != representations_.end()) {
             return it->second;
         } else {
             return nullptr;
@@ -241,14 +241,14 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
     const auto requestedType = std::type_index{typeid(T)};
     if (data.representations_.empty()) {
         auto factory = RepresentationFactoryManager::getRepresentationFactory<Repr>();
-        auto repr = std::shared_ptr<Repr>{factory->createOrDefault(requestedType, &data)};
+        const auto repr = std::shared_ptr<Repr>{factory->createOrDefault(requestedType, &data)};
         if (!repr) {
             throw Exception("Failed to create default representation");
         }
         data.lastValidRepresentation_ = data.addRepresentationInternal(repr);
     }
 
-    if (auto repr = data.findRepr(requestedType); repr && repr->isValid()) {
+    if (const auto repr = data.findRepr(requestedType); repr && repr->isValid()) {
         data.lastValidRepresentation_ = repr;
         return std::dynamic_pointer_cast<T>(repr);
     } else {
@@ -295,21 +295,21 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
 template <typename Self, typename Repr>
 template <typename T>
 std::shared_ptr<const T> Data<Self, Repr>::getRepresentationShared() const {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     return getReprInternal<const T>(*static_cast<const Self*>(this));
 }
 
 template <typename Self, typename Repr>
 template <typename T>
 const T* Data<Self, Repr>::getRepresentation() const {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     return getReprInternal<const T>(*static_cast<const Self*>(this)).get();
 }
 
 template <typename Self, typename Repr>
 template <typename T>
 T* Data<Self, Repr>::getEditableRepresentation() {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     auto repr = getReprInternal<T>(*static_cast<const Self*>(this)).get();
     invalidateAllOtherInternal(repr);
     return repr;
@@ -318,19 +318,19 @@ T* Data<Self, Repr>::getEditableRepresentation() {
 template <typename Self, typename Repr>
 template <typename T>
 bool Data<Self, Repr>::hasRepresentation() const {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     return util::has_key(representations_, std::type_index{typeid(T)});
 }
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::invalidateAllOther(const Repr* repr) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     invalidateAllOtherInternal(repr);
 }
 template <typename Self, typename Repr>
 void Data<Self, Repr>::invalidateAllOtherInternal(const Repr* repr) {
     bool found = false;
-    for (auto& elem : representations_) {
+    for (const auto& elem : representations_) {
         if (elem.second.get() != repr) {
             elem.second->setValid(false);
         } else {
@@ -346,17 +346,17 @@ void Data<Self, Repr>::invalidateAllOtherInternal(const Repr* repr) {
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::clearRepresentations() {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     representations_.clear();
 }
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::copyRepresentationsTo(Data<Self, Repr>* target) const {
-    std::scoped_lock targetLock(mutex_, target->mutex_);
+    const std::scoped_lock targetLock(mutex_, target->mutex_);
     target->representations_.clear();
 
     if (lastValidRepresentation_) {
-        auto rep = std::shared_ptr<Repr>(lastValidRepresentation_->clone());
+        const auto rep = std::shared_ptr<Repr>(lastValidRepresentation_->clone());
         target->lastValidRepresentation_ = target->addRepresentationInternal(rep);
     }
 }
@@ -375,15 +375,15 @@ std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::addRepresentation(std::shared_ptr<Repr> representation) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     lastValidRepresentation_ = addRepresentationInternal(std::move(representation));
 }
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
-    for (auto& elem : representations_) {
+    for (const auto& elem : representations_) {
         if (elem.second.get() == representation) {
             representations_.erase(elem.first);
             break;
@@ -393,7 +393,7 @@ void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
     if (lastValidRepresentation_.get() == representation) {
         lastValidRepresentation_.reset();
 
-        for (auto& elem : representations_) {
+        for (const auto& elem : representations_) {
             if (elem.second->isValid()) {
                 lastValidRepresentation_ = elem.second;
                 break;
@@ -404,7 +404,7 @@ void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::removeOtherRepresentations(const Repr* representation) {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
     std::unordered_map<std::type_index, std::shared_ptr<Repr>> repr;
     for (auto& elem : representations_) {
@@ -425,14 +425,14 @@ void Data<Self, Repr>::removeOtherRepresentations(const Repr* representation) {
 
 template <typename Self, typename Repr>
 bool Data<Self, Repr>::hasRepresentations() const {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     return !representations_.empty();
 }
 
 template <typename Self, typename Repr>
 void Data<Self, Repr>::updateResource(const ResourceMeta& meta) const {
     meta_ = meta;
-    for (auto& elem : representations_) {
+    for (const auto& elem : representations_) {
         elem.second->updateResource(meta);
     }
 }

@@ -222,7 +222,7 @@ struct Fsm {
 }  // namespace fsm
 
 struct PickingControllerMouseStateSM {
-    PickingControllerMouseStateSM(PickingManager* pickingManager)
+    explicit PickingControllerMouseStateSM(PickingManager* pickingManager)
         : pickingManager{pickingManager} {}
     PickingManager* pickingManager;
     fsm::FsmState state;

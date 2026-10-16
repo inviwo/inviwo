@@ -111,7 +111,7 @@ bool EditorFileObserver::eventFilter(QObject* obj, QEvent* event) {
 void EditorFileObserver::queryReloadFile() {
     if (widgetIsFocused() && fileChangedInBackground_ && !reloadQueryInProgress_) {
         reloadQueryInProgress_ = true;
-        std::string msg = fmt::format(
+        const std::string msg = fmt::format(
             "The file {} has been modified outside of Inviwo, do you want to reload its "
             "contents?",
             filename_.stem());

@@ -63,9 +63,9 @@ namespace inviwo {
 namespace {
 
 std::filesystem::path toPath(const QString& str) {
-    auto buffer = str.toUtf8();
-    std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
-                             static_cast<size_t>(buffer.size())};
+    const auto buffer = str.toUtf8();
+    const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
+                                   static_cast<size_t>(buffer.size())};
     return std::filesystem::path{u8str};
 }
 QString toQString(const std::filesystem::path& path) {
@@ -127,7 +127,7 @@ void FileSystemObserverQt::startFileObservation(const std::filesystem::path& fil
 void FileSystemObserverQt::stopFileObservation(const std::filesystem::path& fileName,
                                                FileObserver* source) {
     const std::scoped_lock lock{mutex_};
-    auto it = std::ranges::find_if(fileObservers_, [&](const FileObserver* observer) {
+    const auto it = std::ranges::find_if(fileObservers_, [&](const FileObserver* observer) {
         return observer != source && observer->isObserved(fileName);
     });
     // Make sure that no observer is observing the file
@@ -142,7 +142,7 @@ void FileSystemObserverQt::fileChanged(const QString& fileName) {
     const auto fileNameStd = toPath(fileName);
     std::unique_lock lock{mutex_};
     // don't use iterators here, they might be invalidated.
-    size_t size = fileObservers_.size();
+    const size_t size = fileObservers_.size();
     for (size_t i = 0; i < size && i < fileObservers_.size(); ++i) {
         if (fileObservers_[i]->isObserved(fileNameStd)) {
             auto* observer = fileObservers_[i];
@@ -268,7 +268,7 @@ void utilqt::configurePalette() {
 
 void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
     auto qapp = QApplication::instance();
-    auto helper = std::make_shared<detail::QtProcessFrontHelper>();
+    const auto helper = std::make_shared<detail::QtProcessFrontHelper>();
     app.setPostEnqueueFront([helper]() { emit helper->postEnqueue(); });
     QObject::connect(
         helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp,
@@ -279,11 +279,11 @@ void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
 
 void utilqt::configureAssertionHandler(InviwoApplication& app) {
     app.setAssertionHandler([](std::string_view message, SourceContext context) {
-        auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
-                         .arg(toQString(context.file()))
-                         .arg(context.line())
-                         .arg(toQString(context.function()))
-                         .arg(toQString(message));
+        const auto error = QString{"<b>Assertion Failed</b><br>File: %1:%2<br>Function: %3<p>%4"}
+                               .arg(toQString(context.file()))
+                               .arg(context.line())
+                               .arg(toQString(context.function()))
+                               .arg(toQString(message));
 
         showFatalMessage(error);
     });

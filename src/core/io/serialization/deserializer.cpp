@@ -42,7 +42,7 @@ namespace inviwo {
 
 namespace {
 
-int getVersionAttribute(TiXmlElement* elem) {
+int getVersionAttribute(const TiXmlElement* elem) {
     int version{};
     if (const auto ver = elem->Attribute(SerializeConstants::VersionAttribute)) {
         serialization::fromStr(*ver, version);

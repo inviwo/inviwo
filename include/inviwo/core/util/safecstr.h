@@ -45,7 +45,7 @@ namespace inviwo {
 template <size_t N = 120>
 class SafeCStr {
 public:
-    SafeCStr(const std::string_view sv) {
+    explicit SafeCStr(const std::string_view sv) {
         static_assert(N > 0);
         if (sv.size() < N - 1) {
             std::memcpy(stack.data(), sv.data(), sv.size());

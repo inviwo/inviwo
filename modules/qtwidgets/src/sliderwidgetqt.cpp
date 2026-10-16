@@ -120,8 +120,8 @@ void BaseSliderWidgetQt::applyValue() {
     emit valueChanged();
 }
 void BaseSliderWidgetQt::applyMinValue() {
-    QSignalBlocker spinBlock(spinBox_);
-    QSignalBlocker slideBlock(slider_);
+    const QSignalBlocker spinBlock(spinBox_);
+    const QSignalBlocker slideBlock(slider_);
 
     if (minCB_ == ConstraintBehavior::Ignore) {
         spinBox_->setMinimum(std::numeric_limits<double>::lowest());
@@ -132,8 +132,8 @@ void BaseSliderWidgetQt::applyMinValue() {
     updateSlider();
 }
 void BaseSliderWidgetQt::applyMaxValue() {
-    QSignalBlocker spinBlock(spinBox_);
-    QSignalBlocker slideBlock(slider_);
+    const QSignalBlocker spinBlock(spinBox_);
+    const QSignalBlocker slideBlock(slider_);
 
     if (maxCB_ == ConstraintBehavior::Ignore) {
         spinBox_->setMaximum(std::numeric_limits<double>::max());
@@ -144,8 +144,8 @@ void BaseSliderWidgetQt::applyMaxValue() {
     updateSlider();
 }
 void BaseSliderWidgetQt::applyIncrement() {
-    QSignalBlocker spinBlock(spinBox_);
-    QSignalBlocker slideBlock(slider_);
+    const QSignalBlocker spinBlock(spinBox_);
+    const QSignalBlocker slideBlock(slider_);
 
     spinBox_->setIncrement(transformIncrementToSpinner());
     spinBox_->setDecimals(transformIncrementToSpinnerDecimals());
@@ -174,14 +174,14 @@ void BaseSliderWidgetQt::updateFromSpinBox() {
 }
 
 void BaseSliderWidgetQt::updateSpinBox() {
-    QSignalBlocker spinBlock(spinBox_);
+    const QSignalBlocker spinBlock(spinBox_);
 
     spinnerValue_ = transformValueToSpinner();
     spinBox_->setValue(spinnerValue_);
 }
 
 void BaseSliderWidgetQt::updateSlider() {
-    QSignalBlocker slideBlock(slider_);
+    const QSignalBlocker slideBlock(slider_);
 
     sliderValue_ = transformValueToSlider();
     updateOutOfBounds();
@@ -190,7 +190,8 @@ void BaseSliderWidgetQt::updateSlider() {
 }
 
 void BaseSliderWidgetQt::updateOutOfBounds() {
-    bool isOutOfBounds = (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
+    const bool isOutOfBounds =
+        (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
     if (isOutOfBounds != slider_->property("outOfBounds").toBool()) {
         slider_->setProperty("outOfBounds", isOutOfBounds);
         slider_->style()->unpolish(slider_);
@@ -202,9 +203,9 @@ bool BaseSliderWidgetQt::eventFilter(QObject* watched, QEvent* event) {
     if (watched == slider_ && event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent* me = static_cast<QMouseEvent*>(event);
         if (me->button() == Qt::LeftButton && !slider_->isSliderDown() && isEnabled()) {
-            auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
-                                                   (slider_->maximum() - slider_->minimum()) /
-                                                   slider_->width();
+            const auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
+                                                         (slider_->maximum() - slider_->minimum()) /
+                                                         slider_->width();
             slider_->setValue(static_cast<int>(newPos));
             me->accept();
             return true;

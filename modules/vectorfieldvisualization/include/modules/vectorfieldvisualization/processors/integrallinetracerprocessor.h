@@ -101,13 +101,13 @@ IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
 
 template <typename Tracer>
 void IntegralLineTracerProcessor<Tracer>::process() {
-    auto sampler = sampler_.getData();
+    const auto sampler = sampler_.getData();
     auto lines =
         std::make_shared<IntegralLineSet>(sampler->getModelMatrix(), sampler->getWorldMatrix());
 
     Tracer tracer(sampler, properties_);
 
-    for (auto meta : annotationSamplers_.getSourceVectorData()) {
+    for (const auto meta : annotationSamplers_.getSourceVectorData()) {
         std::string key{meta.first->getProcessor()->getIdentifier()};
         key = util::stripIdentifier(key);
         tracer.addMetaDataSampler(key, meta.second);
@@ -118,9 +118,9 @@ void IntegralLineTracerProcessor<Tracer>::process() {
     for (const auto& seeds : seeds_) {
         util::forEachParallel(*seeds, [&](const auto& p, size_t i) {
             IntegralLine line = tracer.traceFrom(p);
-            auto size = line.getPositions().size();
+            const auto size = line.getPositions().size();
             if (size > 1) {
-                std::lock_guard<std::mutex> lock(mutex);
+                const std::lock_guard<std::mutex> lock(mutex);
                 lines->push_back(std::move(line), startID + i);
             }
         });

@@ -45,7 +45,7 @@ namespace util {
  */
 class IVW_CORE_API KeepTrueWhileInScope {
 public:
-    KeepTrueWhileInScope(bool* b) : variable_(b), prevValue_(b ? *b : false) {
+    explicit KeepTrueWhileInScope(bool* b) : variable_(b), prevValue_(b ? *b : false) {
         if (variable_) {
             (*variable_) = true;
         }
@@ -83,7 +83,7 @@ struct IVW_CORE_API OnScopeExit {
         return *this;
     }
 
-    OnScopeExit(ExitAction action) try : action_(action) {
+    explicit OnScopeExit(ExitAction action) try : action_(action) {
     } catch (...) {
         action();
     }
@@ -97,7 +97,7 @@ struct IVW_CORE_API OnScopeExit {
         if (action_) action_();
         action_ = nullptr;
     }
-    operator bool() const { return static_cast<bool>(action_); }
+    explicit operator bool() const { return static_cast<bool>(action_); }
 
 private:
 #include <warn/push>

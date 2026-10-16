@@ -79,15 +79,15 @@ namespace {
 void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
                     const std::function<void(ContextMenuEvent&)>& propagator) {
 
-    auto addSeparator = [menu](const ContextMenuSeparator&) { menu->addSeparator(); };
-    auto addSubmenu = [menu, propagator](const ContextMenuSubmenu& menuEntry) {
+    const auto addSeparator = [menu](const ContextMenuSeparator&) { menu->addSeparator(); };
+    const auto addSubmenu = [menu, propagator](const ContextMenuSubmenu& menuEntry) {
         auto* submenu = menu->addMenu(utilqt::toQString(menuEntry.label));
         if (menuEntry.iconPath) {
             submenu->setIcon(QIcon(utilqt::toQString(*menuEntry.iconPath)));
         }
         addMenuEntries(submenu, menuEntry.childEntries, propagator);
     };
-    auto addMenuAction = [menu, propagator](const ContextMenuAction& menuAction) {
+    const auto addMenuAction = [menu, propagator](const ContextMenuAction& menuAction) {
         auto* action = menu->addAction(utilqt::toQString(menuAction.label));
         if (menuAction.iconPath) {
             action->setIcon(QIcon(utilqt::toQString(*menuAction.iconPath)));
@@ -142,7 +142,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
                 });
             }
 
-            if (auto image = image_.lock(); image && actions.contains(ContextMenuCategory::Image)) {
+            if (const auto image = image_.lock();
+                image && actions.contains(ContextMenuCategory::Image)) {
                 if (!menu.actions().empty()) {
                     menu.addSeparator();
                 }
@@ -155,7 +156,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         [this](Qt::CursorShape cursor) { setCursor(cursor); });
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
-    auto setHandleTouch = [this, &settings, interactionEventMapper]() {
+    const auto setHandleTouch = [this, &settings, interactionEventMapper]() {
         const auto& touch = settings.enableTouchProperty_;
         const auto& gestures = settings.enableGesturesProperty_;
 

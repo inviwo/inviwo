@@ -158,15 +158,15 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
     std::shared_ptr<const LayerRAM> source) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    pybind11::array data = source->dispatch<pybind11::array>([](auto lr) {
+    const pybind11::array data = source->dispatch<pybind11::array>([](auto lr) {
         using ValueType = util::PrecisionValueType<decltype(lr)>;
         using CompType = typename util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = lr->getDimensions();
 
-        auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.y, dims.x}
-                                 : pybind11::array::ShapeContainer{dims.y, dims.x, extent};
+        const auto shape = extent == 1 ? pybind11::array::ShapeContainer{dims.y, dims.x}
+                                       : pybind11::array::ShapeContainer{dims.y, dims.x, extent};
         pybind11::array_t<CompType> data{shape};
 
         if (pybind11::array::c_style == (data.flags() & pybind11::array::c_style)) {
@@ -212,7 +212,7 @@ std::shared_ptr<LayerRAM> LayerPy2RAMConverter::createFrom(
 
     auto dst = destination->getData();
     auto src = source->data().data(0);
-    auto size = source->data().nbytes();
+    const auto size = source->data().nbytes();
 
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);
@@ -234,7 +234,7 @@ void LayerPy2RAMConverter::update(std::shared_ptr<const LayerPy> source,
 
     auto dst = destination->getData();
     auto src = source->data().data(0);
-    auto size = source->data().nbytes();
+    const auto size = source->data().nbytes();
 
     if (pybind11::array::c_style == (source->data().flags() & pybind11::array::c_style)) {
         std::memcpy(dst, src, size);

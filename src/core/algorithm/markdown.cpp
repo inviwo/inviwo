@@ -46,9 +46,9 @@ namespace {
 void renderAttribute(const MD_ATTRIBUTE& attr, StrBuffer& strBuffer,
                      void (*appendTo)(std::string_view, StrBuffer&)) {
     for (int i = 0; attr.substr_offsets[i] < attr.size; i++) {
-        MD_TEXTTYPE type = attr.substr_types[i];
-        MD_OFFSET off = attr.substr_offsets[i];
-        MD_SIZE size = attr.substr_offsets[i + 1] - off;
+        MD_TEXTTYPE const type = attr.substr_types[i];
+        MD_OFFSET const off = attr.substr_offsets[i];
+        MD_SIZE const size = attr.substr_offsets[i + 1] - off;
         const MD_CHAR* text = attr.text + off;
 
         switch (type) {
@@ -68,7 +68,7 @@ Document util::md2doc(std::string_view markdown) {
         std::string codeText{};  ///< code text accumulated from md4c text callbacks
     };
 
-    auto enter_block_callback = [](MD_BLOCKTYPE type, void* detail, void* userdata) -> int {
+    const auto enter_block_callback = [](MD_BLOCKTYPE type, void* detail, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
 
         constexpr std::array<std::string_view, 4> align{{"", "left", "center", "right"}};
@@ -99,7 +99,7 @@ Document util::md2doc(std::string_view markdown) {
                 break;
             }
             case MD_BLOCK_CODE: {
-                auto* blockDetail = static_cast<MD_BLOCK_CODE_DETAIL*>(detail);
+                const auto* blockDetail = static_cast<MD_BLOCK_CODE_DETAIL*>(detail);
                 if (blockDetail->lang.text != nullptr) {
                     StrBuffer buff;
                     renderAttribute(blockDetail->lang, buff, util::htmlEncodeTo);
@@ -130,7 +130,7 @@ Document util::md2doc(std::string_view markdown) {
                 break;
             case MD_BLOCK_TR: state->handles.push_back(state->handles.back().append("tr")); break;
             case MD_BLOCK_TH: {
-                auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
+                const auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
                 if (blockDetail->align == MD_ALIGN_DEFAULT) {
                     state->handles.push_back(state->handles.back().append("th"));
 
@@ -142,7 +142,7 @@ Document util::md2doc(std::string_view markdown) {
                 break;
             }
             case MD_BLOCK_TD: {
-                auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
+                const auto* blockDetail = static_cast<MD_BLOCK_TD_DETAIL*>(detail);
                 if (blockDetail->align == MD_ALIGN_DEFAULT) {
                     state->handles.push_back(state->handles.back().append("td"));
 
@@ -157,7 +157,7 @@ Document util::md2doc(std::string_view markdown) {
 
         return 0;
     };
-    auto leave_block_callback = [](MD_BLOCKTYPE type, void*, void* userdata) -> int {
+    const auto leave_block_callback = [](MD_BLOCKTYPE type, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         if (type == MD_BLOCK_CODE && !state->codeLang.empty()) {
             util::highlightCode(state->handles.back(), state->codeText, state->codeLang);
@@ -167,7 +167,7 @@ Document util::md2doc(std::string_view markdown) {
         state->handles.pop_back();
         return 0;
     };
-    auto enter_span_callback = [](MD_SPANTYPE type, void* detail, void* userdata) -> int {
+    const auto enter_span_callback = [](MD_SPANTYPE type, void* detail, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
 
         switch (type) {
@@ -177,7 +177,7 @@ Document util::md2doc(std::string_view markdown) {
                 break;
             case MD_SPAN_U: state->handles.push_back(state->handles.back().append("u")); break;
             case MD_SPAN_A: {
-                auto* blockDetail = static_cast<MD_SPAN_A_DETAIL*>(detail);
+                const auto* blockDetail = static_cast<MD_SPAN_A_DETAIL*>(detail);
 
                 StrBuffer buff;
                 renderAttribute(blockDetail->href, buff, util::urlEncodeTo);
@@ -192,7 +192,7 @@ Document util::md2doc(std::string_view markdown) {
                 break;
             }
             case MD_SPAN_IMG: {
-                auto* blockDetail = static_cast<MD_SPAN_IMG_DETAIL*>(detail);
+                const auto* blockDetail = static_cast<MD_SPAN_IMG_DETAIL*>(detail);
 
                 StrBuffer buff;
                 renderAttribute(blockDetail->src, buff, util::urlEncodeTo);
@@ -223,12 +223,13 @@ Document util::md2doc(std::string_view markdown) {
 
         return 0;
     };
-    auto leave_span_callback = [](MD_SPANTYPE, void*, void* userdata) -> int {
+    const auto leave_span_callback = [](MD_SPANTYPE, void*, void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         state->handles.pop_back();
         return 0;
     };
-    auto text_callback = [](MD_TEXTTYPE, const MD_CHAR* text, MD_SIZE size, void* userdata) -> int {
+    const auto text_callback = [](MD_TEXTTYPE, const MD_CHAR* text, MD_SIZE size,
+                                  void* userdata) -> int {
         auto* state = static_cast<State*>(userdata);
         if (state->handles.back().element().name() == "img") {
             state->handles.back().element().attributes().emplace("alt",
@@ -240,20 +241,20 @@ Document util::md2doc(std::string_view markdown) {
         }
         return 0;
     };
-    auto debug_log_callback = [](const char* msg, void*) -> void {
+    const auto debug_log_callback = [](const char* msg, void*) -> void {
         log::error("Markdown Error: {}", msg);
     };
 
-    MD_PARSER parser = {.abi_version = 0,
-                        .flags = MD_FLAG_NOHTML | MD_FLAG_PERMISSIVEAUTOLINKS | MD_FLAG_TABLES |
-                                 MD_FLAG_STRIKETHROUGH,
-                        .enter_block = enter_block_callback,
-                        .leave_block = leave_block_callback,
-                        .enter_span = enter_span_callback,
-                        .leave_span = leave_span_callback,
-                        .text = text_callback,
-                        .debug_log = debug_log_callback,
-                        .syntax = nullptr};
+    MD_PARSER const parser = {.abi_version = 0,
+                              .flags = MD_FLAG_NOHTML | MD_FLAG_PERMISSIVEAUTOLINKS |
+                                       MD_FLAG_TABLES | MD_FLAG_STRIKETHROUGH,
+                              .enter_block = enter_block_callback,
+                              .leave_block = leave_block_callback,
+                              .enter_span = enter_span_callback,
+                              .leave_span = leave_span_callback,
+                              .text = text_callback,
+                              .debug_log = debug_log_callback,
+                              .syntax = nullptr};
 
     Document doc;
     State state{{doc.handle()}};

@@ -48,7 +48,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BASE_API LayerSource : public DataSource<Layer, LayerOutport> {
 public:
-    LayerSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
+    explicit LayerSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~LayerSource() = default;
 
     virtual void dataLoaded(std::shared_ptr<Layer> layer) override;

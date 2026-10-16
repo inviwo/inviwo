@@ -138,9 +138,11 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
             [&](const RandomSphericalPointGeneration& opts) {
                 auto mt = makeMT(opts);
 
-                auto thetaGen = [&]() { return util::randomNumber<T>(mt, 0, glm::two_pi<T>()); };
-                auto cosPhiGen = [&]() { return util::randomNumber<T>(mt, T{-1.0}, T{1.0}); };
-                auto rGen = [&]() { return util::randomNumber<T>(mt, T{0.0}, T{1.0}); };
+                const auto thetaGen = [&]() {
+                    return util::randomNumber<T>(mt, 0, glm::two_pi<T>());
+                };
+                const auto cosPhiGen = [&]() { return util::randomNumber<T>(mt, T{-1.0}, T{1.0}); };
+                const auto rGen = [&]() { return util::randomNumber<T>(mt, T{0.0}, T{1.0}); };
 
                 for (size_t i = 0; i < opts.nPoints; i++) {
                     const auto theta = thetaGen();

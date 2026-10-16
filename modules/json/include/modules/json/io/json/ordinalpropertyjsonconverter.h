@@ -73,12 +73,12 @@ void to_json(json& j, const OrdinalProperty<T>& p) {
 template <typename T>
 void from_json(const json& j, OrdinalProperty<T>& p) {
 
-    auto value = j.value("value", p.get());
+    const auto value = j.value("value", p.get());
 
     // Optional parameters
-    auto minVal = j.value("minValue", p.getMinValue());
-    auto maxVal = j.value("maxValue", p.getMaxValue());
-    auto increment = j.value("increment", p.getIncrement());
+    const auto minVal = j.value("minValue", p.getMinValue());
+    const auto maxVal = j.value("maxValue", p.getMaxValue());
+    const auto increment = j.value("increment", p.getIncrement());
 
     p.set(value, minVal, maxVal, increment);
 }

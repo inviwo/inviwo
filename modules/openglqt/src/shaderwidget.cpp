@@ -137,8 +137,8 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
                      &QAction::setEnabled);
     QObject::connect(revert_, &QAction::triggered, this, &ShaderWidget::revert);
 
-    QPixmap enabled(":/svgicons/precompiled-enabled.svg");
-    QPixmap disabled(":/svgicons/precompiled-disabled.svg");
+    const QPixmap enabled(":/svgicons/precompiled-enabled.svg");
+    const QPixmap disabled(":/svgicons/precompiled-disabled.svg");
     QIcon preicon;
     preicon.addPixmap(enabled, QIcon::Normal, QIcon::Off);
     preicon.addPixmap(disabled, QIcon::Normal, QIcon::On);
@@ -163,7 +163,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
                 if (ret == static_cast<int>(QMessageBox::Save)) {
                     this->save();
                 } else if (ret == static_cast<int>(QMessageBox::Cancel)) {
-                    QSignalBlocker block(preprocess_);
+                    const QSignalBlocker block(preprocess_);
                     preprocess_->setChecked(false);
                     return;
                 }
@@ -233,7 +233,8 @@ void ShaderWidget::save() {
     ignoreNextUpdate_ = true;
 
     // get the non-const version from the manager.
-    if (auto resource = ShaderManager::getPtr()->getShaderResource(obj_->getResource()->key())) {
+    if (const auto resource =
+            ShaderManager::getPtr()->getShaderResource(obj_->getResource()->key())) {
         resource->setSource(utilqt::fromQString(shaderCode_->toPlainText()));
         shaderCode_->document()->setModified(false);
     } else {
@@ -251,7 +252,7 @@ void ShaderWidget::apply() {
         orignal_ = obj_->getResource();
     }
 
-    auto tmp = std::make_shared<StringShaderResource>(
+    const auto tmp = std::make_shared<StringShaderResource>(
         "[tmp]", utilqt::fromQString(shaderCode_->toPlainText()));
     obj_->setResource(tmp);
     setWindowTitle("<tmp file>[*]");
@@ -283,8 +284,8 @@ void ShaderWidget::updateState() {
         const auto lines = std::count(code.begin(), code.end(), '\n') + 1;
         std::string::size_type width = 0;
         for (size_t l = 0; l < static_cast<size_t>(lines); ++l) {
-            auto info = obj_->resolveLine(l);
-            auto pos = info.first.find_last_of('/');
+            const auto info = obj_->resolveLine(l);
+            const auto pos = info.first.find_last_of('/');
             width = std::max(width, info.first.size() - (pos + 1));  // note string::npos+1==0
         }
         const auto numberSize = std::to_string(lines).size();
@@ -300,14 +301,14 @@ void ShaderWidget::updateState() {
 
         shaderCode_->setLineAnnotationColor([this](int line, vec4 org) {
             const auto&& [tag, num] = obj_->resolveLine(line - 1);
-            if (auto pos = tag.find_first_of('['); pos != std::string::npos) {
+            if (const auto pos = tag.find_first_of('['); pos != std::string::npos) {
                 const auto resource = std::string_view{tag}.substr(0, pos);
 
-                auto hsv = color::rgb2hsv(vec3(org));
-                auto randH = static_cast<double>(std::hash<std::string_view>{}(resource)) /
-                             static_cast<double>(std::numeric_limits<size_t>::max());
+                const auto hsv = color::rgb2hsv(vec3(org));
+                const auto randH = static_cast<double>(std::hash<std::string_view>{}(resource)) /
+                                   static_cast<double>(std::numeric_limits<size_t>::max());
 
-                auto adjusted =
+                const auto adjusted =
                     vec4{color::hsv2rgb(vec3(static_cast<float>(randH), std::max(0.75f, hsv.y),
                                              std::max(0.25f, hsv.z))),
                          org.w};
@@ -332,18 +333,19 @@ void ShaderWidget::updateState() {
 
 inline void ShaderWidget::queryReloadFile() {
     if (preprocess_->isChecked()) {
-        util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
+        const util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
         updateState();
         fileChangedInBackground_ = false;
         return;
     }
 
     auto children = findChildren<QWidget*>();
-    auto focus =
+    const auto focus =
         std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
     if (focus && fileChangedInBackground_ && !reloadQueryInProgress_) {
-        util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
-        std::string msg = "The shader source has been modified, do you want to reload its content?";
+        const util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
+        const std::string msg =
+            "The shader source has been modified, do you want to reload its content?";
 
         QMessageBox msgBox(QMessageBox::Question, "Shader Editor", utilqt::toQString(msg),
                            QMessageBox::Yes | QMessageBox::No, this);

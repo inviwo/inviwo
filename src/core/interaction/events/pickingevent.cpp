@@ -231,12 +231,12 @@ dvec3 PickingEvent::getWorldSpaceDeltaAtPressDepth(const Camera& camera) const {
     auto prevNDC = getPreviousNDC();
 
     // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = getPressedDepth();
+    const auto refDepth = getPressedDepth();
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+    const auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    const auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
     return (corrWorld - prevWorld);
 }
 

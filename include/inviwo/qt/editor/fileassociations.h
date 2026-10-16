@@ -122,7 +122,7 @@ class IVW_QTEDITOR_API FileAssociations : public QAbstractNativeEventFilter {
 public:
     using ResultType = qintptr;
 
-    FileAssociations(QMainWindow* win);
+    explicit FileAssociations(QMainWindow* win);
     virtual ~FileAssociations();
 
     /**

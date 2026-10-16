@@ -218,8 +218,8 @@ void StreamParticles::update() {
 }
 
 void StreamParticles::initBuffers() {
-    auto seeds = seeds_.getData();
-    auto numPoints = seeds->size();
+    const auto seeds = seeds_.getData();
+    const auto numPoints = seeds->size();
 
     bufPos_ = std::make_shared<Buffer<vec4>>(numPoints, BufferUsage::Dynamic);
     bufLife_ = std::make_shared<Buffer<float>>(numPoints, BufferUsage::Dynamic);
@@ -240,7 +240,7 @@ void StreamParticles::initBuffers() {
             seeds->begin(), seeds->end(), positions.begin(),
             [toWorld =
                  volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](vec3 seed) {
-                vec4 p = toWorld * vec4(seed, 1.0);
+                const vec4 p = toWorld * vec4(seed, 1.0);
                 return p / p.w;
             });
     }
@@ -262,9 +262,9 @@ void StreamParticles::initBuffers() {
 }
 
 void StreamParticles::reseed() {
-    auto curT = clock_.getElapsedSeconds();
+    const auto curT = clock_.getElapsedSeconds();
     if (curT >= reseedtime_ + reseedInterval_.get()) {
-        auto seeds = seeds_.getData();
+        const auto seeds = seeds_.getData();
 
         auto& positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
         auto& lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
@@ -272,19 +272,19 @@ void StreamParticles::reseed() {
         std::mt19937 rand;
         std::uniform_int_distribution<size_t> dist(0, seeds->size());
 
-        auto seedTransform =
+        const auto seedTransform =
             [space = seedingSpace_.get(),
              toWorld = volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](
                 vec3 seed) -> vec4 {
             if (space == SeedingSpace::World) {
                 return vec4(seed, 1.0f);
             } else {
-                vec4 p = toWorld * vec4(seed, 1.0f);
+                const vec4 p = toWorld * vec4(seed, 1.0f);
                 return p / p.w;
             }
         };
 
-        for (auto z : util::zip(positions, lifes)) {
+        for (const auto z : util::zip(positions, lifes)) {
             if (get<1>(z) <= 0) {
                 get<0>(z) = seedTransform((*seeds)[dist(rand)]);
                 get<1>(z) = 1.0f;
@@ -302,7 +302,7 @@ void StreamParticles::advect() {
     const auto dt = t - prevT_;
     prevT_ = t;
 
-    auto volume = volume_.getData();
+    const auto volume = volume_.getData();
 
     auto bufPosGL = bufPos_->getEditableRepresentation<BufferGL>();
     auto bufLifeGL = bufLife_->getEditableRepresentation<BufferGL>();

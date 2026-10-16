@@ -167,7 +167,7 @@ TEST(convexHull, dvec2span) {
     const auto points = getPointSet<dvec2, 10>();
 
     std::array<dvec2, points.size() + 1> hull{};
-    auto result = util::convexHull<10, double>(points, hull);
+    const auto result = util::convexHull<10, double>(points, hull);
 
     EXPECT_TRUE(util::isConvex(result));
     for (const auto& p : points) {
@@ -179,7 +179,7 @@ TEST(convexHull, ivec2span) {
     const auto points = getPointSet<ivec2, 10>({10, 10});
 
     std::array<ivec2, points.size() + 1> hull{};
-    auto result = util::convexHull<10, std::int32_t>(points, hull);
+    const auto result = util::convexHull<10, std::int32_t>(points, hull);
 
     EXPECT_TRUE(util::isConvex(result));
     for (const auto& p : points) {
@@ -209,7 +209,7 @@ std::array<dvec2, N> createNgon(const dvec2& center, double radius) {
     std::array<dvec2, N> points = {dvec2{0.0}};
 
     const double deltaAngle = std::numbers::pi * 2.0 / static_cast<double>(N);
-    for (auto i : std::views::iota(size_t{0}, points.size())) {
+    for (const auto i : std::views::iota(size_t{0}, points.size())) {
         const auto angle = deltaAngle * static_cast<double>(i);
         points[i] = center + dvec2{std::cos(angle), std::sin(angle)} * radius;
     }

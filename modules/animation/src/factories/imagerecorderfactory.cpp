@@ -60,13 +60,13 @@ class ExceptionPropagator {
             }
         }
         void setException() {
-            std::scoped_lock lock{exceptionMutex_};
+            const std::scoped_lock lock{exceptionMutex_};
             if (!exception_) {
                 exception_ = std::current_exception();
             }
         }
         void throwOnError() {
-            std::scoped_lock lock{exceptionMutex_};
+            const std::scoped_lock lock{exceptionMutex_};
             if (exception_) {
                 std::rethrow_exception(std::exchange(exception_, nullptr));
             }

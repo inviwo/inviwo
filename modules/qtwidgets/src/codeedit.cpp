@@ -83,17 +83,18 @@ CodeEdit::CodeEdit(QWidget* parent)
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 
-    auto updateSyntax = [this]() {
+    const auto updateSyntax = [this]() {
         auto color = utilqt::toivec3(sh_->defaultFormat().background().color());
 
-        auto css = fmt::format("background-color: rgb({}, {}, {});font-size: {}pt;font-family: {};",
-                               color.r, color.g, color.b, sh_->fontSize(), sh_->font());
+        const auto css =
+            fmt::format("background-color: rgb({}, {}, {});font-size: {}pt;font-family: {};",
+                        color.r, color.g, color.b, sh_->fontSize(), sh_->font());
         setStyleSheet(utilqt::toQString(css));
 
         textColor_ = utilqt::tovec4(sh_->defaultFormat().foreground().color());
         highlightColor_ = sh_->highlight();
 
-        QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
+        const QFontMetrics metrics(QFont(utilqt::toQString(sh_->font()), sh_->fontSize()));
         setTabStopDistance(static_cast<qreal>(4 * metrics.horizontalAdvance(' ')));
         sh_->rehighlight();
     };
@@ -280,7 +281,7 @@ void CodeEdit::updateLineNumberArea(const QRect& rect, int dy) {
 void CodeEdit::resizeEvent(QResizeEvent* e) {
     QPlainTextEdit::resizeEvent(e);
 
-    QRect cr = contentsRect();
+    const QRect cr = contentsRect();
     lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 

@@ -50,7 +50,7 @@ PropertyPresetManager::PropertyPresetManager(InviwoApplication* app) : app_{app}
 
 bool PropertyPresetManager::loadPreset(const std::string& name, Property* property,
                                        PropertyPresetType type) const {
-    auto apply = [this](Property* p, const std::pmr::string& xml) {
+    const auto apply = [this](Property* p, const std::pmr::string& xml) {
         const NetworkLock lock(p);
         auto [d, info] = app_->getWorkspaceManager()->createWorkspaceDeserializerAndInfo(xml, "");
 
@@ -65,8 +65,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
     switch (type) {
         case PropertyPresetType::Property: {
             auto pmap = getPropertyPresets(property);
-            auto it = std::find_if(pmap.begin(), pmap.end(),
-                                   [&](const auto& pair) { return pair.first == name; });
+            const auto it = std::find_if(pmap.begin(), pmap.end(),
+                                         [&](const auto& pair) { return pair.first == name; });
             if (it != pmap.end()) {
                 const std::pmr::string xml{it->second};
                 apply(property, xml);
@@ -75,8 +75,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Workspace: {
-            auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
-                                   [&](const auto& item) { return item.name == name; });
+            const auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
+                                         [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end() &&
                 it->classIdentifier == property->getClassIdentifier()) {
                 apply(property, it->data);
@@ -85,8 +85,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Application: {
-            auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
-                                   [&](const auto& item) { return item.name == name; });
+            const auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
+                                         [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end() && it->classIdentifier == property->getClassIdentifier()) {
                 apply(property, it->data);
                 return true;
@@ -118,8 +118,8 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Workspace: {
-            auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
-                                   [&](const auto& item) { return item.name == name; });
+            const auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
+                                         [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end()) {
                 it->classIdentifier = property->getClassIdentifier();
                 it->data = xml;
@@ -129,8 +129,8 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Application: {
-            auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
-                                   [&](const auto& item) { return item.name == name; });
+            const auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
+                                         [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end()) {
                 it->classIdentifier = property->getClassIdentifier();
                 it->data = xml;
@@ -157,7 +157,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
                                  [&](const auto& item) { return item.name == name; }) > 0;
         }
         case PropertyPresetType::Application: {
-            auto removed =
+            const auto removed =
                 std::erase_if(appPresets_, [&](const auto& item) { return item.name == name; });
             saveApplicationPresets();
             return removed > 0;
@@ -168,7 +168,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
 
 void PropertyPresetManager::appendPropertyPresets(Property* target, Property* source) {
     auto& pmap = getPropertyPresets(target);
-    for (auto item : getPropertyPresets(source)) {
+    for (const auto item : getPropertyPresets(source)) {
         pmap[item.first] = item.second;
     }
 }
@@ -199,7 +199,7 @@ std::vector<std::string> PropertyPresetManager::getAvailablePresets(
 }
 
 void PropertyPresetManager::loadApplicationPresets() {
-    auto filename = filesystem::getPath(PathType::Settings) / "PropertyPresets.ivs";
+    const auto filename = filesystem::getPath(PathType::Settings) / "PropertyPresets.ivs";
     if (std::filesystem::is_regular_file(filename)) {
         try {
             Deserializer d(filename);

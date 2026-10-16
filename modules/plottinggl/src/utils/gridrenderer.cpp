@@ -67,8 +67,8 @@ std::unique_ptr<Mesh> generateGridMesh(const std::vector<double>& horizontalPosi
     std::vector<vec2> vertices;
     vertices.reserve(numLines * 2);
 
-    auto createLines = [&vertices](const std::vector<double>& positions, vec2 axisDir, vec2 lineDir,
-                                   dvec2 range) {
+    const auto createLines = [&vertices](const std::vector<double>& positions, vec2 axisDir,
+                                         vec2 lineDir, dvec2 range) {
         const auto axisLength = range.y - range.x;
         const vec2 scaling{axisDir / axisLength};
 
@@ -189,8 +189,8 @@ void GridRenderer::renderGrid(Camera* camera, const vec3& origin, const vec3& ri
         }
     };
 
-    auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
-                        const mat4& transform = mat4{1.0f}) {
+    const auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
+                              const mat4& transform = mat4{1.0f}) {
         lineShader.setUniform("lineWidth", lineWidth);
         MeshDrawerGL::DrawObject drawer(meshGL, meshGL->getDefaultMeshInfo());
         utilgl::setShaderUniforms(lineShader, Transform{transform}, "geometry");

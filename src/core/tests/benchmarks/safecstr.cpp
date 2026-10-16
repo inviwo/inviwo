@@ -48,7 +48,7 @@ std::string_view view =
 template <size_t N>
 class SafeCStr1 {
 public:
-    SafeCStr1(std::string_view sv) {
+    explicit SafeCStr1(std::string_view sv) {
         static_assert(N > 0);
         if (sv.size() < N - 1) {
             auto& arr = storage.template emplace<std::array<char, N>>();
@@ -64,7 +64,7 @@ public:
     const char* c_str() const {
         return std::visit([](const auto& str) { return str.data(); }, storage);
     }
-    operator const char*() const { return c_str(); }
+    explicit operator const char*() const { return c_str(); }
 
 private:
     std::variant<std::array<char, N>, std::vector<char>> storage;
@@ -73,7 +73,7 @@ private:
 template <size_t N>
 class SafeCStr2 {
 public:
-    SafeCStr2(std::string_view sv) {
+    explicit SafeCStr2(std::string_view sv) {
         static_assert(N > 0);
         if (sv.size() < N - 1) {
             std::memcpy(stack.data(), sv.data(), sv.size());
@@ -87,7 +87,7 @@ public:
     }
 
     const char* c_str() const { return heap ? heap.get() : stack.data(); }
-    operator const char*() const { return heap ? heap.get() : stack.data(); }
+    explicit operator const char*() const { return heap ? heap.get() : stack.data(); }
 
 private:
     std::array<char, N> stack;  // Do not initialize!
@@ -95,17 +95,17 @@ private:
 };
 
 static void StringConv(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = std::string(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = std::string(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
 
 static void ArrayConvInit(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
         std::array<char, 256> buff = {0};
         std::memcpy(buff.data(), sv.data(), sv.size());
         auto ptr = buff.data();
@@ -114,8 +114,8 @@ static void ArrayConvInit(benchmark::State& state) {
 }
 
 static void ArrayConvZero(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
         std::array<char, 256> buff;
         std::memcpy(buff.data(), sv.data(), sv.size());
         buff[sv.size()] = 0;
@@ -125,18 +125,18 @@ static void ArrayConvZero(benchmark::State& state) {
 }
 
 static void SafeCStr1_256(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = SafeCStr1<256>(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = SafeCStr1<256>(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
 
 static void SafeCStr2_56(benchmark::State& state) {
-    std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
-    for (auto _ : state) {
-        auto str = SafeCStr2<56>(sv);
+    const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
+    for (const auto _ : state) {
+        const auto str = SafeCStr2<56>(sv);
         auto ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }

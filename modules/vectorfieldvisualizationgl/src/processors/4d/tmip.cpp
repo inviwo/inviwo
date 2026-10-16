@@ -101,13 +101,13 @@ void TMIP::process() {
         initializeResources();
     }
 
-    auto volumes = inport_.getData();
+    const auto volumes = inport_.getData();
 
     if (volumes->empty()) {
         return;
     }
 
-    auto firstVol = volumes->at(0);
+    const auto firstVol = volumes->at(0);
 
     if (inport_.isChanged()) {
         const DataFormatBase* format = firstVol->getDataFormat();
@@ -121,23 +121,23 @@ void TMIP::process() {
         volume1_ = std::shared_ptr<Volume>(volume0_->clone());
     }
 
-    int iterations =
+    const int iterations =
         static_cast<int>(std::ceil(volumes->size() / static_cast<float>(maxSamplers_)));
 
     std::shared_ptr<Volume> readVol = volume0_;
     std::shared_ptr<Volume> writeVol = volume1_;
     int offset = 0;
     for (int i = 0; i < iterations; i++) {
-        bool firstIT = i == 0;
-        bool lastIT = i != 0 && iterations;
+        const bool firstIT = i == 0;
+        const bool lastIT = i != 0 && iterations;
 
-        auto startVolIT = volumes->begin() + offset + 1;
+        const auto startVolIT = volumes->begin() + offset + 1;
 
         if (firstIT) {
-            auto endVolIT = volumes->begin() + offset + maxSamplers_;
+            const auto endVolIT = volumes->begin() + offset + maxSamplers_;
             iteration(shader_, volumes->at(0), writeVol, startVolIT, endVolIT);
         } else if (!lastIT) {
-            auto endVolIT = volumes->begin() + offset + maxSamplers_;
+            const auto endVolIT = volumes->begin() + offset + maxSamplers_;
             iteration(shader_, readVol, writeVol, startVolIT, endVolIT);
         } else {
             iteration(shaderLast_, readVol, writeVol, startVolIT, volumes->end());
@@ -150,9 +150,9 @@ void TMIP::process() {
 }
 
 void TMIP::initializeResources() {
-    auto volumes = inport_.getData();
+    const auto volumes = inport_.getData();
 
-    int numVolumes = static_cast<int>(volumes->size());
+    const int numVolumes = static_cast<int>(volumes->size());
     auto samplers = std::min(maxSamplers_, numVolumes);
 
     initShader(shader_, samplers);
@@ -221,7 +221,7 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol,
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    VolumeGL* outVolumeGL = volume0_->getEditableRepresentation<VolumeGL>();
+    const VolumeGL* outVolumeGL = volume0_->getEditableRepresentation<VolumeGL>();
     if (inport_.isChanged()) {
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }

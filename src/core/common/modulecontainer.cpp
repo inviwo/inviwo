@@ -52,10 +52,11 @@ std::vector<ModuleContainer*> findTransitiveDependencies(const ModuleContainer& 
 
     std::vector<ModuleContainer*> dependencies;
 
-    auto helper = [&](auto self, const ModuleContainer& cont) -> void {
+    const auto helper = [&](auto self, const ModuleContainer& cont) -> void {
         for (const auto& dependencyVersion : cont.dependencies()) {
             const auto& dependency = dependencyVersion.first;
-            if (auto it = std::ranges::find(containers, dependency, &ModuleContainer::identifier);
+            if (const auto it =
+                    std::ranges::find(containers, dependency, &ModuleContainer::identifier);
                 it != containers.end()) {
 
                 if (std::ranges::find(dependencies, &*it) == dependencies.end()) {
@@ -119,7 +120,7 @@ ModuleContainer::ModuleContainer(const std::filesystem::path& libFile, bool runt
 }
 
 std::filesystem::path ModuleContainer::getTmpDir() {
-    auto pid = filesystem::getCurrentProcessId();
+    const auto pid = filesystem::getCurrentProcessId();
     const auto tmp = filesystem::getInviwoUserSettingsPath() / "temporary-module-libraries" /
                      fmt::to_string(pid);
     std::filesystem::create_directories(tmp);
@@ -206,7 +207,7 @@ void ModuleContainer::createModule(InviwoApplication* app) {
                     return factoryObject_->srcPath;
                 } else if (sharedLibrary_) {
                     // TODO handle decide on "module layout" and handle it here
-                    auto libdir = sharedLibrary_->getFilePath().parent_path();
+                    const auto libdir = sharedLibrary_->getFilePath().parent_path();
                     return libdir.parent_path();
                 }
             }

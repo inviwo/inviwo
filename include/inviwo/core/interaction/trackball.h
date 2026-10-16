@@ -61,7 +61,7 @@ public:
      * The trackball does not take ownership of pointers handed to it.
      * @see CameraTrackball
      */
-    Trackball(TrackballObject* object);
+    explicit Trackball(TrackballObject* object);
 
     Trackball(std::string_view identifier, std::string_view displayName,
               TrackballObject* object = nullptr);

@@ -89,7 +89,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
     }
 
     // Add all properties of DemoController
-    auto* factory = util::getPropertyWidgetFactory();
+    const auto* factory = util::getPropertyWidgetFactory();
     for (auto* property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
         auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());

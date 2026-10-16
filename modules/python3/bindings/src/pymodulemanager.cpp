@@ -53,7 +53,7 @@ struct ModuleManagerCallbackHolder {
 
 }  // namespace
 
-void exposeModuleManager(pybind11::module& m) {
+void exposeModuleManager(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::classh<ModuleManagerCallbackHolder>(m, "ModuleManagerCallbackHolder")

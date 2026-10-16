@@ -44,7 +44,7 @@ class HelpBrowser;
 
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
 public:
-    HelpWidget(InviwoMainWindow* parent);
+    explicit HelpWidget(InviwoMainWindow* parent);
     virtual ~HelpWidget();
     HelpWidget(const HelpWidget&) = delete;
     HelpWidget& operator=(const HelpWidget&) = delete;

@@ -37,7 +37,7 @@
 #include <fmt/format.h>
 #include <tclap/CmdLine.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char* const* argv) {
     TCLAP::CmdLine cmd{"Inviwo meta tool", ' '};
 
     TCLAP::SwitchArg verbose{"v", "verbose", "Print extra information", false};
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
         }
     };
 
-    auto getTemplatesPath = [&]() -> std::filesystem::path {
+    const auto getTemplatesPath = [&]() -> std::filesystem::path {
         if (templateDir.isSet()) {
             return std::filesystem::canonical(std::filesystem::path{templateDir.getValue()});
         }
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 
     try {
         cmd.parse(argc, argv);
-        inviwo::meta::Creator creator(
+        const inviwo::meta::Creator creator(
             getInviwoPath(), getTemplatesPath(), {},
             {verbose.getValue(), dryrun.getValue(), force.getValue(), std::cout});
 

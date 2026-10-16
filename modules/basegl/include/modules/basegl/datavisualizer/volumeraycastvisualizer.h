@@ -47,7 +47,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASEGL_API VolumeRaycastVisualizer : public DataVisualizer {
 public:
-    VolumeRaycastVisualizer(InviwoApplication* app);
+    explicit VolumeRaycastVisualizer(InviwoApplication* app);
     virtual ~VolumeRaycastVisualizer() = default;
 
     virtual std::string getName() const override;

@@ -160,7 +160,7 @@ vec3 PositionProperty::get(CoordinateSpace space) const {
 }
 
 void PositionProperty::set(const vec3& pos, CoordinateSpace space, ApplyOffset applyOffset) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     referenceSpace_.set(space);
     const vec3 offset{applyOffset == ApplyOffset::Yes ? getOffset(space) : vec3{0.0f}};
     position_.set(pos + offset);
@@ -203,8 +203,8 @@ vec3 PositionProperty::convertFromWorld(const vec3& pos, CoordinateSpace targetS
     if (!camera_) {
         return pos;
     }
-    SpatialIdentity identity;
-    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    const SpatialIdentity identity;
+    const SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
     return transformer.transformPosition(pos, CoordinateSpace::World, targetSpace);
 }
 
@@ -212,8 +212,8 @@ vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpa
     if (!camera_) {
         return pos;
     }
-    SpatialIdentity identity;
-    SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
+    const SpatialIdentity identity;
+    const SpatialCameraCoordinateTransformerImpl transformer{identity, camera_->get()};
     return transformer.transformPosition(pos, sourceSpace, CoordinateSpace::World);
 }
 
@@ -228,13 +228,13 @@ void PositionProperty::deserialize(Deserializer& d) {
 }
 
 void PositionProperty::invalidateOutputProperties() {
-    for (auto& p : util::ref<Property>(worldPos_, viewPos_, clipPos_, screenPos_)) {
+    for (const auto& p : util::ref<Property>(worldPos_, viewPos_, clipPos_, screenPos_)) {
         p.get().propertyModified();
     }
 }
 
 void PositionProperty::referenceSpaceChanged() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     if (previousReferenceSpace_.has_value()) {
         position_.set(convert(position_, *previousReferenceSpace_, referenceSpace_));
     } else {

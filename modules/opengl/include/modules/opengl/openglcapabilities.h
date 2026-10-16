@@ -48,7 +48,7 @@ public:
     class IVW_MODULE_OPENGL_API GLSLShaderVersion {
     public:
         GLSLShaderVersion();
-        GLSLShaderVersion(int num);
+        explicit GLSLShaderVersion(int num);
         GLSLShaderVersion(int num, std::string_view pro);
 
         const std::string& getProfile() const;

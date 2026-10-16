@@ -40,7 +40,7 @@ bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly) {
     if (checkfirstonly) {
         return seq.at(0)->hasMetaData<DoubleMetaData>("timestamp");
     }
-    for (auto v : seq) {
+    for (const auto v : seq) {
         if (!v->hasMetaData<DoubleMetaData>("timestamp")) return false;
     }
     return true;
@@ -56,8 +56,8 @@ std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sort
         end = getTimestamp(seq.back());
     } else {
         end = start;
-        for (auto v : seq) {
-            auto t = getTimestamp(v);
+        for (const auto v : seq) {
+            const auto t = getTimestamp(v);
             start = std::min(start, t);
             end = std::max(end, t);
         }
@@ -72,7 +72,7 @@ bool isSorted(const VolumeSequence& seq) {
     auto prev = getTimestamp(seq.front());
     auto it = seq.begin() + 1;
     for (; it < seq.end(); ++it) {
-        auto t = getTimestamp(*it);
+        const auto t = getTimestamp(*it);
         if (prev >= t) return false;
         prev = t;
     }
@@ -87,8 +87,8 @@ VolumeSequence sortSequence(const VolumeSequence& seq) {
 
     std::sort(sorted.begin(), sorted.end(),
               [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
-                  auto t1 = getTimestamp(a);
-                  auto t2 = getTimestamp(b);
+                  const auto t1 = getTimestamp(a);
+                  const auto t2 = getTimestamp(b);
                   return t1 < t2;
               });
     return VolumeSequence{sorted};
@@ -112,7 +112,7 @@ std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolum
     } else if (sorted) {
         // find first volume with timestamp greater than t
         auto it = std::find_if(seq.begin(), seq.end(), [t](const std::shared_ptr<const Volume>& v) {
-            auto vt = getTimestamp(v);
+            const auto vt = getTimestamp(v);
             return t < vt;
         });
 

@@ -40,7 +40,7 @@
 namespace inviwo {
 
 TEST(SerializationTest, initTest) {
-    auto refpath = filesystem::findBasePath();
+    const auto refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.write(xml);
@@ -49,7 +49,7 @@ TEST(SerializationTest, initTest) {
 
 template <typename T>
 T serializationOfType(T inValue) {
-    auto refpath = filesystem::findBasePath();
+    const auto refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
@@ -353,7 +353,7 @@ TEST(SerializationTest, dvec4Tests) {
 TEST(SerializationTest, mat2Tests) {
     mat2 inMat(0.0f, 1.0f, 2.0f, 3.0f), outMat;
     outMat = serializationOfType(inMat);
-    int s = 2;
+    const int s = 2;
 
     for (int i = 0; i < s; i++)
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
@@ -362,7 +362,7 @@ TEST(SerializationTest, mat2Tests) {
 TEST(SerializationTest, mat3Tests) {
     mat3 inMat(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f), outMat;
     outMat = serializationOfType(inMat);
-    int s = 3;
+    const int s = 3;
 
     for (int i = 0; i < s; i++)
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
@@ -373,7 +373,7 @@ TEST(SerializationTest, mat4Tests) {
                13.0f, 14.0f, 15.0f),
         outMat;
     outMat = serializationOfType(inMat);
-    int s = 4;
+    const int s = 4;
 
     for (int i = 0; i < s; i++)
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);

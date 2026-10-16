@@ -109,7 +109,7 @@ void addProcessorAndConnect(const std::shared_ptr<Processor>& processor, Process
 }
 
 void addProcessorAndConnect(const std::shared_ptr<Processor>& processor, ProcessorNetwork* net,
-                            Processor* source) {
+                            const Processor* source) {
 
     const auto srcPos = utilqt::toQPoint(util::getPosition(source));
     const auto current = net->getProcessors();

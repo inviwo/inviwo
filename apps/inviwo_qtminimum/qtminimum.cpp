@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     inviwo::LogCentral logger;
     inviwo::LogCentral::init(&logger);
 
-    auto clogger = std::make_shared<inviwo::ConsoleLogger>();
+    const auto clogger = std::make_shared<inviwo::ConsoleLogger>();
     logger.registerLogger(clogger);
 
     // Must be set before constructing QApplication
@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     qInstallMessageHandler(&inviwo::utilqt::logQtMessages);
 #endif
 
-    QApplication qtApp{argc, argv};
+    const QApplication qtApp{argc, argv};
 
     QMainWindow mainWindow{};
     mainWindow.setObjectName("InviwoMainWindow");
@@ -197,7 +197,8 @@ int main(int argc, char** argv) {
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
     // before Processor can delete them.
-    inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
+    const inviwo::util::OnScopeExit clearNetwork(
+        [&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();

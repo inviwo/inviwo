@@ -42,8 +42,8 @@ template <typename T>
 class cloneable_ptr {
 public:
     cloneable_ptr() = default;
-    cloneable_ptr(T* ptr);
-    cloneable_ptr(std::unique_ptr<T>&& ptr);
+    explicit cloneable_ptr(T* ptr);
+    explicit cloneable_ptr(std::unique_ptr<T>&& ptr);
     cloneable_ptr(const cloneable_ptr<T>& rhs);
     cloneable_ptr<T>& operator=(const cloneable_ptr<T>& that);
 

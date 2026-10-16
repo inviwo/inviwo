@@ -579,16 +579,16 @@ void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffe
     if (values[6] > 0) index = index | 64;
     if (values[7] > 0) index = index | 128;
 
-    for (auto t : cases[index]) {
-        auto interpolate = [&](auto a, auto b) {
-            auto v0 = values[a];
-            auto v1 = values[b];
-            float t = static_cast<float>(v0 / (v0 - v1));
+    for (const auto t : cases[index]) {
+        const auto interpolate = [&](auto a, auto b) {
+            const auto v0 = values[a];
+            const auto v1 = values[b];
+            const float t = static_cast<float>(v0 / (v0 - v1));
             return pos[a] + t * (pos[b] - pos[a]);
         };
-        vec3 p0 = interpolate(t.e0a, t.e0b);
-        vec3 p1 = interpolate(t.e1a, t.e1b);
-        vec3 p2 = interpolate(t.e2a, t.e2b);
+        const vec3 p0 = interpolate(t.e0a, t.e0b);
+        const vec3 p1 = interpolate(t.e1a, t.e1b);
+        const vec3 p2 = interpolate(t.e2a, t.e2b);
 
         marching::addTriangle(vertexTree, indexBuffer, positions, normals, p0, p1, p2);
     }
@@ -628,7 +628,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume,
         std::vector<vec3> normals;
         std::vector<vec4> colors;
         std::vector<int> surfaceIndices;
-        auto indexBufferRam = std::make_shared<IndexBufferRAM>();
+        const auto indexBufferRam = std::make_shared<IndexBufferRAM>();
 
         const T* src = ram->getDataTyped();
 
@@ -683,7 +683,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume,
 
         IVW_ASSERT(positions.size() == normals.size(), "positions_ and normals_ must be equal");
 
-        auto mesh = std::make_shared<Mesh>();
+        const auto mesh = std::make_shared<Mesh>();
         mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
         mesh->addBuffer(BufferType::NormalAttrib, util::makeBuffer(std::move(normals)));
         mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));

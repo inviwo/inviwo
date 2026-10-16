@@ -149,7 +149,7 @@ Wrapping2D Layer::getWrapping() const {
 
 std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     const std::string& fileExtension) const {
-    if (auto writer = std::shared_ptr<DataWriterType<Layer>>(
+    if (const auto writer = std::shared_ptr<DataWriterType<Layer>>(
             InviwoApplication::getPtr()
                 ->getDataWriterFactory()
                 ->getWriterForTypeAndExtension<Layer>(fileExtension))) {

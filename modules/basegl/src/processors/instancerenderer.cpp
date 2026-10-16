@@ -409,10 +409,10 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
                    FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
                    FloatMat2Property, FloatMat3Property, FloatMat4Property>;
     util::for_each_type<types>{}([this, property]<typename T>() {
-        if (auto* prop = dynamic_cast<T*>(property)) {
+        if (const auto* prop = dynamic_cast<T*>(property)) {
             dynUniforms_.emplace_back(
                 [prop](Shader& shader, TextureUnitContainer&) {
-                    auto name = util::stripIdentifier(prop->getDisplayName());
+                    const auto name = util::stripIdentifier(prop->getDisplayName());
                     shader.setUniform(name, prop->get());
                 },
                 [prop](ShaderObject& so) {
@@ -429,7 +429,7 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
     if (auto* tfProp = dynamic_cast<TransferFunctionProperty*>(property)) {
         dynUniforms_.emplace_back(
             [tfProp](const Shader& shader, TextureUnitContainer& units) {
-                auto name = util::stripIdentifier(tfProp->getDisplayName());
+                const auto name = util::stripIdentifier(tfProp->getDisplayName());
                 const auto& unit = units.emplace_back();
                 utilgl::bindTexture(*tfProp, unit);
                 shader.setUniform(name, unit);
@@ -593,7 +593,7 @@ void InstanceRenderer::initializeResources() {
     std::ranges::for_each(dynUniforms_, [&](auto& uniform) { uniform.addUniform(*vso); });
 
     size_t prio = 100;
-    for (auto& transform : transforms_) {
+    for (const auto& transform : transforms_) {
         vso->addSegment(ShaderSegment{
             .placeholder = irplaceholder::transforms,
             .name = std::string{transform.getIdentifier()},
@@ -617,18 +617,18 @@ size_t numberOfVertices(Mesh::MeshInfo mi, size_t nIndices) {
     return numberOfVertices(mi.dt, mi.ct, nIndices);
 }
 size_t numberOfVertices(const MeshGL& meshGL, size_t index) {
-    auto mi = meshGL.getMeshInfoForIndexBuffer(index);
-    auto nIndices = meshGL.getIndexBuffer(index)->getSize();
+    const auto mi = meshGL.getMeshInfoForIndexBuffer(index);
+    const auto nIndices = meshGL.getIndexBuffer(index)->getSize();
     return numberOfVertices(mi, nIndices);
 }
 size_t numberOfVertices(const MeshGL& meshGL) {
     const std::size_t numIndexBuffers = meshGL.getIndexBufferCount();
     if (numIndexBuffers > 0) {
-        auto indices = std::ranges::iota_view{size_t{0}, numIndexBuffers};
+        const auto indices = std::ranges::iota_view{size_t{0}, numIndexBuffers};
         return std::transform_reduce(indices.begin(), indices.end(), size_t{0}, std::plus<>{},
                                      [&](size_t ib) { return numberOfVertices(meshGL, ib); });
     } else {
-        auto nIndices = meshGL.getBufferGL(0)->getSize();
+        const auto nIndices = meshGL.getBufferGL(0)->getSize();
         return numberOfVertices(meshGL.getDefaultMeshInfo(), nIndices);
     }
 }
@@ -672,7 +672,7 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
             });
         }
         if (numIndexBuffers == 0) {
-            auto size = meshGL.getBufferGL(0)->getSize();
+            const auto size = meshGL.getBufferGL(0)->getSize();
             const auto meshInfo = meshGL.getDefaultMeshInfo();
             callback(size, meshInfo, [&meshInfo, size]() {
                 glDrawArrays(MeshDrawerGL::getGLDrawMode(meshInfo), 0, static_cast<GLsizei>(size));
@@ -710,7 +710,7 @@ void InstanceRenderer::process() {
 
 std::optional<dmat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     utilgl::activateTargetAndClearOrCopySource(outport_, background_);
-    util::OnScopeExit deactivate(utilgl::deactivateCurrentTarget);
+    const util::OnScopeExit deactivate(utilgl::deactivateCurrentTarget);
 
     const auto nInstances = commonNumberOfElements(vecPorts_);
     if (nInstances == 0) return std::nullopt;
@@ -718,12 +718,12 @@ std::optional<dmat4> InstanceRenderer::render(bool enableBoundingBoxCalc) {
     const auto& mesh = *inport_.getData();
     const auto& meshGL = *mesh.getRepresentation<MeshGL>();
 
-    utilgl::Activate activate{&shader_};
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::Activate activate{&shader_};
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::setUniforms(shader_, camera_, light_);
     utilgl::setShaderUniforms(shader_, mesh, "geometry");
-    utilgl::Enable<MeshGL> enable{&meshGL};
+    const utilgl::Enable<MeshGL> enable{&meshGL};
 
     TextureUnitContainer units;
     for (const auto& uniform : dynUniforms_) {

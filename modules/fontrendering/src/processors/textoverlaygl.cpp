@@ -173,14 +173,14 @@ void TextOverlayGL::process() {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
 
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     for (auto&& [item, tex] : util::zip(texts_, textObjects_)) {
         if (auto tp = dynamic_cast<const TextOverlayProperty*>(item)) {
             // use integer position for best results
-            vec2 size(tex.bbox.textExtent);
-            vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
+            const vec2 size(tex.bbox.textExtent);
+            const vec2 shift = 0.5f * size * (font_.anchorPos_.get() + vec2(1.0f, 1.0f));
 
             ivec2 pos(tp->position.get() * vec2(outport_.getDimensions()));
             pos += tp->offset.get() - ivec2(shift);

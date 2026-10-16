@@ -51,7 +51,7 @@ double totalMass(std::span<const TFPrimitiveData> tf) {
     if (tf.size() < 2) return 0.0;
     double mass = 0.0;
     for (std::size_t i = 1; i < tf.size(); ++i) {
-        double dx = tf[i].pos - tf[i - 1].pos;
+        const double dx = tf[i].pos - tf[i - 1].pos;
         if (dx <= 0.0) continue;
         mass += 0.5 *
                 (std::max(0.0, static_cast<double>(tf[i - 1].color.a)) +
@@ -81,8 +81,8 @@ TEST(OptimalTransport, IdentityInterpolation) {
     auto result = algorithm::optimalTransportInterpolation(tf, tf, 0.5);
 
     // The result should have the same total mass as the input.
-    double massTF = totalMass(tf);
-    double massResult = totalMass(result);
+    const double massTF = totalMass(tf);
+    const double massResult = totalMass(result);
     EXPECT_NEAR(massResult, massTF, 1e-3) << "Self-interpolation should preserve total mass";
 }
 
@@ -126,13 +126,13 @@ TEST(OptimalTransport, MassConservationUniform) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
 
-    double massA = totalMass(a);
-    double massB = totalMass(b);
+    const double massA = totalMass(a);
+    const double massB = totalMass(b);
 
-    for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
+    for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
-        double expected = (1.0 - t) * massA + t * massB;
-        double actual = totalMass(result);
+        const double expected = (1.0 - t) * massA + t * massB;
+        const double actual = totalMass(result);
         EXPECT_NEAR(actual, expected, 1e-3)
             << "Mass not conserved at t=" << t << " expected=" << expected << " actual=" << actual;
     }
@@ -142,13 +142,13 @@ TEST(OptimalTransport, MassConservationSpikes) {
     TF a = spikeTF(0.25, 0.1, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.75, 0.1, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    double massA = totalMass(a);
-    double massB = totalMass(b);
+    const double massA = totalMass(a);
+    const double massB = totalMass(b);
 
-    for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
+    for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
-        double expected = (1.0 - t) * massA + t * massB;
-        double actual = totalMass(result);
+        const double expected = (1.0 - t) * massA + t * massB;
+        const double actual = totalMass(result);
         EXPECT_NEAR(actual, expected, 1e-2) << "Mass not conserved for spikes at t=" << t;
     }
 }
@@ -163,7 +163,7 @@ TEST(OptimalTransport, SpikeTranslation) {
     TF a = spikeTF(0.2, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.8, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
 
     // At t=0.5, the spike should be centered around 0.5.
     // Find position of maximum alpha.
@@ -186,23 +186,23 @@ TEST(OptimalTransport, SpikeTranslationMonotone) {
 
     double prevCenter = 0.0;
     for (int step = 0; step <= 10; ++step) {
-        double t = step / 10.0;
+        const double t = step / 10.0;
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
 
         // Compute center of mass.
         double massWeighted = 0.0;
         double mass = 0.0;
         for (std::size_t i = 1; i < result.size(); ++i) {
-            double dx = result[i].pos - result[i - 1].pos;
+            const double dx = result[i].pos - result[i - 1].pos;
             if (dx <= 0.0) continue;
-            double a0 = std::max(0.0, static_cast<double>(result[i - 1].color.a));
-            double a1 = std::max(0.0, static_cast<double>(result[i].color.a));
-            double segMass = 0.5 * (a0 + a1) * dx;
-            double segCenter = 0.5 * (result[i - 1].pos + result[i].pos);
+            const double a0 = std::max(0.0, static_cast<double>(result[i - 1].color.a));
+            const double a1 = std::max(0.0, static_cast<double>(result[i].color.a));
+            const double segMass = 0.5 * (a0 + a1) * dx;
+            const double segCenter = 0.5 * (result[i - 1].pos + result[i].pos);
             massWeighted += segMass * segCenter;
             mass += segMass;
         }
-        double center = (mass > 1e-12) ? massWeighted / mass : 0.0;
+        const double center = (mass > 1e-12) ? massWeighted / mass : 0.0;
 
         if (step > 0) {
             EXPECT_GE(center, prevCenter - 1e-6)
@@ -226,13 +226,13 @@ TEST(OptimalTransport, Symmetry) {
             {0.7, vec4{0.0f, 1.0f, 1.0f, 1.0f}},
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
-    double t = 0.3;
+    const double t = 0.3;
     auto resultAB = algorithm::optimalTransportInterpolation(a, b, t);
     auto resultBA = algorithm::optimalTransportInterpolation(b, a, 1.0 - t);
 
     // Total mass should be the same.
-    double massAB = totalMass(resultAB);
-    double massBA = totalMass(resultBA);
+    const double massAB = totalMass(resultAB);
+    const double massBA = totalMass(resultBA);
     EXPECT_NEAR(massAB, massBA, 1e-3) << "Symmetric interpolations should have the same total mass";
 }
 
@@ -244,7 +244,7 @@ TEST(OptimalTransport, EmptyAReturnsB) {
     TF a;
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
     ASSERT_EQ(result.size(), b.size());
 }
 
@@ -252,7 +252,7 @@ TEST(OptimalTransport, EmptyBReturnsA) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b;
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
     ASSERT_EQ(result.size(), a.size());
 }
 
@@ -260,7 +260,7 @@ TEST(OptimalTransport, BothEmpty) {
     TF a;
     TF b;
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
     EXPECT_TRUE(result.empty());
 }
 
@@ -270,7 +270,7 @@ TEST(OptimalTransport, SinglePointTF) {
 
     // Single-point TFs have zero mass (need at least two points for area).
     // Should fall back to linear blend or handle gracefully.
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
     EXPECT_FALSE(result.empty());
 }
 
@@ -284,7 +284,7 @@ TEST(OptimalTransport, ZeroAlphaFallback) {
 
     auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
 
-    double mass = totalMass(result);
+    const double mass = totalMass(result);
     EXPECT_NEAR(mass, 0.0, 1e-12) << "Zero-alpha TFs should produce zero-alpha result";
 }
 
@@ -302,8 +302,8 @@ TEST(OptimalTransport, NonNegativeAlpha) {
             {0.5, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
-    for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+    for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
+        const auto result = algorithm::optimalTransportInterpolation(a, b, t);
         for (const auto& p : result) {
             EXPECT_GE(p.color.a, 0.0f) << "Negative alpha at pos=" << p.pos << " t=" << t;
         }
@@ -319,8 +319,8 @@ TEST(OptimalTransport, PositionsWithinDomain) {
     TF a = {{0.1, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {0.4, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.6, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {0.9, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    for (double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
-        auto result = algorithm::optimalTransportInterpolation(a, b, t);
+    for (const double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
+        const auto result = algorithm::optimalTransportInterpolation(a, b, t);
         for (const auto& p : result) {
             EXPECT_GE(p.pos, 0.1 - 1e-6) << "Position below domain min at t=" << t;
             EXPECT_LE(p.pos, 0.9 + 1e-6) << "Position above domain max at t=" << t;
@@ -342,7 +342,7 @@ TEST(OptimalTransport, MonotonePositions) {
             {0.7, vec4{0.0f, 1.0f, 1.0f, 1.0f}},
             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
-    for (double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
+    for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
         for (std::size_t i = 1; i < result.size(); ++i) {
             EXPECT_GE(result[i].pos, result[i - 1].pos - 1e-12)
@@ -360,7 +360,7 @@ TEST(OptimalTransport, EMDIdenticalIsZero) {
              {0.5, vec4{0.0f, 1.0f, 0.0f, 0.5f}},
              {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    double d = algorithm::earthMoversDistance(tf, tf);
+    const double d = algorithm::earthMoversDistance(tf, tf);
     EXPECT_NEAR(d, 0.0, 1e-10) << "Distance from a TF to itself should be zero";
 }
 
@@ -368,8 +368,8 @@ TEST(OptimalTransport, EMDSymmetric) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {0.5, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.5, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    double dAB = algorithm::earthMoversDistance(a, b);
-    double dBA = algorithm::earthMoversDistance(b, a);
+    const double dAB = algorithm::earthMoversDistance(a, b);
+    const double dBA = algorithm::earthMoversDistance(b, a);
     EXPECT_NEAR(dAB, dBA, 1e-10) << "EMD should be symmetric";
 }
 
@@ -377,7 +377,7 @@ TEST(OptimalTransport, EMDNonNegative) {
     TF a = spikeTF(0.3, 0.1, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.7, 0.1, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    double d = algorithm::earthMoversDistance(a, b);
+    const double d = algorithm::earthMoversDistance(a, b);
     EXPECT_GE(d, 0.0) << "EMD should be non-negative";
 }
 
@@ -386,9 +386,9 @@ TEST(OptimalTransport, EMDTriangleInequality) {
     TF b = spikeTF(0.5, 0.05, vec4{0.0f, 1.0f, 0.0f, 1.0f});
     TF c = spikeTF(0.8, 0.05, vec4{0.0f, 0.0f, 1.0f, 1.0f});
 
-    double dAB = algorithm::earthMoversDistance(a, b);
-    double dBC = algorithm::earthMoversDistance(b, c);
-    double dAC = algorithm::earthMoversDistance(a, c);
+    const double dAB = algorithm::earthMoversDistance(a, b);
+    const double dBC = algorithm::earthMoversDistance(b, c);
+    const double dAC = algorithm::earthMoversDistance(a, c);
 
     EXPECT_LE(dAC, dAB + dBC + 1e-6) << "EMD should satisfy triangle inequality";
 }
@@ -402,7 +402,7 @@ TEST(OptimalTransport, EMDTranslatedSpikes) {
     TF a = spikeTF(0.3, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
     TF b = spikeTF(0.7, 0.05, vec4{1.0f, 0.0f, 0.0f, 1.0f});
 
-    double d = algorithm::earthMoversDistance(a, b);
+    const double d = algorithm::earthMoversDistance(a, b);
     // Expected: 0.4 (distance between centers).
     EXPECT_NEAR(d, 0.4, 0.02) << "EMD of translated identical spikes should equal separation";
 }
@@ -411,7 +411,7 @@ TEST(OptimalTransport, EMDEmptyInput) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b;
 
-    double d = algorithm::earthMoversDistance(a, b);
+    const double d = algorithm::earthMoversDistance(a, b);
     EXPECT_DOUBLE_EQ(d, 0.0) << "EMD with empty input should be 0";
 }
 
@@ -424,7 +424,7 @@ TEST(OptimalTransport, ColorInterpolation) {
     TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
-    auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
+    const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
 
     // Check that result colors are approximately purple (0.5, 0, 0.5).
     for (const auto& p : result) {
@@ -454,12 +454,12 @@ TEST(OptimalTransport, ContinuityInT) {
     double prevMass = totalMass(a);
 
     for (int i = 1; i <= steps; ++i) {
-        double t = static_cast<double>(i) / steps;
+        const double t = static_cast<double>(i) / steps;
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
-        double mass = totalMass(result);
+        const double mass = totalMass(result);
 
         // Mass should change smoothly (bounded by total mass difference / steps + tolerance).
-        double maxMassDelta = std::abs(totalMass(b) - totalMass(a)) / steps + 0.05;
+        const double maxMassDelta = std::abs(totalMass(b) - totalMass(a)) / steps + 0.05;
         EXPECT_NEAR(mass, prevMass, maxMassDelta)
             << "Mass changed too abruptly between steps at t=" << t;
         prevMass = mass;
@@ -504,11 +504,11 @@ TEST(OptimalTransport, SamplesPerSegmentMass) {
     auto result32 = algorithm::optimalTransportInterpolation(a, b, 0.5, 32);
     auto result64 = algorithm::optimalTransportInterpolation(a, b, 0.5, 64);
 
-    double mass4 = totalMass(result4);
-    double mass32 = totalMass(result32);
-    double mass64 = totalMass(result64);
+    const double mass4 = totalMass(result4);
+    const double mass32 = totalMass(result32);
+    const double mass64 = totalMass(result64);
 
-    double expected = 0.5 * totalMass(a) + 0.5 * totalMass(b);
+    const double expected = 0.5 * totalMass(a) + 0.5 * totalMass(b);
 
     EXPECT_NEAR(mass4, expected, 0.06) << "Mass with 4 samples/segment";
     EXPECT_NEAR(mass32, expected, 0.03) << "Mass with 32 samples/segment";
@@ -530,7 +530,7 @@ struct OTConf {
 
     static void check(const TransferFunction& interpolated, const TransferFunction& reference) {
         for (int i = 0; i < OTConf::numSamples; ++i) {
-            double x = i / static_cast<double>(OTConf::numSamples - 1);
+            const double x = i / static_cast<double>(OTConf::numSamples - 1);
             const auto interpolatedSample = interpolated.sample(x);
             const auto refSample = reference.sample(x);
             EXPECT_NEAR(interpolatedSample.a, refSample.a, OTConf::epsilon);

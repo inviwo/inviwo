@@ -257,7 +257,7 @@ public:
 
     ~NodeSwitch();
 
-    operator bool() const;
+    explicit operator bool() const;
 
 private:
     SerializeBase* serializer_;  // reference to serializer or deserializer

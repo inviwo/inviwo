@@ -115,7 +115,7 @@ DrawPoints::~DrawPoints() = default;
 void DrawPoints::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     {
-        utilgl::PointSizeState pointsize(static_cast<GLfloat>(pointSize_));
+        const utilgl::PointSizeState pointsize(static_cast<GLfloat>(pointSize_));
         pointShader_.activate();
         pointShader_.setUniform("color", pointColor_.get());
         pointDrawer_.draw();
@@ -141,7 +141,7 @@ void DrawPoints::eventDraw(Event* event) {
     if (!drawModeEnabled_) return;
 
     auto mouseEvent = static_cast<MouseEvent*>(event);
-    auto point = mouseEvent->ndc();
+    const auto point = mouseEvent->ndc();
 
     addPoint(vec2(point.x, point.y));
 
@@ -149,7 +149,7 @@ void DrawPoints::eventDraw(Event* event) {
 }
 
 void DrawPoints::eventEnableDraw(Event* event) {
-    KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
+    const KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
     drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 

@@ -107,7 +107,7 @@ std::shared_ptr<Volume> curlVolume(
             std::array<dvec3, 6> samples{};
             for (auto&& [pos, dest] : std::views::zip(positions, samples)) {
                 grid::dispatch<dispatching::filter::Vec3s>(srcFmt, [&]<typename T> {
-                    auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
+                    const auto src = static_cast<const VolumeRAMPrecision<T>*>(srcRep)->getView();
                     const auto val = static_cast<dvec3>(src[im(pos)]);
                     dest = g * invBasis * dm.mapFromDataTo<DataMapper::Space::Value>(val);
                 });

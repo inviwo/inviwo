@@ -44,7 +44,7 @@ class InviwoApplication;
 class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule,
                                        public ProcessorNetworkEvaluationObserver {
 public:
-    GLFWModule(InviwoApplication* app);
+    explicit GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
 
     virtual void onProcessorNetworkEvaluationBegin() override;

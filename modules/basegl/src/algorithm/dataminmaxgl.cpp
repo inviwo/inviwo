@@ -340,7 +340,7 @@ Shader& DataMinMaxGL::getNdShader(Shader& shader, const GLFormat& glFormat, int 
     }
 
     const auto formatId = GLFormats::get(glFormat);
-    if (auto it = shaderDataFormat_.find(computeShader->getID());
+    if (const auto it = shaderDataFormat_.find(computeShader->getID());
         it == shaderDataFormat_.end() || it->second != formatId) {
 
         const bool useImageLoadStore = (glFormat.channels != 3);

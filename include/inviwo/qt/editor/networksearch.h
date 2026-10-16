@@ -55,7 +55,7 @@ class Processor;
  */
 class IVW_QTEDITOR_API NetworkSearch : public QWidget {
 public:
-    NetworkSearch(InviwoMainWindow* win);
+    explicit NetworkSearch(InviwoMainWindow* win);
 
     void updateSearch(const QString& str);
 

@@ -70,7 +70,7 @@ class Element;
 class IVW_MODULE_USERINTERFACEGL_API GLUIProcessor : public Processor,
                                                      public PropertyOwnerObserver {
 public:
-    GLUIProcessor(InviwoApplication* app);
+    explicit GLUIProcessor(InviwoApplication* app);
     virtual ~GLUIProcessor() = default;
 
     virtual void process() override;

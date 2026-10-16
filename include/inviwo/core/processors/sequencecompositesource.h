@@ -150,9 +150,9 @@ struct ProcessorTraits<SequenceCompositeSource<InportSequenceType, OutportType>>
         static_assert(std::is_same_v<intype, outtype>,
                       "InportSequenceType and OutportType must work with the same data type");
 
-        auto name = fmt::format("{} Meta Sequence Source", DataTraits<intype>::dataName());
-        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
-                                         SequenceCompositeSourceBase::identifierSuffix());
+        const auto name = fmt::format("{} Meta Sequence Source", DataTraits<intype>::dataName());
+        const auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
+                                               SequenceCompositeSourceBase::identifierSuffix());
         return {
             id,                 // Class identifier
             name,               // Display name
@@ -181,7 +181,7 @@ SequenceCompositeSource<InportSequenceType, OutportType>::SequenceCompositeSourc
 
 template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::process() {
-    auto data = superInport_->getData();
+    const auto data = superInport_->getData();
     if (sequenceIndex_ < data->size()) {
         outport_.setData((*data)[sequenceIndex_]);
     } else {
@@ -206,7 +206,7 @@ template <typename InportSequenceType, typename OutportType>
 void SequenceCompositeSource<InportSequenceType, OutportType>::sync(
     SequenceCompositeSourceBase* source) {
     if (source) {
-        if (auto* typedSource =
+        if (const auto* typedSource =
                 dynamic_cast<SequenceCompositeSource<InportSequenceType, OutportType>*>(source)) {
             superInport_ = typedSource->superInport_;
             addPortToGroup(superInport_.get(), "default");

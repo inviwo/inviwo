@@ -310,12 +310,12 @@ QPointF ProcessorGraphicsItem::portPosition(PortType type, size_t index) {
 }
 
 void ProcessorGraphicsItem::addInport(Inport* port) {
-    auto pos = portPosition(PortType::In, inportItems_.size());
+    const auto pos = portPosition(PortType::In, inportItems_.size());
     inportItems_[port] = new ProcessorInportGraphicsItem(this, pos, port);
 }
 
 void ProcessorGraphicsItem::addOutport(Outport* port) {
-    auto pos = portPosition(PortType::Out, outportItems_.size());
+    const auto pos = portPosition(PortType::Out, outportItems_.size());
     outportItems_[port] = new ProcessorOutportGraphicsItem(this, pos, port);
 }
 
@@ -324,7 +324,7 @@ void ProcessorGraphicsItem::removeInport(Inport* port) {
     inportItems_.erase(port);
 
     size_t count = 0;
-    for (auto& item : inportItems_) {
+    for (const auto& item : inportItems_) {
         item.second->setPos(portPosition(PortType::In, count));
         count++;
     }
@@ -335,7 +335,7 @@ void ProcessorGraphicsItem::removeOutport(Outport* port) {
     delete outportItems_[port];
     outportItems_.erase(port);
     size_t count = 0;
-    for (auto& item : outportItems_) {
+    for (const auto& item : outportItems_) {
         item.second->setPos(portPosition(PortType::Out, count));
         count++;
     }
@@ -450,7 +450,7 @@ void ProcessorGraphicsItem::paint(QPainter* p,
 }
 
 void ProcessorGraphicsItem::snapToGrid() {
-    QPointF newpos = NetworkEditor::snapToGrid(pos());
+    const QPointF newpos = NetworkEditor::snapToGrid(pos());
     if (newpos != pos()) {
         setPos(newpos);
     }
@@ -638,13 +638,13 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Max Time"), util::msToString(maxEvalTime_, true, true));
 #endif
 
-    if (auto* net = processor_->getNetwork()) {
+    if (const auto* net = processor_->getNetwork()) {
         if (auto* app = net->getApplication()) {
             const std::filesystem::path processorFile{processor_->getProcessorInfo().file};
 
             std::filesystem::path best;
             std::string bestModule;
-            for (auto& m : app->getModuleManager().getInviwoModules()) {
+            for (const auto& m : app->getModuleManager().getInviwoModules()) {
                 const auto relpath = processorFile.lexically_relative(m.getPath());
                 if (!relpath.empty() && !relpath.string().starts_with("..")) {
                     if (best.empty() || relpath.string().length() < best.string().length()) {

@@ -74,7 +74,7 @@ int InviwoFileDialog::exec() {
     QFileDialog::setSidebarUrls(sidebarURLs_);
     // use filter used for this path type last time
     if (selectedFilter_.empty()) {
-        QString filter{getPreviousExtension(pathType_)};
+        const QString filter{getPreviousExtension(pathType_)};
 
         if (extensions_.contains(filter)) {
             QFileDialog::selectNameFilter(filter);
@@ -82,7 +82,7 @@ int InviwoFileDialog::exec() {
         // initialize selected filter
         selectedFilter_ = getMatchingFileExtension(filter);
     } else {
-        auto filter = utilqt::toQString(selectedFilter_.toString());
+        const auto filter = utilqt::toQString(selectedFilter_.toString());
         if (extensions_.contains(filter)) {
             QFileDialog::selectNameFilter(filter);
         }
@@ -92,7 +92,7 @@ int InviwoFileDialog::exec() {
         QFileDialog::setDirectory(currentPath_);
     }
 
-    int ret = QFileDialog::exec();
+    const int ret = QFileDialog::exec();
     if (ret == QDialog::Accepted) {
         setPreviousPath(pathType_, directory().absolutePath());
         setPreviousExtension(pathType_, selectedNameFilter());
@@ -109,7 +109,7 @@ void InviwoFileDialog::setAcceptMode(inviwo::AcceptMode mode) {
     switch (mode) {
         case inviwo::AcceptMode::Save: QFileDialog::setAcceptMode(QFileDialog::AcceptSave); break;
         case inviwo::AcceptMode::Open: QFileDialog::setAcceptMode(QFileDialog::AcceptOpen); break;
-        default:                       QFileDialog::setAcceptMode(QFileDialog::AcceptOpen); break;
+        default: QFileDialog::setAcceptMode(QFileDialog::AcceptOpen); break;
     }
 }
 
@@ -117,7 +117,7 @@ AcceptMode InviwoFileDialog::getAcceptMode() const {
     switch (QFileDialog::acceptMode()) {
         case QFileDialog::AcceptSave: return inviwo::AcceptMode::Save;
         case QFileDialog::AcceptOpen: return inviwo::AcceptMode::Open;
-        default:                      return inviwo::AcceptMode::Open;
+        default: return inviwo::AcceptMode::Open;
     }
 }
 
@@ -140,11 +140,11 @@ void InviwoFileDialog::setFileMode(inviwo::FileMode mode) {
 
 FileMode InviwoFileDialog::getFileMode() const {
     switch (QFileDialog::fileMode()) {
-        case FileMode::AnyFile:       return inviwo::FileMode::AnyFile;
-        case FileMode::ExistingFile:  return inviwo::FileMode::ExistingFile;
-        case FileMode::Directory:     return inviwo::FileMode::Directory;
+        case FileMode::AnyFile: return inviwo::FileMode::AnyFile;
+        case FileMode::ExistingFile: return inviwo::FileMode::ExistingFile;
+        case FileMode::Directory: return inviwo::FileMode::Directory;
         case FileMode::ExistingFiles: return inviwo::FileMode::ExistingFiles;
-        default:                      return inviwo::FileMode::AnyFile;
+        default: return inviwo::FileMode::AnyFile;
     }
 }
 void InviwoFileDialog::setContentType(std::string_view contentType) {
@@ -192,7 +192,7 @@ void InviwoFileDialog::setCurrentFile(const std::filesystem::path& filename) {
 
 std::vector<std::filesystem::path> InviwoFileDialog::getSelectedFiles() const {
     std::vector<std::filesystem::path> filenames;
-    for (auto file : QFileDialog::selectedFiles()) {
+    for (const auto& file : QFileDialog::selectedFiles()) {
         filenames.emplace_back(utilqt::toPath(file));
     }
     return filenames;
@@ -203,7 +203,7 @@ void InviwoFileDialog::addExtension(const FileExtension& fileExt) {
     std::string str{fileExt.toString()};
 
     // add entry to the extension map
-    auto retval = extmap_.emplace(str, fileExt);
+    const auto retval = extmap_.emplace(str, fileExt);
     if (retval.second) {  // insert successful
         extensions_ << utilqt::toQString(str);
     } else {
@@ -221,7 +221,7 @@ void InviwoFileDialog::addExtension(std::string_view extString) {
 }
 
 void InviwoFileDialog::addExtensions(const std::vector<FileExtension>& extensions) {
-    for (auto ext : extensions) {
+    for (const auto ext : extensions) {
         addExtension(ext);
     }
 }
@@ -237,7 +237,7 @@ void InviwoFileDialog::setSelectedExtension(const FileExtension& ext) { selected
 
 FileExtension InviwoFileDialog::getMatchingFileExtension(const QString& extStr) {
     // try to find matching filter in extension map
-    auto it = extmap_.find(utilqt::fromQString(extStr));
+    const auto it = extmap_.find(utilqt::fromQString(extStr));
     if (it != extmap_.end()) {
         return it->second;
     } else {
@@ -286,7 +286,7 @@ void InviwoFileDialog::setPreviousPath(const QString& pathType, const QString& p
 QString InviwoFileDialog::getPreviousExtension(const QString& pathType) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
-    QString setting = pathType + "_extension";
+    const QString setting = pathType + "_extension";
 
     QString defaultExt;
     if (pathType != "default") {
@@ -303,7 +303,7 @@ QString InviwoFileDialog::getPreviousExtension(const QString& pathType) {
 void InviwoFileDialog::setPreviousExtension(const QString& pathType, const QString& path) {
     QSettings settings;
     settings.beginGroup("InviwoFileDialog");
-    QString setting = pathType + "_extension";
+    const QString setting = pathType + "_extension";
     settings.setValue(setting, path);
     settings.endGroup();
 }

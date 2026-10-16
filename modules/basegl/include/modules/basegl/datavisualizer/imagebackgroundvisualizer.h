@@ -46,7 +46,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASEGL_API ImageBackgroundVisualizer : public DataVisualizer {
 public:
-    ImageBackgroundVisualizer(InviwoApplication* app);
+    explicit ImageBackgroundVisualizer(InviwoApplication* app);
     virtual ~ImageBackgroundVisualizer() = default;
 
     virtual std::string getName() const override;

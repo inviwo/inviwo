@@ -97,7 +97,7 @@ ConvexHull2DProcessor::ConvexHull2DProcessor()
 }
 
 void ConvexHull2DProcessor::process() {
-    auto data = inport_.getData();
+    const auto data = inport_.getData();
 
     // build a rotation matrix based on the normal
     const vec3 normal(glm::normalize(normal_.get()));
@@ -105,25 +105,25 @@ void ConvexHull2DProcessor::process() {
     if (1.0f - std::abs(glm::dot(normal, vec3(0.0f, 0.0f, 1.0f))) > glm::epsilon<float>()) {
         // build right-hand coordinate system around normal
         vec3 right = glm::normalize(glm::cross(normal, vec3(0.0f, 0.0f, 1.0f)));
-        vec3 up = glm::normalize(glm::cross(normal, right));
+        const vec3 up = glm::normalize(glm::cross(normal, right));
         right = glm::cross(up, normal);
         rotMatrix[0] = right;
         rotMatrix[1] = up;
         rotMatrix[2] = normal;
     }
     // build projection matrix
-    glm::dmat3x2 proj(glm::transpose(glm::dmat2x3(rotMatrix[0], rotMatrix[1])));
+    const glm::dmat3x2 proj(glm::transpose(glm::dmat2x3(rotMatrix[0], rotMatrix[1])));
 
     // TODO: check data format of all buffers! And find common denominator instead of dvec2
     std::vector<vec2> points;
     // collect all positions of the input geometry
-    for (auto item : data->getBuffers()) {
+    for (const auto& item : data->getBuffers()) {
         if (item.first.type == BufferType::PositionAttrib) {
             auto buffer = item.second->getRepresentation<BufferRAM>();
             for (std::size_t i = 0; i < buffer->getSize(); ++i) {
-                auto p = buffer->getAsDVec3(i);
+                const auto p = buffer->getAsDVec3(i);
                 // project point p onto plane given by normal
-                auto q = proj * p;
+                const auto q = proj * p;
                 points.push_back(q);
             }
         }
@@ -136,7 +136,7 @@ void ConvexHull2DProcessor::process() {
     }
 
     // convert hull into a line strip mesh
-    auto mesh = util::convertHullToMesh(hull);
+    const auto mesh = util::convertHullToMesh(hull);
     mesh->setModelMatrix(mat4(rotMatrix));
     outport_.setData(mesh);
 }

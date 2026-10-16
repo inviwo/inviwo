@@ -86,7 +86,7 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
     std::vector<T> result;
     result.reserve(percentiles.size());
     auto nElements = data.size();
-    for (auto percentile : percentiles) {
+    for (const auto percentile : percentiles) {
         if (percentile < 0.0 || percentile > 1.0) {
             throw Exception("Percentile must be between 0 and 1");
         }
@@ -100,13 +100,13 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
 // Float/double types have special values
 template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
-    auto noNaN =
+    const auto noNaN =
         std::partition(data.begin(), data.end(), [](const auto& a) { return glm::isnan(a); });
     std::sort(noNaN, data.end());
     std::vector<T> result;
     result.reserve(percentiles.size());
-    size_t nElements = std::distance(noNaN, data.end());
-    for (auto percentile : percentiles) {
+    const size_t nElements = std::distance(noNaN, data.end());
+    for (const auto percentile : percentiles) {
         if (percentile < 0.0 || percentile > 1.0) {
             throw std::invalid_argument("Percentile must be between 0 and 1");
         }

@@ -184,7 +184,7 @@ void TextEditorDockWidget::updateFromProperty() {
     const auto oldPos = editor_->textCursor().position();
     if (fileProperty_) {
         fileObserver_.setFileName(fileProperty_->get());
-        if (auto f = std::ifstream(fileProperty_->get())) {
+        if (const auto f = std::ifstream(fileProperty_->get())) {
             std::stringstream ss;
             ss << f.rdbuf();
             editor_->setPlainText(utilqt::toQString(ss.str()));
@@ -231,7 +231,7 @@ void TextEditorDockWidget::setReadOnly(bool readonly) {
 }
 
 void TextEditorDockWidget::updateWindowTitle() {
-    auto str = [&]() -> std::string {
+    const auto str = [&]() -> std::string {
         if (fileProperty_) {
             return fmt::format("Text Editor - {}", fileProperty_->get());
         } else if (stringProperty_) {

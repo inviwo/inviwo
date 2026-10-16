@@ -85,15 +85,15 @@ MeshShaderCache::MeshShaderCache(std::vector<std::pair<ShaderType, std::string>>
 
 Shader& MeshShaderCache::getShader(const Mesh& mesh, std::optional<Mesh::MeshInfo> meshInfo) {
     std::vector<int> state;
-    for (auto& functor : stateFunctors_) {
+    for (const auto& functor : stateFunctors_) {
         state.push_back(functor.getState(mesh, meshInfo ? *meshInfo : mesh.getDefaultMeshInfo()));
     }
 
-    auto it = shaders_.find(state);
+    const auto it = shaders_.find(state);
     if (it != shaders_.end()) {
         return it->second;
     } else {
-        auto ins = shaders_.try_emplace(state, items_, Shader::Build::No);
+        const auto ins = shaders_.try_emplace(state, items_, Shader::Build::No);
         auto& shader = ins.first->second;
         shader[ShaderType::Vertex]->clearInDeclarations();
 

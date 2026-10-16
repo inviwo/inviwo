@@ -85,7 +85,7 @@ VolumeLaplacianProcessor::VolumeLaplacianProcessor()
 }
 
 void VolumeLaplacianProcessor::process() {
-    auto invol = inport_.getData();
+    const auto invol = inport_.getData();
     inVolume_.updateForNewVolume(*invol.get(), util::OverwriteState::Yes);
     inVolume_.setReadOnly(true);
 

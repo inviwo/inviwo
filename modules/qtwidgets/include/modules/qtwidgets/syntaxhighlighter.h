@@ -97,7 +97,7 @@ class IVW_MODULE_QTWIDGETS_API SyntaxHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 
 public:
-    SyntaxHighlighter(QTextDocument* parent);
+    explicit SyntaxHighlighter(QTextDocument* parent);
     virtual ~SyntaxHighlighter();
 
     const QTextCharFormat& defaultFormat() const;

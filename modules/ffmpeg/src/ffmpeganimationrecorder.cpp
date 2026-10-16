@@ -111,13 +111,15 @@ FFmpegRecorderFactory::FFmpegRecorderFactory()
     activeCodec_.setSerializationMode(PropertySerializationMode::None);
     activeCodec_.setReadOnly(true);
 
-    auto updateCodecs = [this]() { codec_.replaceOptions(codecsOptionsFor(getOutputFormat())); };
+    const auto updateCodecs = [this]() {
+        codec_.replaceOptions(codecsOptionsFor(getOutputFormat()));
+    };
 
-    auto updateActive = [this]() {
-        auto outputFormat = getOutputFormat();
+    const auto updateActive = [this]() {
+        const auto outputFormat = getOutputFormat();
         activeFormat_.set(fmt::format("{} ({})", outputFormat.name(), outputFormat.longName()));
 
-        auto codec = getCodec(outputFormat);
+        const auto codec = getCodec(outputFormat);
         activeCodec_.set(fmt::format("{} ({})", codec.name(), codec.longName().value_or("-")));
     };
 

@@ -225,7 +225,7 @@ std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, Inviwo
 
     const auto processorCId = utilqt::fromQString(list.front());
     try {
-        if (auto processor = app->getProcessorFactory()->createShared(processorCId, app)) {
+        if (const auto processor = app->getProcessorFactory()->createShared(processorCId, app)) {
             auto help = help::buildProcessorHelp(*processor, *app);
             const auto& inviwoModule = findModule(*app, processorCId);
 
@@ -238,7 +238,7 @@ std::tuple<std::string, std::filesystem::path> loadIdUrl(const QUrl& url, Inviwo
                 help::HelpProperty* property = nullptr;
                 for (const auto& elem : list) {
                     bool ok = true;
-                    if (auto num = elem.toULongLong(&ok); ok && num < properties->size()) {
+                    if (const auto num = elem.toULongLong(&ok); ok && num < properties->size()) {
                         property = &(*properties)[num];
                         properties = &property->properties;
                     } else {
@@ -311,7 +311,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
     if (std::filesystem::is_regular_file(filePath)) {
         if (type == QTextDocument::ImageResource) {
             const auto maxImageWidth = (95 * width()) / 100;
-            auto image = QImage(url.toLocalFile());
+            const auto image = QImage(url.toLocalFile());
             if (image.width() > maxImageWidth) {
                 return image.scaledToWidth(maxImageWidth);
             } else {

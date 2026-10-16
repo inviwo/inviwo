@@ -212,7 +212,8 @@ void DataInport<T, N, Flat>::connectTo(Outport* outport) {
 
 template <typename T, size_t N, bool Flat>
 void DataInport<T, N, Flat>::disconnectFrom(Outport* outport) {
-    if (auto it = std::ranges::find_if(outports_, [&](auto* dp) { return dp->port() == outport; });
+    if (const auto it =
+            std::ranges::find_if(outports_, [&](auto* dp) { return dp->port() == outport; });
         it != outports_.end()) {
 
         outports_.erase(it);
@@ -242,7 +243,7 @@ bool DataInport<T, N, Flat>::hasData() const {
 template <typename T, size_t N, bool Flat>
 std::shared_ptr<const T> DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
-        auto it = this->begin();
+        const auto it = this->begin();
         if (it != this->end()) return *it;
     }
     return nullptr;

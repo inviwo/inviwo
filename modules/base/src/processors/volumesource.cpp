@@ -103,7 +103,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
 
     util::updateNameFilters<VolumeSequence, Volume>(*util::getDataReaderFactory(app), file_);
 
-    auto* rf = util::getDataReaderFactory(app_);
+    const auto* rf = util::getDataReaderFactory(app_);
     util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
 
     // make sure that we always process even if not connected
@@ -125,7 +125,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
         }
     });
     file_.onChange([this]() {
-        auto* rf = util::getDataReaderFactory(app_);
+        const auto* rf = util::getDataReaderFactory(app_);
         util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
         error_.clear();
         isReady_.update();
@@ -149,7 +149,7 @@ void VolumeSource::load(bool deserialize) {
             std::swap(volumes, volumes_);
         } else if (auto volumeReader =
                        rf->getReaderForTypeAndExtension<Volume>(sext, file_.get())) {
-            auto volume = volumeReader->readData(file_.get(), this);
+            const auto volume = volumeReader->readData(file_.get(), this);
             auto volumes = std::make_shared<VolumeSequence>();
             volumes->push_back(volume);
             std::swap(volumes, volumes_);
@@ -168,7 +168,7 @@ void VolumeSource::load(bool deserialize) {
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         // store filename in metadata
-        for (auto volume : *volumes_) {
+        for (const auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename")) {
                 volume->setMetaData<StringMetaData>("filename", file_.get().generic_string());
             }

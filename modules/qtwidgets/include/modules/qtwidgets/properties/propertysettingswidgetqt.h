@@ -170,7 +170,7 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(P
 
     setModal(false);
     // remove help button from title bar
-    Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    const Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
     setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
@@ -218,12 +218,12 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(P
     auto symmetric = new QCheckBox("Symmetric", this);
     symmetric->setToolTip("Symmetric min and max value ( min = -max )");
 
-    auto updateOthers = [this, same, symmetric](size_t srcRow, size_t srcCol) {
+    const auto updateOthers = [this, same, symmetric](size_t srcRow, size_t srcCol) {
         return [this, same, symmetric, srcRow, srcCol](const QString&) {
             if (same[srcCol]->isChecked()) {
                 for (size_t row = 0; row < settings_.size(); row++) {
                     if (row != srcRow) {
-                        QSignalBlocker block{settings_[row].additionalFields_[srcCol]};
+                        const QSignalBlocker block{settings_[row].additionalFields_[srcCol]};
                         settings_[row].additionalFields_[srcCol]->setText(
                             settings_[srcRow].additionalFields_[srcCol]->text());
                     }
@@ -231,8 +231,8 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(P
                 if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
                     const size_t dstCol = srcCol == 0 ? 2 : 0;
                     for (size_t row = 0; row < settings_.size(); row++) {
-                        QSignalBlocker block{settings_[row].additionalFields_[dstCol]};
-                        QLocale locale = settings_[row].additionalFields_[dstCol]->locale();
+                        const QSignalBlocker block{settings_[row].additionalFields_[dstCol]};
+                        const QLocale locale = settings_[row].additionalFields_[dstCol]->locale();
                         settings_[row].additionalFields_[dstCol]->setText(
                             QStringHelper<BT>::toLocaleString(
                                 locale, static_cast<BT>(-settings_[row].getFieldAsDouble(srcCol))));
@@ -240,8 +240,8 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(P
                 }
             } else if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
                 const size_t dstCol = srcCol == 0 ? 2 : 0;
-                QSignalBlocker block{settings_[srcRow].additionalFields_[dstCol]};
-                QLocale locale = settings_[srcRow].additionalFields_[dstCol]->locale();
+                const QSignalBlocker block{settings_[srcRow].additionalFields_[dstCol]};
+                const QLocale locale = settings_[srcRow].additionalFields_[dstCol]->locale();
                 settings_[srcRow].additionalFields_[dstCol]->setText(
                     QStringHelper<BT>::toLocaleString(
                         locale, static_cast<BT>(-settings_[srcRow].getFieldAsDouble(srcCol))));
@@ -291,7 +291,7 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::~OrdinalLikePropertySettingsWidgetQt(
 
 template <typename Prop>
 void OrdinalLikePropertySettingsWidgetQt<Prop>::apply() {
-    NetworkLock lock(property_);
+    const NetworkLock lock(property_);
 
     std::array<T, 4> vals{};
     for (size_t i = 0; i < settings_.size(); i++) {
@@ -322,7 +322,7 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::reload() {
                           detail::OrdinalSettingsTraits<Prop>::displayValue(property_),
                           property_->getMaxValue(), property_->getIncrement()};
 
-    QLocale locale = settings_[0].additionalFields_[0]->locale();
+    const QLocale locale = settings_[0].additionalFields_[0]->locale();
     for (size_t i = 0; i < settings_.size(); i++) {
         for (size_t k = 0; k < vals.size(); ++k) {
             settings_[i].additionalFields_[k]->setText(
@@ -440,7 +440,7 @@ MinMaxPropertySettingsWidgetQt<T>::MinMaxPropertySettingsWidgetQt(MinMaxProperty
 
     setModal(false);
     // remove help button from title bar
-    Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    const Qt::WindowFlags flags = windowFlags() ^ Qt::WindowContextHelpButtonHint;
     setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
@@ -480,13 +480,15 @@ MinMaxPropertySettingsWidgetQt<T>::~MinMaxPropertySettingsWidgetQt() {
 
 template <typename T>
 void MinMaxPropertySettingsWidgetQt<T>::apply() {
-    NetworkLock lock(property_);
+    const NetworkLock lock(property_);
 
     using range_type = typename MinMaxProperty<T>::value_type;
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"
-    auto getVal = [&](size_t index) { return static_cast<BT>(setting_.getFieldAsDouble(index)); };
+    const auto getVal = [&](size_t index) {
+        return static_cast<BT>(setting_.getFieldAsDouble(index));
+    };
 
     range_type newVal(getVal(1), getVal(2));
     range_type newRange(getVal(0), getVal(3));
@@ -499,7 +501,7 @@ void MinMaxPropertySettingsWidgetQt<T>::apply() {
     if (newRange.x > newRange.y) newRange = range_type(newRange.y, newRange.x);
 
     // perform sanity check whether new values are out of bounds
-    bool outOfBounds = ((newVal.x < newRange.x) || (newVal.y > newRange.y));
+    const bool outOfBounds = ((newVal.x < newRange.x) || (newVal.y > newRange.y));
     if (outOfBounds) {
         // adjust ranges
         newRange.x = glm::min(newRange.x, newVal.x);
@@ -519,7 +521,7 @@ void MinMaxPropertySettingsWidgetQt<T>::reload() {
                           property_->getEnd(),           property_->getRangeMax(),
                           property_->getMinSeparation(), property_->getIncrement()};
 
-    QLocale locale = setting_.additionalFields_[0]->locale();
+    const QLocale locale = setting_.additionalFields_[0]->locale();
     for (size_t k = 0; k < vals.size(); ++k) {
         setting_.additionalFields_[k]->setText(QStringHelper<BT>::toLocaleString(locale, vals[k]));
     }

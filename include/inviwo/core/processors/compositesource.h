@@ -111,9 +111,9 @@ struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
         using intype = typename InportType::type;
         using outtype = typename InportType::type;
         static_assert(std::is_same<intype, outtype>::value, "type mismatch");
-        auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
-        auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
-                                         CompositeSourceBase::identifierSuffix());
+        const auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
+        const auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
+                                               CompositeSourceBase::identifierSuffix());
         return {
             id,                 // Class identifier
             name,               // Display name

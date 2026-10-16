@@ -124,7 +124,7 @@ std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
         return dispatching::singleDispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
             df->getId(), [&]<typename Type>() {
                 const size2_t dims(arr.shape(1), arr.shape(0));
-                auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
+                const auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
                 memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
                 return std::make_unique<Layer>(layerRAM);
             });
@@ -147,7 +147,7 @@ std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
         return dispatching::singleDispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
             df->getId(), [&]<typename Type>() {
                 const size3_t dims(arr.shape(2), arr.shape(1), arr.shape(0));
-                auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
+                const auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
                 memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());
                 return std::make_unique<Volume>(volumeRAM);
             });

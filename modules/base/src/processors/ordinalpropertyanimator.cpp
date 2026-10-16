@@ -73,7 +73,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
     , play_("play", "Play", "Activate animation"_help)
     , timer_(std::chrono::milliseconds{delay_}, [this]() {
-        NetworkLock lock(this);
+        const NetworkLock lock(this);
         for (auto p : props_) {
             p->update();
         }
@@ -93,16 +93,16 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 
         // make the id unique
         size_t count = 1;
-        const auto& base = p->getIdentifier();
-        auto id = base;
-        auto displayname = base;
+        const auto base = p->getIdentifier();
+        std::string id{base};
+        std::string displayName{base};
         while (getPropertyByIdentifier(id) != nullptr) {
             id = fmt::format("{}{}", base, count);
-            displayname = fmt::format("{} {}", base, count);
+            displayName = fmt::format("{} {}", base, count);
             ++count;
         }
         p->setIdentifier(id);
-        p->setDisplayName(displayname);
+        p->setDisplayName(displayName);
 
         p->setSerializationMode(PropertySerializationMode::All);
         props_.push_back(static_cast<BaseOrdinalAnimationProperty*>(p.get()));
@@ -134,10 +134,10 @@ void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
 
 std::ostream& operator<<(std::ostream& ss, BoundaryType bt) {
     switch (bt) {
-        case BoundaryType::Stop:     ss << "Stop"; break;
+        case BoundaryType::Stop: ss << "Stop"; break;
         case BoundaryType::Periodic: ss << "Periodic"; break;
-        case BoundaryType::Mirror:   ss << "Mirror"; break;
-        default:                     break;
+        case BoundaryType::Mirror: ss << "Mirror"; break;
+        default: break;
     }
     return ss;
 }

@@ -64,7 +64,7 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
                glm::max(lookTo.getMaxValue(), newLookTo + minMaxRatio * glm::abs(newLookTo)),
                lookTo.getIncrement());
     // Adjust near/far planes if necessary
-    auto nearFar = computeNearFarPlanes(minmax, camera);
+    const auto nearFar = computeNearFarPlanes(minmax, camera);
     camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);
 }
 
@@ -73,7 +73,7 @@ std::pair<double, double> computeNearFarPlanes(std::pair<dvec3, dvec3> worldSpac
     auto m = glm::scale(worldSpaceBoundingBox.second - worldSpaceBoundingBox.first);
     m[3] = dvec4(worldSpaceBoundingBox.first, 1.0);
 
-    auto maxViewLength =
+    const auto maxViewLength =
         std::max(glm::distance(camera.lookFrom_.getMaxValue(), camera.lookTo_.get()),
                  glm::distance(camera.lookFrom_.getMinValue(), camera.lookTo_.get()));
 

@@ -107,12 +107,12 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
             saveFileDialog.setCurrentDirectory(dir);
 
             if (saveFileDialog.exec()) {
-                QString qpath = saveFileDialog.selectedFiles().at(0);
+                const QString qpath = saveFileDialog.selectedFiles().at(0);
                 const auto path = utilqt::toPath(qpath);
 
                 const auto templatePath = modulePath / "templates/templateprocessor.py";
 
-                auto ifs = std::ifstream(templatePath);
+                const auto ifs = std::ifstream(templatePath);
                 std::stringstream ss;
                 ss << ifs.rdbuf();
                 const auto script = std::move(ss).str();

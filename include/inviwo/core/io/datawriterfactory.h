@@ -181,8 +181,9 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
     }
 
     // Select the match with the longest extension, for example select tar.gz over gz
-    if (auto it = std::max_element(candidates.begin(), candidates.end(),
-                                   [](const auto& a, const auto& b) { return a.first < b.first; });
+    if (const auto it =
+            std::max_element(candidates.begin(), candidates.end(),
+                             [](const auto& a, const auto& b) { return a.first < b.first; });
         it != candidates.end()) {
         return std::unique_ptr<DataWriterType<T>>{it->second->clone()};
     } else {
@@ -195,7 +196,7 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
     const LCString& extension) const {
     for (const auto& [ext, writer] : map_) {
         if (ext.extension == extension) {
-            if (auto* w = dynamic_cast<DataWriterType<T>*>(writer)) {
+            if (const auto* w = dynamic_cast<DataWriterType<T>*>(writer)) {
                 return std::unique_ptr<DataWriterType<T>>(w->clone());
             }
         }
@@ -207,7 +208,7 @@ template <typename T>
 std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
     const FileExtension& extension) const {
     return util::map_find_or_null(map_, extension, [](DataWriter* o) {
-        if (auto* w = dynamic_cast<DataWriterType<T>*>(o)) {
+        if (const auto* w = dynamic_cast<DataWriterType<T>*>(o)) {
             return std::unique_ptr<DataWriterType<T>>(w->clone());
         } else {
             return std::unique_ptr<DataWriterType<T>>();

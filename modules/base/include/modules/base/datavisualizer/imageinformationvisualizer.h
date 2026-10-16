@@ -47,7 +47,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASE_API ImageInformationVisualizer : public DataVisualizer {
 public:
-    ImageInformationVisualizer(InviwoApplication* app);
+    explicit ImageInformationVisualizer(InviwoApplication* app);
     virtual ~ImageInformationVisualizer() = default;
     virtual std::string getName() const override;
     virtual Document getDescription() const override;

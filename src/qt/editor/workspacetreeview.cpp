@@ -60,7 +60,7 @@ namespace {
 
 class SectionDelegate : public QStyledItemDelegate {
 public:
-    SectionDelegate(QWidget* parent = nullptr);
+    explicit SectionDelegate(QWidget* parent = nullptr);
     virtual ~SectionDelegate() override = default;
 
     virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -83,15 +83,15 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
                                 QPainter::SmoothPixmapTransform);
 
         option.text = "";
-        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
+        const QStyle* style = option.widget ? option.widget->style() : QApplication::style();
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
         const auto name = utilqt::getData(index, Role::Name).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
         const auto& image = [&]() {
-            QVariant annotations = utilqt::getData(index, Role::Annotations);
+            const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
-                WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
+                const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
                 return workspaceInfo.annotations->getPrimaryCanvasQImage();
             } else {
                 return WorkspaceAnnotationsQt::getMissingImage();
@@ -106,7 +106,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         const auto margins = QMargins(margin, margin, margin, margin);
 
         auto imgRect = option.rect;
-        auto imageWidth = imgRect.height();
+        const auto imageWidth = imgRect.height();
 
         imgRect.setWidth(imageWidth);
         imgRect = imgRect.marginsRemoved(margins);
@@ -178,7 +178,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 
     auto directories = str.split('/');
 
-    bool keepFirst = str[0] != '/';
+    const bool keepFirst = str[0] != '/';
     const int widthFirst = (keepFirst ? metrics.boundingRect(directories.front()).width() : 0);
     const QString strFirst = (keepFirst ? directories.front() : "");
     if (keepFirst) {
@@ -199,7 +199,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
     }
 
     int leftWidth = width - widthFirst - widthDots;
-    QString result =
+    const QString result =
         std::accumulate(directories.begin(), directories.end(), QString(),
                         [&, index = 0, leftWidth](QString str, const QString& dir) mutable {
                             if (leftWidth >= widthDirs[index]) {

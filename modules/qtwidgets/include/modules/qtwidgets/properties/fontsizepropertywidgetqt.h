@@ -43,7 +43,7 @@ class IvwComboBox;
 
 class IVW_MODULE_QTWIDGETS_API FontSizePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    FontSizePropertyWidgetQt(IntProperty* property);
+    explicit FontSizePropertyWidgetQt(IntProperty* property);
     virtual void updateFromProperty() override;
 
 private:

@@ -107,7 +107,7 @@ void ShaderManager::addShaderSearchPath(const std::filesystem::path& shaderSearc
 
 void ShaderManager::addShaderResource(std::string key, std::string src) {
     replaceInString(src, "NEWLINE", "\n");
-    auto resource = std::make_shared<StringShaderResource>(key, src);
+    const auto resource = std::make_shared<StringShaderResource>(key, src);
 
     const std::scoped_lock lock{mutex_};
     ownedResources_.push_back(resource);
@@ -115,7 +115,7 @@ void ShaderManager::addShaderResource(std::string key, std::string src) {
 }
 
 void ShaderManager::addShaderResource(std::unique_ptr<ShaderResource> resource) {
-    std::shared_ptr<ShaderResource> res(std::move(resource));
+    const std::shared_ptr<ShaderResource> res(std::move(resource));
 
     const std::scoped_lock lock{mutex_};
     ownedResources_.push_back(res);
@@ -131,7 +131,7 @@ void ShaderManager::addShaderResource(std::shared_ptr<ShaderResource> resource) 
 std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_view key) {
     const std::scoped_lock lock{mutex_};
 
-    auto it1 = shaderResources_.find(key);
+    const auto it1 = shaderResources_.find(key);
     if (it1 != shaderResources_.end()) {
         if (!it1->second.expired()) {
             return it1->second.lock();
@@ -143,7 +143,7 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_vie
     std::string key2{key};
     replaceInString(key2, "/", "_");
     replaceInString(key2, ".", "_");
-    auto it0 = shaderResources_.find(key2);
+    const auto it0 = shaderResources_.find(key2);
     if (it0 != shaderResources_.end()) {
         if (!it0->second.expired()) {
             return it0->second.lock();
@@ -158,7 +158,7 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string_vie
         return resource;
     }
 
-    auto it2 = util::find_if(shaderSearchPaths_, [&](const std::filesystem::path& path) {
+    const auto it2 = util::find_if(shaderSearchPaths_, [&](const std::filesystem::path& path) {
         return std::filesystem::is_regular_file(path / key);
     });
     if (it2 != shaderSearchPaths_.end()) {

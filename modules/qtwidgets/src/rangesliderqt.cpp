@@ -240,7 +240,7 @@ void RangeSliderQt::updateSlidersFromState() {
         static_cast<int>(r2),
     });
 
-    QSignalBlocker block(this);
+    const QSignalBlocker block(this);
     setSizes(sizes);
 }
 
@@ -271,7 +271,7 @@ void RangeSliderQt::moveMiddle(int delta) {
     sizes[2] -= delta;
 
     {
-        QSignalBlocker block(this);
+        const QSignalBlocker block(this);
         QSplitter::setSizes(sizes);
     }
     // update internal state
@@ -310,7 +310,7 @@ bool RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
     if (event->type() == QEvent::MouseButtonRelease) {
         if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
 
-            auto newSizes = [&]() -> QList<int> {
+            const auto newSizes = [&]() -> QList<int> {
                 const auto sizes = QSplitter::sizes();
                 if (groove == Groove::Left) {
                     return {me->pos().x(), sizes[1] + (sizes[0] - me->pos().x()), sizes[2]};
@@ -320,7 +320,7 @@ bool RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
             }();
 
             {
-                QSignalBlocker block(this);
+                const QSignalBlocker block(this);
                 QSplitter::setSizes(newSizes);
             }
             // update internal state

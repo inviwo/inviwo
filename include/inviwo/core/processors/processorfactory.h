@@ -46,7 +46,7 @@ class IVW_CORE_API ProcessorFactory
     using Register = FactoryRegister<ProcessorFactoryObject, std::string, std::string_view>;
 
 public:
-    ProcessorFactory(InviwoApplication* app);
+    explicit ProcessorFactory(InviwoApplication* app);
     virtual ~ProcessorFactory() = default;
     bool registerObject(ProcessorFactoryObject* processor) override;
 

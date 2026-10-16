@@ -59,16 +59,18 @@ ViewManager::ViewManager() = default;
 
 bool ViewManager::propagatePickingEvent(PickingEvent* pe, Propagator propagator) {
 
-    auto prop = [&](Event* newEvent, size_t ind) {
+    const auto prop = [&](Event* newEvent, size_t ind) {
         if (newEvent) {
-            auto pressPos = pe->getPressedPosition();
-            auto previousPos = pe->getPreviousPosition();
+            const auto pressPos = pe->getPressedPosition();
+            const auto previousPos = pe->getPreviousPosition();
 
-            auto offset = dvec2(views_[ind].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
-            auto scale = dvec2(pe->getCanvasSize() - uvec2(1)) / dvec2(views_[ind].size - ivec2(1));
+            const auto offset = dvec2(views_[ind].pos) / dvec2(pe->getCanvasSize() - uvec2(1));
+            const auto scale =
+                dvec2(pe->getCanvasSize() - uvec2(1)) / dvec2(views_[ind].size - ivec2(1));
 
-            auto pressNDC = dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressedDepth());
-            auto previousNDC =
+            const auto pressNDC =
+                dvec3(2.0 * scale * (pressPos - offset) - 1.0, pe->getPressedDepth());
+            const auto previousNDC =
                 dvec3(2.0 * scale * (previousPos - offset) - 1.0, pe->getPreviousDepth());
 
             PickingEvent newPe(pe->getPickingAction(), static_cast<InteractionEvent*>(newEvent),
@@ -110,9 +112,10 @@ bool ViewManager::propagateMouseEvent(MouseEvent* me, Propagator propagator, boo
     if (selectedView_.first && selectedView_.second < views_.size()) {
         MouseEvent newEvent(*me);
         newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
-        auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(me->canvasSize() - uvec2(1));
-        auto scale = dvec2(me->canvasSize() - uvec2(1)) /
-                     dvec2(views_[selectedView_.second].size - ivec2(1));
+        const auto offset =
+            dvec2(views_[selectedView_.second].pos) / dvec2(me->canvasSize() - uvec2(1));
+        const auto scale = dvec2(me->canvasSize() - uvec2(1)) /
+                           dvec2(views_[selectedView_.second].size - ivec2(1));
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) me->markAsUsed();
@@ -132,9 +135,10 @@ bool ViewManager::propagateWheelEvent(WheelEvent* we, Propagator propagator, boo
     if (selectedView_.first && selectedView_.second < views_.size()) {
         WheelEvent newEvent(*we);
         newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
-        auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(we->canvasSize() - uvec2(1));
-        auto scale = dvec2(we->canvasSize() - uvec2(1)) /
-                     dvec2(views_[selectedView_.second].size - ivec2(1));
+        const auto offset =
+            dvec2(views_[selectedView_.second].pos) / dvec2(we->canvasSize() - uvec2(1));
+        const auto scale = dvec2(we->canvasSize() - uvec2(1)) /
+                           dvec2(views_[selectedView_.second].size - ivec2(1));
         newEvent.setPosNormalized(scale * (newEvent.posNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) we->markAsUsed();
@@ -154,9 +158,10 @@ bool ViewManager::propagateGestureEvent(GestureEvent* ge, Propagator propagator,
     if (selectedView_.first && selectedView_.second < views_.size()) {
         GestureEvent newEvent(*ge);
         newEvent.setCanvasSize(uvec2(views_[selectedView_.second].size));
-        auto offset = dvec2(views_[selectedView_.second].pos) / dvec2(ge->canvasSize() - uvec2(1));
-        auto scale = dvec2(ge->canvasSize() - uvec2(1)) /
-                     dvec2(views_[selectedView_.second].size - ivec2(1));
+        const auto offset =
+            dvec2(views_[selectedView_.second].pos) / dvec2(ge->canvasSize() - uvec2(1));
+        const auto scale = dvec2(ge->canvasSize() - uvec2(1)) /
+                           dvec2(views_[selectedView_.second].size - ivec2(1));
         newEvent.setScreenPosNormalized(scale * (newEvent.screenPosNormalized() - offset));
         propagator(&newEvent, selectedView_.second);
         if (newEvent.hasBeenUsed()) ge->markAsUsed();
@@ -176,14 +181,14 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator, boo
     std::vector<int> usedPointIds;
 
     auto idToView = eventState_.getView(*this, te);
-    for (auto& point : touchPoints) {
-        auto it = idToView.find(point.id());
+    for (const auto& point : touchPoints) {
+        const auto it = idToView.find(point.id());
         if (it != idToView.end()) {
             viewIdToTouchPoints[it->second].push_back(point);
         }
     }
 
-    for (auto& item : viewIdToTouchPoints) {
+    for (const auto& item : viewIdToTouchPoints) {
         const auto& viewId = item.first;
         auto points = item.second;
 
@@ -276,7 +281,7 @@ size_t ViewManager::size() const { return views_.size(); }
 void ViewManager::clear() { views_.clear(); }
 
 std::pair<bool, ViewManager::ViewId> ViewManager::findView(ivec2 pos) const {
-    auto it = util::find_if(views_, [&](const auto& view) { return inView(view, pos); });
+    const auto it = util::find_if(views_, [&](const auto& view) { return inView(view, pos); });
     if (it != views_.end()) {
         return {true, std::distance(views_.begin(), it)};
     } else {
@@ -324,7 +329,7 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
     for (const auto& tp : te->touchPoints()) {
         switch (tp.state()) {
             case TouchState::Started: {
-                auto res = m.findView(static_cast<ivec2>(tp.pos()));
+                const auto res = m.findView(static_cast<ivec2>(tp.pos()));
                 if (res.first) {
                     touchpointIdToViewId_[tp.id()] = res.second;
                     newTouchpointIdToViewID[tp.id()] = res.second;
@@ -332,7 +337,7 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
                 break;
             }
             case TouchState::Finished: {
-                auto it = touchpointIdToViewId_.find(tp.id());
+                const auto it = touchpointIdToViewId_.find(tp.id());
                 if (it != touchpointIdToViewId_.end()) {
                     newTouchpointIdToViewID[tp.id()] = it->second;
                 }
@@ -343,7 +348,7 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
             case TouchState::Updated:
             case TouchState::None:
             default:                     {
-                auto it = touchpointIdToViewId_.find(tp.id());
+                const auto it = touchpointIdToViewId_.find(tp.id());
                 if (it != touchpointIdToViewId_.end()) {
                     newTouchpointIdToViewID[tp.id()] = it->second;
                 }

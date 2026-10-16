@@ -43,7 +43,7 @@ class Image;
 
 class IVW_CORE_API ImageCache {
 public:
-    ImageCache(std::shared_ptr<const Image> master = std::shared_ptr<const Image>());
+    explicit ImageCache(std::shared_ptr<const Image> master = std::shared_ptr<const Image>());
     ~ImageCache() = default;
 
     ImageCache(const ImageCache&) = delete;

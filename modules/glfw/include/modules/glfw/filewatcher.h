@@ -50,7 +50,7 @@ class InviwoApplication;
  */
 class IVW_MODULE_GLFW_API FileWatcher : public FileSystemObserver {
 public:
-    FileWatcher(InviwoApplication* app = nullptr);
+    explicit FileWatcher(InviwoApplication* app = nullptr);
     FileWatcher(const FileWatcher&) = delete;
     FileWatcher(FileWatcher&&) = delete;
     FileWatcher& operator=(const FileWatcher&) = delete;

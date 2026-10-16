@@ -100,7 +100,7 @@ private:
  */
 template <typename T, typename... Args>
 std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
-    auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
+    const auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
 
     std::unique_ptr<T> p;
 

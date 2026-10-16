@@ -46,7 +46,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotDataFrameVisualizer : public DataVisualizer {
 public:
-    ScatterPlotDataFrameVisualizer(InviwoApplication* app);
+    explicit ScatterPlotDataFrameVisualizer(InviwoApplication* app);
     virtual ~ScatterPlotDataFrameVisualizer() = default;
 
     virtual std::string getName() const override;

@@ -105,7 +105,7 @@ TEST(CompositeProperty, ObserveMove) {
     EXPECT_CALL(obs1, onDidRemoveProperty).Times(1);
 
     FloatProperty f1{"f1", "f1"};
-    auto copy = [&]() {
+    const auto copy = [&]() {
         CompositeProperty org{"org", "name", "help"_help};
         org.PropertyOwnerObservable::addObserver(&obs1);
         org.addProperty(f1);
@@ -126,7 +126,7 @@ TEST(CompositeProperty, ObserveMoveOwned) {
     EXPECT_CALL(obs1, onWillRemoveProperty).Times(1);
     EXPECT_CALL(obs1, onDidRemoveProperty).Times(1);
 
-    auto copy = [&]() {
+    const auto copy = [&]() {
         CompositeProperty org{"org", "name", "help"_help};
         org.PropertyOwnerObservable::addObserver(&obs1);
         org.addProperty(std::make_unique<FloatProperty>("f1", "f1"));

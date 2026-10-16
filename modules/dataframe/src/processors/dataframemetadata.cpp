@@ -65,7 +65,7 @@ DataFrameMetaData::DataFrameMetaData()
 }
 
 void DataFrameMetaData::process() {
-    auto dataFrame = std::make_shared<DataFrame>(*inport_.getData().get());
+    const auto dataFrame = std::make_shared<DataFrame>(*inport_.getData().get());
     columns_.updateDataFrame(*dataFrame);
     outport_.setData(dataFrame);
 }

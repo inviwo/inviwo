@@ -220,7 +220,7 @@ MeasureDistance3D::MeasureDistance3D()
     volume_.setOptional(true);
 
     isReady_.setUpdate([this]() -> ProcessorStatus {
-        if (auto connectedPorts = std::ranges::fold_left(
+        if (const auto connectedPorts = std::ranges::fold_left(
                 std::to_array<const Inport*>({&mesh_, &layer_, &volume_}) |
                     std::views::transform([](auto* p) { return p->isConnected() ? 1 : 0; }),
                 0, std::plus<>{});
@@ -233,7 +233,7 @@ MeasureDistance3D::MeasureDistance3D()
 
     addPorts(inport_, mesh_, layer_, volume_, outport_);
 
-    auto updateDistance = [this]() {
+    const auto updateDistance = [this]() {
         const auto dist{glm::distance(positions_[0].get(), positions_[1].get())};
         distance_.set(dist);
         measurementAxis_.setRange({0.0, dist});
@@ -284,7 +284,7 @@ void MeasureDistance3D::process() {
     const auto centerClip = util::transformPos(coordTransform.getWorldToClipMatrix(), center);
     const auto clipToWorld{coordTransform.getClipToWorldMatrix()};
 
-    auto pixelDistToWorld = [&](double len) {
+    const auto pixelDistToWorld = [&](double len) {
         return static_cast<float>(glm::distance(
             center,
             util::transformPos(clipToWorld,
@@ -412,7 +412,7 @@ void MeasureDistance3D::invokeEvent(Event* event) {
         sm->sm.process_event(Reset{});
         reset();
     } else if ((*placeLocatorEvent_.getEventMatcher())(event)) {
-        if (auto* mouseEvent = event->getAs<MouseEvent>()) {
+        if (const auto* mouseEvent = event->getAs<MouseEvent>()) {
             auto mousePosNdc{mouseEvent->ndc()};
             if (mouseEvent->depth() >= 1.0) {
                 // no depth information/far clip plane, replace with distance to lookTo

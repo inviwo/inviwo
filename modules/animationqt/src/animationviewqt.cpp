@@ -73,7 +73,7 @@ namespace animation {
 
 class TimeLine : public QWidget {
 public:
-    TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
+    explicit TimeLine(AnimationViewQt* parent) : QWidget(parent), view_(parent) {
         setObjectName("AnimationTimeLine");
         setMouseTracking(true);
         setFixedHeight(timelineHeight);
@@ -85,8 +85,8 @@ public:
         auto gridPen = painter.pen();
         gridPen.setWidthF(1.0);
         gridPen.setCosmetic(true);
-        auto font = painter.font();
-        QFontMetrics fm{font};
+        const auto font = painter.font();
+        const QFontMetrics fm{font};
         auto fontHeight = fm.lineSpacing();
 
         const auto gridSpacing = widthPerSecond;
@@ -107,9 +107,9 @@ public:
 
         QVector<QLineF> majorTicksLines;
         QVector<QLineF> minorTicksLines;
-        QString text{"%1"};
+        const QString text{"%1"};
 
-        auto addMinor = [&](double pos) {
+        const auto addMinor = [&](double pos) {
             for (int j = 1; j < 5; ++j) {
                 const auto t =
                     view_->mapFromScene(widthPerSecond * (pos + j * div.step / 5), 0).x();
@@ -121,7 +121,7 @@ public:
 
         for (size_t i = 0; i <= div.count; ++i) {
             const auto x = view_->mapFromScene(widthPerSecond * (div.start + i * div.step), 0).x();
-            QRectF box(x - 0.5 * gridSpacing, rect().top(), gridSpacing, timelineHeight);
+            const QRectF box(x - 0.5 * gridSpacing, rect().top(), gridSpacing, timelineHeight);
             painter.drawText(box, Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip,
                              text.arg(div.start + i * div.step, 0, 'f', div.fractionalDigits));
 
@@ -267,8 +267,8 @@ void AnimationViewQt::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void AnimationViewQt::wheelEvent(QWheelEvent* e) {
-    QPointF numPixels = e->pixelDelta() / 5.0;
-    QPointF numDegrees = e->angleDelta() / 8.0 / 15;
+    const QPointF numPixels = e->pixelDelta() / 5.0;
+    const QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 
     if (e->modifiers() & Qt::ControlModifier) {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -301,7 +301,7 @@ void AnimationViewQt::drawBackground(QPainter*, const QRectF&) {}
 
 void AnimationViewQt::drawForeground(QPainter* painter, const QRectF& rect) {
     // Current time
-    auto x = timeToScenePos(controller_.getCurrentTime());
+    const auto x = timeToScenePos(controller_.getCurrentTime());
     QPen timePen;
     timePen.setColor(QColor(255, 255, 255));
     timePen.setWidthF(1.0);

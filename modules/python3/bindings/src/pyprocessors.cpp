@@ -78,7 +78,7 @@ public:
     }
 
     virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override {
-        auto proc = createProcessor(app);
+        const auto proc = createProcessor(app);
         auto p = proc.cast<std::shared_ptr<Processor>>();
         return p;
     }
@@ -95,7 +95,7 @@ public:
     }
 
     virtual std::unique_ptr<ProcessorWidget> create(Processor* processor) override {
-        auto proc = createWidget(processor);
+        const auto proc = createWidget(processor);
         auto p = proc.cast<std::unique_ptr<ProcessorWidget>>();
         return p;
     }
@@ -333,7 +333,7 @@ void exposeProcessors(pybind11::module& m) {
              })
 
         .def("snapshotAsync", [](CanvasProcessor* canvas, const std::filesystem::path& filePath) {
-            auto writer = std::shared_ptr<DataWriterType<Layer>>{
+            const auto writer = std::shared_ptr<DataWriterType<Layer>>{
                 canvas->getInviwoApplication()
                     ->getDataWriterFactory()
                     ->getWriterForTypeAndExtension<Layer>(filePath)};

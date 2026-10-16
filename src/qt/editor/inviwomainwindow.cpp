@@ -130,7 +130,7 @@ QString addAppendSuffix(const QString& str, bool append) {
 
 class MenuKeyboardEventFilter : public QObject {
 public:
-    MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
+    explicit MenuKeyboardEventFilter(QObject* parent) : QObject(parent) {}
 
     // This will not trigger on MacOS, so we also trigger update on hovered and aboutToShow.
     virtual bool eventFilter(QObject*, QEvent* ev) override {
@@ -145,14 +145,14 @@ public:
     void update(bool ctrl) {
         if (ctrl != ctrlPressed) {
             ctrlPressed = ctrl;
-            for (auto& action : actions_) {
+            for (const auto& action : actions_) {
                 action.action->setText(addAppendSuffix(action.text, ctrl));
             }
         }
     }
 
     void add(QAction* action, const QString& text) {
-        auto sig = connect(action, &QAction::hovered, this, [this]() {
+        const auto sig = connect(action, &QAction::hovered, this, [this]() {
             const auto ctrl =
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
@@ -161,7 +161,7 @@ public:
     }
 
     void add(QMenu* menu) {
-        auto sig = connect(menu, &QMenu::aboutToShow, this, [this]() {
+        const auto sig = connect(menu, &QMenu::aboutToShow, this, [this]() {
             const auto ctrl =
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
@@ -170,11 +170,11 @@ public:
     }
 
     void clear() {
-        for (auto& action : actions_) {
+        for (const auto& action : actions_) {
             disconnect(action.connection);
         }
         actions_.clear();
-        for (auto& menu : menus_) {
+        for (const auto& menu : menus_) {
             disconnect(menu.connection);
         }
         menus_.clear();
@@ -207,7 +207,7 @@ auto getWidgetProcessors(InviwoApplication* app) {
     return widgetProcessors;
 }
 
-auto getFloatingDockWidgets(InviwoMainWindow* win) {
+auto getFloatingDockWidgets(const InviwoMainWindow* win) {
     auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
                                      [](const auto p) { return p->isFloating(); });
     std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {
@@ -326,11 +326,13 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     const auto ssize = screen->availableSize();
 
     QSize size = utilqt::emToPx(this, QSizeF(192, 108));
-    size.setWidth(std::min(size.width(), static_cast<int>(ssize.width() * maxRatio)));
-    size.setHeight(std::min(size.height(), static_cast<int>(ssize.height() * maxRatio)));
+    size.setWidth(
+        std::min(size.width(), static_cast<int>(static_cast<float>(ssize.width()) * maxRatio)));
+    size.setHeight(
+        std::min(size.height(), static_cast<int>(static_cast<float>(ssize.height()) * maxRatio)));
 
     // Center Window
-    QPoint pos{ssize.width() / 2 - size.width() / 2, ssize.height() / 2 - size.height() / 2};
+    const QPoint pos{ssize.width() / 2 - size.width() / 2, ssize.height() / 2 - size.height() / 2};
 
     resize(size);
     move(pos);
@@ -518,7 +520,7 @@ void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::str
 void InviwoMainWindow::getScreenGrab(const std::filesystem::path& path, std::string_view fileName) {
     repaint();
     qApp->processEvents();
-    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
+    const QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(winId());
     screenGrab.save(utilqt::toQString(path / fileName), "png");
 }
 
@@ -637,7 +639,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         fileMenuItem->addAction(appendAction);
     }
     {
-        auto* snapshot = fileMenuItem->addAction("Save Snapshots ...");
+        const auto* snapshot = fileMenuItem->addAction("Save Snapshots ...");
         connect(snapshot, &QAction::triggered, [this](bool /*state*/) {
             InviwoFileDialog saveFileDialog(nullptr, "Save Snapshots ...", "images");
             saveFileDialog.setFileMode(FileMode::Directory);
@@ -658,7 +660,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         backgroundVisibleAction->setChecked(true);
         exportNetworkMenu->addSeparator();
 
-        auto exportNetworkImageFunc = [this, backgroundVisibleAction](bool entireScene) {
+        const auto exportNetworkImageFunc = [this, backgroundVisibleAction](bool entireScene) {
             return [this, backgroundVisibleAction, entireScene](bool /*state*/) {
                 InviwoFileDialog saveFileDialog(nullptr, "Export Network ...", "image");
                 saveFileDialog.setFileMode(FileMode::AnyFile);
@@ -780,7 +782,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             if (!std::filesystem::is_directory(moduleWorkspacePath)) continue;
             auto menu =
                 std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
-            for (auto file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            for (const auto& file : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (file.extension() != ".inv") continue;
                 const auto qFile = utilqt::toQString(file);
@@ -788,7 +790,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 menuEventFilter_->add(action, qFile);
                 const auto path = moduleWorkspacePath / file;
                 connect(action, &QAction::triggered, this, [this, path]() {
-                    auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                    const auto action = util::getModifierAction(QApplication::keyboardModifiers());
                     if (action == ModifierAction::AppendWorkspace) {
                         appendWorkspace(path);
                         hideWelcomeScreen();
@@ -823,23 +825,24 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
         testMenu_->clear();
         for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-            auto moduleTestPath = inviwoModule.getPath(ModulePath::RegressionTests);
+            const auto moduleTestPath = inviwoModule.getPath(ModulePath::RegressionTests);
             if (!std::filesystem::is_directory(moduleTestPath)) continue;
             auto menu =
                 std::make_unique<QMenu>(QString::fromStdString(inviwoModule.getIdentifier()));
-            for (auto test : filesystem::getDirectoryContents(moduleTestPath,
-                                                              filesystem::ListMode::Directories)) {
+            for (const auto& test : filesystem::getDirectoryContents(
+                     moduleTestPath, filesystem::ListMode::Directories)) {
                 const auto testDir = moduleTestPath / test;
                 if (!std::filesystem::is_directory(testDir)) continue;
-                for (auto file : filesystem::getDirectoryContents(testDir)) {
+                for (const auto& file : filesystem::getDirectoryContents(testDir)) {
                     // only accept inviwo workspace files
                     if (file.extension() != ".inv") continue;
-                    auto qFile = utilqt::toQString(file);
+                    const auto qFile = utilqt::toQString(file);
                     auto* action = menu->addAction(qFile);
                     menuEventFilter_->add(action, qFile);
-                    auto path = testDir / file;
+                    const auto path = testDir / file;
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        auto action = util::getModifierAction(QApplication::keyboardModifiers());
+                        const auto action =
+                            util::getModifierAction(QApplication::keyboardModifiers());
                         if (action == ModifierAction::AppendWorkspace) {
                             appendWorkspace(path);
                             hideWelcomeScreen();
@@ -877,7 +880,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 #ifndef IVW_RELEASE
     {
         fileMenuItem->addSeparator();
-        auto* reloadStyle = fileMenuItem->addAction("Reload Style sheet");
+        const auto* reloadStyle = fileMenuItem->addAction("Reload Style sheet");
         connect(reloadStyle, &QAction::triggered, [](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
@@ -949,7 +952,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     // View
     {
         // dock widget visibility menu entries
-        auto* restore = viewMenuItem->addAction("Restore Window State");
+        const auto* restore = viewMenuItem->addAction("Restore Window State");
         connect(restore, &QAction::triggered, this, [this]() { restoreDefaultState(); });
         viewMenuItem->addSeparator();
 
@@ -1011,7 +1014,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         expandAction->setEnabled(false);
         connect(expandAction, &QAction::triggered, this, [this]() {
             for (auto* item : networkEditor_->selectedItems()) {
-                if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                if (const auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                     if (auto* comp = dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
                         util::expandCompositeProcessorIntoNetwork(*comp);
                     }
@@ -1019,12 +1022,12 @@ void InviwoMainWindow::addActions() {  // NOLINT
             }
         });
 
-        auto updateButtonState = [this, expandAction, compAction] {
+        const auto updateButtonState = [this, expandAction, compAction] {
             bool selectedProcessor = false;
             bool selectedComposite = false;
 
             for (auto* item : networkEditor_->selectedItems()) {
-                if (auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
+                if (const auto* pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
                     selectedProcessor = true;
                     if (dynamic_cast<CompositeProcessor*>(pgi->getProcessor())) {
                         selectedComposite = true;
@@ -1039,7 +1042,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
     }
     {
         networkMenuItem->addSeparator();
-        auto* invalidateNetwork = networkMenuItem->addAction("Invalidate All Output");
+        const auto* invalidateNetwork = networkMenuItem->addAction("Invalidate All Output");
         connect(invalidateNetwork, &QAction::triggered, [this](bool /*state*/) {
             auto* net = app_->getProcessorNetwork();
             const NetworkLock lock{net};
@@ -1081,7 +1084,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
 
             QWidget* widget = nullptr;
             for (const auto& p : widgetProcessors) {
-                if (auto* w = dynamic_cast<CanvasProcessorWidget*>(p->getProcessorWidget())) {
+                if (const auto* w = dynamic_cast<CanvasProcessorWidget*>(p->getProcessorWidget())) {
                     if (auto* qw = dynamic_cast<QWidget*>(w->getCanvas())) {
                         widget = qw;
                         break;
@@ -1142,7 +1145,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                 const auto widgetProcessors = detail::getWidgetProcessors(app_);
                 if (!widgetProcessors.empty()) windowMenuItem->addSeparator();
 
-                for (auto* p : widgetProcessors) {
+                for (const auto* p : widgetProcessors) {
                     auto* item =
                         windowMenuItem->addMenu(QString("%1 (%2)")
                                                     .arg(utilqt::toQString(p->getDisplayName()))
@@ -1168,13 +1171,13 @@ void InviwoMainWindow::addActions() {  // NOLINT
                         p->getProcessorWidget()->setFullScreen(toggle);
                     });
 
-                    auto* raise = item->addAction("Raise");
+                    const auto* raise = item->addAction("Raise");
                     QObject::connect(raise, &QAction::triggered, this, [p]() {
                         if (auto* w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
                             w->raise();
                         }
                     });
-                    auto* lower = item->addAction("Lower");
+                    const auto* lower = item->addAction("Lower");
                     QObject::connect(lower, &QAction::triggered, this, [p]() {
                         if (auto* w = dynamic_cast<QWidget*>(p->getProcessorWidget())) {
                             w->lower();
@@ -1287,7 +1290,7 @@ bool InviwoMainWindow::openExample(const std::filesystem::path& exampleFileName)
 }
 
 void InviwoMainWindow::openLastWorkspace(const std::filesystem::path& workspace) {
-    QSettings settings;
+    const QSettings settings;
     const bool showWelcomePage = settings.value("WelcomeWidget/showWelcomePage", true).toBool();
     const bool loadLastWorkspace =
         settings.value("WelcomeWidget/autoloadLastWorkspace", false).toBool();
@@ -1318,7 +1321,7 @@ std::optional<std::filesystem::path> InviwoMainWindow::askForWorkspaceToOpen() {
         openFileDialog.setFileMode(FileMode::AnyFile);
 
         if (openFileDialog.exec()) {
-            QString path = openFileDialog.selectedFiles().at(0);
+            const QString path = openFileDialog.selectedFiles().at(0);
             return utilqt::toPath(path);
         }
     }
@@ -1348,7 +1351,7 @@ bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool
     }
 
     {
-        NetworkLock lock(app_->getProcessorNetwork());
+        const NetworkLock lock(app_->getProcessorNetwork());
         app_->getWorkspaceManager()->clear();
         try {
             app_->getWorkspaceManager()->load(fileName, [&](SourceContext) {
@@ -1378,7 +1381,7 @@ bool InviwoMainWindow::openWorkspace(const std::filesystem::path& fileName, bool
 }
 
 void InviwoMainWindow::appendWorkspace(const std::filesystem::path& file) {
-    NetworkLock lock(app_->getProcessorNetwork());
+    const NetworkLock lock(app_->getProcessorNetwork());
     networkEditor_->append(file);
     qApp->processEvents();  // make sure the gui is ready before we unlock.
 }
@@ -1676,19 +1679,14 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         // set minimum size to suppress Qt warning
         // see bug report https://bugreports.qt.io/browse/QTBUG-63661
         msgBox.setMinimumSize(msgBox.minimumSizeHint());
-        int answer = msgBox.exec();
+        const int answer = msgBox.exec();
 
         switch (answer) {
-            case QMessageBox::Yes:
-                saveWorkspace();
-                break;
+            case QMessageBox::Yes: saveWorkspace(); break;
 
-            case QMessageBox::No:
-                break;
+            case QMessageBox::No: break;
 
-            case QMessageBox::Cancel:
-                continueOperation = false;
-                break;
+            case QMessageBox::Cancel: continueOperation = false; break;
         }
     }
 
@@ -1733,8 +1731,8 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
     const auto* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
-        std::filesystem::path filename = utilqt::toPath(urlList.front().toLocalFile());
-        auto ext = toLower(filename.extension().string());
+        const std::filesystem::path filename = utilqt::toPath(urlList.front().toLocalFile());
+        const auto ext = toLower(filename.extension().string());
 
         if (ext == ".inv" ||
             !app_->getDataVisualizerManager()->getDataVisualizersForFile(filename).empty()) {
@@ -1760,14 +1758,15 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
         try {
             // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows
             // Explorer, while the drop operation is performed
-            auto action = [this, keyModifiers = event->modifiers(), urlList = mimeData->urls()]() {
+            const auto action = [this, keyModifiers = event->modifiers(),
+                                 urlList = mimeData->urls()]() {
                 RenderContext::getPtr()->activateDefaultRenderContext();
 
                 hideWelcomeScreen();
 
                 bool first = true;
                 for (auto& file : urlList) {
-                    std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
+                    const std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
 
                     if (toLower(filename.extension().string()) == ".inv") {
                         if (!first || keyModifiers & Qt::ControlModifier) {
@@ -1836,12 +1835,12 @@ void InviwoMainWindow::VisibleWidgets::show() {
 ProcessorDocsLoader::ProcessorDocsLoader(InviwoApplication* app) : app_{app} {}
 
 void ProcessorDocsLoader::operator()() {
-    auto docs = std::make_shared<help::ProcessorDocs>(help::generateDocs(*app_));
+    const auto docs = std::make_shared<help::ProcessorDocs>(help::generateDocs(*app_));
     app_->dispatchFrontAndForget([l = shared_from_this(), docs] { l->done(docs); });
 }
 
 void InviwoMainWindow::updateProcessorDocs() {
-    auto loader = std::make_shared<ProcessorDocsLoader>(app_);
+    const auto loader = std::make_shared<ProcessorDocsLoader>(app_);
     connect(
         loader.get(), &ProcessorDocsLoader::done, this,
         [this](std::shared_ptr<help::ProcessorDocs> docs) {

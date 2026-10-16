@@ -95,7 +95,7 @@ void transform(const OrdinalProperty<dmat4>& mat, auto& dst, dvec2) {
             auto res = mat.get() * dvec4{dval, 0.0, 1.0};
             return static_cast<T>(res);
         } else if constexpr (util::extent_v<T> == 3) {
-            auto res = mat.get() * dvec4{dval, 1.0};
+            const auto res = mat.get() * dvec4{dval, 1.0};
             return static_cast<T>(res);
         } else if constexpr (util::extent_v<T> == 4) {
             return static_cast<T>(mat.get() * dval);
@@ -306,7 +306,7 @@ void DataFrameToMesh::process() {
         mapper_.updateSources(*data);
     }
 
-    auto mesh = std::make_shared<Mesh>(mapper_.getBuffers(*data), Mesh::IndexVector{});
+    const auto mesh = std::make_shared<Mesh>(mapper_.getBuffers(*data), Mesh::IndexVector{});
 
     if (drawType_.getSelectedValue() == 0) {
         mesh->setDefaultMeshInfo({.dt = DrawType::Points, .ct = ConnectivityType::None});

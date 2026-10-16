@@ -188,8 +188,8 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         }
     };
 
-    auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
-                        mat4 transform = mat4(1.0f)) {
+    const auto drawMesh = [&](const MeshGL* meshGL, float lineWidth, bool caps,
+                              mat4 transform = mat4(1.0f)) {
         lineShader.setUniform("lineWidth", lineWidth);
         MeshDrawerGL::DrawObject drawer(meshGL, meshGL->getDefaultMeshInfo());
         utilgl::setShaderUniforms(lineShader, Transform{transform}, "geometry");
@@ -203,11 +203,13 @@ void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3&
         drawMesh(lineMesh, data_.width, false, makeLineTransform(start, end));
     }
     const auto tick = glm::normalize(tickDir) * (data_.mirrored ? -1.0f : 1.0f);
-    if (auto* majorMesh = majorMesh_.get(data_.majorPositions, data_.range, data_.major.style)) {
+    if (const auto* majorMesh =
+            majorMesh_.get(data_.majorPositions, data_.range, data_.major.style)) {
         drawMesh(majorMesh->getRepresentation<MeshGL>(), data_.major.width, true,
                  makeTickTransform(start, end, tick * data_.major.length));
     }
-    if (auto* minorMesh = minorMesh_.get(data_.minorPositions, data_.range, data_.minor.style)) {
+    if (const auto* minorMesh =
+            minorMesh_.get(data_.minorPositions, data_.range, data_.minor.style)) {
         drawMesh(minorMesh->getRepresentation<MeshGL>(), data_.minor.width, true,
                  makeTickTransform(start, end, tick * data_.minor.length));
     }
@@ -370,7 +372,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
     // axis caption
     if (data_.captionSettings.enabled) {
         const auto& cs = data_.captionSettings;
-        auto capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
+        const auto capTex = caption_.getCaption(data_.caption, cs, textRenderer_);
 
         // render axis caption centered at the axis using the offset
         const vec2 texDims(capTex.texture->getDimensions());

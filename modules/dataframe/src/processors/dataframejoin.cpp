@@ -99,7 +99,7 @@ DataFrameJoin::DataFrameJoin()
         join_, [](const auto& p) { return p == JoinType::AppendColumns; });
     columnMatching_.visibilityDependsOn(join_,
                                         [](const auto& p) { return p == JoinType::AppendRows; });
-    auto keyVisible = [](const auto& p) {
+    const auto keyVisible = [](const auto& p) {
         return (p == JoinType::Inner || p == JoinType::OuterLeft);
     };
 
