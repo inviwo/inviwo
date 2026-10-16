@@ -481,23 +481,25 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     // classification defines, red channel is used
     std::string_view classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
     std::string_view classificationValue;
-    if (property.classificationMode_.isSelectedIdentifier("none"))
+    if (property.classificationMode_.isSelectedIdentifier("none")) {
         classificationValue = "vec4(voxel.r)";
-    else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
+    } else if (property.classificationMode_.isSelectedIdentifier("transfer-function")) {
         classificationValue = "applyTF(transferFunc, voxel.r)";
-    else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
+    } else if (property.classificationMode_.isSelectedIdentifier("voxel-value")) {
         classificationValue = "voxel";
+    }
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // classification of specific channel
     classificationKey = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
     classificationValue = "";
-    if (property.classificationMode_.isSelectedIdentifier("none"))
+    if (property.classificationMode_.isSelectedIdentifier("none")) {
         classificationValue = "vec4(voxel[channel])";
-    else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
+    } else if (property.classificationMode_.isSelectedIdentifier("transfer-function")) {
         classificationValue = "applyTF(transferFunc, voxel, channel)";
-    else if (property.classificationMode_.isSelectedIdentifier("voxel-value"))
+    } else if (property.classificationMode_.isSelectedIdentifier("voxel-value")) {
         classificationValue = "voxel";
+    }
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
@@ -506,22 +508,23 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
         "tIncr)";
     std::string_view compositingValue = "result";
 
-    if (property.compositingMode_.isSelectedIdentifier("dvr"))
+    if (property.compositingMode_.isSelectedIdentifier("dvr")) {
         compositingValue = "compositeDVR(result, color, t, tDepth, tIncr)";
-    else if (property.compositingMode_.isSelectedIdentifier("mip"))
+    } else if (property.compositingMode_.isSelectedIdentifier("mip")) {
         compositingValue = "compositeMIP(result, color, t, tDepth)";
-    else if (property.compositingMode_.isSelectedIdentifier("fhp"))
+    } else if (property.compositingMode_.isSelectedIdentifier("fhp")) {
         compositingValue = "compositeFHP(result, color, samplePos, t, tDepth)";
-    else if (property.compositingMode_.isSelectedIdentifier("fhn"))
+    } else if (property.compositingMode_.isSelectedIdentifier("fhn")) {
         compositingValue = "compositeFHN(result, color, gradient, t, tDepth)";
-    else if (property.compositingMode_.isSelectedIdentifier("fhnvs"))
+    } else if (property.compositingMode_.isSelectedIdentifier("fhnvs")) {
         compositingValue = "compositeFHN_VS(result, color, gradient, t, camera, tDepth)";
-    else if (property.compositingMode_.isSelectedIdentifier("fhd"))
+    } else if (property.compositingMode_.isSelectedIdentifier("fhd")) {
         compositingValue = "compositeFHD(result, color, t, tDepth)";
-    else if (property.compositingMode_.isSelectedIdentifier("iso"))
+    } else if (property.compositingMode_.isSelectedIdentifier("iso")) {
         compositingValue = "compositeISO(result, color, voxel.r, t, tDepth, tIncr, isoValue)";
-    else if (property.compositingMode_.isSelectedIdentifier("ison"))
+    } else if (property.compositingMode_.isSelectedIdentifier("ison")) {
         compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue)";
+    }
 
     shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }

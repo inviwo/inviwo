@@ -59,20 +59,21 @@ const std::array<std::pair<std::string_view, ShaderType>, 6> extToShaderType{
 }  // namespace
 
 ShaderType ShaderType::typeFromExtension(std::string_view ext) {
-    if (ext == "vert")
+    if (ext == "vert") {
         return Vertex;
-    else if (ext == "geom")
+    } else if (ext == "geom") {
         return Geometry;
-    else if (ext == "frag")
+    } else if (ext == "frag") {
         return Fragment;
-    else if (ext == "tesc")
+    } else if (ext == "tesc") {
         return TessellationControl;
-    else if (ext == "tese")
+    } else if (ext == "tese") {
         return TessellationEvaluation;
-    else if (ext == "comp")
+    } else if (ext == "comp") {
         return Compute;
-    else
+    } else {
         return ShaderType(GLenum{0});
+    }
 }
 
 ShaderType ShaderType::typeFromString(std::string_view str) {

@@ -156,17 +156,19 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
 
 void StreamRibbonsDeprecated::process() {
     const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
-        if (sampler_.isConnected())
+        if (sampler_.isConnected()) {
             return sampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
+        }
     }();
 
     const auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
-        if (vorticitySampler_.isConnected())
+        if (vorticitySampler_.isConnected()) {
             return vorticitySampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
+        }
     }();
 
     const auto mesh = std::make_shared<BasicMesh>();

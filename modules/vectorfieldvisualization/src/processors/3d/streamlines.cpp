@@ -151,10 +151,11 @@ StreamLinesDeprecated::~StreamLinesDeprecated() = default;
 void StreamLinesDeprecated::process() {
 
     const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
-        if (sampler_.isConnected())
+        if (sampler_.isConnected()) {
             return sampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+        }
     }();
 
     const auto mesh = std::make_shared<BasicMesh>();

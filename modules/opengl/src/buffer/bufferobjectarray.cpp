@@ -191,10 +191,11 @@ void BufferObjectArray::detachBufferObject(GLuint location) {
 }
 
 const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
-    if (location < attachedBuffers_.size())
+    if (location < attachedBuffers_.size()) {
         return attachedBuffers_[location].second;
-    else
+    } else {
         return nullptr;
+    }
 }
 
 BufferObjectArray::BindingType BufferObjectArray::getBindingType(size_t location) const {

@@ -130,8 +130,9 @@ void DepthDarkening::process() {
         minmax =
             std::accumulate(data, data + size, minmax, [](const vec2& mm, const float& v) -> vec2 {
                 if (v < std::numeric_limits<float>::epsilon() ||
-                    v >= 1 - std::numeric_limits<float>::epsilon())
+                    v >= 1 - std::numeric_limits<float>::epsilon()) {
                     return mm;
+                }
                 return {glm::min(mm.x, v), glm::max(mm.y, v)};
             });
 

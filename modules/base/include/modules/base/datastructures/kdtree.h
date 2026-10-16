@@ -465,8 +465,9 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMin(unsigned int d) {
     if (dimmension_ == d) {
         return isLeftLeaf() ? this : leftChild_->findMin(d);
     }
-    if (isLeaf())  // leaf node
+    if (isLeaf()) {  // leaf node
         return this;
+    }
 
     KDNode* l = nullptr;
     KDNode* r = nullptr;

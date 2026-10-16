@@ -404,10 +404,11 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     }
 
     if (numberOfSupportedVersions == 0) {
-        if (isShadersSupported())
+        if (isShadersSupported()) {
             glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        else if (isShadersSupportedARB())
+        } else if (isShadersSupportedARB()) {
             glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
+        }
 
         glslVersionStr_ = std::string(
             (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
@@ -442,8 +443,9 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
         while (i < supportedShaderVersions_.size() &&
                (supportedShaderVersions_[i].hasProfile() &&
-                supportedShaderVersions_[i].getProfile() != getProfileString()))
+                supportedShaderVersions_[i].getProfile() != getProfileString())) {
             i++;
+        }
 
         currentGlobalGLSLVersionIdx_ = i;
     }
@@ -486,10 +488,11 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     } else {
         texArraySupported_ = isExtensionSupported("GL_EXT_texture_array");
 
-        if (isTextureArraysSupported())
+        if (isTextureArraysSupported()) {
             glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTexSize_);
-        else
+        } else {
             maxArrayTexSize_ = 0;
+        }
     }
     numTexUnits_ = -1;
 

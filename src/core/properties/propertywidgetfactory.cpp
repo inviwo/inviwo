@@ -102,8 +102,9 @@ std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForPro
     sameKeys = widgetMap_.equal_range(property->getClassIdentifier());
     std::vector<PropertySemantics> semantics;
 
-    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it)
+    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         semantics.push_back(it->second->getSematics());
+    }
 
     return semantics;
 }

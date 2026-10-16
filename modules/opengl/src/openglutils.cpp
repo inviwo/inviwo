@@ -249,10 +249,11 @@ GlBoolState::GlBoolState(GlBoolState&& rhs)
 GlBoolState::GlBoolState(GLenum target, bool state) : target_(target), oldState_{}, state_(state) {
     oldState_ = (glIsEnabled(target_) == GL_TRUE);
     if (oldState_ != state_) {
-        if (state)
+        if (state) {
             glEnable(target_);
-        else
+        } else {
             glDisable(target_);
+        }
     }
 }
 
@@ -260,10 +261,11 @@ GlBoolState::operator bool() const { return state_; }
 
 GlBoolState::~GlBoolState() {
     if (oldState_ != state_) {
-        if (oldState_)
+        if (oldState_) {
             glEnable(target_);
-        else
+        } else {
             glDisable(target_);
+        }
     }
 }
 
