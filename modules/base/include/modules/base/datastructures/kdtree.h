@@ -398,7 +398,8 @@ bool KDNode<N, T, P>::isLeftLeaf() const {
 
 template <unsigned char N, typename T, typename P>
 unsigned long KDNode<N, T, P>::depth() const {
-    unsigned long l = 0, r = 0;
+    unsigned long l = 0;
+    unsigned long r = 0;
     if (!isRightLeaf()) r = rightChild_->depth();
     if (!isLeftLeaf()) l = leftChild_->depth();
     return 1 + std::max(l, r);
@@ -406,7 +407,8 @@ unsigned long KDNode<N, T, P>::depth() const {
 
 template <unsigned char N, typename T, typename P>
 unsigned long KDNode<N, T, P>::size() const {
-    unsigned long l = 0, r = 0;
+    unsigned long l = 0;
+    unsigned long r = 0;
     if (!isRightLeaf()) r = rightChild_->size();
     if (!isLeftLeaf()) l = leftChild_->size();
     return 1 + l + r;
@@ -466,7 +468,9 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMin(unsigned int d) {
     if (isLeaf())  // leaf node
         return this;
 
-    KDNode *l = nullptr, *r = nullptr, *minChild = nullptr;
+    KDNode* l = nullptr;
+    KDNode* r = nullptr;
+    KDNode* minChild = nullptr;
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         minChild = rightChild_->findMin(d);
@@ -487,7 +491,9 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMax(unsigned int d) {
     }
     if (isLeaf()) return this;
 
-    KDNode *l = nullptr, *r = nullptr, *maxChild = nullptr;
+    KDNode* l = nullptr;
+    KDNode* r = nullptr;
+    KDNode* maxChild = nullptr;
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         maxChild = rightChild_->findMax(d);
@@ -533,7 +539,9 @@ template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* __closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P>* n1) {
     if (n0 == 0) return n1;
     if (n1 == 0 || n0 == n1) return n0;
-    P d0 = 0, d1 = 0, dx;
+    P d0 = 0;
+    P d1 = 0;
+    P dx;
     for (size_t i = 0; i < N; i++) {
         dx = pos[i] - n0->getPosition()[i];
         d0 += dx * dx;
@@ -556,7 +564,8 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
         return nearest;
     }
 
-    P d0, d1;
+    P d0;
+    P d1;
     if (goRight(pos)) {        // pos is within right sub tree
         if (!isRightLeaf()) {  // Look forit in right sub tree
             nearest = __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
@@ -598,7 +607,8 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
 
 template <unsigned char N, typename T, typename P>
 P __sqDist(const P p0[N], const P p1[N]) {
-    P d = 0, a;
+    P d = 0;
+    P a;
     for (size_t i = 0; i < N; i++) {
         a = p0[i] - p1[i];
         d += a * a;
@@ -612,7 +622,8 @@ void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KD
         nodes.push_back(this);
     }
     P d;
-    bool right = false, left = false;
+    bool right = false;
+    bool left = false;
     // BUG ??
     if (goRight(pos)) {
         if (!isRightLeaf()) {
@@ -714,7 +725,8 @@ void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
     }
 
     P d;
-    bool right = false, left = false;
+    bool right = false;
+    bool left = false;
     if (current.size() < amount) {
         left = !isLeftLeaf();
         right = !isRightLeaf();

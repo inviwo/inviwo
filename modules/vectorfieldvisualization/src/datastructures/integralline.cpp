@@ -122,7 +122,8 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
         return positions_.front();
     }
 
-    double distPrev = 0, distNext = 0;
+    double distPrev = 0;
+    double distNext = 0;
     auto next = positions_.begin();
     auto prev = next;
     while (distNext < d) {

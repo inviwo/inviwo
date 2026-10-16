@@ -154,7 +154,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         colorLayerCopyCount_ = colorLayersGL_.size();
     }
 
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    TextureUnit colorUnit;
+    TextureUnit depthUnit;
+    TextureUnit pickingUnit;
     source->getColorLayerGL()->bindTexture(colorUnit.getEnum());
     if (source->getDepthLayerGL()) {
         source->getDepthLayerGL()->bindTexture(depthUnit.getEnum());

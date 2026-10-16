@@ -243,7 +243,9 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     auto& nearClipShader = getNearClipShader(includeNormals);
     nearClipShader.activate();
 
-    TextureUnit entryColorUnit, entryDepthUnit, entryNormalUnit;
+    TextureUnit entryColorUnit;
+    TextureUnit entryDepthUnit;
+    TextureUnit entryNormalUnit;
     tmpEntryGL_->getColorLayerGL()->bindTexture(entryColorUnit);
     tmpEntryGL_->getDepthLayerGL()->bindTexture(entryDepthUnit);
     nearClipShader.setUniform("entryColor", entryColorUnit);
@@ -253,7 +255,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         nearClipShader.setUniform("entryNormal", entryNormalUnit);
     }
 
-    TextureUnit exitColorUnit, exitDepthUnit;
+    TextureUnit exitColorUnit;
+    TextureUnit exitDepthUnit;
     exitPoints.getColorLayerGL()->bindTexture(exitColorUnit);
     exitPoints.getDepthLayerGL()->bindTexture(exitDepthUnit);
     nearClipShader.setUniform("exitColor", exitColorUnit);

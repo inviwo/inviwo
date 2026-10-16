@@ -333,7 +333,9 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    TextureUnit colorUnit;
+    TextureUnit depthUnit;
+    TextureUnit pickingUnit;
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
