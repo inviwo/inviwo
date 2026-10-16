@@ -113,7 +113,7 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
         [this](TFPropertyConcept::HistogramChange change,
                std::shared_ptr<const std::vector<Histogram1D>> histograms) {
             histogramState_.change = change;
-            histogramState_.histograms = histograms;
+            histogramState_.histograms = std::move(histograms);
             histogramState_.polygons = HistogramState::createHistogramPolygons(
                 histogramState_.histograms, histogramState_.mode);
             resetCachedContent();

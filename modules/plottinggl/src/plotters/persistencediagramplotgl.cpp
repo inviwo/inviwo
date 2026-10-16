@@ -490,7 +490,7 @@ void PersistenceDiagramPlotGL::setColorData(std::shared_ptr<const BufferBase> bu
 
 void PersistenceDiagramPlotGL::setIndexColumn(
     std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
-    indexColumn_ = indexcol;
+    indexColumn_ = std::move(indexcol);
 
     if (indexColumn_) {
         picking_.resize(indexColumn_->getSize());

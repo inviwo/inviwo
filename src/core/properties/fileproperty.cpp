@@ -308,12 +308,12 @@ void FileProperty::deserialize(Deserializer& d) {
     if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
         if (oldWorkspacePath.is_absolute()) {
             if (absolutePath.empty()) {  // on use url if "absolutePath" is not set
-                absolutePath = oldWorkspacePath;
+                absolutePath = std::move(oldWorkspacePath);
             }
         } else {
             // on use url if "workspaceRelativePath" is not set
             if (workspaceRelativePath.empty()) {
-                workspaceRelativePath = oldWorkspacePath;
+                workspaceRelativePath = std::move(oldWorkspacePath);
             }
         }
     }

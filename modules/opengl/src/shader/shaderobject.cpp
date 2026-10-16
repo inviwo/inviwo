@@ -387,7 +387,7 @@ const std::string& ShaderObject::getFileName() const { return resource_->key(); 
 
 void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
     IVW_ASSERT(resource, "Should never be null");
-    resource_ = resource;
+    resource_ = std::move(resource);
     callbacks_.invoke(this);
 }
 

@@ -318,7 +318,7 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     // We consider an event to be a duplicate if all points in the event are the same as the last
     // event.
     if (touchPoints == prevTouchPoints_) {
-        prevTouchPoints_ = touchPoints;
+        prevTouchPoints_ = std::move(touchPoints);
         touch->accept();
         return true;
     }
