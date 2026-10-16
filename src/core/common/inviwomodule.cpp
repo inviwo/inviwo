@@ -171,63 +171,53 @@ int InviwoModule::getVersion() const { return 0; }
 
 std::unique_ptr<VersionConverter> InviwoModule::getConverter(int) const { return nullptr; }
 
-const std::vector<Capabilities*> InviwoModule::getCapabilities() const {
+std::vector<Capabilities*> InviwoModule::getCapabilities() const {
     return uniqueToPtr(capabilities_);
 }
 
-const std::vector<CameraFactoryObject*> InviwoModule::getCameras() const {
-    return uniqueToPtr(cameras_);
-}
+std::vector<CameraFactoryObject*> InviwoModule::getCameras() const { return uniqueToPtr(cameras_); }
 
-const std::vector<DataReader*> InviwoModule::getDataReaders() const {
-    return uniqueToPtr(dataReaders_);
-}
-const std::vector<DataWriter*> InviwoModule::getDataWriters() const {
-    return uniqueToPtr(dataWriters_);
-}
-const std::vector<DialogFactoryObject*> InviwoModule::getDialogs() const {
-    return uniqueToPtr(dialogs_);
-}
-const std::vector<MetaData*> InviwoModule::getMetaData() const { return uniqueToPtr(metadata_); }
-const std::vector<InportFactoryObject*> InviwoModule::getInports() const {
-    return uniqueToPtr(inports_);
-}
-const std::vector<OutportFactoryObject*> InviwoModule::getOutports() const {
+std::vector<DataReader*> InviwoModule::getDataReaders() const { return uniqueToPtr(dataReaders_); }
+std::vector<DataWriter*> InviwoModule::getDataWriters() const { return uniqueToPtr(dataWriters_); }
+std::vector<DialogFactoryObject*> InviwoModule::getDialogs() const { return uniqueToPtr(dialogs_); }
+std::vector<MetaData*> InviwoModule::getMetaData() const { return uniqueToPtr(metadata_); }
+std::vector<InportFactoryObject*> InviwoModule::getInports() const { return uniqueToPtr(inports_); }
+std::vector<OutportFactoryObject*> InviwoModule::getOutports() const {
     return uniqueToPtr(outports_);
 }
 
-const std::vector<PortInspectorFactoryObject*> InviwoModule::getPortInspectors() const {
+std::vector<PortInspectorFactoryObject*> InviwoModule::getPortInspectors() const {
     return uniqueToPtr(portInspectors_);
 }
-const std::vector<ProcessorFactoryObject*> InviwoModule::getProcessors() const {
+std::vector<ProcessorFactoryObject*> InviwoModule::getProcessors() const {
     return uniqueToPtr(processors_);
 }
-const std::vector<ProcessorWidgetFactoryObject*> InviwoModule::getProcessorWidgets() const {
+std::vector<ProcessorWidgetFactoryObject*> InviwoModule::getProcessorWidgets() const {
     return uniqueToPtr(processorWidgets_);
 }
-const std::vector<PropertyFactoryObject*> InviwoModule::getProperties() const {
+std::vector<PropertyFactoryObject*> InviwoModule::getProperties() const {
     return uniqueToPtr(properties_);
 }
-const std::vector<PropertyWidgetFactoryObject*> InviwoModule::getPropertyWidgets() const {
+std::vector<PropertyWidgetFactoryObject*> InviwoModule::getPropertyWidgets() const {
     return uniqueToPtr(propertyWidgets_);
 }
-const std::vector<BaseRepresentationFactoryObject*> InviwoModule::getRepresentationFactoryObjects()
+std::vector<BaseRepresentationFactoryObject*> InviwoModule::getRepresentationFactoryObjects()
     const {
     return uniqueToPtr(representationFactoryObjects_);
 }
-const std::vector<BaseRepresentationFactory*> InviwoModule::getRepresentationFactories() const {
+std::vector<BaseRepresentationFactory*> InviwoModule::getRepresentationFactories() const {
     return uniqueToPtr(representationFactories_);
 }
-const std::vector<BaseRepresentationConverter*> InviwoModule::getRepresentationConverters() const {
+std::vector<BaseRepresentationConverter*> InviwoModule::getRepresentationConverters() const {
     return uniqueToPtr(representationConverters_);
 }
 
-const std::vector<BaseRepresentationConverterFactory*>
-InviwoModule::getRepresentationConverterFactories() const {
+std::vector<BaseRepresentationConverterFactory*> InviwoModule::getRepresentationConverterFactories()
+    const {
     return uniqueToPtr(representationConverterFactories_);
 }
 
-const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueToPtr(drawers_); }
+std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueToPtr(drawers_); }
 const std::vector<Settings*>& InviwoModule::getSettings() const { return settings_; }
 
 std::string InviwoModule::getDescription() const {

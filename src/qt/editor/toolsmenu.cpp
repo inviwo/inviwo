@@ -88,7 +88,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     for (const size_t i : order) {
         const auto& m = modules[i];
 
-        auto& processors = m->getProcessors();
+        const auto& processors = m->getProcessors();
         if (processors.empty()) continue;
 
         auto modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
