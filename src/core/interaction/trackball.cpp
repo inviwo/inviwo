@@ -701,7 +701,10 @@ void Trackball::touchGesture(Event* event) {
         const size_t rotateBasedOnIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
         const auto& point = touchPoints[rotateBasedOnIndex];
 
-        if (point.state() == TouchState::Finished) return reset(event);
+        if (point.state() == TouchState::Finished) {
+            reset(event);
+            return;
+        }
 
         if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
         timer_.stop();
