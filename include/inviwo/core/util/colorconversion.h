@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <cmath>
@@ -229,8 +230,8 @@ constexpr vec3 rgb2hsv(const vec3& rgb) {
     const double r = rgb.x;
     const double g = rgb.y;
     const double b = rgb.z;
-    const double val = std::max(std::max(r, g), b);
-    double sat = std::min(std::min(r, g), b);
+    const double val = std::max({r, g, b});
+    double sat = std::min({r, g, b});
     const double range = val - sat;
 
     // set hue to zero for undefined values

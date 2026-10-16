@@ -107,7 +107,7 @@ vec3 hsl2rgb(const vec3& hsl) {
 
     const auto f = [lum, a = sat * std::min(lum, 1.0 - lum), h = hue * 360.0 / 30.0](double n) {
         const double k = std::fmod(n + h, 12.0);
-        return lum - a * std::max(-1.0, std::min(k - 3.0, std::min(9.0 - k, 1.0)));
+        return lum - a * std::max(-1.0, std::min({k - 3.0, 9.0 - k, 1.0}));
     };
     return vec3{f(0.0), f(8.0), f(4.0)};
 }
