@@ -664,10 +664,10 @@ int getLogLineNumber(std::string_view compileLogLine) {
     int result = -1;
     std::stringstream input;
     input << compileLogLine;
-    int num;
+    int num = 0;
 
     if (input >> num) {
-        char c;
+        char c = 0;
         if (input >> c && c == '(') {
             if (input >> result) {
                 return result;
@@ -688,7 +688,7 @@ int getLogLineNumber(std::string_view compileLogLine) {
 }
 
 std::string getShaderInfoLog(GLuint id) {
-    GLint maxLogLength;
+    GLint maxLogLength = 0;
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);
     LGL_ERROR;
 
@@ -703,7 +703,7 @@ std::string getShaderInfoLog(GLuint id) {
 }
 
 std::string getProgramInfoLog(GLuint id) {
-    GLint maxLogLength;
+    GLint maxLogLength = 0;
     glGetProgramiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);
     LGL_ERROR;
 

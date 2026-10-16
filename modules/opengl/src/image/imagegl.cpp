@@ -198,7 +198,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
                            ? glm::scale(glm::vec3(1.0f, targetRatio / sourceRatio, 1.0f))
                            : glm::scale(glm::vec3(sourceRatio / targetRatio, 1.0f, 1.0f));
 
-    GLint prog;
+    GLint prog = 0;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
 
     shader_->activate();

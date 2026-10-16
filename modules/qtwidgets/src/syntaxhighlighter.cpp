@@ -93,7 +93,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
 
         while (startIndex >= 0) {
             const auto endMatch = rule.end.match(text, currPos);
-            int commentLength;
+            int commentLength = 0;
 
             if (endMatch.hasMatch()) {
                 commentLength = static_cast<int>(endMatch.capturedEnd()) - startIndex;

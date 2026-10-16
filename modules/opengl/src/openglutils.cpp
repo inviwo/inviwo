@@ -526,7 +526,7 @@ void ColorMaski::get() {
     glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
     std::vector<GLenum> drawBuffers(static_cast<size_t>(maxDrawBuffers), GL_NONE);
     for (int i = 0; i < maxDrawBuffers; ++i) {
-        GLint value;
+        GLint value = 0;
         glGetIntegerv(static_cast<GLenum>(static_cast<unsigned int>(GL_DRAW_BUFFER0) +
                                           static_cast<unsigned int>(i)),
                       &value);

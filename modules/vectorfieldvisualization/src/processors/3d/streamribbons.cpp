@@ -226,13 +226,14 @@ void StreamRibbonsDeprecated::process() {
                 const vec3 p0 = vec3(*position) - vort;
                 const vec3 p1 = vec3(*position) + vort;
 
-                float d;
                 switch (coloringMethod_.get()) {
-                    case ColoringMethod::Vorticity:
-                        d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
+                    case ColoringMethod::Vorticity: {
+                        const auto d =
+                            glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;
+                    }
                     case ColoringMethod::ColorPort:
                         if (hasColors) {
                             break;
@@ -242,12 +243,14 @@ void StreamRibbonsDeprecated::process() {
                                 "instead ");
                             [[fallthrough]];
                         }
-                    default: [[fallthrough]];
-                    case ColoringMethod::Velocity:
-                        d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
+                    default:                       [[fallthrough]];
+                    case ColoringMethod::Velocity: {
+                        const auto d =
+                            glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;
+                    }
                 }
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));

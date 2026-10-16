@@ -414,12 +414,13 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     hbaoUboData_.projOrtho = useOrtho;
     hbaoUboData_.projInfo = useOrtho ? projInfoOrtho : projInfoPerspective;
 
-    float projScale;
-    if (useOrtho) {
-        projScale = float(height) / (projInfoOrtho[1]);
-    } else {
-        projScale = float(height) / (tanf(proj.fov * 0.5f) * 2.0f);
-    }
+    float projScale = [&]() {
+        if (useOrtho) {
+            return static_cast<float>(height) / (projInfoOrtho[1]);
+        } else {
+            return static_cast<float>(height) / (tanf(proj.fov * 0.5f) * 2.0f);
+        }
+    }();
 
     // radius
     const float meters2viewspace = 1.0f;
