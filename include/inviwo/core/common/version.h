@@ -129,8 +129,8 @@ private:
             size_t rhsBegin = 0;
 
             while (true) {
-                const size_t lhsEnd = lhsPre.find_first_of(".", lhsBegin);
-                const size_t rhsEnd = rhsPre.find_first_of(".", rhsBegin);
+                const size_t lhsEnd = lhsPre.find_first_of('.', lhsBegin);
+                const size_t rhsEnd = rhsPre.find_first_of('.', rhsBegin);
 
                 const auto lhsPart = lhsPre.substr(lhsBegin, lhsEnd - lhsBegin);
                 const auto rhsPart = rhsPre.substr(rhsBegin, rhsEnd - rhsBegin);
@@ -204,9 +204,9 @@ constexpr Version::Version(std::string_view version) {
         end = majorMinorPatch.find('.', begin);
     }
 
-    const auto preReleaseBegin = version.find_first_of("-", 0);
+    const auto preReleaseBegin = version.find_first_of('-', 0);
     if (preReleaseBegin != std::string_view::npos) {
-        auto preReleaseEnd = version.find_first_of("+", preReleaseBegin);
+        auto preReleaseEnd = version.find_first_of('+', preReleaseBegin);
         if (preReleaseEnd == std::string_view::npos) {
             preReleaseEnd = version.size();
         }
@@ -220,7 +220,7 @@ constexpr Version::Version(std::string_view version) {
         std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
     }
 
-    const auto buildBegin = version.find_first_of("+", 0);
+    const auto buildBegin = version.find_first_of('+', 0);
     if (buildBegin != std::string_view::npos) {
         const auto build = version.substr(buildBegin + 1);
         if (build.size() > buildBuffer.size() - 1) {

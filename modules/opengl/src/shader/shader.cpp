@@ -379,7 +379,7 @@ std::string Shader::processLog(std::string log) const {
             const auto lineNumber = res.second;
             const auto fileName = res.first;
             result << "\n"
-                   << fileName << " (" << lineNumber << "): " << line.substr(line.find(":") + 1);
+                   << fileName << " (" << lineNumber << "): " << line.substr(line.find(':') + 1);
         } else {
             result << "\n" << line;
         }
