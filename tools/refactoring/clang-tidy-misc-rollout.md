@@ -2,12 +2,12 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 61 checks done so
+below for current progress and the exact resume point). 62 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
-+ `modernize-use-equals-default`),
-~39 remaining (plus 4 permanently-skipped false positives, see below).
++ `modernize-use-equals-default` + `modernize-use-nullptr`),
+~38 remaining (plus 4 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 **Branch:** `feature/more-conv-warnings`
@@ -154,7 +154,8 @@ plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-avoid-return-with-void-value` — plus
 `readability-const-return-type`, `modernize-use-integer-sign-comparison`,
 `performance-inefficient-vector-operation`, `readability-qualified-auto`,
-and `readability-make-member-function-const`.
+`readability-make-member-function-const`, `modernize-use-equals-default`,
+and `modernize-use-nullptr`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -396,13 +397,13 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~39 fixable checks remaining** (out of 98 total fixable checks found by
+   **~38 fixable checks remaining** (out of 98 total fixable checks found by
    the dry run); next up by size (skipping
    `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
    reverted this session — see "Reverted as false positives" above, do not
    reapply it without per-instance review):
-   `modernize-use-nullptr`,
-   `performance-faster-string-find`, `bugprone-macro-parentheses`, ...
+   `performance-faster-string-find`, `bugprone-macro-parentheses`,
+   `modernize-unary-static-assert`, `modernize-return-braced-init-list`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
