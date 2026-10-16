@@ -86,7 +86,8 @@ TEST(SetUnion, SecondEmpty) {
 }
 
 TEST(SetUnion, BothEmpty) {
-    std::vector<int> a{}, b{};
+    std::vector<int> a{};
+    std::vector<int> b{};
     const auto v =
         views::set_union{std::views::all(a), std::views::all(b)} | std::ranges::to<std::vector>();
     EXPECT_TRUE(v.empty());
@@ -171,10 +172,12 @@ static_assert(std::forward_iterator<std::ranges::iterator_t<V>>);
 static_assert(std::ranges::common_range<V>);
 
 TEST(SetUnion, MultipassYieldsSameSequence) {
-    std::vector<int> a{1, 3, 5}, b{2, 3, 4};
+    std::vector<int> a{1, 3, 5};
+    std::vector<int> b{2, 3, 4};
     auto v = views::set_union{std::views::all(a), std::views::all(b)};
 
-    std::vector<int> first, second;
+    std::vector<int> first;
+    std::vector<int> second;
     for (const auto x : v) first.push_back(x);
     for (const auto x : v) second.push_back(x);  // second pass
     EXPECT_EQ(first, second);
@@ -182,7 +185,8 @@ TEST(SetUnion, MultipassYieldsSameSequence) {
 }
 
 TEST(SetUnion, IteratorEquality) {
-    std::vector<int> a{1, 2}, b{1, 3};
+    std::vector<int> a{1, 2};
+    std::vector<int> b{1, 3};
     auto v = views::set_union{std::views::all(a), std::views::all(b)};
     auto i = v.begin();
     auto j = v.begin();
@@ -194,7 +198,8 @@ TEST(SetUnion, IteratorEquality) {
 }
 
 TEST(SetUnion, EndIsIteratorAndDistanceWorks) {
-    std::vector<int> a{1, 3, 5}, b{2, 4, 6};
+    std::vector<int> a{1, 3, 5};
+    std::vector<int> b{2, 4, 6};
     auto v = views::set_union{std::views::all(a), std::views::all(b)};
     EXPECT_EQ(std::ranges::distance(v.begin(), v.end()), 6);
     const auto it = std::ranges::find(v, 4);
@@ -203,7 +208,8 @@ TEST(SetUnion, EndIsIteratorAndDistanceWorks) {
 }
 
 TEST(SetUnion, PostIncrementReturnsCopy) {
-    std::vector<int> a{1, 2}, b{3};
+    std::vector<int> a{1, 2};
+    std::vector<int> b{3};
     auto v = views::set_union{std::views::all(a), std::views::all(b)};
     auto it = v.begin();
     const auto old = it++;

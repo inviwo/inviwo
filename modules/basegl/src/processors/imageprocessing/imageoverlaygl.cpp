@@ -338,7 +338,9 @@ void ImageOverlayGL::process() {
         const utilgl::BlendModeState blendMode(overlayProperty_.getBlendModeGL(),
                                                GL_ONE_MINUS_SRC_ALPHA);
 
-        TextureUnit colorUnit, depthUnit, pickingUnit;
+        TextureUnit colorUnit;
+        TextureUnit depthUnit;
+        TextureUnit pickingUnit;
         shader_.activate();
         shader_.setUniform("color_", colorUnit.getUnitNumber());
         shader_.setUniform("depth_", depthUnit.getUnitNumber());
