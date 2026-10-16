@@ -50,18 +50,21 @@ std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sort
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
-    double start, end;
-    start = getTimestamp(seq.front());
-    if (sorted) {
-        end = getTimestamp(seq.back());
-    } else {
-        end = start;
-        for (const auto v : seq) {
-            const auto t = getTimestamp(v);
-            start = std::min(start, t);
-            end = std::max(end, t);
+
+    const auto start = getTimestamp(seq.front());
+    const auto end = [&]() {
+        if (sorted) {
+            return getTimestamp(seq.back());
+        } else {
+            auto end = start;
+            for (const auto v : seq) {
+                const auto t = getTimestamp(v);
+                start = std::min(start, t);
+                end = std::max(end, t);
+            }
+            return end;
         }
-    }
+    }();
     return std::make_pair(start, end);
 }
 

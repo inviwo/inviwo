@@ -98,7 +98,7 @@ void addInviwoMetaAction(QMenu* menu) {
         auto action = menu->addAction("Add &Module...");
         menu->connect(action, &QAction::triggered, [&]() {
             create("Module", [](meta::Creator& creator, const std::filesystem::path& path) {
-                bool ok;
+                bool ok = false;
                 const QString text = QInputDialog::getText(
                     nullptr, "Add Module", "Organization:", QLineEdit::Normal, "inviwo", &ok,
                     Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);

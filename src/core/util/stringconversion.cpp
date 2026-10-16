@@ -381,7 +381,7 @@ std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
 std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
-    size_t pos;
+    size_t pos = 0;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
         newString.erase(pos, strToRemove.length());
     }

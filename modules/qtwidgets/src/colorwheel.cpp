@@ -311,7 +311,7 @@ void ColorWheel::drawOuterRing(QPainter& painter) {
 void ColorWheel::updateSquareImage(const int& hue) {
     QImage square(255, 255, QImage::Format_ARGB32_Premultiplied);
     QColor color;
-    QRgb vv;
+    QRgb vv = 0;
 
     for (int i = 0; i < 255; ++i) {
         for (int j = 0; j < 255; ++j) {
