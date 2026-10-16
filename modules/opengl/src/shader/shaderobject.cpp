@@ -100,7 +100,7 @@ struct Char {
     It curr;
     It end;
 
-    bool peek(std::string_view match) {
+    bool peek(std::string_view match) const {
         return std::mismatch(curr, end, match.begin(), match.end()).second == match.end();
     }
 };

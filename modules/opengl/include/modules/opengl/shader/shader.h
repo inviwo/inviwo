@@ -76,7 +76,7 @@ public:
     constexpr explicit Build(T value) noexcept : value_{value} {}
     // clang-format on
 
-    explicit constexpr operator bool() { return value_; }
+    explicit constexpr operator bool() const { return value_; }
 
     static const Build Yes;
     static const Build No;

@@ -129,7 +129,7 @@ private:
         std::unique_ptr<DialogCurveGraphicsItem> linkCurve_;
         LinkDialogGraphicsScene* scene_;
 
-        explicit operator bool() { return linkCurve_ != nullptr; }
+        explicit operator bool() const { return linkCurve_ != nullptr; }
     };
 
     Curve curve_;
