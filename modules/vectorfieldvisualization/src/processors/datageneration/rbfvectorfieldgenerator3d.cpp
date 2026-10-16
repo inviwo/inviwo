@@ -164,8 +164,12 @@ void RBFVectorFieldGenerator3D::process() {
     }
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(seeds_.get(), seeds_.get());
-    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get()), by(seeds_.get()), bz(seeds_.get());
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get()), xz(seeds_.get());
+    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd by(seeds_.get());
+    Eigen::VectorXd bz(seeds_.get());
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd xy(seeds_.get());
+    Eigen::VectorXd xz(seeds_.get());
 
     int row = 0;
     for (const auto& a : samples) {

@@ -203,13 +203,15 @@ int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
 ivec2 CanvasGLFW::getWindowSize() const {
-    int width = 0, height = 0;
+    int width = 0;
+    int height = 0;
     glfwGetWindowSize(glWindow_, &width, &height);
     return {width, height};
 }
 
 ivec2 CanvasGLFW::getFramebufferSize() const {
-    int width = 0, height = 0;
+    int width = 0;
+    int height = 0;
     glfwGetFramebufferSize(glWindow_, &width, &height);
     return {width, height};
 }
@@ -222,7 +224,8 @@ void CanvasGLFW::setWindowPosition(ivec2 pos) {
 }
 
 ivec2 CanvasGLFW::getWindowPosition() const {
-    int x = 0, y = 0;
+    int x = 0;
+    int y = 0;
     glfwGetWindowPos(glWindow_, &x, &y);
     return {x, y};
 }

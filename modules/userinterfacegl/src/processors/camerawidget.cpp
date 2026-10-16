@@ -446,7 +446,9 @@ void CameraWidget::drawWidgetTexture() {
     const utilgl::ViewportState viewportState(viewport);
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
-    TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
+    TextureUnit colorTexUnit;
+    TextureUnit depthTexUnit;
+    TextureUnit pickingTexUnit;
     const utilgl::Activate as{&overlayShader_};
 
     overlayShader_.setUniform("color_", colorTexUnit);

@@ -129,7 +129,9 @@ void SplitImage::process() {
         }
 
         const auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
-            TextureUnit colorUnit, depthUnit, pickingUnit;
+            TextureUnit colorUnit;
+            TextureUnit depthUnit;
+            TextureUnit pickingUnit;
             TextureUnitContainer additionalColorUnits;
             Shader* shader = nullptr;
             if (inport.isReady()) {

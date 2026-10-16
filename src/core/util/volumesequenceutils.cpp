@@ -51,7 +51,8 @@ std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sort
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
-    double start = NAN, end = NAN;
+    double start = NAN;
+    double end = NAN;
     start = getTimestamp(seq.front());
     if (sorted) {
         end = getTimestamp(seq.back());

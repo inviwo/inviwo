@@ -96,7 +96,10 @@ static void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* in
     if (v1 > 0) index = index | 2;
     if (v2 > 0) index = index | 4;
     if (v3 > 0) index = index | 8;
-    glm::vec3 a, b, c, d;
+    glm::vec3 a;
+    glm::vec3 b;
+    glm::vec3 c;
+    glm::vec3 d;
     if (index == 0 || index == 15) return;
     if (index == 1 || index == 14) {
         a = marching::interpolate(p0, v0, p2, v2);
