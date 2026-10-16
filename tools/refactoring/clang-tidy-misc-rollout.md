@@ -2,11 +2,11 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 51 checks done so
-far (34 + a batch of 11 + a batch of 6: `readability-redundant-nested-if`,
-`modernize-loop-convert`, `modernize-use-noexcept`,
-`modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
-`readability-container-contains`), ~50 remaining (plus 3
+below for current progress and the exact resume point). 55 checks done so
+far (34 + a batch of 11 + a batch of 6 + 4 more:
+`google-upgrade-googletest-case`, `performance-use-std-move`,
+`readability-isolate-declaration`,
+`readability-avoid-return-with-void-value`), ~46 remaining (plus 3
 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
@@ -146,7 +146,10 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `readability-redundant-string-init` — plus a further batch of 6:
 `readability-redundant-nested-if`, `modernize-loop-convert`,
 `modernize-use-noexcept`, `modernize-use-std-numbers`,
-`cppcoreguidelines-init-variables`, `readability-container-contains`.
+`cppcoreguidelines-init-variables`, `readability-container-contains` —
+plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
+`readability-isolate-declaration`,
+`readability-avoid-return-with-void-value`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -300,16 +303,15 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **50 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); after the 6 checks done in this batch (see DONE_CHECKS),
-   next up by size: `google-upgrade-googletest-case`,
-   `performance-use-std-move`, `readability-isolate-declaration`,
-   `readability-avoid-return-with-void-value`,
+   **~46 fixable checks remaining** (out of 98 total fixable checks found by
+   the dry run); next up by size:
    `cppcoreguidelines-pro-type-static-cast-downcast`,
    `readability-const-return-type`,
    `modernize-use-integer-sign-comparison`,
    `performance-inefficient-vector-operation`,
-   `readability-qualified-auto`, ...
+   `readability-qualified-auto`, `readability-make-member-function-const`,
+   `modernize-use-equals-default`, `modernize-use-nullptr`,
+   `performance-faster-string-find`, `bugprone-macro-parentheses`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
