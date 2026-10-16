@@ -145,12 +145,10 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
                         property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
                         existing->getIdentifier(), existing->getClassIdentifier());
     }
-    if (auto parent = dynamic_cast<Property*>(this)) {
-        if (parent == property) {
-            throw Exception(SourceContext{},
-                            "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
-                            property->getIdentifier(), property->getClassIdentifier());
-        }
+    if (auto parent = dynamic_cast<Property*>(this); parent && (parent == property)) {
+        throw Exception(SourceContext{},
+                        "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
+                        property->getIdentifier(), property->getClassIdentifier());
     }
 
     notifyObserversWillAddProperty(this, property, index);
@@ -403,10 +401,10 @@ void PropertyOwner::deserialize(Deserializer& d) {
                     } else {
                         // The property was not serialized since it was in its
                         // default state. Make sure we reset it to that state again.
-                        if (auto* p = getPropertyByIdentifier(id)) {
-                            if (p->getSerializationMode() == PropertySerializationMode::Default) {
-                                p->resetToDefaultState();
-                            }
+                        if (auto* p = getPropertyByIdentifier(id);
+                            p &&
+                            (p->getSerializationMode() == PropertySerializationMode::Default)) {
+                            p->resetToDefaultState();
                         }
                     }
                 },

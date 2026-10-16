@@ -129,24 +129,23 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
     auto normalprinter = [&]() {
         if (nit != data->getBuffers().end()) {
-            if (const auto normRam = nit->second->getRepresentation<BufferRAM>()) {
-                if (normRam->getDataFormat()->getComponents() == 3) {
-                    return normRam
-                        ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,
-                                   dispatching::filter::Vec3s>(
-                            [&](auto nb)
-                                -> std::function<void(std::ostream & fs, size_t, size_t, size_t)> {
-                                return [&modelNormal, nb](std::ostream& fs, size_t i1, size_t i2,
-                                                          size_t i3) {
-                                    auto& norm = *nb;
-                                    const auto n1 = modelNormal * norm[i1];
-                                    const auto n2 = modelNormal * norm[i2];
-                                    const auto n3 = modelNormal * norm[i3];
-                                    const auto n = glm::normalize(n1 + n2 + n3);
-                                    fmt::print(fs, "{} {} {}\n", n.x, n.y, n.z);
-                                };
-                            });
-                }
+            if (const auto normRam = nit->second->getRepresentation<BufferRAM>();
+                normRam && (normRam->getDataFormat()->getComponents() == 3)) {
+                return normRam
+                    ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,
+                               dispatching::filter::Vec3s>(
+                        [&](auto nb)
+                            -> std::function<void(std::ostream& fs, size_t, size_t, size_t)> {
+                            return [&modelNormal, nb](std::ostream& fs, size_t i1, size_t i2,
+                                                      size_t i3) {
+                                auto& norm = *nb;
+                                const auto n1 = modelNormal * norm[i1];
+                                const auto n2 = modelNormal * norm[i2];
+                                const auto n3 = modelNormal * norm[i3];
+                                const auto n = glm::normalize(n1 + n2 + n3);
+                                fmt::print(fs, "{} {} {}\n", n.x, n.y, n.z);
+                            };
+                        });
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(

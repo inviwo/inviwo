@@ -159,12 +159,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex& index) const override {
         if (index.column() == 0) {
             Qt::ItemFlags flags = Qt::NoItemFlags;
-            if (auto prop = toProperty(index)) {
-                if (!isExposed(prop)) {
-                    flags =
-                        flags | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
-                }
+            if (auto prop = toProperty(index); prop && (!isExposed(prop))) {
+                flags = flags | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
             }
+
             return flags;
         } else {
             return Qt::NoItemFlags;
@@ -353,11 +351,11 @@ public:
     }
 
     Property* toProperty(const QModelIndex& index) const {
-        if (auto parent = getParent(index)) {
-            if (index.row() >= 0 && index.row() < ssize(*parent)) {
-                return (*parent)[index.row()];
-            }
+        if (auto parent = getParent(index);
+            parent && (index.row() >= 0 && index.row() < ssize(*parent))) {
+            return (*parent)[index.row()];
         }
+
         return nullptr;
     }
     PropertyOwner* toOwner(const QModelIndex& index) const {
@@ -488,19 +486,17 @@ public:
         if (index.column() == column::remove) {
             switch (role) {
                 case Qt::DecorationRole: {
-                    if (auto prop = toProperty(index)) {
-                        if (cp_.getSubProperty(prop)) {
-                            return QIcon(":/svgicons/close.svg");
-                        }
+                    if (auto prop = toProperty(index); prop && (cp_.getSubProperty(prop))) {
+                        return QIcon(":/svgicons/close.svg");
                     }
+
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto prop = toProperty(index)) {
-                        if (cp_.getSubProperty(prop)) {
-                            return "Remove";
-                        }
+                    if (auto prop = toProperty(index); prop && (cp_.getSubProperty(prop))) {
+                        return "Remove";
                     }
+
                     break;
                 }
             }
@@ -541,10 +537,8 @@ public:
         std::vector<Property*> toRemove;
 
         for (int i = 0; i < count; ++i) {
-            if (auto prop = toProperty(index(row, 0, parent))) {
-                if (cp_.getSubProperty(prop)) {
-                    toRemove.emplace_back(prop);
-                }
+            if (auto prop = toProperty(index(row, 0, parent)); prop && (cp_.getSubProperty(prop))) {
+                toRemove.emplace_back(prop);
             }
         }
 

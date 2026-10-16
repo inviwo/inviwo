@@ -279,13 +279,12 @@ void RandomMeshGenerator::invokeEvent(Event* event) {
                                         ContextMenuCategory::Callback | ContextMenuCategory::View);
             mouseEvent->setUsed(true);
         }
-    } else if (auto* menuEvent = event->getAs<ContextMenuEvent>()) {
-        if (menuEvent->getId().starts_with(getIdentifier())) {
-            if (menuEvent->getId().ends_with(".reseed")) {
-                reseed_.pressButton();
-            }
-            menuEvent->setUsed(true);
+    } else if (auto* menuEvent = event->getAs<ContextMenuEvent>();
+               menuEvent && (menuEvent->getId().starts_with(getIdentifier()))) {
+        if (menuEvent->getId().ends_with(".reseed")) {
+            reseed_.pressButton();
         }
+        menuEvent->setUsed(true);
     }
 }
 

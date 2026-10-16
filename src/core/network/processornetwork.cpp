@@ -223,11 +223,11 @@ const std::vector<PortConnection>& ProcessorNetwork::getConnections() const {
 }
 
 bool ProcessorNetwork::isPortInNetwork(Port* port) const {
-    if (const auto* processor = port->getProcessor()) {
-        if (processor == getProcessorByIdentifier(processor->getIdentifier())) {
-            return true;
-        }
+    if (const auto* processor = port->getProcessor();
+        processor && (processor == getProcessorByIdentifier(processor->getIdentifier()))) {
+        return true;
     }
+
     return false;
 }
 

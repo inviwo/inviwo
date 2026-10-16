@@ -196,16 +196,14 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
     if (auto processorWidget = processor->getProcessorWidget()) {
-        if (auto md = processor->getMetaData<BoolMetaData>("PortInspector")) {
-            if (md->get()) {
-                if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
-                    const auto size = processorWidget->getDimensions();
-                    widget->setMinimumSize(size.x, size.y);
-                    widget->setMaximumSize(size.x, size.y);
-                    widget->setWindowFlags(Qt::CustomizeWindowHint | Qt::Tool);
-                }
-                processorWidget->setVisible(true);
+        if (auto md = processor->getMetaData<BoolMetaData>("PortInspector"); md && (md->get())) {
+            if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
+                const auto size = processorWidget->getDimensions();
+                widget->setMinimumSize(size.x, size.y);
+                widget->setMaximumSize(size.x, size.y);
+                widget->setWindowFlags(Qt::CustomizeWindowHint | Qt::Tool);
             }
+            processorWidget->setVisible(true);
         }
     }
 
@@ -707,20 +705,19 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
         showAction->setChecked(widget->isVisible());
         connect(showAction, &QAction::triggered,
                 util::exceptionGuarded([widget]() { widget->setVisible(!widget->isVisible()); }));
-    } else if (auto* comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor())) {
-        if (util::any_of(comp->getSubNetwork().processorRange(),
-                         [](const Processor& p) { return p.hasProcessorWidget(); })) {
-            QMenu* subMenu = menu.addMenu("Widgets");
-            for (const auto& subProcessor : comp->getSubNetwork().processorRange()) {
-                if (auto* subWidget = subProcessor.getProcessorWidget()) {
-                    QAction* showAction = subMenu->addAction(utilqt::toQString(
-                        fmt::format("Show {} Widget", subProcessor.getDisplayName())));
-                    showAction->setCheckable(true);
-                    showAction->setChecked(subWidget->isVisible());
-                    connect(showAction, &QAction::triggered, util::exceptionGuarded([subWidget]() {
-                                subWidget->setVisible(!subWidget->isVisible());
-                            }));
-                }
+    } else if (auto* comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor());
+               comp && (util::any_of(comp->getSubNetwork().processorRange(),
+                                     [](const Processor& p) { return p.hasProcessorWidget(); }))) {
+        QMenu* subMenu = menu.addMenu("Widgets");
+        for (const auto& subProcessor : comp->getSubNetwork().processorRange()) {
+            if (auto* subWidget = subProcessor.getProcessorWidget()) {
+                QAction* showAction = subMenu->addAction(utilqt::toQString(
+                    fmt::format("Show {} Widget", subProcessor.getDisplayName())));
+                showAction->setCheckable(true);
+                showAction->setChecked(subWidget->isVisible());
+                connect(showAction, &QAction::triggered, util::exceptionGuarded([subWidget]() {
+                            subWidget->setVisible(!subWidget->isVisible());
+                        }));
             }
         }
     }

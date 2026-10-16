@@ -165,10 +165,8 @@ void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     QFileDialog::setDirectory(currentPath_);
 
     // if the given path points to a file, select it when the dialog is opened
-    if (path.has_filename()) {
-        if (QFile::exists(currentPath_)) {
-            QFileDialog::selectFile(currentPath_);
-        }
+    if ((path.has_filename()) && (QFile::exists(currentPath_))) {
+        QFileDialog::selectFile(currentPath_);
     }
 }
 

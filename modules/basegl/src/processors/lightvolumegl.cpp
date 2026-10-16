@@ -409,11 +409,9 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
 }
 
 void LightVolumeGL::volumeSizeOptionChanged() {
-    if (inport_.hasData()) {
-        if ((inport_.getData()->getDimensions() / size3_t(volumeSizeOption_.get())) !=
-            volumeDimOut_) {
-            internalVolumesInvalid_ = true;
-        }
+    if ((inport_.hasData()) && ((inport_.getData()->getDimensions() /
+                                 size3_t(volumeSizeOption_.get())) != volumeDimOut_)) {
+        internalVolumesInvalid_ = true;
     }
 }
 

@@ -106,13 +106,11 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     connect(comboBox_->lineEdit(), &QLineEdit::editingFinished, [&]() {
         int fontSize = comboBox_->currentText().toInt();
         // check whether it is a custom font size
-        if (std::find(fontSizes_.begin(), fontSizes_.end(), fontSize) == fontSizes_.end()) {
-            // custom font size
-            if (fontSize != property_->get()) {
-                property_->setInitiatingWidget(this);
-                util::exceptionGuard([&]() { property_->set(fontSize); });
-                property_->clearInitiatingWidget();
-            }
+        if ((std::find(fontSizes_.begin(), fontSizes_.end(), fontSize) == fontSizes_.end()) &&
+            (fontSize != property_->get())) {
+            property_->setInitiatingWidget(this);
+            util::exceptionGuard([&]() { property_->set(fontSize); });
+            property_->clearInitiatingWidget();
         }
     });
 
