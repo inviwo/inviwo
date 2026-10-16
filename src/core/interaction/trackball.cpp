@@ -299,7 +299,7 @@ dvec3 Trackball::mapNormalizedMousePosToTrackball(const dvec2& mousePos, double 
     double z = 0;
     // Mapping according to Holroyds trackball
     // Piece-wise sphere + hyperbolic sheet
-    if (norm <= r * r / (2.0)) {  // Spherical Region
+    if (norm <= r * r / 2.0) {  // Spherical Region
         z = r * r - norm;
         z = z > 0.0 ? std::sqrt(z) : 0.0;
     } else {  // Hyperbolic Region - for smooth z values
@@ -808,7 +808,7 @@ void Trackball::touchGesture(Event* event) {
         zoom *= glm::length(direction);
         direction = glm::normalize(direction);
         zoom = getBoundedZoom(getLookFrom(), getLookTo(), static_cast<float>(zoom));
-        const dvec3 newLookFrom = getLookFrom() + zoom * (direction);
+        const dvec3 newLookFrom = getLookFrom() + zoom * direction;
 
         const dvec3 boundedWorldSpaceTranslation(
             getBoundedTranslation(newLookFrom, getLookTo(), worldSpaceTranslation));

@@ -412,7 +412,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
 }
 
 void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
-    for (auto& elem : properties_) (elem)->setCurrentStateAsDefault();
+    for (auto& elem : properties_) elem->setCurrentStateAsDefault();
 }
 
 void PropertyOwner::resetAllProperties() {

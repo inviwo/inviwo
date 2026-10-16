@@ -172,7 +172,7 @@ void NetworkAutomation::AutoIn::update(QPointF scenePos, Qt::KeyboardModifiers m
             if (oldIt == connections.end() ||
                 oldIt->second->getOutportGraphicsItem()->getPort() != *validOutports.first) {
 
-                auto* outport = *(validOutports.first);
+                auto* outport = *validOutports.first;
                 const auto* pgi = editor.getProcessorGraphicsItem(outport->getProcessor());
                 auto* ogi = pgi->getOutportGraphicsItem(outport);
                 auto connection = std::make_unique<ConnectionOutportDragGraphicsItem>(
@@ -226,7 +226,7 @@ void NetworkAutomation::AutoOut::update(QPointF scenePos, Qt::KeyboardModifiers 
             if (oldIt == connections.end() ||
                 oldIt->second->getInportGraphicsItem()->getPort() != *validInports.first) {
 
-                auto* inport = *(validInports.first);
+                auto* inport = *validInports.first;
                 const auto* pgi = editor.getProcessorGraphicsItem(inport->getProcessor());
                 auto* ogi = pgi->getInportGraphicsItem(inport);
                 auto connection = std::make_unique<ConnectionInportDragGraphicsItem>(
@@ -346,10 +346,10 @@ void NetworkAutomation::enter(QPointF scenePos, Qt::KeyboardModifiers modifiers,
         std::ranges::empty(editor_.getNetwork()->processorRange() |
                            std::views::filter([&](const auto& p) { return &p == &processor; }));
 
-    inports_.findCandidates(processor, *(editor_.getNetwork()));
-    outports_.findCandidates(processor, *(editor_.getNetwork()));
+    inports_.findCandidates(processor, *editor_.getNetwork());
+    outports_.findCandidates(processor, *editor_.getNetwork());
     if (autoLink_) {
-        links_.findCandidates(processor, *(editor_.getNetwork()));
+        links_.findCandidates(processor, *editor_.getNetwork());
     }
 
     move(scenePos, modifiers, processor, zoom);
@@ -436,7 +436,7 @@ auto NetworkAutomation::drop(QPointF, Qt::KeyboardModifiers modifiers, Processor
 
     if (autoLink_ && result != Result::Replace &&
         !modifiers.testFlag(NetworkAutomation::noAutoLink)) {
-        links_.linker.addLinksToClosestCandidates(*(editor_.getNetwork()), true);
+        links_.linker.addLinksToClosestCandidates(*editor_.getNetwork(), true);
     }
 
     return result;

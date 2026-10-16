@@ -149,7 +149,7 @@ bool ColumnOptionProperty::hasNoneOption() const { return noneOption_ == AddNone
 
 void ColumnOptionProperty::set(const Property* srcProperty) {
     if (const auto* src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
-        if ((src->opts().empty()) || (opts().empty())) {
+        if (src->opts().empty() || opts().empty()) {
             return;
         }
 

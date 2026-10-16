@@ -139,9 +139,9 @@ const PickingAction* PickingManager::getPickingActionFromColor(const uvec3& c) c
 
 bool PickingManager::pickingEnabled() {
     if (!enableCallback_) {
-        auto* picking = &(InviwoApplication::getPtr()
-                              ->getSettingsByType<SystemSettings>()
-                              ->enablePickingProperty_);
+        auto* picking = &InviwoApplication::getPtr()
+                             ->getSettingsByType<SystemSettings>()
+                             ->enablePickingProperty_;
 
         enableCallback_ = picking->onChange([this, picking]() { enabled_ = picking->get(); });
         enabled_ = picking->get();
@@ -190,9 +190,9 @@ size_t PickingManager::colorToIndex(uvec3 color) {
 
     std::uint32_t index = 0;
     for (int i = 0; i < 8; ++i) {
-        index |= (((b & (1 << i)) << (0 + 2 * i)));
-        index |= (((g & (1 << i)) << (1 + 2 * i)));
-        index |= (((r & (1 << i)) << (2 + 2 * i)));
+        index |= ((b & (1 << i)) << (0 + 2 * i));
+        index |= ((g & (1 << i)) << (1 + 2 * i));
+        index |= ((r & (1 << i)) << (2 + 2 * i));
     }
     return index;
 }

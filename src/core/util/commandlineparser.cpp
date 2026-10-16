@@ -133,18 +133,18 @@ void CommandLineParser::parse(int argc, char** argv) {
 void CommandLineParser::parse() { parseInternal(args_, Mode::Normal); }
 
 std::filesystem::path CommandLineParser::getOutputPath() const {
-    if (outputPath_.isSet()) return (outputPath_.getValue());
+    if (outputPath_.isSet()) return outputPath_.getValue();
     return {};
 }
 
 std::filesystem::path CommandLineParser::getWorkspacePath() const {
-    if (workspace_.isSet()) return (workspace_.getValue());
+    if (workspace_.isSet()) return workspace_.getValue();
     return {};
 }
 
 std::filesystem::path CommandLineParser::getLogToFileFileName() const {
     if (logfile_.isSet())
-        return (logfile_.getValue());
+        return logfile_.getValue();
     else
         return {};
 }

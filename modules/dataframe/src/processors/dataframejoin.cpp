@@ -119,7 +119,7 @@ void DataFrameJoin::process() {
     if (inportLeft_.isChanged()) {
         for (auto p : secondaryLeftKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p);
-                keyProp && (inportLeft_.hasData())) {
+                keyProp && inportLeft_.hasData()) {
                 keyProp->setOptions(*inportLeft_.getData());
             }
         }
@@ -127,7 +127,7 @@ void DataFrameJoin::process() {
     if (inportRight_.isChanged()) {
         for (auto p : secondaryRightKeys_) {
             if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p);
-                keyProp && (inportRight_.hasData())) {
+                keyProp && inportRight_.hasData()) {
                 keyProp->setOptions(*inportRight_.getData());
             }
         }

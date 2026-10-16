@@ -278,10 +278,9 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            const bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
-                    overlayPort_.propagateEvent(newEvent);
-                }));
+            const bool overlayHandlesEvent = viewManager_.propagateEvent(
+                event,
+                [&](Event* newEvent, size_t /*ind*/) { overlayPort_.propagateEvent(newEvent); });
 
             if ((overlayHandlesEvent && !passThroughEvent_.get()) || event->hasBeenUsed()) {
                 return;

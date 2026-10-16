@@ -548,7 +548,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
             });
     }
     for (const auto& data : dataFrames) {
-        for (auto col : *(data)) {
+        for (auto col : *data) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
 
             columns[col->getHeader()]

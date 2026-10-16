@@ -128,7 +128,7 @@ void parse(CMakeFile& file, Input&& input) {
     try {
         const auto root = p::parse_tree::parse<cmake::file, cmake::selector, cmake::action>(
             std::forward<Input>(input), bracket_id);
-        convert(file, *(root->children[0]));
+        convert(file, *root->children[0]);
     } catch (const p::parse_error& e) {
         const auto& pos0 = e.positions().front();
         throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {} col: {}", pos0.source,

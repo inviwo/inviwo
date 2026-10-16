@@ -123,18 +123,18 @@ QVariant TFEditorControlPoint::itemChange(GraphicsItemChange change, const QVari
 
         const double d = 2.0 * scene()->sceneRect().width() * glm::epsilon<float>();
         if (moveMode() == TFMoveMode::Free) {
-            if ((left_ && left_->left && *(left_->left) > *this) ||
-                (right_ && right_->right && *(right_->right) < *this)) {
+            if ((left_ && left_->left && *left_->left > *this) ||
+                (right_ && right_->right && *right_->right < *this)) {
                 if (auto* tfe = qobject_cast<TFEditor*>(scene())) {
                     tfe->updateConnections();
                     return {};
                 }
             }
         } else if (moveMode() == TFMoveMode::Push) {
-            if (left_ && left_->left && *(left_->left) > *this) {
+            if (left_ && left_->left && *left_->left > *this) {
                 left_->left->setPos(QPointF(scenePos().x() - d, left_->left->scenePos().y()));
             }
-            if (right_ && right_->right && *(right_->right) < *this) {
+            if (right_ && right_->right && *right_->right < *this) {
                 right_->right->setPos(QPointF(scenePos().x() + d, right_->right->scenePos().y()));
             }
         }

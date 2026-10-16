@@ -236,7 +236,7 @@ void GLUIProcessor::onWillRemoveProperty(Property* property, size_t) {
     // remove matching widget from map and the layout
     const auto it = propertyWidgetMap_.find(property);
     if (it != propertyWidgetMap_.end()) {
-        layout_.removeElement(*(it->second));
+        layout_.removeElement(*it->second);
         propertyWidgetMap_.erase(it);
 
         invalidate(InvalidationLevel::InvalidOutput);

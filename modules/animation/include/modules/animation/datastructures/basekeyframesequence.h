@@ -150,7 +150,7 @@ BaseKeyframeSequence<Key>& BaseKeyframeSequence<Key>::operator=(
         }
         for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
              i < that.keyframes_.size(); i++) {
-            keyframes_.push_back(std::make_unique<Key>(*(that.keyframes_[i])));
+            keyframes_.push_back(std::make_unique<Key>(*that.keyframes_[i]));
             notifyKeyframeAdded(keyframes_.back().get(), this);
         }
         while (keyframes_.size() > that.keyframes_.size()) {

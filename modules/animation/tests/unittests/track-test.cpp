@@ -470,7 +470,7 @@ TEST(AnimationTests, TrackSerializationTest) {
         auto* floatProcessor = static_cast<TestProcessor*>(
             net.addProcessor(std::make_unique<TestProcessor>("float", "Float")));
         PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(
-            &(floatProcessor->floatProperty));
+            &floatProcessor->floatProperty);
 
         std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
         fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
@@ -559,7 +559,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
         {
             auto floatTrack = std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(
-                &(floatProcessor->floatProperty));
+                &floatProcessor->floatProperty);
             floatTrack->add(std::move(floatSequence));
             animation.add(std::move(floatTrack));
         }

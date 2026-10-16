@@ -237,7 +237,7 @@ std::shared_ptr<VolumeSequence> readIvfFile(const std::filesystem::path& filePat
         volume->setWorldMatrix(worldTransform);
         volume->dataMap = dataMap;
         volume->axes = axes;
-        *(volume->getMetaDataMap()) = metaData;
+        *volume->getMetaDataMap() = metaData;
 
         const auto volumeDisk = std::make_shared<VolumeDisk>(
             fileDirectory / path, dimensions, format, swizzleMask, interpolation, wrapping);

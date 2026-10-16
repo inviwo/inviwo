@@ -672,7 +672,7 @@ vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) 
     vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
                     glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
 
-    if ((clamp) && ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f))) {
+    if (clamp && ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f))) {
         pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
     }
 

@@ -545,7 +545,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
     int result = 0;
 
     while (*strPtr != '\0') {
-        if ((*patternPtr == '#') && (isdigit(*strPtr))) {
+        if ((*patternPtr == '#') && isdigit(*strPtr)) {
             // digit detected
             result = result * 10 + static_cast<int>(*strPtr - '0');
 
@@ -554,7 +554,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
 
             if (matchMore) {
                 // more digits (eat up all digits)
-                while ((*strPtr != '\0') && (*patternPtr != '#') && (isdigit(*strPtr))) {
+                while ((*strPtr != '\0') && (*patternPtr != '#') && isdigit(*strPtr)) {
                     result = result * 10 + static_cast<int>(*strPtr - '0');
                     ++strPtr;
                 }

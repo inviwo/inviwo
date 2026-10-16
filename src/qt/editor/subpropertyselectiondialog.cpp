@@ -486,14 +486,14 @@ public:
         if (index.column() == column::remove) {
             switch (role) {
                 case Qt::DecorationRole: {
-                    if (auto* prop = toProperty(index); prop && (cp_.getSubProperty(prop))) {
+                    if (auto* prop = toProperty(index); prop && cp_.getSubProperty(prop)) {
                         return QIcon(":/svgicons/close.svg");
                     }
 
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto* prop = toProperty(index); prop && (cp_.getSubProperty(prop))) {
+                    if (auto* prop = toProperty(index); prop && cp_.getSubProperty(prop)) {
                         return "Remove";
                     }
 
@@ -537,8 +537,7 @@ public:
         std::vector<Property*> toRemove;
 
         for (int i = 0; i < count; ++i) {
-            if (auto* prop = toProperty(index(row, 0, parent));
-                prop && (cp_.getSubProperty(prop))) {
+            if (auto* prop = toProperty(index(row, 0, parent)); prop && cp_.getSubProperty(prop)) {
                 toRemove.emplace_back(prop);
             }
         }

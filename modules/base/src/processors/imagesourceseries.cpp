@@ -134,7 +134,7 @@ void ImageSourceSeries::process() {
 
     // sanity check for valid index
     const auto index = currentImageIndex_.get() - 1;
-    if ((index < 0) || (std::cmp_greater_equal(index, fileList_.size()))) {
+    if ((index < 0) || std::cmp_greater_equal(index, fileList_.size())) {
         throw Exception("Invalid image index. Exceeded number of files.");
     }
 

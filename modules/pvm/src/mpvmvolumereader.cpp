@@ -187,7 +187,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 void MPVMVolumeReader::printPVMMeta(const Volume& volume,
                                     const std::filesystem::path& fileName) const {
     const size3_t dim = volume.getDimensions();
-    const size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
+    const size_t bytes = dim.x * dim.y * dim.z * volume.getDataFormat()->getSizeInBytes();
     log::info("Loaded volume: '{:?g}' size: {}", fileName, ByteSize{bytes});
     printMetaInfo(volume, "description");
     printMetaInfo(volume, "courtesy");

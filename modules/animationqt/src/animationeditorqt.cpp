@@ -457,9 +457,9 @@ void AnimationEditorQt::cut() {
     const QList<QGraphicsItem*> itemList = selectedItems();
     for (auto* elem : itemList) {
         if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
-            controller_.getAnimation().remove(&(keyqt->getKeyframe()));
+            controller_.getAnimation().remove(&keyqt->getKeyframe());
         } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
-            controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
+            controller_.getAnimation().remove(&seqqt->getKeyframeSequence());
         }
     }
 }
@@ -467,9 +467,9 @@ void AnimationEditorQt::cut() {
 void AnimationEditorQt::deleteItems(const QList<QGraphicsItem*>& itemsList) {
     for (auto* elem : itemsList) {
         if (auto* keyqt = qgraphicsitem_cast<KeyframeWidgetQt*>(elem)) {
-            controller_.getAnimation().remove(&(keyqt->getKeyframe()));
+            controller_.getAnimation().remove(&keyqt->getKeyframe());
         } else if (auto* seqqt = qgraphicsitem_cast<KeyframeSequenceWidgetQt*>(elem)) {
-            controller_.getAnimation().remove(&(seqqt->getKeyframeSequence()));
+            controller_.getAnimation().remove(&seqqt->getKeyframeSequence());
         }
     }
 }

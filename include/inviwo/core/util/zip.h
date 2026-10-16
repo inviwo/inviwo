@@ -160,11 +160,11 @@ auto getEnd(const std::tuple<T...>& t) {
 }
 
 template <typename T, std::size_t... I>
-auto refImpl(const T& t, std::index_sequence<I...>) -> proxy<decltype(*(std::get<I>(t)))...> {
-    return proxy<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
+auto refImpl(const T& t, std::index_sequence<I...>) -> proxy<decltype(*std::get<I>(t))...> {
+    return proxy<decltype(*std::get<I>(t))...>{*std::get<I>(t)...};
 }
 template <typename... T>
-auto ref(const std::tuple<T...>& t) -> proxy<decltype(*(std::declval<T>()))...> {
+auto ref(const std::tuple<T...>& t) -> proxy<decltype(*std::declval<T>())...> {
     return refImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -181,12 +181,11 @@ auto index(const std::tuple<T...>& t, ptrdiff_t i)
 
 template <typename T, std::size_t... I>
 auto pointerImpl(const T& t, std::index_sequence<I...>)
-    -> std::tuple<decltype((std::get<I>(t)).operator->())...> {
-    return std::tuple<decltype((std::get<I>(t)).operator->())...>{(std::get<I>(t)).operator->()...};
+    -> std::tuple<decltype(std::get<I>(t).operator->())...> {
+    return std::tuple<decltype(std::get<I>(t).operator->())...>{std::get<I>(t).operator->()...};
 }
 template <typename... T>
-auto pointer(const std::tuple<T...>& t)
-    -> std::tuple<decltype((std::declval<T>()).operator->())...> {
+auto pointer(const std::tuple<T...>& t) -> std::tuple<decltype(std::declval<T>().operator->())...> {
     return pointerImpl(t, std::index_sequence_for<T...>{});
 }
 

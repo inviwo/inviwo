@@ -227,10 +227,9 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (imageInteraction_.get() && imgInport_.isConnected()) {
-            const bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
-                    imgInport_.propagateEvent(newEvent);
-                }));
+            const bool overlayHandlesEvent = viewManager_.propagateEvent(
+                event,
+                [&](Event* newEvent, size_t /*ind*/) { imgInport_.propagateEvent(newEvent); });
 
             if (overlayHandlesEvent || event->hasBeenUsed()) {
                 return;
