@@ -2,14 +2,11 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 45 checks done so
-far (34 + a batch of 11: `readability-string-compare`,
-`performance-move-const-arg`, `readability-redundant-smartptr-get`,
-`readability-simplify-boolean-expr`, `modernize-avoid-bind`,
-`readability-use-concise-preprocessor-directives`,
-`modernize-use-string-view`, `modernize-use-emplace`,
-`performance-avoid-endl`, `readability-redundant-access-specifiers`,
-`readability-redundant-string-init`), ~60 remaining (plus 3
+below for current progress and the exact resume point). 51 checks done so
+far (34 + a batch of 11 + a batch of 6: `readability-redundant-nested-if`,
+`modernize-loop-convert`, `modernize-use-noexcept`,
+`modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
+`readability-container-contains`), ~50 remaining (plus 3
 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
@@ -146,7 +143,10 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `readability-use-concise-preprocessor-directives`,
 `modernize-use-string-view`, `modernize-use-emplace`,
 `performance-avoid-endl`, `readability-redundant-access-specifiers`,
-`readability-redundant-string-init`.
+`readability-redundant-string-init` — plus a further batch of 6:
+`readability-redundant-nested-if`, `modernize-loop-convert`,
+`modernize-use-noexcept`, `modernize-use-std-numbers`,
+`cppcoreguidelines-init-variables`, `readability-container-contains`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -183,6 +183,22 @@ checks again without manual review)**:
   though the check reports zero accessibility change. Watch for this
   pattern in any future check that manipulates access specifiers in
   `Q_OBJECT` classes.
+- `modernize-use-std-numbers` has a "coincidental floating-point literal"
+  false-positive category: it matches float/double literals against
+  `std::numbers::*` constants by numeric *proximity*, with no understanding
+  of where the literal came from. Hit this hard in
+  `src/core/util/colorbrewer-generated.cpp` (a generated ColorBrewer RGB
+  palette table — 8-bit-quantized channel values like 81/255 =
+  0.3176470588235294 happen to sit within tolerance of `inv_pi`, `ln2`,
+  `log10e`, `egamma`, `inv_sqrtpi`; 59 bogus replacements, reverted the
+  whole file) and once in `src/core/util/colorconversion.cpp` (the
+  empirically-derived YCbCr chroma-blue coefficient `0.565` got "fixed" to
+  `std::numbers::inv_sqrtpi`, reverted that one hunk). Any check that
+  matches literals by closeness-of-value rather than by where/how they're
+  used can misfire on quantized or empirically-derived constants (color
+  data, calibration coefficients, lookup tables) — double check every hit
+  against a generated/data file or a known standards-derived coefficient
+  before trusting it.
 
 ### Two notable `-fix` bugs hit while applying this batch (not false
 positives — the underlying warning was correct, but clang-tidy's suggested
@@ -241,6 +257,21 @@ edit was broken or dangerous and had to be corrected manually)
    disk. Reverted that one hunk (kept the check's other, purely
    stream/stdout-based conversions, including two other one-time,
    non-crash-relevant `std::endl`s in the same file's constructor).
+6. **`readability-redundant-nested-if`'s `clang-apply-replacements --format`
+   pass left cosmetic-but-ugly artifacts in ~3 files** when merging a
+   nested if's condition into the outer one: a stray blank
+   whitespace-only line left where the (now-removed) inner `{` used to be,
+   and in two cases a comment that documented the *inner* if got stranded
+   between the newly-merged condition and the opening brace instead of
+   staying above the `if` (`fontsizepropertywidgetqt.cpp`,
+   `inviwomainwindow.cpp` x3 spots, `camerawidget.cpp` x2 spots — see that
+   check's commit message). Not a correctness bug (the code still compiled
+   and ran correctly) but left trailing whitespace (violates
+   `.editorconfig`) and misleadingly-placed comments; fixed by hand after
+   noticing via `grep -n '^\+[[:space:]]*$'` on the raw diff for
+   whitespace-only added lines. Worth running that same grep on any future
+   check's diff that merges/restructures control flow (loop fusion,
+   if/else collapsing, etc.) before committing.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -269,14 +300,16 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **68 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); after the 11 checks done in this batch (see DONE_CHECKS),
-   next up by size: `readability-redundant-nested-if`,
-   `modernize-loop-convert`, `modernize-use-noexcept`,
-   `modernize-use-std-numbers`, `cppcoreguidelines-init-variables`,
-   `readability-container-contains`, `google-upgrade-googletest-case`,
+   **50 fixable checks remaining** (out of 98 total fixable checks found by
+   the dry run); after the 6 checks done in this batch (see DONE_CHECKS),
+   next up by size: `google-upgrade-googletest-case`,
    `performance-use-std-move`, `readability-isolate-declaration`,
-   `readability-avoid-return-with-void-value`, ...
+   `readability-avoid-return-with-void-value`,
+   `cppcoreguidelines-pro-type-static-cast-downcast`,
+   `readability-const-return-type`,
+   `modernize-use-integer-sign-comparison`,
+   `performance-inefficient-vector-operation`,
+   `readability-qualified-auto`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
 3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
