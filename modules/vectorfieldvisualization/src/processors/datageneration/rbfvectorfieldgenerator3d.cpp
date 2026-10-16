@@ -131,7 +131,7 @@ RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-RBFVectorFieldGenerator3D::~RBFVectorFieldGenerator3D() {}
+RBFVectorFieldGenerator3D::~RBFVectorFieldGenerator3D() = default;
 
 void RBFVectorFieldGenerator3D::process() {
     if (useSameSeed_.get()) {

@@ -38,8 +38,8 @@ namespace inviwo {
 
 class IVW_CORE_API CallbackWithSingleArgument {
 public:
-    CallbackWithSingleArgument() {}
-    virtual ~CallbackWithSingleArgument() {}
+    CallbackWithSingleArgument() = default;
+    virtual ~CallbackWithSingleArgument() = default;
     virtual void invoke(void*) const = 0;
 };
 

@@ -146,7 +146,7 @@ StreamLinesDeprecated::StreamLinesDeprecated()
         "with the IntegralLineToMesh processor.");
 }
 
-StreamLinesDeprecated::~StreamLinesDeprecated() {}
+StreamLinesDeprecated::~StreamLinesDeprecated() = default;
 
 void StreamLinesDeprecated::process() {
 

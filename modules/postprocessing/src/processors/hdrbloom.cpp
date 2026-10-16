@@ -120,7 +120,7 @@ HdrBloom::HdrBloom()
     FrameBufferObject::deactivateFBO();
 }
 
-HdrBloom::~HdrBloom() {}
+HdrBloom::~HdrBloom() = default;
 
 void HdrBloom::process() {
     if (inport_.isChanged()) {

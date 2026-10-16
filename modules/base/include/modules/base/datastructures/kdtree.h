@@ -164,7 +164,7 @@ template <unsigned char N, typename T = char, typename P = double>
 class KDTreeGlm : public KDTree<N, T, P> {
 public:
     KDTreeGlm() : KDTree<N, T, P>() {}
-    virtual ~KDTreeGlm() {}
+    virtual ~KDTreeGlm() = default;
 
     typedef KDNode<N, T, P> Node;
     typedef KDTree<N, T, P> Tree;

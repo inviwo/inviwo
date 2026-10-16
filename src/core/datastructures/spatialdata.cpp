@@ -120,7 +120,7 @@ SpatialIdentity::SpatialIdentity(const glm::dmat4& modelMatrix)
 SpatialIdentity::SpatialIdentity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix)
     : SpatialEntity{modelMatrix, worldMatrix} {}
 
-SpatialIdentity::SpatialIdentity(const SpatialIdentity& rhs) : SpatialEntity{rhs} {}
+SpatialIdentity::SpatialIdentity(const SpatialIdentity& rhs) = default;
 
 SpatialIdentity& SpatialIdentity::operator=(const SpatialIdentity& that) {
     if (this != &that) {

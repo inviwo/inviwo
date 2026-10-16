@@ -70,20 +70,20 @@ public:
     explicit InvalidColCount(const std::string& message = "",
                              SourceContext context = SourceContext())
         : Exception(message, context) {}
-    virtual ~InvalidColCount() noexcept {}
+    virtual ~InvalidColCount() noexcept = default;
 };
 class IVW_MODULE_DATAFRAME_API NoColumns : public Exception {
 public:
     explicit NoColumns(const std::string& message = "", SourceContext context = SourceContext())
         : Exception(message, context) {}
-    virtual ~NoColumns() noexcept {}
+    virtual ~NoColumns() noexcept = default;
 };
 class IVW_MODULE_DATAFRAME_API DataTypeMismatch : public Exception {
 public:
     explicit DataTypeMismatch(const std::string& message = "",
                               SourceContext context = SourceContext())
         : Exception(message, context) {}
-    virtual ~DataTypeMismatch() noexcept {}
+    virtual ~DataTypeMismatch() noexcept = default;
 };
 /**
  * Table of data for plotting where each column can have a header (title).
