@@ -76,7 +76,7 @@ bool LayerDisk::copyRepresentationsTo(LayerRepresentation*) const { return false
 
 void LayerDisk::updateDataFormat(const DataFormatBase* format) { dataFormatBase_ = format; }
 
-std::type_index LayerDisk::getTypeIndex() const { return std::type_index(typeid(LayerDisk)); }
+std::type_index LayerDisk::getTypeIndex() const { return {typeid(LayerDisk)}; }
 
 void LayerDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 

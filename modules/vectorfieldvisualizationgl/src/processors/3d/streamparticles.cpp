@@ -277,7 +277,7 @@ void StreamParticles::reseed() {
              toWorld = volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](
                 vec3 seed) -> vec4 {
             if (space == SeedingSpace::World) {
-                return vec4(seed, 1.0f);
+                return {seed, 1.0f};
             } else {
                 const vec4 p = toWorld * vec4(seed, 1.0f);
                 return p / p.w;

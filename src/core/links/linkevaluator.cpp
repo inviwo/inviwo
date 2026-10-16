@@ -133,7 +133,7 @@ std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1
     if (it != processorLinksCache_.end()) {
         return it->second;
     } else {
-        return std::vector<PropertyLink>();
+        return {};
     }
 }
 

@@ -80,12 +80,12 @@ static vec3 orthvec(const vec3& vec) {
     if (std::abs(p) != 1.0f) {
         return glm::normalize(u - p * n);
     } else {
-        return vec3(0.0f, 1.0f, 0.0f);
+        return {0.0f, 1.0f, 0.0f};
     }
 }
 
 static vec3 tospherical(const vec2& v) {
-    return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
+    return {std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x)};
 }
 
 }  // namespace detail
@@ -618,7 +618,7 @@ static vec3 V(const mat4& m, const vec3 v) {
 
 static vec3 N(const mat4& m, const vec3 v) {
     const vec4 V = m * vec4(v, 0);
-    return vec3(V);
+    return {V};
 }
 
 std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {

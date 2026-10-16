@@ -68,7 +68,7 @@ Plane Plane::transform(const mat4& transform) const {
     const auto newPos = vec3(transform * vec4(point_, 1.0));
     const auto normalTransform = glm::transpose(glm::inverse(transform));
     const auto newNormal = glm::normalize(vec3(normalTransform * vec4(normal_, 0.0)));
-    return Plane(newPos, newNormal);
+    return {newPos, newNormal};
 }
 
 std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) const {

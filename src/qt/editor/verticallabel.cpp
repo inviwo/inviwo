@@ -50,12 +50,12 @@ void VerticalLabel::paintEvent(QPaintEvent*) {
 
 QSize VerticalLabel::minimumSizeHint() const {
     const QSize s = QLabel::minimumSizeHint();
-    return QSize(s.height(), s.width());
+    return {s.height(), s.width()};
 }
 
 QSize VerticalLabel::sizeHint() const {
     const QSize s = QLabel::sizeHint();
-    return QSize(s.height(), s.width());
+    return {s.height(), s.width()};
 }
 
 }  // namespace inviwo

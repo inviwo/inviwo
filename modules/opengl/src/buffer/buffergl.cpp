@@ -102,6 +102,6 @@ void BufferGL::disable() const {
     }
 }
 
-std::type_index BufferGL::getTypeIndex() const { return std::type_index(typeid(BufferGL)); }
+std::type_index BufferGL::getTypeIndex() const { return {typeid(BufferGL)}; }
 
 }  // namespace inviwo

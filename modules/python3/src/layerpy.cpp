@@ -121,7 +121,7 @@ LayerPy::~LayerPy() {
 
 LayerPy* LayerPy::clone() const { return new LayerPy(*this); }
 
-std::type_index LayerPy::getTypeIndex() const { return std::type_index(typeid(LayerPy)); }
+std::type_index LayerPy::getTypeIndex() const { return {typeid(LayerPy)}; }
 
 void LayerPy::setDimensions(size2_t dimensions) {
     if (dimensions != dims_) {

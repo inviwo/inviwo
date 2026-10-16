@@ -157,7 +157,7 @@ void ColorWheel::setColorFromSquare(const QPoint& point) {
                               clamp(static_cast<int>(p.y() / SquareWidth * 255.0), 0, 255)));
 }
 
-QSize ColorWheel::sizeHint() const { return QSize(height(), height()); }
+QSize ColorWheel::sizeHint() const { return {height(), height()}; }
 
 QSize ColorWheel::minimumSizeHint() const { return initSize_; }
 

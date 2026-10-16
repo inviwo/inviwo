@@ -45,7 +45,7 @@ bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const 
     return false;
 }
 
-std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }
+std::type_index LayerRAM::getTypeIndex() const { return {typeid(LayerRAM)}; }
 
 std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
                                          const DataFormatBase* format,

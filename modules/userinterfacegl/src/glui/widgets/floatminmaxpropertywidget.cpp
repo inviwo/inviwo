@@ -124,11 +124,11 @@ int FloatMinMaxPropertyWidget::reprToSlider(float val) const {
 }
 
 vec2 FloatMinMaxPropertyWidget::sliderToRepr(const ivec2& val) const {
-    return vec2(sliderToRepr(val.x), sliderToRepr(val.y));
+    return {sliderToRepr(val.x), sliderToRepr(val.y)};
 }
 
 ivec2 FloatMinMaxPropertyWidget::reprToSlider(const vec2& val) const {
-    return ivec2(reprToSlider(val.x), reprToSlider(val.y));
+    return {reprToSlider(val.x), reprToSlider(val.y)};
 }
 
 int FloatMinMaxPropertyWidget::reprSeparationToSlider() const {

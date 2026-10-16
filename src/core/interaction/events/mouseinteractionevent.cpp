@@ -58,7 +58,7 @@ dvec2 MouseInteractionEvent::posNormalized() const { return position_; }
 void MouseInteractionEvent::setPosNormalized(dvec2 pos) { position_ = pos; }
 
 dvec3 MouseInteractionEvent::ndc() const {
-    return dvec3(2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_);
+    return {2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_};
 }
 
 void MouseInteractionEvent::setNdc(dvec3 ndc) {

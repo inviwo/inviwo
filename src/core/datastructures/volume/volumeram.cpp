@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
+std::type_index VolumeRAM::getTypeIndex() const { return {typeid(VolumeRAM)}; }
 
 std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
                                            void* dataPtr, const SwizzleMask& swizzleMask,

@@ -157,7 +157,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 }
 
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
-    if (!index.isValid()) return QSize();
+    if (!index.isValid()) return {};
 
     if (utilqt::getData(index, Role::Type) == Type::File) {
         auto option = o;

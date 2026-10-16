@@ -67,7 +67,7 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
         const QPoint viewP = v->mapFromScene(sceneP);
         return v->viewport()->mapToGlobal(viewP);
     } else {
-        return QPoint(0, 0);
+        return {0, 0};
     }
 }
 

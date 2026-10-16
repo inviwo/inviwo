@@ -145,7 +145,7 @@ VolumePy::~VolumePy() {
 
 VolumePy* VolumePy::clone() const { return new VolumePy(*this); }
 
-std::type_index VolumePy::getTypeIndex() const { return std::type_index(typeid(VolumePy)); }
+std::type_index VolumePy::getTypeIndex() const { return {typeid(VolumePy)}; }
 
 const DataFormatBase* VolumePy::getDataFormat() const {
     const pybind11::gil_scoped_acquire guard{};

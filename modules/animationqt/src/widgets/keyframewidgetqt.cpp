@@ -113,7 +113,7 @@ void KeyframeWidgetQt::onKeyframeTimeChanged(Keyframe*, Seconds) {
 }
 
 QRectF KeyframeWidgetQt::boundingRect() const {
-    return QRectF(-keyframeWidth / 2.0f, -keyframeHeight / 2.0f, keyframeWidth, keyframeHeight);
+    return {-keyframeWidth / 2.0f, -keyframeHeight / 2.0f, keyframeWidth, keyframeHeight};
 }
 
 QVariant KeyframeWidgetQt::itemChange(GraphicsItemChange change, const QVariant& value) {

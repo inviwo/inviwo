@@ -47,7 +47,7 @@ void ImageCache::setMaster(std::shared_ptr<const Image> master) {
 }
 
 std::shared_ptr<const Image> ImageCache::getImage(const size2_t dimensions) const {
-    if (!master_ || (glm::compMul(dimensions) == 0)) return std::shared_ptr<const Image>();
+    if (!master_ || (glm::compMul(dimensions) == 0)) return {};
 
     if (master_->getDimensions() == dimensions) return master_;
 
@@ -128,7 +128,7 @@ std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
         cache_.erase(it);
         return ptr;
     } else {
-        return std::shared_ptr<Image>();
+        return {};
     }
 }
 
@@ -143,7 +143,7 @@ std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& di
         cache_.erase(it);
         return ptr;
     } else {
-        return std::shared_ptr<Image>();
+        return {};
     }
 }
 
