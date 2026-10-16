@@ -566,7 +566,7 @@ void ProcessorNetworkConverter::updateProcessorIdentifiersStriped(TxElement* nod
 
             std::string stripedIdentifier = util::stripIdentifier(newIdentifier);
 
-            while (usedIdentifier_.find(stripedIdentifier) != usedIdentifier_.end()) {
+            while (usedIdentifier_.contains(stripedIdentifier)) {
                 newIdentifier = baseIdentifier + " " + toString(i++);
                 stripedIdentifier = util::stripIdentifier(newIdentifier);
             }

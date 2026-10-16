@@ -169,7 +169,7 @@ static auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true,
 namespace {
 DataFormatId findScalarFormat(const std::filesystem::path& filePath) {
     const auto fileExtension = toLower(filePath.extension().string());
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         return extToBaseTypeMap_[fileExtension];
     } else {
         return DataFormatId::Float32;
@@ -323,7 +323,7 @@ static auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view
     const DataFormatBase* inFormat = DataFormat<T>::get();
     // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
     const DataFormatBase* outFormat = DataFloat32::get();
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
     } else if ((fileExtension == ".tif") || (fileExtension == ".tiff") ||
                (fileExtension == ".raw")) {

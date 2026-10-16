@@ -217,7 +217,7 @@ void FilePatternProperty::updateFileList() {
             auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            const bool hasDigits = (strPattern.find('#') != std::string::npos);
+            const bool hasDigits = (strPattern.contains('#'));
             const bool hasWildcard =
                 hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 

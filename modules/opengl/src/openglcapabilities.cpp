@@ -346,13 +346,11 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     glVendorStr_ =
         std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
-    if (glVendorStr_.find("NVIDIA") != std::string::npos) {
+    if (glVendorStr_.contains("NVIDIA")) {
         glVendor_ = GlVendor::Nvidia;
-    } else if (glVendorStr_.find("AMD") != std::string::npos ||
-               glVendorStr_.find("ATI") != std::string::npos) {
+    } else if (glVendorStr_.contains("AMD") || glVendorStr_.contains("ATI")) {
         glVendor_ = GlVendor::Amd;
-    } else if (glVendorStr_.find("INTEL") != std::string::npos ||
-               glVendorStr_.find("Intel") != std::string::npos) {
+    } else if (glVendorStr_.contains("INTEL") || glVendorStr_.contains("Intel")) {
         glVendor_ = GlVendor::Intel;
     } else {
         glVendor_ = GlVendor::Unknown;
