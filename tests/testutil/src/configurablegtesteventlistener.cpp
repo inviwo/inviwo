@@ -80,9 +80,9 @@ void ConfigurableGTestEventListener::OnEnvironmentsSetUpEnd(const ::testing::Uni
     }
 }
 
-void ConfigurableGTestEventListener::OnTestCaseStart(const ::testing::TestCase& test_case) {
+void ConfigurableGTestEventListener::OnTestSuiteStart(const ::testing::TestSuite& test_case) {
     if (showTestCases) {
-        eventListener->OnTestCaseStart(test_case);
+        eventListener->OnTestSuiteStart(test_case);
     }
 }
 
@@ -103,9 +103,9 @@ void ConfigurableGTestEventListener::OnTestEnd(const ::testing::TestInfo& test_i
     }
 }
 
-void ConfigurableGTestEventListener::OnTestCaseEnd(const ::testing::TestCase& test_case) {
+void ConfigurableGTestEventListener::OnTestSuiteEnd(const ::testing::TestSuite& test_case) {
     if (showTestCases) {
-        eventListener->OnTestCaseEnd(test_case);
+        eventListener->OnTestSuiteEnd(test_case);
     }
 }
 

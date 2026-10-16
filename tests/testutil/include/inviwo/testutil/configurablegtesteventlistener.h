@@ -54,11 +54,11 @@ public:
     virtual void OnTestIterationStart(const ::testing::UnitTest& unit_test, int iteration) override;
     virtual void OnEnvironmentsSetUpStart(const ::testing::UnitTest& unit_test) override;
     virtual void OnEnvironmentsSetUpEnd(const ::testing::UnitTest& unit_test) override;
-    virtual void OnTestCaseStart(const ::testing::TestCase& test_case) override;
+    virtual void OnTestSuiteStart(const ::testing::TestSuite& test_case) override;
     virtual void OnTestStart(const ::testing::TestInfo& test_info) override;
     virtual void OnTestPartResult(const ::testing::TestPartResult& result) override;
     virtual void OnTestEnd(const ::testing::TestInfo& test_info) override;
-    virtual void OnTestCaseEnd(const ::testing::TestCase& test_case) override;
+    virtual void OnTestSuiteEnd(const ::testing::TestSuite& test_case) override;
     virtual void OnEnvironmentsTearDownStart(const ::testing::UnitTest& unit_test) override;
     virtual void OnEnvironmentsTearDownEnd(const ::testing::UnitTest& unit_test) override;
     virtual void OnTestIterationEnd(const ::testing::UnitTest& unit_test, int iteration) override;
