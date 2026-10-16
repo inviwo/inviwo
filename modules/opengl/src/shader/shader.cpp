@@ -358,18 +358,19 @@ std::string Shader::processLog(std::string log) const {
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
         const auto lline = toLower(line);
-        if (lline.contains("vertex"))
+        if (lline.contains("vertex")) {
             type = ShaderType::Vertex;
-        else if (lline.contains("geometry"))
+        } else if (lline.contains("geometry")) {
             type = ShaderType::Geometry;
-        else if (lline.contains("fragment"))
+        } else if (lline.contains("fragment")) {
             type = ShaderType::Fragment;
-        else if (lline.contains("tessellation control"))
+        } else if (lline.contains("tessellation control")) {
             type = ShaderType::TessellationControl;
-        else if (lline.contains("tessellation evaluation"))
+        } else if (lline.contains("tessellation evaluation")) {
             type = ShaderType::TessellationEvaluation;
-        else if (lline.contains("compute"))
+        } else if (lline.contains("compute")) {
             type = ShaderType::Compute;
+        }
 
         const int origLineNumber = utilgl::getLogLineNumber(line);
 

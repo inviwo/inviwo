@@ -203,10 +203,11 @@ PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) 
     return std::accumulate(points.begin(), points.end(), toPickingState(points.front().state()),
                            [&](PickingState ps, const TouchPoint& tp) {
                                const auto s = toPickingState(tp.state());
-                               if (ps == s)
+                               if (ps == s) {
                                    return ps;
-                               else
+                               } else {
                                    return PickingState::Updated;
+                               }
                            });
 }
 

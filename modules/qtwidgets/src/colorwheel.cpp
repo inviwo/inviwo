@@ -212,19 +212,21 @@ void ColorWheel::mouseMoveEvent(QMouseEvent* e) {
             qreal y0 = 0.0f;
             const qreal w0 = static_cast<qreal>(squareRegion_.boundingRect().width());
 
-            if (lastPos_.x() > m + w0)
+            if (lastPos_.x() > m + w0) {
                 x0 = m + w0;
-            else if (lastPos_.x() < m)
+            } else if (lastPos_.x() < m) {
                 x0 = m;
-            else
+            } else {
                 x0 = static_cast<qreal>(lastPos_.x());
+            }
 
-            if (lastPos_.y() > m + w0)
+            if (lastPos_.y() > m + w0) {
                 y0 = m + w0;
-            else if (lastPos_.y() < m)
+            } else if (lastPos_.y() < m) {
                 y0 = m;
-            else
+            } else {
                 y0 = static_cast<qreal>(lastPos_.y());
+            }
 
             setColorFromSquare(QPoint(static_cast<int>(x0), static_cast<int>(y0)));
         }
@@ -326,10 +328,11 @@ void ColorWheel::updateSquareImage(const int& hue) {
 void ColorWheel::drawIndicator(QPainter& painter) {
     const int hue = currentColor_.hue();
 
-    if (hue > 20 && hue < 200)
+    if (hue > 20 && hue < 200) {
         painter.setPen(Qt::black);
-    else
+    } else {
         painter.setPen(Qt::white);
+    }
 
     painter.save();
     painter.setBrush(Qt::NoBrush);

@@ -111,8 +111,9 @@ void DemoController::onChangeSelection(Offset offset) {
 
     // No need to load anything
     if (nextFileIndex < 0 || nextFileIndex >= numFiles ||
-        (offset != Offset::Reload && nextFileIndex == demoFile_.get()))
+        (offset != Offset::Reload && nextFileIndex == demoFile_.get())) {
         return;
+    }
 
     updateWorkspace_ = false;
     demoFile_.set(nextFileIndex);

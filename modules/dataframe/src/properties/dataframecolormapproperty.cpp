@@ -81,8 +81,9 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
 
     selectedColorAxis.onChange([&]() {
         if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() ||
-            overrideColormap)
+            overrideColormap) {
             return;
+        }
 
         for (auto i = 0u; i < colormaps_.size(); i++) {
             colormaps_[i]->setVisible(std::cmp_equal(i, *selectedColorAxis));

@@ -62,10 +62,11 @@ LabelGraphicsItem::LabelGraphicsItem(QGraphicsItem* parent, int width, Qt::Align
 }
 
 QString LabelGraphicsItem::text() const {
-    if (isCropped())
+    if (isCropped()) {
         return orgText_;
-    else
+    } else {
         return toPlainText();
+    }
 }
 
 void LabelGraphicsItem::setText(const QString& str) {

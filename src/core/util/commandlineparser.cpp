@@ -143,10 +143,11 @@ std::filesystem::path CommandLineParser::getWorkspacePath() const {
 }
 
 std::filesystem::path CommandLineParser::getLogToFileFileName() const {
-    if (logfile_.isSet())
+    if (logfile_.isSet()) {
         return logfile_.getValue();
-    else
+    } else {
         return {};
+    }
 }
 
 std::vector<std::filesystem::path> CommandLineParser::getModuleSearchPaths() const {

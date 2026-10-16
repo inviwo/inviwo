@@ -89,8 +89,9 @@ std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
 
     std::vector<Colormap> v;
     v.reserve(numColormapsInThisFamily);
-    for (int i = 0; i < numColormapsInThisFamily; i++)
+    for (int i = 0; i < numColormapsInThisFamily; i++) {
         v.emplace_back(static_cast<Colormap>(accumulated + i));
+    }
 
     std::vector<std::vector<dvec4>> ret;
     ret.reserve(v.size());
@@ -104,8 +105,9 @@ std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
 std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category& category) {
     std::map<Family, std::vector<std::vector<dvec4>>> v;
 
-    for (const auto& family : getFamiliesForCategory(category))
+    for (const auto& family : getFamiliesForCategory(category)) {
         v.emplace(family, getColormaps(family));
+    }
 
     return v;
 }

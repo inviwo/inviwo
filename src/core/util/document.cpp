@@ -109,10 +109,11 @@ void Document::Element::deserialize(Deserializer& d) {
 
 Document::PathComponent Document::PathComponent::first() {
     return {"<first>", [](const ElemVec& elements) -> ElemVec::const_iterator {
-                if (!elements.empty())
+                if (!elements.empty()) {
                     return elements.begin();
-                else
+                } else {
                     return elements.end();
+                }
             }};
 }
 
@@ -124,10 +125,11 @@ Document::PathComponent::PathComponent(int index)
     : strrep_("Index: " + std::to_string(index))
     , matcher_{[index](const ElemVec& elements) -> ElemVec::const_iterator {
         const size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
-        if (i < elements.size())
+        if (i < elements.size()) {
             return elements.begin() + i;
-        else
+        } else {
             return elements.end();
+        }
     }} {}
 
 Document::PathComponent::PathComponent(std::string_view name)
@@ -174,10 +176,11 @@ std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) 
 
 Document::PathComponent Document::PathComponent::last() {
     return {"<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {
-                if (!elements.empty())
+                if (!elements.empty()) {
                     return --elements.end();
-                else
+                } else {
                     return elements.end();
+                }
             }};
 }
 

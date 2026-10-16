@@ -167,8 +167,9 @@ std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> util::getUni
         for (const auto& desc : group.units) {
             if (isSubset(desc.unit.base_units(), unit.base_units()) &&
                 inviwo::all(desc.unit.base_units(), unit.base_units(),
-                            [](auto a, auto b) { return std::abs(a) <= std::abs(b); }))
+                            [](auto a, auto b) { return std::abs(a) <= std::abs(b); })) {
                 groups[desc.unit.base_units()].push_back(desc);
+            }
         }
     }
     return groups;
