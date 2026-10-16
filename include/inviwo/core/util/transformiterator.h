@@ -69,7 +69,7 @@ struct TransformIterator {
         : transform_{Transform{}}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
         : transform_{std::move(transform)}, iterator_(iterator) {
-        static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value, "");
+        static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value);
     }
     TransformIterator(const TransformIterator& rhs) = default;
     TransformIterator(TransformIterator&& rhs) = default;
