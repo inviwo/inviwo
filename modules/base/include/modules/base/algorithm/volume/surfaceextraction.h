@@ -60,7 +60,7 @@ void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexB
                       double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2);
 
 size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& positions,
-                 std::vector<vec3>& normals, const vec3 pos);
+                 std::vector<vec3>& normals, vec3 pos);
 
 void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
                  std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& a,

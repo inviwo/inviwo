@@ -57,7 +57,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    static std::shared_ptr<Mesh> convertHullToMesh(const std::vector<dvec2> hull);
+    static std::shared_ptr<Mesh> convertHullToMesh(std::vector<dvec2> hull);
 
     MeshInport inport_;
     MeshOutport outport_;
