@@ -68,7 +68,7 @@ private:
  * The action can be changed at any time by calling setAction() or release().
  */
 struct IVW_CORE_API OnScopeExit {
-    using ExitAction = std::function<void(void)>;
+    using ExitAction = std::function<void()>;
 
     OnScopeExit() = delete;
     OnScopeExit(const OnScopeExit&) = delete;
