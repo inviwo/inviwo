@@ -323,16 +323,16 @@ void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
 
     else if (info.ct == ConnectivityType::Strip) {
         std::invoke(lineStartCallback);
-        for (size_t i = 0; i < ram.size(); ++i) {
-            std::invoke(linePointCallback, ram[i]);
+        for (unsigned int i : ram) {
+            std::invoke(linePointCallback, i);
         }
         std::invoke(lineEndCallback);
     }
 
     else if (info.ct == ConnectivityType::Loop) {
         std::invoke(lineStartCallback);
-        for (size_t i = 0; i < ram.size(); ++i) {
-            std::invoke(linePointCallback, ram[i]);
+        for (unsigned int i : ram) {
+            std::invoke(linePointCallback, i);
         }
         std::invoke(linePointCallback, ram.front());
         std::invoke(lineEndCallback);

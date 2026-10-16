@@ -124,12 +124,12 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
-    for (size_t i = 0; i < files.size(); i++) {
-        const auto newVol = PVMVolumeReader::readPVMData(fileDirectory / files[i]);
+    for (const auto& file : files) {
+        const auto newVol = PVMVolumeReader::readPVMData(fileDirectory / file);
         if (newVol) {
             volumes.push_back(newVol);
         } else {
-            log::warn("Could not load {:?g}", fileDirectory / files[i]);
+            log::warn("Could not load {:?g}", fileDirectory / file);
         }
     }
 
