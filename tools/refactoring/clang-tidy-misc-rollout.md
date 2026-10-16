@@ -2,11 +2,12 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 60 checks done so
+below for current progress and the exact resume point). 61 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
-+ `readability-qualified-auto` + `readability-make-member-function-const`),
-~40 remaining (plus 4 permanently-skipped false positives, see below).
++ `readability-qualified-auto` + `readability-make-member-function-const`
++ `modernize-use-equals-default`),
+~39 remaining (plus 4 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 **Branch:** `feature/more-conv-warnings`
@@ -395,12 +396,12 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~40 fixable checks remaining** (out of 98 total fixable checks found by
+   **~39 fixable checks remaining** (out of 98 total fixable checks found by
    the dry run); next up by size (skipping
    `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
    reverted this session — see "Reverted as false positives" above, do not
    reapply it without per-instance review):
-   `modernize-use-equals-default`, `modernize-use-nullptr`,
+   `modernize-use-nullptr`,
    `performance-faster-string-find`, `bugprone-macro-parentheses`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
    false positives" above — do not reapply it.)
