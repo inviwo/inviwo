@@ -48,12 +48,12 @@ namespace inviwo {
 class Property;
 
 ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property), property_(property), button_(new QPushButton()) {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
-    button_ = new QPushButton();
+
     button_->setText(utilqt::toQString(property_->getDisplayName()));
     connect(button_, &QPushButton::released, this, [&]() {
         if (!property_->getReadOnly()) {

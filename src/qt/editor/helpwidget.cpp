@@ -100,7 +100,7 @@ private:
 HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     : InviwoDockWidget(tr("Help"), mainWindow, "HelpWidget")
     , mainWindow_(mainWindow)
-    , helpBrowser_(nullptr) {
+    , helpBrowser_(new HelpBrowser(this, mainWindow_->getInviwoApplication())) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
@@ -112,7 +112,6 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
 
-    helpBrowser_ = new HelpBrowser(this, mainWindow_->getInviwoApplication());
     centralWidget->setCentralWidget(helpBrowser_);
     setWidget(centralWidget);
 

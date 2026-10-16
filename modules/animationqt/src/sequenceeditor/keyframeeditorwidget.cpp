@@ -51,15 +51,16 @@ namespace inviwo {
 
 namespace animation {
 KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
-    : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
+    : QWidget(parent)
+    , keyframe_(keyframe)
+    , sequenceEditorWidget_(parent)
+    , layout_(new QHBoxLayout())
+    , timeSpinner_(new DoubleValueDragSpinBox()) {
 
     setObjectName("KeyframeEditorWidget");
 
     keyframe.addObserver(this);
 
-    layout_ = new QHBoxLayout();
-
-    timeSpinner_ = new DoubleValueDragSpinBox();
     timeSpinner_->setValue(keyframe.getTime().count());
     timeSpinner_->setSingleStep(0.1);
     timeSpinner_->setDecimals(3);

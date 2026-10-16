@@ -103,7 +103,7 @@ public:
 };
 
 AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
-    : QListView(), controller_(controller) {
+    : QListView(), controller_(controller), model_(new AnimationLabelModelQt(this)) {
     setMouseTracking(true);
     setSelectionBehavior(SelectRows);
     setMovement(Snap);
@@ -117,7 +117,6 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 
     setViewportMargins(0, timelineHeight, 0, 0);
 
-    model_ = new AnimationLabelModelQt(this);
     setModel(model_);
 
     controller_.AnimationControllerObservable::addObserver(this);

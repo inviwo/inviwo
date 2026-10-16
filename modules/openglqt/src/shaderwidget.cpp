@@ -86,7 +86,8 @@ namespace inviwo {
 ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(obj->getFileName()) + "[*]", parent, "ShaderEditorWidget")
     , obj_{obj}
-    , shaderObjOnChange_{obj->onChange([this](ShaderObject*) { shaderObjectChanged(); })} {
+    , shaderObjOnChange_{obj->onChange([this](ShaderObject*) { shaderObjectChanged(); })}
+    , shaderCode_(new CodeEdit{this}) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(50, 70)));  // default size
@@ -102,7 +103,6 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    shaderCode_ = new CodeEdit{this};
     auto settings = InviwoApplication::getPtr()->getSettingsByType<GLSLSyntaxHighlight>();
     codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shaderCode_->syntaxHighlighter(), *settings);
 

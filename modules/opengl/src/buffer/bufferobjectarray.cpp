@@ -73,18 +73,20 @@ size_t BufferObjectArray::maxSize() {
 }
 
 BufferObjectArray::BufferObjectArray()
-    : id_(0u), attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {
+    : id_(0u)
+    , attachedBuffers_(maxSize(), {BindingType::Native, nullptr})
+    , creationContext_(RenderContext::getPtr()->activeContext()) {
 
-    creationContext_ = RenderContext::getPtr()->activeContext();
     IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenVertexArrays(1, &id_);
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(rhs.attachedBuffers_) {
+    : id_(0u)
+    , attachedBuffers_(rhs.attachedBuffers_)
+    , creationContext_(RenderContext::getPtr()->activeContext()) {
 
-    creationContext_ = RenderContext::getPtr()->activeContext();
     IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenVertexArrays(1, &id_);
