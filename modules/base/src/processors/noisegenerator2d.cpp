@@ -133,7 +133,7 @@ NoiseGenerator2D::NoiseGenerator2D()
     size_.onChange([&]() {
         auto s = std::max(size_.get().x, size_.get().y);
         s = std::bit_ceil(s);
-        const auto l2 = std::log(s) / std::log(2.0f);
+        const auto l2 = std::log(s) / std::numbers::ln2_v<float>;
         levels_.setRangeMax(static_cast<int>(std::round(l2)));
     });
 
