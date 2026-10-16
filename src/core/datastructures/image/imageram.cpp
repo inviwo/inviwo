@@ -63,19 +63,22 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
         std::min(source->getNumberOfColorLayers(), target->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
-        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))
+        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i))) {
             return false;
+        }
     }
 
     // Copy and resize depth layer
     if ((source->getDepthLayerRAM() && target->getDepthLayerRAM()) &&
-        (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM())))
+        (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))) {
         return false;
+    }
 
     // Copy and resize picking layer
     if ((source->getPickingLayerRAM() && target->getPickingLayerRAM()) &&
-        (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM())))
+        (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))) {
         return false;
+    }
 
     return true;
 }

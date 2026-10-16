@@ -380,8 +380,9 @@ void Trackball::rotateTAV(MouseEvent* mouseEvent) {
         const dvec3 newFrom =
             rot_around_right * rot_around_up * camDir;  // Rotate camDir (normalized lookFrom)
         dvec3 newUp = rot_around_right * rot_around_up * getLookUp();  // Rotate up accordingly
-        if (fixUp_)
+        if (fixUp_) {
             newUp = glm::cross(glm::cross(-camDir, wUp), -camDir);  // let up point along world up
+        }
 
         setLook(getLookTo() + newFrom * dist, getLookTo(), glm::normalize(newUp));
     }

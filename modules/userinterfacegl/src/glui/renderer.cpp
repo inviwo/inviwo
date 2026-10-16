@@ -116,10 +116,11 @@ const TextRenderer& Renderer::getTextRenderer(bool bold) const {
 int Renderer::getDefaultFontSize() const { return defaultFontSize_; }
 
 TextRenderer& Renderer::getTextRenderer(bool bold) {
-    if (bold)
+    if (bold) {
         return textRendererBold_;
-    else
+    } else {
         return textRenderer_;
+    }
 }
 
 const TextureQuadRenderer& Renderer::getTextureQuadRenderer() const { return quadRenderer_; }

@@ -513,8 +513,9 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
                     viewCountApprox_.get() + viewIndex);
     if (pos.x < 0 || std::cmp_greater_equal(pos.x, dimLightField.x) || pos.y < 0 ||
         std::cmp_greater_equal(pos.y, dimLightField.y) || pos.z < 0 ||
-        std::cmp_greater_equal(pos.z, dimLightField.z))
+        std::cmp_greater_equal(pos.z, dimLightField.z)) {
         return;
+    }
 
     const double currDepth = lightFieldDepth->getAsDouble(pos);
     if (currDepth < 0 || currDepth > zWorld + 0.01) {

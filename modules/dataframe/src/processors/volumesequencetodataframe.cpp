@@ -150,8 +150,9 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     if (omitOutliers) {
         for (const auto& vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
-            if (vol->getDataFormat()->getComponents() != 1)
+            if (vol->getDataFormat()->getComponents() != 1) {
                 log::warn("This volume is omitted because it has more than one channel.");
+            }
             volumeData.push_back(
                 static_cast<const glm::f32*>(vol->getRepresentation<VolumeRAM>()->getData()));
         }
@@ -163,9 +164,10 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
 
     for (size_t i = 0; i < size; i++) {
         for (size_t j = 0; j < volumeData.size(); j++) {
-            if (volumeData[j][i] < threshold)
+            if (volumeData[j][i] < threshold) {
                 minMaxes[j] = vec2(std::min(volumeData[j][i], minMaxes[j].x),
                                    std::max(volumeData[j][i], minMaxes[j].y));
+            }
         }
         if (dis(gen) <= probability) {
             if (omitOutliers) {

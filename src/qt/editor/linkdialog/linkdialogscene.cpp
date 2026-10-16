@@ -413,8 +413,9 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem
     LinkDialogPropertyGraphicsItem* outProperty, LinkDialogPropertyGraphicsItem* inProperty) const {
     for (const auto& elem : connections_) {
         if ((elem->getStartProperty() == outProperty && elem->getEndProperty() == inProperty) ||
-            (elem->getStartProperty() == inProperty && elem->getEndProperty() == outProperty))
+            (elem->getStartProperty() == inProperty && elem->getEndProperty() == outProperty)) {
             return elem;
+        }
     }
 
     return nullptr;

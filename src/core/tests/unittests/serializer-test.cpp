@@ -228,8 +228,9 @@ TEST(SerializationTest, vectorOfPointersTest) {
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
-    for (size_t i = 0; i < inVector.size(); i++)
+    for (size_t i = 0; i < inVector.size(); i++) {
         EXPECT_EQ(inVector[i]->value_, outVector[i]->value_);
+    }
 }
 
 TEST(SerializationTest, vec2Tests) {
@@ -373,8 +374,9 @@ TEST(SerializationTest, mat2Tests) {
     outMat = serializationOfType(inMat);
     const int s = 2;
 
-    for (int i = 0; i < s; i++)
+    for (int i = 0; i < s; i++) {
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
+    }
 }
 
 TEST(SerializationTest, mat3Tests) {
@@ -383,8 +385,9 @@ TEST(SerializationTest, mat3Tests) {
     outMat = serializationOfType(inMat);
     const int s = 3;
 
-    for (int i = 0; i < s; i++)
+    for (int i = 0; i < s; i++) {
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
+    }
 }
 
 TEST(SerializationTest, mat4Tests) {
@@ -394,7 +397,8 @@ TEST(SerializationTest, mat4Tests) {
     outMat = serializationOfType(inMat);
     const int s = 4;
 
-    for (int i = 0; i < s; i++)
+    for (int i = 0; i < s; i++) {
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
+    }
 }
 }  // namespace inviwo

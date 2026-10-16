@@ -112,8 +112,9 @@ auto RepresentationConverterFactory<BaseRepr>::getConverters() const -> const Re
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(
     RepresentationConverter<BaseRepr>* converter) {
-    if (!util::insert_unique(converters_, converter->getConverterID(), converter))
+    if (!util::insert_unique(converters_, converter->getConverterID(), converter)) {
         throw(ConverterException("Converter with supplied ID already registered"));
+    }
 
     return true;
 }

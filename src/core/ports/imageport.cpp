@@ -224,12 +224,13 @@ void ImageOutport::setDimensions(const size2_t& newDimension) {
 }
 
 size2_t ImageOutport::getDimensions() const {
-    if (image_)
+    if (image_) {
         return image_->getDimensions();
-    else if (data_)
+    } else if (data_) {
         return data_->getDimensions();
-    else
+    } else {
         return getLargestReqDim();
+    }
 }
 
 std::shared_ptr<Image> ImageOutport::getEditableData() const {

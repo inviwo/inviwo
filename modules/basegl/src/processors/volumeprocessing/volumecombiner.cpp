@@ -243,12 +243,13 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
     // Determine which normalization mode should be used
     std::string getVoxel;
     const auto mode = normalizationMode_.get();
-    if (mode == NormalizationMode::Normalized)
+    if (mode == NormalizationMode::Normalized) {
         getVoxel = "getNormalizedVoxel";
-    else if (mode == NormalizationMode::SignedNormalized)
+    } else if (mode == NormalizationMode::SignedNormalized) {
         getVoxel = "getSignNormalizedVoxel";
-    else
+    } else {
         getVoxel = "getVoxel";
+    }
 
     for (auto&& i : util::enumerate(inport_)) {
         const std::string vol = "vol" + toString(i.first());

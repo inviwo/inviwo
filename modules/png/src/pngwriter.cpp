@@ -208,8 +208,9 @@ void PNGLayerWriter::writeData(const Layer* data, FILE* fp) {
 void PNGLayerWriter::writeData(const Layer* data, const std::filesystem::path& filePath) const {
     checkOverwrite(filePath);
     FILE* fp = filesystem::fopen(filePath, "wb");
-    if (!fp)
+    if (!fp) {
         throw DataWriterException(SourceContext{}, "Failed to open file for writing, {}", filePath);
+    }
     const util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 
     writeData(data, fp);

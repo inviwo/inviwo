@@ -410,10 +410,11 @@ void VolumeSliceExtractor::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
 void VolumeSliceExtractor::eventGestureShiftSlice(Event* event) {
     const GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-    if (gestureEvent->deltaPos().y < 0)
+    if (gestureEvent->deltaPos().y < 0) {
         shiftSlice(1);
-    else if (gestureEvent->deltaPos().y > 0)
+    } else if (gestureEvent->deltaPos().y > 0) {
         shiftSlice(-1);
+    }
 }
 
 }  // namespace inviwo

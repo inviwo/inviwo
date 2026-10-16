@@ -142,8 +142,9 @@ fs::path getWorkingDirectory() {
     return fs::path{buff};
 #else
     std::array<char, FILENAME_MAX> workingDir;
-    if (!getcwd(workingDir.data(), workingDir.size()))
+    if (!getcwd(workingDir.data(), workingDir.size())) {
         throw Exception("Error querying current directory");
+    }
     return {workingDir.data()};
 #endif
 }
