@@ -76,6 +76,7 @@ void checkDataFormat(const DataFormatBase* format, const Vector<Dim, size_t>& di
     const auto expectedComponents = format->getComponents();
 
     std::vector<size_t> expectedDimensions;
+    expectedDimensions.reserve(Dim);
     for (int i = 0; i < Dim; i++) {
         expectedDimensions.push_back(util::glmcomp(dim, i));
     }

@@ -107,6 +107,7 @@ bool ModuleManager::isRuntimeModuleReloadingEnabled() {
 void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo,
                                     const std::function<void(std::string_view)>& progressCallback) {
     std::vector<ModuleContainer> inviwoModules;
+    inviwoModules.reserve(mfo.size());
     for (auto& obj : mfo) {
         inviwoModules.emplace_back(std::move(obj));
     }
