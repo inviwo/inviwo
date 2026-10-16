@@ -143,7 +143,7 @@ IntegralLineVectorToMesh::ColorByProperty* IntegralLineVectorToMesh::ColorByProp
     return new ColorByProperty(*this);
 }
 
-IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() {}
+IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() = default;
 
 void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);

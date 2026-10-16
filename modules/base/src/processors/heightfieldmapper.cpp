@@ -118,7 +118,7 @@ HeightFieldMapper::HeightFieldMapper()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-HeightFieldMapper::~HeightFieldMapper() {}
+HeightFieldMapper::~HeightFieldMapper() = default;
 
 void HeightFieldMapper::process() {
     if (!inport_.isReady()) return;

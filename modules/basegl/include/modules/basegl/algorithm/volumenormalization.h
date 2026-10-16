@@ -58,7 +58,7 @@ public:
     }
     VolumeNormalization();
 
-    virtual ~VolumeNormalization() {}
+    virtual ~VolumeNormalization() = default;
 
     /**
      * Performs the normalization on the GPU.

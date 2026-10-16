@@ -55,6 +55,6 @@ const ProcessorInfo& ImageInvert::getProcessorInfo() const { return processorInf
 
 ImageInvert::ImageInvert() : ImageGLProcessor("img_invert.frag") {}
 
-ImageInvert::~ImageInvert() {}
+ImageInvert::~ImageInvert() = default;
 
 }  // namespace inviwo

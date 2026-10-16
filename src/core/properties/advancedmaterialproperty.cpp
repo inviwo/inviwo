@@ -85,7 +85,7 @@ AdvancedMaterialProperty* AdvancedMaterialProperty::clone() const {
     return new AdvancedMaterialProperty(*this);
 }
 
-AdvancedMaterialProperty::~AdvancedMaterialProperty() {}
+AdvancedMaterialProperty::~AdvancedMaterialProperty() = default;
 
 vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
     const ShadingFunctionKind shadingType = getPhaseFunctionEnum();

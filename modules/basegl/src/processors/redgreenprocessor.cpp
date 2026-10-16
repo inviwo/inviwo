@@ -58,7 +58,7 @@ RedGreenProcessor::RedGreenProcessor()
     addPort(outportGreen_);
 }
 
-RedGreenProcessor::~RedGreenProcessor() {}
+RedGreenProcessor::~RedGreenProcessor() = default;
 
 void RedGreenProcessor::process() {
     utilgl::activateTarget(outportRed_);

@@ -49,7 +49,7 @@ PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
 
 PathLineProperties* PathLineProperties::clone() const { return new PathLineProperties(*this); }
 
-PathLineProperties::~PathLineProperties() {}
+PathLineProperties::~PathLineProperties() = default;
 
 void PathLineProperties::setUpProperties() { addProperty(startT_); }
 

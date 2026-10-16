@@ -33,7 +33,7 @@
 #include <inviwo/core/ports/outport.h>
 
 namespace inviwo {
-VersionConverter::VersionConverter() {}
+VersionConverter::VersionConverter() = default;
 
 NodeVersionConverter::NodeVersionConverter(std::function<bool(TxElement*)> fun)
     : VersionConverter(), fun_(fun) {}

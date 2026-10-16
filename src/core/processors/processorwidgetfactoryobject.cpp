@@ -35,6 +35,6 @@ ProcessorWidgetFactoryObject::ProcessorWidgetFactoryObject(
     std::string_view processorClassIdentifier)
     : classIdentifier_(processorClassIdentifier) {}
 
-ProcessorWidgetFactoryObject::~ProcessorWidgetFactoryObject() {}
+ProcessorWidgetFactoryObject::~ProcessorWidgetFactoryObject() = default;
 
 }  // namespace inviwo

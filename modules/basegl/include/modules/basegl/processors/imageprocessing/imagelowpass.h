@@ -49,7 +49,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     ImageLowPass();
-    virtual ~ImageLowPass() {}
+    virtual ~ImageLowPass() = default;
 
 protected:
     virtual void process() override;

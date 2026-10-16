@@ -37,7 +37,7 @@ namespace animation {
 
 Interpolation::Interpolation(InviwoApplication* app) : app_(app) {}
 
-Interpolation::Interpolation(const Interpolation& rhs) : PropertyOwner(rhs), app_(rhs.app_) {}
+Interpolation::Interpolation(const Interpolation& rhs) = default;
 
 InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
 

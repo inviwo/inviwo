@@ -97,7 +97,7 @@ IntegralLineTracerProcessor<Tracer>::IntegralLineTracerProcessor()
 }
 
 template <typename Tracer>
-IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() {}
+IntegralLineTracerProcessor<Tracer>::~IntegralLineTracerProcessor() = default;
 
 template <typename Tracer>
 void IntegralLineTracerProcessor<Tracer>::process() {

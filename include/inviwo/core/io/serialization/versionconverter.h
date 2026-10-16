@@ -73,7 +73,7 @@ public:
     template <typename T>
     TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     explicit TraversingVersionConverter(std::function<bool(TxElement*)> fun);
-    virtual ~TraversingVersionConverter() {}
+    virtual ~TraversingVersionConverter() = default;
 
     /**
      * Traverse all child nodes starting at @p root. The function provided in the constructor will

@@ -121,7 +121,7 @@ ImageMixer::ImageMixer()
     blendingMode_.onChange([&]() { weight_.setVisible(blendingMode_.get() == BlendModes::Mix); });
 }
 
-ImageMixer::~ImageMixer() {}
+ImageMixer::~ImageMixer() = default;
 
 void ImageMixer::process() {
     if (inport0_.isChanged() || inport1_.isChanged()) {

@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-DataVisualizerManager::DataVisualizerManager() {}
+DataVisualizerManager::DataVisualizerManager() = default;
 
 void DataVisualizerManager::registerObject(DataVisualizer* visualizer) {
     visualizers_.push_back(visualizer);

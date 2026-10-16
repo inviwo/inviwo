@@ -40,7 +40,7 @@ namespace inviwo {
 IntegralLineSet::IntegralLineSet(mat4 modelMatrix, mat4 worldMatrix)
     : lines_(), modelMatrix_(modelMatrix), worldMatrix_(worldMatrix) {}
 
-IntegralLineSet::~IntegralLineSet() {}
+IntegralLineSet::~IntegralLineSet() = default;
 
 mat4 IntegralLineSet::getModelMatrix() const { return modelMatrix_; }
 mat4 IntegralLineSet::getWorldMatrix() const { return worldMatrix_; }
