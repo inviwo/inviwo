@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <math.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -226,7 +227,7 @@ void StreamRibbonsDeprecated::process() {
                 const vec3 p0 = vec3(*position) - vort;
                 const vec3 p1 = vec3(*position) + vort;
 
-                float d;
+                float d = NAN;
                 switch (coloringMethod_.get()) {
                     case ColoringMethod::Vorticity:
                         d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),

@@ -30,6 +30,7 @@
 #include <inviwo/core/util/volumesequenceutils.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <math.h>
 
 namespace inviwo::util {
 
@@ -50,7 +51,7 @@ std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sort
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
-    double start, end;
+    double start = NAN, end = NAN;
     start = getTimestamp(seq.front());
     if (sorted) {
         end = getTimestamp(seq.back());

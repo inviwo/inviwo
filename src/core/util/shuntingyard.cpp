@@ -60,6 +60,7 @@ THE SOFTWARE.
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <math.h>
 
 #include <cstdlib>
 #include <stdexcept>
@@ -74,7 +75,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
     bool lastTokenWasOp = true;
 
     std::stringstream expr(expression);
-    char c;
+    char c = 0;
 
     // In one pass, ignore whitespace and parse the expression into RPN
     // using Dijkstra's Shunting-yard algorithm.
@@ -82,7 +83,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
     while (!expr.eof()) {
         if (isdigit(expr.peek())) {
             // If the token is a number, add it to the output queue.
-            double digit;
+            double digit = NAN;
             expr >> digit;
             rpnQueue.push(std::make_unique<Token<double>>(digit));
             lastTokenWasOp = false;

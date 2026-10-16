@@ -52,6 +52,7 @@ OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------*/
 
+#include <math.h>
 #include <modules/postprocessing/processors/ssao.h>
 
 #include <inviwo/core/datastructures/camera/camera.h>
@@ -414,7 +415,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     hbaoUboData_.projOrtho = useOrtho;
     hbaoUboData_.projInfo = useOrtho ? projInfoOrtho : projInfoPerspective;
 
-    float projScale;
+    float projScale = NAN;
     if (useOrtho) {
         projScale = float(height) / (projInfoOrtho[1]);
     } else {

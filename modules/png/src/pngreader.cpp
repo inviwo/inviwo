@@ -113,7 +113,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
     auto bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
     SwizzleMask swizzleMask;
-    size_t channels;
+    size_t channels = 0;
     switch (color_type) {
         case PNG_COLOR_TYPE_GRAY_ALPHA:
             swizzleMask = swizzlemasks::luminanceAlpha;

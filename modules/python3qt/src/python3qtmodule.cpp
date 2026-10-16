@@ -82,7 +82,7 @@ namespace inviwo {
 namespace {
 pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
 
-    bool ok;
+    bool ok = false;
     const QString text = QInputDialog::getText(
         nullptr, title.c_str(), message.c_str(), QLineEdit::Normal, defaultResponse.c_str(), &ok,
         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);

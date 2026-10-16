@@ -299,7 +299,7 @@ void Shader::linkShader(bool notifyRebuild) {
 }
 
 bool Shader::checkLinkStatus() const {
-    GLint res;
+    GLint res = 0;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
     return res != 0;
 }
