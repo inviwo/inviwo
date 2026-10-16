@@ -237,7 +237,7 @@ void VolumeSequenceToDataFrame::process() {
 
         util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t& pos) {
             const auto idx = indexMapper(pos);
-            if (filteredIDs_.find(idx) == filteredIDs_.end()) return;
+            if (!filteredIDs_.contains(idx)) return;
             const auto v = volumeRAM->getAsDVec4(pos);
             for (size_t c = 0; c < numCh; c++) {
                 (*channelBuffer_[c])[idx] = float(v[c]);

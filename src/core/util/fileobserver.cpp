@@ -112,7 +112,7 @@ void FileObserver::stopAllObservation() {
 
 bool FileObserver::isObserved(const std::filesystem::path& fileName) const {
     const std::scoped_lock lock{mutex_};
-    return observedFiles_.find(fileName) != observedFiles_.end();
+    return observedFiles_.contains(fileName);
 }
 
 }  // namespace inviwo

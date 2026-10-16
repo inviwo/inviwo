@@ -123,7 +123,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         }
 
         const auto pickedId = it->second;
-        if (touchStates_.find(pickedId) == touchStates_.end()) {
+        if (!touchStates_.contains(pickedId)) {
             touchStates_[pickedId] = PickingControllerTouchState{PickingManager::getPtr()};
         }
         pickingIdToTouchPoints[it->second].push_back(point);
