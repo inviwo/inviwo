@@ -128,7 +128,7 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
-    operator bool();
+    operator bool() const;
 
     ~GlBoolState();
 
@@ -154,7 +154,7 @@ struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
 
     ~CullFaceState();
 
-    GLint getMode();
+    GLint getMode() const;
 
 protected:
     GLint mode_;

@@ -228,7 +228,7 @@ CullFaceState::~CullFaceState() {
     }
 }
 
-GLint CullFaceState::getMode() { return mode_; }
+GLint CullFaceState::getMode() const { return mode_; }
 
 GlBoolState& GlBoolState::operator=(GlBoolState&& that) {
     if (this != &that) {
@@ -256,7 +256,7 @@ GlBoolState::GlBoolState(GLenum target, bool state) : target_(target), oldState_
     }
 }
 
-GlBoolState::operator bool() { return state_; }
+GlBoolState::operator bool() const { return state_; }
 
 GlBoolState::~GlBoolState() {
     if (oldState_ != state_) {

@@ -71,7 +71,7 @@ public:
 
     void saveImageLayer();
     void saveImageLayer(const std::filesystem::path& filePath,
-                        const FileExtension& extension = FileExtension());
+                        const FileExtension& extension = FileExtension()) const;
     const Layer* getVisibleLayer() const;
 
     virtual std::shared_ptr<const Image> getImage() const override;

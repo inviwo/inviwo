@@ -321,7 +321,7 @@ void CanvasProcessor::saveImageLayer() {
 }
 
 void CanvasProcessor::saveImageLayer(const std::filesystem::path& snapshotPath,
-                                     const FileExtension& extension) {
+                                     const FileExtension& extension) const {
     if (auto layer = getVisibleLayer()) {
         util::saveLayer(*layer, snapshotPath, extension);
     } else {
