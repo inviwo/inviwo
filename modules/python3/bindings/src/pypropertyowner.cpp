@@ -93,18 +93,16 @@ void exposePropertyOwner(pybind11::module& m) {
 
                 const auto skey = py::str(key).cast<std::string>();
                 const auto owner = po.cast<PropertyOwner*>();
-                if (auto prop = owner->getPropertyByIdentifier(skey)) {
-                    if (isProperty()) {
-                        throw py::attribute_error{fmt::format(
-                            "The member '{0}' is a registered Property of type '{3}',\n"
-                            "in PropertyOwner '{1}' of type '{2}'.\n"
-                            "To rebind the member unregister (remove) the property from "
-                            "'{1}' first.\nIf you were trying to set the 'value' of the '{0}' "
-                            "property, you should assign to '{0}.value' instead.\nSee help({0}) "
-                            "for more details",
-                            skey, path(owner), type(po).attr("__name__").cast<std::string>(),
-                            prop->getClassIdentifier())};
-                    }
+                if (auto prop = owner->getPropertyByIdentifier(skey); prop && (isProperty())) {
+                    throw py::attribute_error{fmt::format(
+                        "The member '{0}' is a registered Property of type '{3}',\n"
+                        "in PropertyOwner '{1}' of type '{2}'.\n"
+                        "To rebind the member unregister (remove) the property from "
+                        "'{1}' first.\nIf you were trying to set the 'value' of the '{0}' "
+                        "property, you should assign to '{0}.value' instead.\nSee help({0}) "
+                        "for more details",
+                        skey, path(owner), type(po).attr("__name__").cast<std::string>(),
+                        prop->getClassIdentifier())};
                 }
 
                 const auto object = builtins.attr("object");

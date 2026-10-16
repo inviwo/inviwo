@@ -518,13 +518,12 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     std::vector<std::pair<std::string, QImage>> images;
 
     network->forEachProcessor([&](Processor* p) {
-        if (const auto* exporter = dynamic_cast<const ImageExporter*>(p)) {
-            if (p->isSink() && p->isReady()) {
-                if (const auto img = exporter->getImage()) {
-                    if (const auto* layer = img->getColorLayer()) {
-                        auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
-                        images.emplace_back(p->getDisplayName(), qimg);
-                    }
+        if (const auto* exporter = dynamic_cast<const ImageExporter*>(p);
+            exporter && (p->isSink() && p->isReady())) {
+            if (const auto img = exporter->getImage()) {
+                if (const auto* layer = img->getColorLayer()) {
+                    auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
+                    images.emplace_back(p->getDisplayName(), qimg);
                 }
             }
         }

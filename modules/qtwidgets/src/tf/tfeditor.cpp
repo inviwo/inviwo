@@ -1159,10 +1159,8 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.back()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.back()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.back()->setSelected(true);
             }
 
             break;
@@ -1175,11 +1173,10 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.front()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.front()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.front()->setSelected(true);
             }
+
             break;
         case Qt::Key_Up:
         case 'I':

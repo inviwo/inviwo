@@ -124,10 +124,8 @@ QModelIndex ProcessorListModel::parent(const QModelIndex& index) const {
     if (!index.isValid()) return QModelIndex{};
 
     if (const auto* node = indexToNode(index)) {
-        if (const auto* parent = node->parent) {
-            if (parent != root_.get()) {
-                return createIndex(parent->row, 0, parent);
-            }
+        if (const auto* parent = node->parent; parent && (parent != root_.get())) {
+            return createIndex(parent->row, 0, parent);
         }
     }
     return QModelIndex{};
@@ -281,20 +279,19 @@ void ProcessorListModel::build() {
 bool ProcessorListModel::updateItem(std::string_view classIdentifier,
                                     const std::function<bool(Item&)>& updater) {
     const auto it = classIdentifierToItem_.find(classIdentifier);
-    if (it != classIdentifierToItem_.end()) {
-        if (updater(*it->second)) {
-            if (grouping_ == Grouping::LastUsed || grouping_ == Grouping::MostUsed) {
-                beginResetModel();
-                build();
-                endResetModel();
-            } else {
-                const auto* node = itemToNode_[it->second];
-                const auto index = createIndex(node->row, 0, node);
-                dataChanged(index, index);
-                return true;
-            }
+    if ((it != classIdentifierToItem_.end()) && (updater(*it->second))) {
+        if (grouping_ == Grouping::LastUsed || grouping_ == Grouping::MostUsed) {
+            beginResetModel();
+            build();
+            endResetModel();
+        } else {
+            const auto* node = itemToNode_[it->second];
+            const auto index = createIndex(node->row, 0, node);
+            dataChanged(index, index);
+            return true;
         }
     }
+
     return false;
 }
 

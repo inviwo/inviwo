@@ -87,14 +87,13 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
     const bool performMapping = (propertyPtr_->get().getMode() == PrimitiveSetMode::Relative) &&
                                 (property_->getSemantics().getString() == "Text");
 
-    if (const auto* map = propertyPtr_->data().getDataMap()) {
-        if (performMapping) {
-            const dvec2 range = map->valueRange;
-            std::ranges::for_each(
-                primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
-                &TFPrimitiveData::pos);
-        }
+    if (const auto* map = propertyPtr_->data().getDataMap(); map && (performMapping)) {
+        const dvec2 range = map->valueRange;
+        std::ranges::for_each(
+            primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
+            &TFPrimitiveData::pos);
     }
+
     {
         const NetworkLock lock(property_);
         propertyPtr_->get().clear();
