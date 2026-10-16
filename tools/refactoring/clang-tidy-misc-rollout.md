@@ -2,13 +2,14 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 64 checks done so
+below for current progress and the exact resume point). 65 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
 + `modernize-use-equals-default` + `modernize-use-nullptr`
-+ `performance-faster-string-find` + `modernize-unary-static-assert`),
-~36 remaining (plus 5 permanently-skipped false positives, see below).
++ `performance-faster-string-find` + `modernize-unary-static-assert`
++ `modernize-return-braced-init-list`),
+~35 remaining (plus 5 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -154,8 +155,8 @@ plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-const-return-type`, `modernize-use-integer-sign-comparison`,
 `performance-inefficient-vector-operation`, `readability-qualified-auto`,
 `readability-make-member-function-const`, `modernize-use-equals-default`,
-`modernize-use-nullptr`, `performance-faster-string-find`, and
-`modernize-unary-static-assert`.
+`modernize-use-nullptr`, `performance-faster-string-find`,
+`modernize-unary-static-assert`, and `modernize-return-braced-init-list`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -393,6 +394,24 @@ edit was broken or dangerous and had to be corrected manually)
    from a method should prompt a repo-wide grep for
    `static_cast<.*(ClassName::\*)` casts referencing that method before
    committing.
+10. **`modernize-return-braced-init-list` turned implicit narrowing
+    conversions into hard compile errors.** Braced list-initialization
+    (`return {args};`) performs the standard's narrowing-conversion check,
+    but the direct-initialization it replaces (`return Type(args);`) does
+    not — so any call whose arguments only *coincidentally* matched the
+    target type via an implicit narrowing conversion breaks. Two cases:
+    `modules/opengl/src/shader/shaderutils.cpp`'s `getShaderInfoLog()`/
+    `getProgramInfoLog()` built a `std::string` from a `(const char*,
+    GLsizei)` pair (signed `int` → unsigned `size_type`), and
+    `modules/qtwidgets/include/modules/qtwidgets/inviwoqtutils.h`'s
+    `toQColor(const uvec3&)`/`toQColor(const uvec4&)` passed glm's
+    unsigned vector components to `QColor`'s `int` parameters. Both failed
+    with "non-constant-expression cannot be narrowed" — a hard compile
+    error, not a silent bug, but worth watching for in any future check
+    that converts direct-initialization to brace-/list-initialization:
+    grep the touched call sites for signed/unsigned argument mismatches
+    against the target type's parameters before trusting the build to
+    catch every instance (it does, but only after wasting a build cycle).
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
