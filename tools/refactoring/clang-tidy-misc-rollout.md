@@ -2,15 +2,16 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 68 checks done so
+below for current progress and the exact resume point). 69 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
 + `modernize-use-equals-default` + `modernize-use-nullptr`
 + `performance-faster-string-find` + `modernize-unary-static-assert`
 + `modernize-return-braced-init-list` + `readability-inconsistent-ifelse-braces`
-+ `modernize-redundant-void-arg` + `readability-avoid-const-params-in-decls`),
-~32 remaining (plus 5 permanently-skipped false positives, see below).
++ `modernize-redundant-void-arg` + `readability-avoid-const-params-in-decls`
++ `readability-convert-member-functions-to-static`),
+~31 remaining (plus 5 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -159,7 +160,8 @@ plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `modernize-use-nullptr`, `performance-faster-string-find`,
 `modernize-unary-static-assert`, `modernize-return-braced-init-list`,
 `readability-inconsistent-ifelse-braces`, `modernize-redundant-void-arg`,
-and `readability-avoid-const-params-in-decls`.
+`readability-avoid-const-params-in-decls`, and
+`readability-convert-member-functions-to-static`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -415,6 +417,31 @@ edit was broken or dangerous and had to be corrected manually)
     grep the touched call sites for signed/unsigned argument mismatches
     against the target type's parameters before trusting the build to
     catch every instance (it does, but only after wasting a build cycle).
+11. **`readability-convert-member-functions-to-static` broke
+    pointer-to-member-function dispatch tables.**
+    `include/inviwo/core/network/processornetworkconverter.h` (14 methods)
+    and `modules/vectorfieldvisualization/.../vectorfieldvisualizationmodule.h`
+    (2 methods in a nested `Converter` class) each have a generic
+    `traverseNodes(node, update)` helper taking an
+    `updateType = void (DerivedConverter::*)(TxElement*)` alias, called as
+    `traverseNodes(node, &DerivedConverter::updateX)` for many different
+    `updateX` methods. The check correctly observed these methods never
+    use `*this` and added `static` — but a static member function's
+    address is a *plain* function pointer, not a pointer-to-member, so
+    every one of those `&DerivedConverter::updateX` call sites stopped
+    matching the `updateType` parameter with a hard compile error ("cannot
+    initialize a parameter of type 'updateType' ... with an rvalue of type
+    'void (*)(TxElement *)'"). Reverted both files in full. Verified
+    `tools/meta`'s `ModuleConf`/`InviwoConf`/`QtEditorConf` hierarchy
+    (also touched by this check, and previously flagged for a *different*
+    reason — a `std::visit` uniform-return-type issue — by
+    `modernize-use-string-view` earlier in this rollout) was safe this
+    time: those methods are only ever called through a generic lambda
+    inside `std::visit`, never through an explicit pointer-to-member, so
+    static-vs-instance makes no difference there. Any future check that
+    adds/removes `static` from a method should prompt a repo-wide grep for
+    `&ClassName::methodName` referencing it, same as the existing advice
+    for `const`/`noexcept` changes and pointer-to-member-function casts.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
