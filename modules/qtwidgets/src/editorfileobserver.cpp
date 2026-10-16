@@ -79,10 +79,10 @@ void EditorFileObserver::setFileName(const std::filesystem::path& filename) {
 const std::filesystem::path& EditorFileObserver::getFileName() const { return filename_; }
 
 void EditorFileObserver::setModifiedCallback(std::function<void(bool)> cb) {
-    modifiedCallback_ = cb;
+    modifiedCallback_ = std::move(cb);
 }
 void EditorFileObserver::setReloadFileCallback(std::function<void()> cb) {
-    reloadFileCallback_ = cb;
+    reloadFileCallback_ = std::move(cb);
 }
 
 void EditorFileObserver::fileChanged(const std::filesystem::path&) {
