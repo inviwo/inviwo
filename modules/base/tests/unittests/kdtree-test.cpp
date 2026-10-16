@@ -44,8 +44,9 @@ TEST(KDTreeTests, randomPointsTest) {
     K3DTree<int, float> tree;
     const int size = 1000;
     for (int i = 0; i < size; i++) {
-        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
-                          rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX));
         tree.insert(p, i);
     }
 
@@ -60,8 +61,9 @@ TEST(KDTreeTests, minMaxTest) {
     K3DTree<int, float> tree;
     const int size = 1000;
     for (int i = 0; i < size; i++) {
-        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
-                          rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX));
         tree.insert(p, i);
     }
 
@@ -118,8 +120,9 @@ TEST(KDTreeTests, findNClosests) {
     K3DTree<int, float> tree;
     const int size = 1000;
     for (int i = 0; i < size; i++) {
-        const glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX),
-                          rand() / float(RAND_MAX));
+        const glm::vec3 p(rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX),
+                          rand() / static_cast<float>(RAND_MAX));
         tree.insert(p, i);
     }
 

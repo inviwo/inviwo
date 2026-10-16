@@ -65,7 +65,7 @@ size_t BufferObjectArray::maxSize() {
     static const size_t size = []() {
         GLint glsize = 0;
         // usually about 16 should be more than BufferType::NumberOfBufferTypes.
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &glsize);
         return static_cast<size_t>(glsize);
     }();
 

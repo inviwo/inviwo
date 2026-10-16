@@ -444,8 +444,8 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
     } else {
         // Warp peripheral views to a circle segment of simulated views to fill visibility holes
         // left after warping the central view.
-        const double segmentWidth =
-            double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
+        const double segmentWidth = static_cast<double>(simViewCountApprox_.get()) /
+                                    static_cast<double>(viewCountApprox_.get() - 1);
         const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
         const int stop = static_cast<int>(evalCount_ * segmentWidth);
         addToLightFieldShader_.setUniform("segmentStart", start);
@@ -484,8 +484,8 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
             } else {
                 // Warp peripheral views to a circle segment of simulated views to fill
                 // visibility holes left after warping the central view.
-                const double segmentWidth =
-                    double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
+                const double segmentWidth = static_cast<double>(simViewCountApprox_.get()) /
+                                            static_cast<double>(viewCountApprox_.get() - 1);
                 const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
                 const int stop = static_cast<int>(evalCount_ * segmentWidth);
                 for (int i = start; i < stop; i++) {
@@ -501,8 +501,8 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
                         VolumeRAM* lightField, VolumeRAM* lightFieldDepth, double fovy,
                         double focusDepth) {
     const double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
-    const double angle =
-        double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
+    const double angle = static_cast<double>(viewIndex) /
+                         static_cast<double>(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
     const vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
 
     const vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);

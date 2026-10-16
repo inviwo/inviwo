@@ -196,8 +196,9 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
 
     std::clock_t start_convert = std::clock();
     if (logging) {
-        Assimp::DefaultLogger::get()->debug(fmt::format(
-            "time to load: {}", double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
+        Assimp::DefaultLogger::get()->debug(
+            fmt::format("time to load: {}",
+                        static_cast<double>((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
     }
 
     if (!scene) {
@@ -407,10 +408,11 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     std::clock_t now = std::clock();
     if (logging) {
         Assimp::DefaultLogger::get()->debug(
-            "time to convert: " + std::to_string(double((now - start_convert) / CLOCKS_PER_SEC)));
+            "time to convert: " +
+            std::to_string(static_cast<double>((now - start_convert) / CLOCKS_PER_SEC)));
         Assimp::DefaultLogger::get()->debug(
             "overall time to import: " +
-            std::to_string(double((now - start_readmetadata) / CLOCKS_PER_SEC)));
+            std::to_string(static_cast<double>((now - start_readmetadata) / CLOCKS_PER_SEC)));
 
         Assimp::DefaultLogger::kill();
     }

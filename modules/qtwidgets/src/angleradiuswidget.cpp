@@ -88,7 +88,7 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     QStylePainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(width() / 2, height() / 2);
-    painter.scale(side / (qreal)100., side / (qreal)100.);
+    painter.scale(side / static_cast<qreal>(100.), side / static_cast<qreal>(100.));
 
     painter.setPen(coordinateSystemPen);
     // Draw axes and bounds circle(s)
@@ -251,8 +251,10 @@ void AngleRadiusWidget::setAngleRadiusAtPosition(const QPoint& pos) {
     const QPoint pixelSpacePos = pos - center;
     // Scale point from pixel coordinates to lie in [-maxRadius maxRadius]
     // Flip y-coordinate to get it facing upward instead of downward
-    const double x = getMaxRadius() * pixelSpacePos.x() / ((double)getMaxPixelSpaceRadius());
-    const double y = -getMaxRadius() * pixelSpacePos.y() / ((double)getMaxPixelSpaceRadius());
+    const double x =
+        getMaxRadius() * pixelSpacePos.x() / static_cast<double>(getMaxPixelSpaceRadius());
+    const double y =
+        -getMaxRadius() * pixelSpacePos.y() / static_cast<double>(getMaxPixelSpaceRadius());
 
     const double radius = std::sqrt(x * x + y * y);
     double theta = std::atan2(y, x);

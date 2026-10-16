@@ -240,7 +240,7 @@ void VolumeSequenceToDataFrame::process() {
             if (!filteredIDs_.contains(idx)) return;
             const auto v = volumeRAM->getAsDVec4(pos);
             for (size_t c = 0; c < numCh; c++) {
-                (*channelBuffer_[c])[idx] = float(v[c]);
+                (*channelBuffer_[c])[idx] = static_cast<float>(v[c]);
             }
         });
     }
