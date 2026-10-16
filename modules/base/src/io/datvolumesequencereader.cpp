@@ -473,7 +473,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         resolve(state);
         auto volume = createVolume(state);
 
-        const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+        const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
 
         for (size_t t = 0; t < state.sequences; ++t) {
             if (t == 0) {
@@ -544,7 +544,7 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
         createDiskRepWithLoader(state, filePath, filePath.parent_path() / state.rawFile, 0);
     volume->addRepresentation(diskRepr);
 
-    const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+    const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
     if (!state.dataRange) {  // Use min/max value in data as data range if none is given
         updateDataRange(*volume, state);
         if (bytes > 128 * 128 * 128) {

@@ -232,7 +232,7 @@ bool CodeEdit::event(QEvent* event) {
     // need to handle tab key events here, since QWidget moves the focus with Shift + Tab
     if (event->type() == QEvent::KeyPress) {
         auto* keyEvent = dynamic_cast<QKeyEvent*>(event);
-        if (!(keyEvent->modifiers().testFlags(Qt::ControlModifier | Qt::AltModifier))) {
+        if (!keyEvent->modifiers().testFlags(Qt::ControlModifier | Qt::AltModifier)) {
             if (keyEvent->key() == Qt::Key_Backtab ||
                 (keyEvent->key() == Qt::Key_Tab &&
                  keyEvent->modifiers().testFlag(Qt::ShiftModifier))) {

@@ -1030,7 +1030,7 @@ const T& OptionProperty<T>::operator*() const {
 
 template <typename T>
 const T* OptionProperty<T>::operator->() const {
-    return &(opt(selectedIndex_).value_);
+    return &opt(selectedIndex_).value_;
 }
 
 template <typename T>

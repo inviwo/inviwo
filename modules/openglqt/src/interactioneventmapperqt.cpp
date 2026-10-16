@@ -111,12 +111,12 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 
     const auto deviceIt = devices_.find(touch->device());
     if (deviceIt != devices_.end()) {
-        return &(deviceIt->second);
+        return &deviceIt->second;
     } else {
         // Insert device new device into map
         auto [it, inserted] = devices_.try_emplace(touch->device(), mapDeviceType(touch),
                                                    utilqt::fromQString(touch->device()->name()));
-        return &(it->second);
+        return &it->second;
     }
 }
 

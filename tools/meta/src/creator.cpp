@@ -292,7 +292,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
             fs::remove(item.path());
             oldFolders.insert(relpath.parent_path());
 
-            im.addFileToGroup(*(file.source->cmakeGroup), im.srcPath() / relpath);
+            im.addFileToGroup(*file.source->cmakeGroup, im.srcPath() / relpath);
 
             const auto oldinc = relpath.filename().replace_extension(".h").generic_string();
             const auto newinc = im.getHeaderInclude(replace_extension(dst, ".h"));
@@ -310,7 +310,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
             fs::remove(item.path());
             oldFolders.insert(relpath.parent_path());
 
-            im.addFileToGroup(*(file.header->cmakeGroup), im.incPath() / relpath);
+            im.addFileToGroup(*file.header->cmakeGroup, im.incPath() / relpath);
         }
     }
 

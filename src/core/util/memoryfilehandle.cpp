@@ -100,7 +100,7 @@ bool MemoryFileHandle::checkForOverflow() const {
     if (pos < buffer_.size()) {
         int i = 1;
         while ((i + pos < buffer_.size()) && (i <= 8) && !overflowDetected) {
-            overflowDetected = ((buffer_[pos + i]) != magicCode_);
+            overflowDetected = (buffer_[pos + i] != magicCode_);
             ++i;
         }
     }

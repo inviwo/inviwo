@@ -127,7 +127,7 @@ static inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, 
 
     permLightMat = permMat;
     // Permutation of z
-    const float closestAxisZ = (faceNormals_[permFaceIndex])[faceAxis_[permFaceIndex]];
+    const float closestAxisZ = faceNormals_[permFaceIndex][faceAxis_[permFaceIndex]];
     permMat[2][faceAxis_[permFaceIndex]] = closestAxisZ;
     permLightMat[2][faceAxis_[permFaceIndex]] = glm::abs<float>(closestAxisZ);
 
@@ -409,8 +409,8 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
 }
 
 void LightVolumeGL::volumeSizeOptionChanged() {
-    if ((inport_.hasData()) && ((inport_.getData()->getDimensions() /
-                                 size3_t(volumeSizeOption_.get())) != volumeDimOut_)) {
+    if (inport_.hasData() && ((inport_.getData()->getDimensions() /
+                               size3_t(volumeSizeOption_.get())) != volumeDimOut_)) {
         internalVolumesInvalid_ = true;
     }
 }

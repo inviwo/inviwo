@@ -52,7 +52,7 @@ Outport::Outport(std::string_view identifier, Document help)
 
 Outport::~Outport() = default;
 
-bool Outport::isConnected() const { return !(connectedInports_.empty()); }
+bool Outport::isConnected() const { return !connectedInports_.empty(); }
 
 bool Outport::isReady() const { return isReady_; }
 

@@ -227,7 +227,7 @@ struct IndirectIterator {
     constexpr reference operator*() const { return **iterator_; }
 
     constexpr pointer operator->() const {
-        return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->()));
+        return detail_indirect::asPointer<is_const>::get(*iterator_.operator->());
     }
 
     constexpr const Iter& base() const& { return iterator_; }

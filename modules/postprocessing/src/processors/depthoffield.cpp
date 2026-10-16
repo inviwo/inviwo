@@ -251,7 +251,7 @@ void DepthOfField::process() {
         dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth]() {
             if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 if (auto* SkewedCamera =
-                        dynamic_cast<SkewedPerspectiveCamera*>(&(self->camera_.get()))) {
+                        dynamic_cast<SkewedPerspectiveCamera*>(&self->camera_.get())) {
                     self->moveCamera(SkewedCamera, maxEvalCount, focusDepth);
                 } else {
                     self->invalidate(InvalidationLevel::InvalidOutput);

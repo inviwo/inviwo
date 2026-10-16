@@ -398,15 +398,15 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     const float* P = &proj.matrix[0][0];
 
     const vec4 projInfoPerspective{
-        2.0f / (P[4 * 0 + 0]),                  // (x) * (R - L)/N
-        2.0f / (P[4 * 1 + 1]),                  // (y) * (T - B)/N
+        2.0f / P[4 * 0 + 0],                    // (x) * (R - L)/N
+        2.0f / P[4 * 1 + 1],                    // (y) * (T - B)/N
         -(1.0f - P[4 * 2 + 0]) / P[4 * 0 + 0],  // L/N
         -(1.0f + P[4 * 2 + 1]) / P[4 * 1 + 1],  // B/N
     };
 
     vec4 projInfoOrtho{
-        2.0f / (P[4 * 0 + 0]),                  // ((x) * R - L)
-        2.0f / (P[4 * 1 + 1]),                  // ((y) * T - B)
+        2.0f / P[4 * 0 + 0],                    // ((x) * R - L)
+        2.0f / P[4 * 1 + 1],                    // ((y) * T - B)
         -(1.0f + P[4 * 3 + 0]) / P[4 * 0 + 0],  // L
         -(1.0f - P[4 * 3 + 1]) / P[4 * 1 + 1],  // B
     };
@@ -417,7 +417,7 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
 
     float projScale = NAN;
     if (useOrtho) {
-        projScale = float(height) / (projInfoOrtho[1]);
+        projScale = float(height) / projInfoOrtho[1];
     } else {
         projScale = float(height) / (tanf(proj.fov * 0.5f) * 2.0f);
     }

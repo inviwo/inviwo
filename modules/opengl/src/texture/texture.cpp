@@ -170,7 +170,7 @@ Texture::Texture(const Texture& other)
     glGetTexParameterIuiv(other.target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
     glGetTexParameterIuiv(other.target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
     for (size_t i = 0; i < dims; ++i) {
-        glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        glGetTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
     }
 
     glBindTexture(target_, id_);
@@ -178,7 +178,7 @@ Texture::Texture(const Texture& other)
     glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
     glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
     for (size_t i = 0; i < dims; ++i) {
-        glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        glTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
     }
     glBindTexture(target_, 0);
 }
@@ -217,14 +217,14 @@ Texture& Texture::operator=(const Texture& rhs) {
         glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
         glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
         for (size_t i = 0; i < dims; ++i) {
-            glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+            glGetTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
         }
         glBindTexture(target_, id_);
         glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
         glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
         glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
         for (size_t i = 0; i < dims; ++i) {
-            glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+            glTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
         }
         glBindTexture(target_, 0);
     }

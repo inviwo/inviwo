@@ -197,7 +197,7 @@ float AdvancedMaterialProperty::HenyehGreensteinToSchlick(float g) {
 }
 
 float AdvancedMaterialProperty::roughnessToShininess(float m) {
-    return 2.f / (std::max(1e-4f, m * m)) - 2.f;
+    return 2.f / std::max(1e-4f, m * m) - 2.f;
 }
 
 float AdvancedMaterialProperty::WardParameterMapping(float x) { return std::max(x, 1e-4f); }

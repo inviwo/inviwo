@@ -132,7 +132,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     filteredIDs_.clear();
 
     auto volumeSequence = inport_.getVectorData();
-    auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
+    auto first = volumeSequence[0]->getRepresentation<VolumeRAM>();
 
     const auto dims = first->getDimensions();
     const size_t size = dims.x * dims.y * dims.z;

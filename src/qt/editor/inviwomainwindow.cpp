@@ -726,8 +726,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
                             if (qApp->keyboardModifiers() == Qt::ControlModifier) {
                                 appendWorkspace(utilqt::toPath(action->data().toString()));
                                 hideWelcomeScreen();
-                            } else if ((askToSaveWorkspaceChanges()) &&
-                                       (openWorkspace(utilqt::toPath(action->data().toString())))) {
+                            } else if (askToSaveWorkspaceChanges() &&
+                                       openWorkspace(utilqt::toPath(action->data().toString()))) {
                                 hideWelcomeScreen();
                             }
                         });
@@ -793,8 +793,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     if (action == ModifierAction::AppendWorkspace) {
                         appendWorkspace(path);
                         hideWelcomeScreen();
-                    } else if ((askToSaveWorkspaceChanges()) &&
-                               (openWorkspace(path, action != ModifierAction::OpenWithPath))) {
+                    } else if (askToSaveWorkspaceChanges() &&
+                               openWorkspace(path, action != ModifierAction::OpenWithPath)) {
                         // open examples as regular workspace with filename and full path if
                         // modifier key is pressed
                         hideWelcomeScreen();
@@ -844,7 +844,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
                         if (action == ModifierAction::AppendWorkspace) {
                             appendWorkspace(path);
                             hideWelcomeScreen();
-                        } else if ((askToSaveWorkspaceChanges()) && (openWorkspace(path))) {
+                        } else if (askToSaveWorkspaceChanges() && openWorkspace(path)) {
                             hideWelcomeScreen();
                         }
                     });
@@ -1000,7 +1000,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         networkToolBar->addAction(compAction);
         compAction->setShortcut(Qt::CTRL | Qt::Key_G);
         connect(compAction, &QAction::triggered, this, [this]() {
-            util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
+            util::replaceSelectionWithCompositeProcessor(*app_->getProcessorNetwork());
         });
 
         auto* expandAction = networkMenuItem->addAction(

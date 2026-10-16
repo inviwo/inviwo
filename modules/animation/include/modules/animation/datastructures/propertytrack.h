@@ -416,7 +416,7 @@ AnimationTimeState PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Secon
 
     if (it == this->begin()) {
         if (from > it->getFirstTime()) {  // case 1
-            setPropertyFromKeyframe(property_, &(it->getFirst()));
+            setPropertyFromKeyframe(property_, &it->getFirst());
         }
     } else {  // case 2
         auto& seq1 = *std::prev(it);
@@ -426,10 +426,10 @@ AnimationTimeState PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Secon
         } else {  // case 2b
             if (from < seq1.getLastTime()) {
                 // We came from before the previous key
-                setPropertyFromKeyframe(property_, &(seq1.getLast()));
+                setPropertyFromKeyframe(property_, &seq1.getLast());
             } else if (it != this->end() && from > it->getFirstTime()) {
                 // We came form after the next key
-                setPropertyFromKeyframe(property_, &(it->getFirst()));
+                setPropertyFromKeyframe(property_, &it->getFirst());
             }
             // we moved in an unmarked region, do nothing.
         }
