@@ -62,8 +62,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    float rand(const float min, const float max) const;
-    vec3 randVec3(const float min = 0, const float max = 1) const;
+    float rand(float min, float max) const;
+    vec3 randVec3(float min = 0, float max = 1) const;
     vec3 randVec3(const vec3& min, const vec3& max) const;
     void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
     static vec3 getDelta(const Camera& camera, PickingEvent* p);

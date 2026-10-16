@@ -76,7 +76,7 @@ public:
      * @param normalize Boolean value indicating whether or not the selected channel should be
      * normalized.
      */
-    void setNormalizeChannel(const size_t channel, const bool normalize);
+    void setNormalizeChannel(size_t channel, bool normalize);
 
     /**
      * Sets the channels that are to be normalized. In practice, this method in-/ejects shader

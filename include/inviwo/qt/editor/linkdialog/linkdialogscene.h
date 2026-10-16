@@ -68,7 +68,7 @@ public:
     virtual ~LinkDialogGraphicsScene();
 
     template <typename T>
-    T* getItemAt(const QPointF pos, const Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
+    T* getItemAt(QPointF pos, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
                  Qt::SortOrder order = Qt::DescendingOrder) const;
 
     ProcessorNetwork* getNetwork() const;

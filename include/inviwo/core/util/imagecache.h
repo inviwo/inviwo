@@ -50,7 +50,7 @@ public:
     ImageCache& operator=(const ImageCache& that) = delete;
 
     void setMaster(std::shared_ptr<const Image> master);
-    std::shared_ptr<const Image> getImage(const size2_t dimensions) const;
+    std::shared_ptr<const Image> getImage(size2_t dimensions) const;
 
     /**
      *    Remove all cached images except those in dimensions
@@ -62,9 +62,9 @@ public:
     void update(std::vector<size2_t> dimensions);
     void setInvalid() const;
 
-    bool hasImage(const size2_t dimensions);
+    bool hasImage(size2_t dimensions);
     void addImage(std::shared_ptr<Image> image);
-    std::shared_ptr<Image> releaseImage(const size2_t dimensions);
+    std::shared_ptr<Image> releaseImage(size2_t dimensions);
     std::shared_ptr<Image> getUnusedImage(const std::vector<size2_t>& dimensions);
     size_t size() const;
 
