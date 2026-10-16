@@ -59,7 +59,7 @@ public:
     Frame& operator=(Frame&& that);
     ~Frame();
     explicit operator bool() const;
-    void makeWritable();
+    void makeWritable() const;
 
     AVFrame* frame;
 };

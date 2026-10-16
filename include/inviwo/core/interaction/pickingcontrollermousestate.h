@@ -48,8 +48,8 @@ public:
     PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
     ~PickingControllerMouseState();
 
-    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId);
-    void propagateEvent(WheelEvent* e, EventPropagator* propagator, size_t globalId);
+    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId) const;
+    void propagateEvent(WheelEvent* e, EventPropagator* propagator, size_t globalId) const;
 
     std::unique_ptr<PickingControllerMouseStateSM> msm;
 };

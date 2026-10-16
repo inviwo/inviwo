@@ -50,7 +50,7 @@ SwScale::SwScale(int srcW, int srcH, enum AVPixelFormat srcFormat, int dstW, int
 SwScale::~SwScale() { sws_freeContext(ctx); }
 
 int SwScale::scale(const uint8_t* const srcSlice[], const int srcStride[], int srcSliceY,
-                   int srcSliceH, uint8_t* const dst[], const int dstStride[]) {
+                   int srcSliceH, uint8_t* const dst[], const int dstStride[]) const {
     return sws_scale(ctx, srcSlice, srcStride, srcSliceY, srcSliceH, dst, dstStride);
 }
 

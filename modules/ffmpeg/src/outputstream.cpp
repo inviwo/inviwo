@@ -93,7 +93,7 @@ OutputStream::OutputStream(OutputContext& format, Options opts)
     }
 }
 
-void OutputStream::openVideo(AVDictionary* opt_arg) {
+void OutputStream::openVideo(AVDictionary* opt_arg) const {
     encoder.open(opt_arg);
 
     /* copy the stream parameters to the muxer */

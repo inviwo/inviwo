@@ -228,7 +228,7 @@ CullFaceState::~CullFaceState() {
     }
 }
 
-GLint CullFaceState::getMode() { return mode_; }
+GLint CullFaceState::getMode() const { return mode_; }
 
 GlBoolState& GlBoolState::operator=(GlBoolState&& that) {
     if (this != &that) {
@@ -256,7 +256,7 @@ GlBoolState::GlBoolState(GLenum target, bool state) : target_(target), oldState_
     }
 }
 
-GlBoolState::operator bool() { return state_; }
+GlBoolState::operator bool() const { return state_; }
 
 GlBoolState::~GlBoolState() {
     if (oldState_ != state_) {
@@ -464,7 +464,7 @@ ViewportState::~ViewportState() {
 
 void Viewport::get() { glGetIntegerv(GL_VIEWPORT, view_.data()); }
 
-void Viewport::set() { glViewport(x(), y(), width(), height()); }
+void Viewport::set() const { glViewport(x(), y(), width(), height()); }
 
 ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
     : oldBox_{ScissorBox{}} {
@@ -483,7 +483,7 @@ ScissorState::~ScissorState() {
 
 void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
-void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
+void ScissorBox::set() const { glScissor(x(), y(), width(), height()); }
 
 ColorMaskState::ColorMaskState(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
     : oldMask_{ColorMask{}} {
@@ -502,7 +502,7 @@ ColorMaskState::~ColorMaskState() {
 
 void ColorMask::get() { glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); }
 
-void ColorMask::set() { glColorMask(red(), green(), blue(), alpha()); }
+void ColorMask::set() const { glColorMask(red(), green(), blue(), alpha()); }
 
 ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue,
                                  GLboolean alpha)
@@ -540,7 +540,7 @@ void ColorMaski::get() {
     glDrawBuffers(maxDrawBuffers, drawBuffers.data());
 }
 
-void ColorMaski::set() { glColorMaski(buf_, red(), green(), blue(), alpha()); }
+void ColorMaski::set() const { glColorMaski(buf_, red(), green(), blue(), alpha()); }
 
 GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];

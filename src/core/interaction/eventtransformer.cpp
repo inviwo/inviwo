@@ -352,7 +352,7 @@ void EventTransformer::propagateEvent(Event* event, const Propagator& propagate)
 }
 
 void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case MouseState::Press: {
             state.sm.process_event(mouse::Press{event, getViewIdx(event.ndc()), propagate});
@@ -374,12 +374,12 @@ void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
 }
 
 void EventTransformer::propagateEvent(WheelEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     state.sm.process_event(mouse::Wheel{event, getViewIdx(event.ndc()), propagate});
 }
 
 void EventTransformer::propagateEvent(GestureEvent& event, GestureSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case GestureState::NoGesture: {
             state.sm.process_event(gesture::NoGesture{event, getViewIdx(event.ndc()), propagate});

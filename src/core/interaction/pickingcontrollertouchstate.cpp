@@ -297,7 +297,7 @@ PickingControllerTouchState& PickingControllerTouchState::operator=(
 PickingControllerTouchState::~PickingControllerTouchState() = default;
 
 void PickingControllerTouchState::propagateEvent(TouchEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     const auto points = e->touchPoints();
     const auto ps = TouchEvent::getPickingState(points);
     switch (ps) {

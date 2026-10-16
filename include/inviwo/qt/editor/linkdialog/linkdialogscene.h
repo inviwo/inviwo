@@ -125,11 +125,11 @@ private:
         explicit Curve(LinkDialogGraphicsScene* scene);
         void clear();
         void start(QPointF start, QPointF end);
-        void update(QPointF start, QPointF end);
+        void update(QPointF start, QPointF end) const;
         std::unique_ptr<DialogCurveGraphicsItem> linkCurve_;
         LinkDialogGraphicsScene* scene_;
 
-        explicit operator bool() { return linkCurve_ != nullptr; }
+        explicit operator bool() const { return linkCurve_ != nullptr; }
     };
 
     Curve curve_;

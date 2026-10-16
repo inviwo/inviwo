@@ -112,18 +112,18 @@ void exposeDocument(pybind11::module& m) {
         .def("get", &Document::get)
         .def("insert", static_cast<Document::DocumentHandle (Document::*)(
                            Document::PathComponent, std::string_view, std::string_view,
-                           const UnorderedStringMap<std::string>&)>(&Document::insert))
+                           const UnorderedStringMap<std::string>&) const>(&Document::insert))
         .def("append",
              static_cast<Document::DocumentHandle (Document::*)(
-                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&)>(
-                 &Document::append))
+                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&)
+                            const>(&Document::append))
         .def("insert",
-             static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)>(
-                 &Document::insert))
+             static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)
+                            const>(&Document::insert))
         .def("insertText", &Document::insertText)
         .def("appendText", &Document::appendText)
         .def("append",
-             static_cast<Document::DocumentHandle (Document::*)(Document)>(&Document::append))
+             static_cast<Document::DocumentHandle (Document::*)(Document) const>(&Document::append))
         .def("visit",
              [](Document& d,
                 std::function<void(Document::Element*, std::vector<Document::Element*>&)> before,

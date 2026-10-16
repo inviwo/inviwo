@@ -62,7 +62,7 @@ struct IVW_MODULE_FFMPEG_API OutputStream : NoMoveCopy {
 
     OutputStream(OutputContext& format, Options opts);
 
-    void openVideo(AVDictionary* opt_arg = nullptr);
+    void openVideo(AVDictionary* opt_arg = nullptr) const;
 
     Frame* fillFrame(Frame& dst, std::function<void(AVFrame* pict, int width, int height)> filler);
 

@@ -176,8 +176,8 @@ protected:
     void plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges);
 
     void renderLines(const size2_t& dims, const std::vector<uint32_t>& diagonalIndices,
-                     const std::vector<uint32_t>& indices);
-    void renderPoints(const size2_t& dims, const std::vector<uint32_t>& indices);
+                     const std::vector<uint32_t>& indices) const;
+    void renderPoints(const size2_t& dims, const std::vector<uint32_t>& indices) const;
     void renderAxis(const size2_t& dims);
 
     void objectPicked(PickingEvent* p);

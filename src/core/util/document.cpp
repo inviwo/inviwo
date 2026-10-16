@@ -287,33 +287,35 @@ Document& Document::operator=(const Document& that) {
 
 Document::DocumentHandle Document::handle() const { return DocumentHandle(this, root_.get()); }
 
-Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
+Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) const {
     return handle().get(path);
 }
 
 Document::DocumentHandle Document::insert(PathComponent pos, std::string_view name,
                                           std::string_view content,
-                                          const UnorderedStringMap<std::string>& attributes) {
+                                          const UnorderedStringMap<std::string>& attributes) const {
     return handle().insert(pos, name, content, attributes);
 }
 
 Document::DocumentHandle Document::append(std::string_view name, std::string_view content,
-                                          const UnorderedStringMap<std::string>& attributes) {
+                                          const UnorderedStringMap<std::string>& attributes) const {
     return handle().append(name, content, attributes);
 }
 
-Document::DocumentHandle Document::insert(PathComponent pos, Document doc) {
+Document::DocumentHandle Document::insert(PathComponent pos, Document doc) const {
     return handle().insert(pos, std::move(doc));
 }
 
-Document::DocumentHandle Document::insertText(PathComponent pos, std::string_view text) {
+Document::DocumentHandle Document::insertText(PathComponent pos, std::string_view text) const {
     return handle().insertText(pos, text);
 }
-Document::DocumentHandle Document::appendText(std::string_view text) {
+Document::DocumentHandle Document::appendText(std::string_view text) const {
     return handle().appendText(text);
 }
 
-Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
+Document::DocumentHandle Document::append(Document doc) const {
+    return handle().append(std::move(doc));
+}
 
 std::string Document::str() const {
     std::string buff;

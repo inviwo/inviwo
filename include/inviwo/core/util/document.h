@@ -182,18 +182,18 @@ public:
 
     DocumentHandle handle() const;
 
-    DocumentHandle get(const std::vector<PathComponent>& path);
+    DocumentHandle get(const std::vector<PathComponent>& path) const;
     DocumentHandle insert(PathComponent pos, std::string_view name, std::string_view content = "",
-                          const UnorderedStringMap<std::string>& attributes = {});
+                          const UnorderedStringMap<std::string>& attributes = {}) const;
 
     DocumentHandle append(std::string_view name, std::string_view content = "",
-                          const UnorderedStringMap<std::string>& attributes = {});
+                          const UnorderedStringMap<std::string>& attributes = {}) const;
 
-    DocumentHandle insertText(PathComponent pos, std::string_view text);
-    DocumentHandle appendText(std::string_view text);
+    DocumentHandle insertText(PathComponent pos, std::string_view text) const;
+    DocumentHandle appendText(std::string_view text) const;
 
-    DocumentHandle insert(PathComponent pos, Document doc);
-    DocumentHandle append(Document doc);
+    DocumentHandle insert(PathComponent pos, Document doc) const;
+    DocumentHandle append(Document doc) const;
 
     template <typename BeforVisitor, typename AfterVisitor>
     void visit(BeforVisitor before, AfterVisitor after) const {

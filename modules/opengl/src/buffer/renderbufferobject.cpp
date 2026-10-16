@@ -37,7 +37,7 @@ RenderBufferObject::RenderBufferObject() { glGenRenderbuffersEXT(1, &id_); }
 
 RenderBufferObject::~RenderBufferObject() { glDeleteRenderbuffersEXT(1, &id_); }
 
-void RenderBufferObject::activate() { glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, id_); }
+void RenderBufferObject::activate() const { glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, id_); }
 
 void RenderBufferObject::deactivate() { glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0); }
 

@@ -121,7 +121,7 @@ public:
     /**
      * Get access to the sub network to add or remove processors etc
      */
-    ProcessorNetwork& getSubNetwork();
+    ProcessorNetwork& getSubNetwork() const;
 
     /**
      * Add a corresponding property in the SequenceProcessor for the sub property 'subProperty' in

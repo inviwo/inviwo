@@ -237,7 +237,7 @@ PickingControllerMouseState::PickingControllerMouseState(PickingManager* picking
 PickingControllerMouseState::~PickingControllerMouseState() = default;
 
 void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     switch (e->state()) {
         case MouseState::Press: {
             msm->sm.process_event(fsm::Press{globalId, e, propagator});
@@ -259,7 +259,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
 }
 
 void PickingControllerMouseState::propagateEvent(WheelEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     msm->sm.process_event(fsm::Wheel{globalId, e, propagator});
 }
 

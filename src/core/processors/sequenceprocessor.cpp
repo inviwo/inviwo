@@ -237,7 +237,7 @@ void SequenceProcessor::saveSubNetwork(const std::filesystem::path& file) {
     s.writeFile(ofs, true);
 }
 
-ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *sub_.net; }
+ProcessorNetwork& SequenceProcessor::getSubNetwork() const { return *sub_.net; }
 
 void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {

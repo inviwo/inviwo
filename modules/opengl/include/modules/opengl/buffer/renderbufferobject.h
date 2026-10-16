@@ -39,7 +39,7 @@ public:
     RenderBufferObject();
     ~RenderBufferObject();
 
-    void activate();
+    void activate() const;
     static void deactivate();
 
     unsigned int getID() const;

@@ -128,7 +128,7 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
-    operator bool();
+    operator bool() const;
 
     ~GlBoolState();
 
@@ -154,7 +154,7 @@ struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
 
     ~CullFaceState();
 
-    GLint getMode();
+    GLint getMode() const;
 
 protected:
     GLint mode_;
@@ -288,7 +288,7 @@ struct IVW_MODULE_OPENGL_API Viewport {
     Viewport() : view_({{0, 0, 0, 0}}) {}
     Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_({{x, y, width, height}}) {}
     void get();
-    void set();
+    void set() const;
 
     GLint x() const { return view_[0]; }
     GLint y() const { return view_[1]; }
@@ -331,7 +331,7 @@ struct IVW_MODULE_OPENGL_API ScissorBox {
     ScissorBox() : box_({{0, 0, 0, 0}}) {}
     ScissorBox(GLint x, GLint y, GLsizei width, GLsizei height) : box_({{x, y, width, height}}) {}
     void get();
-    void set();
+    void set() const;
 
     GLint x() const { return box_[0]; }
     GLint y() const { return box_[1]; }
@@ -375,7 +375,7 @@ struct IVW_MODULE_OPENGL_API ColorMask {
     ColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
         : mask_({{red, green, blue, alpha}}) {}
     void get();
-    void set();
+    void set() const;
 
     GLboolean red() const { return mask_[0]; }
     GLboolean green() const { return mask_[1]; }
@@ -402,7 +402,7 @@ struct IVW_MODULE_OPENGL_API ColorMaski {
     ColorMaski(GLuint buf, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
         : buf_(buf), mask_({{red, green, blue, alpha}}) {}
     void get();
-    void set();
+    void set() const;
 
     GLuint buffer() const { return buf_; }
     GLboolean red() const { return mask_[0]; }

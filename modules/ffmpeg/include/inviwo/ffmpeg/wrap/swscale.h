@@ -50,7 +50,7 @@ public:
     ~SwScale();
 
     int scale(const uint8_t* const srcSlice[], const int srcStride[], int srcSliceY, int srcSliceH,
-              uint8_t* const dst[], const int dstStride[]);
+              uint8_t* const dst[], const int dstStride[]) const;
 
     SwsContext* ctx;
 };

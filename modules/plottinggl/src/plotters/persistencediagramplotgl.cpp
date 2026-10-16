@@ -391,7 +391,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
 void PersistenceDiagramPlotGL::renderLines(const size2_t& dims,
                                            const std::vector<uint32_t>& diagonalIndices,
-                                           const std::vector<uint32_t>& indices) {
+                                           const std::vector<uint32_t>& indices) const {
     lineShader_.setUniform("roundCaps", true);
     lineShader_.setUniform("screenDim", vec2(dims));
     if (!diagonalIndices.empty()) {
@@ -412,7 +412,7 @@ void PersistenceDiagramPlotGL::renderLines(const size2_t& dims,
 }
 
 void PersistenceDiagramPlotGL::renderPoints(const size2_t& dims,
-                                            const std::vector<uint32_t>& indices) {
+                                            const std::vector<uint32_t>& indices) const {
     pointShader_.setUniform("pixelSize", vec2(1.0f) / vec2(dims));
     pointShader_.setUniform("dims", ivec2(dims));
     pointShader_.setUniform("maxRadius", properties_.radius_.get());

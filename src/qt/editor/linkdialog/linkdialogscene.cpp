@@ -134,7 +134,7 @@ void LinkDialogGraphicsScene::Curve::start(QPointF start, QPointF end) {
     scene_->addItem(linkCurve_.get());
     linkCurve_->show();
 }
-void LinkDialogGraphicsScene::Curve::update(QPointF start, QPointF end) {
+void LinkDialogGraphicsScene::Curve::update(QPointF start, QPointF end) const {
     linkCurve_->setStartPoint(start);
     linkCurve_->setEndPoint(end);
 }

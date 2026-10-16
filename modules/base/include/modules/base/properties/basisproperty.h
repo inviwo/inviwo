@@ -91,7 +91,7 @@ public:
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<2>& volume, bool deserialize);
 
-    void updateEntity(SpatialEntity& volume);
+    void updateEntity(SpatialEntity& volume) const;
 
     dmat4 getBasisAndOffset() const;
 
