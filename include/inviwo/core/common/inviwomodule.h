@@ -346,6 +346,7 @@ private:
     template <typename T>
     std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
         std::vector<T*> res;
+        res.reserve(v.size());
         for (auto& elem : v) res.push_back(elem.get());
         return res;
     }

@@ -141,6 +141,7 @@ static int constFun(const_iterator iter) { return *iter; }
 
 TEST(IndirectIteratorTest, Conversion) {
     std::vector<std::unique_ptr<int>> vec;
+    vec.reserve(5);
     for (int i = 0; i < 5; ++i) {
         vec.push_back(std::make_unique<int>(i));
     }
