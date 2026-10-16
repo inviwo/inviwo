@@ -37,6 +37,8 @@
 
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -103,7 +105,7 @@ void LayerSeriesSource::process() {
 
     // sanity check for valid index
     const auto index = currentIndex_.get() - 1;
-    if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
+    if ((index < 0) || (std::cmp_greater_equal(index, fileList_.size()))) {
         throw Exception("Invalid image index. Exceeded number of files.");
     }
 

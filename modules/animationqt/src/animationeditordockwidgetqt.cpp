@@ -124,7 +124,7 @@ QComboBox* createAnimationsList(WorkspaceAnimations& animations, QWidget* parent
 
     QObject::connect(list, QOverload<int>::of(&QComboBox::currentIndexChanged),
                      [ani = &animations](int index) {
-                         if (index >= 0 && index < static_cast<int>(ani->size())) {
+                         if (index >= 0 && std::cmp_less(index, ani->size())) {
                              ani->setMainAnimation((*ani)[index]);
                          }
                      });

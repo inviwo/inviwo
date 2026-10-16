@@ -40,6 +40,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <utility>
 
 #ifdef IVW_USE_OPENMP
 #include <omp.h>
@@ -76,7 +77,7 @@ std::shared_ptr<VolumeRAM> volumeStridedDownsample(const VolumeRAM* volume, size
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
 #endif
-            for (long long z_ = 0; z_ < static_cast<long long>(destDims.z); ++z_) {
+            for (long long z_ = 0; std::cmp_less(z_, destDims.z); ++z_) {
                 const auto z = static_cast<size_t>(z_);  // OpenMP requires signed integral type
                 for (size_t y = 0; y < destDims.y; ++y) {
                     for (size_t x = 0; x < destDims.x; ++x) {
@@ -116,7 +117,7 @@ std::shared_ptr<VolumeRAM> volumeAveragedDownsample(const VolumeRAM* volume, siz
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
 #endif
-            for (long long z_ = 0; z_ < static_cast<long long>(destDims.z); ++z_) {
+            for (long long z_ = 0; std::cmp_less(z_, destDims.z); ++z_) {
                 const auto z = static_cast<size_t>(z_);  // OpenMP requires signed integral type
                 for (size_t y = 0; y < destDims.y; ++y) {
                     for (size_t x = 0; x < destDims.x; ++x) {

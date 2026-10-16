@@ -33,6 +33,7 @@
 #include <inviwo/ffmpeg/ffmpeganimationrecorder.h>
 
 #include <array>
+#include <utility>
 
 extern "C" {
 #include <libavutil/log.h>
@@ -54,7 +55,7 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
                                                   static_cast<int>(line.size()), &print_prefix);
         needSize < 0) {
         log::report(LogLevel::Error, SourceContext{"ffmpeg"_sl}, "Error formatting log message");
-    } else if (needSize >= static_cast<int>(line.size())) {
+    } else if (std::cmp_greater_equal(needSize, line.size())) {
         dynamicLine.resize(needSize + 1);
         if (av_log_format_line2(ptr, level, fmt, vl, dynamicLine.data(),
                                 static_cast<int>(dynamicLine.size()), &print_prefix) > 0) {

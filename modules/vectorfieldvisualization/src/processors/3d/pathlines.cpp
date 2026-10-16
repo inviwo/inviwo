@@ -200,7 +200,7 @@ void PathLinesDeprecated::process() {
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
 #endif
-        for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
+        for (long long j = 0; std::cmp_less(j, seeds->size()); j++) {
             const auto& p = (*seeds)[j];
             const vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));

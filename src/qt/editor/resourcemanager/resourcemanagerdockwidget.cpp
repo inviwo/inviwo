@@ -40,6 +40,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -84,7 +85,7 @@ public:
         if (parent == QModelIndex{}) {
             return createIndex(row, column, root);
         } else if ((parent.parent() == QModelIndex{}) &&
-                   (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row()))))) {
+                   (std::cmp_less(row, manager_->size(static_cast<size_t>(parent.row()))))) {
             return createIndex(row, column, parent.row());
         }
 
@@ -114,7 +115,7 @@ public:
     }
 
     virtual QVariant headerData(int section, Qt::Orientation, int role) const override {
-        if (role == Qt::DisplayRole && section < static_cast<int>(colNames.size())) {
+        if (role == Qt::DisplayRole && std::cmp_less(section, colNames.size())) {
             return utilqt::toQString(colNames[section]);
         }
         return {};

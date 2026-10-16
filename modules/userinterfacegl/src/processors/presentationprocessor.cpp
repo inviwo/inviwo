@@ -64,6 +64,7 @@
 #include <map>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -205,7 +206,7 @@ void PresentationProcessor::process() {
 void PresentationProcessor::updateSlideImage() {
     // sanity check for valid index
     const auto index = slideIndex_.get() - 1;
-    if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
+    if ((index < 0) || (std::cmp_greater_equal(index, fileList_.size()))) {
         log::error("Invalid image index. Exceeded number of files.");
         currentSlide_ = nullptr;
         return;

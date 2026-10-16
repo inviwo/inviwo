@@ -283,7 +283,7 @@ void ShaderWidget::updateState() {
     if (checked) {
         const auto lines = std::count(code.begin(), code.end(), '\n') + 1;
         std::string::size_type width = 0;
-        for (size_t l = 0; l < static_cast<size_t>(lines); ++l) {
+        for (size_t l = 0; std::cmp_less(l, lines); ++l) {
             const auto info = obj_->resolveLine(l);
             const auto pos = info.first.find_last_of('/');
             width = std::max(width, info.first.size() - (pos + 1));  // note string::npos+1==0
