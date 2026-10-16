@@ -45,6 +45,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace inviwo {
@@ -88,7 +89,7 @@ void checkDataFormat(const DataFormatBase* format, const Vector<Dim, size_t>& di
     }
 
     for (size_t i = 0; i < expectedDimensions.size(); i++) {
-        if (static_cast<size_t>(data.shape(static_cast<int>(i))) != expectedDimensions[i]) {
+        if (std::cmp_not_equal(data.shape(static_cast<int>(i)), expectedDimensions[i])) {
             throw py::value_error(fmt::format("Invalid data dimensions, got '{}' expected '{}'",
                                               data.shape(static_cast<int>(i)),
                                               expectedDimensions[i]));

@@ -91,6 +91,7 @@
 #include <glm/common.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace inviwo::plot {
 
@@ -511,7 +512,7 @@ void ParallelCoordinates::buildLineIndices() {
     const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
 
     lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
-    if (!lines_.sizes.empty() && lines_.sizes.front() != static_cast<int>(numberOfEnabledAxis)) {
+    if (!lines_.sizes.empty() && std::cmp_not_equal(lines_.sizes.front(), numberOfEnabledAxis)) {
         std::ranges::fill(lines_.sizes, static_cast<int>(numberOfEnabledAxis));
     }
 

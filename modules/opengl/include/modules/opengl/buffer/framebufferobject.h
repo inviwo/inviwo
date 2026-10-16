@@ -35,6 +35,7 @@
 #include <modules/opengl/inviwoopengl.h>
 
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace inviwo {
@@ -345,7 +346,7 @@ public:
     explicit ActivateFBO(FrameBufferObject& fbo) : prevFbo_{0} {
         GLint currentFbo = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
-        if (static_cast<GLint>(fbo.getID()) != currentFbo) {
+        if (std::cmp_not_equal(fbo.getID(), currentFbo)) {
             fbo.activate();
             prevFbo_ = currentFbo;
         }

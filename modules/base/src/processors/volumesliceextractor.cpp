@@ -71,6 +71,7 @@
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace inviwo {
 class Event;
@@ -328,7 +329,7 @@ void VolumeSliceExtractor::process() {
     const auto vol = inport_.getData();
 
     if (tfGroup_.isChecked() &&
-        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
+        std::cmp_greater_equal(channel_.get(), vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
                         "Channel for TF mapping is greater than the available channels {} >= {}",
                         channel_.get() + 1, vol->getDataFormat()->getComponents());

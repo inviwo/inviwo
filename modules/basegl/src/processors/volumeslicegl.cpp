@@ -489,7 +489,7 @@ void VolumeSliceGL::process() {
 
     if (const auto vol = inport_.getData();
         vol && tfGroup_.isChecked() &&
-        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
+        std::cmp_greater_equal(channel_.get(), vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
                         "Channel for TF mapping is greater than the available channels {} >= {}",
                         channel_.get() + 1, vol->getDataFormat()->getComponents());
@@ -694,15 +694,15 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     const NetworkLock lock(this);
 
     const size3_t dims{inport_.getData()->getDimensions()};
-    if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.x, sliceX_.getMaxValue())) {
         sliceX_.setMaxValue(static_cast<int>(dims.x));
         sliceX_.set(static_cast<int>(dims.x) / 2);
     }
-    if (static_cast<int>(dims.y) != sliceY_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.y, sliceY_.getMaxValue())) {
         sliceY_.setMaxValue(static_cast<int>(dims.y));
         sliceY_.set(static_cast<int>(dims.y) / 2);
     }
-    if (static_cast<int>(dims.z) != sliceZ_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.z, sliceZ_.getMaxValue())) {
         sliceZ_.setMaxValue(static_cast<int>(dims.z));
         sliceZ_.set(static_cast<int>(dims.z) / 2);
     }

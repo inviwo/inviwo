@@ -135,7 +135,7 @@ bool FrameBufferObject::isActive() const {
     checkContext("FBO used in a different context"sv, creationContext_);
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
-    return (static_cast<GLint>(id_) == currentFbo);
+    return (std::cmp_equal(id_, currentFbo));
 }
 
 GLenum FrameBufferObject::status() const {

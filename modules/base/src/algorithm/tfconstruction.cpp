@@ -35,6 +35,7 @@
 #include <ranges>
 #include <set>
 #include <optional>
+#include <utility>
 
 namespace inviwo::util {
 
@@ -169,7 +170,7 @@ double errorByRemoving(const std::vector<TFPrimitiveData>& points, int i) {
 /// removes redundant points from the tf
 void cleanTf(std::vector<TFPrimitiveData>& points, double epsilon) {
     // remove from the front
-    for (int i = 1; i < static_cast<int>(points.size()); ++i) {
+    for (int i = 1; std::cmp_less(i, points.size()); ++i) {
         if (points[i].color == points[i - 1].color) {
             points.erase(points.begin() + i - 1);
         } else {

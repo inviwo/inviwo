@@ -60,6 +60,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <glm/common.hpp>
@@ -349,7 +350,7 @@ NrrdState parseNrrdHeader(const std::filesystem::path& filePath) {
     if (state.sizes.empty()) {
         throw DataReaderException(SourceContext{}, "NRRD file missing 'sizes' field: {}", filePath);
     }
-    if (static_cast<int>(state.sizes.size()) != state.dimension) {
+    if (std::cmp_not_equal(state.sizes.size(), state.dimension)) {
         throw DataReaderException(SourceContext{},
                                   "NRRD 'sizes' count ({}) does not match 'dimension' ({}) in: {}",
                                   state.sizes.size(), state.dimension, filePath);

@@ -33,6 +33,8 @@
 
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -75,7 +77,7 @@ void ImageToLayer::process() {
             case static_cast<int>(LayerEnum::Picking): return data->getPickingLayer()->clone();
             default:
                 const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
-                if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {
+                if (std::cmp_greater_equal(outputLayer_.get(), nColorLayers)) {
                     throw Exception(SourceContext{},
                                     "Selected color layer '{}' is out of bounds '{}'",
                                     outputLayer_.get(), nColorLayers);
