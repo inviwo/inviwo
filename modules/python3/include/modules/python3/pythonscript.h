@@ -99,7 +99,7 @@ public:
 
 private:
     bool checkCompileError();
-    bool checkRuntimeError();
+    static bool checkRuntimeError();
 
     static std::string getAndFormatError();
 

@@ -61,7 +61,7 @@ public:
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
         const DataFrame* data, std::string_view fileExtension) const override;
 
-    void writeData(const DataFrame* data, std::ostream& os) const;
+    static void writeData(const DataFrame* data, std::ostream& os);
 };
 
 }  // namespace inviwo

@@ -81,7 +81,7 @@ void Creator::createProcessor(const fs::path& processorPath) const {
     generate(processorPath, "processor");
 }
 
-json::json Creator::createSettings(const InviwoModule& im, std::string_view fileName) const {
+json::json Creator::createSettings(const InviwoModule& im, std::string_view fileName) {
     using clock = std::chrono::system_clock;
     const auto now = clock::to_time_t(clock::now());
     const auto year = 1900 + std::localtime(&now)->tm_year;

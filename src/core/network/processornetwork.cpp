@@ -188,7 +188,7 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
     }
 }
 
-bool ProcessorNetwork::canConnect(const Outport* src, const Inport* dst) const {
+bool ProcessorNetwork::canConnect(const Outport* src, const Inport* dst) {
     return src != nullptr && dst != nullptr && dst->canConnectTo(src);
 }
 

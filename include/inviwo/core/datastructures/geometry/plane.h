@@ -115,7 +115,7 @@ public:
 
     Plane transform(const mat4& transform) const;
 
-    std::string_view getDataInfo() const;
+    static std::string_view getDataInfo();
 
     static constexpr uvec3 colorCode{225, 174, 225};
     static constexpr std::string_view classIdentifier{"org.inviwo.Plane"};

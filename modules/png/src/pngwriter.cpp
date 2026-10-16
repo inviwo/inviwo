@@ -200,7 +200,7 @@ PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
 
 PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this); }
 
-void PNGLayerWriter::writeData(const Layer* data, FILE* fp) const {
+void PNGLayerWriter::writeData(const Layer* data, FILE* fp) {
     data->getRepresentation<LayerRAM>()->dispatch<void>(
         [&](auto ram) { detail::write(ram, static_cast<png_voidp>(fp)); });
 }

@@ -84,13 +84,13 @@ public:
     FloatProperty anisotropyProp;
 
 protected:
-    float HenyehGreensteinToSchlick(float g) const;
+    static float HenyehGreensteinToSchlick(float g);
 
-    float roughnessToShininess(float m) const;
+    static float roughnessToShininess(float m);
 
-    float WardParameterMapping(float x) const;
+    static float WardParameterMapping(float x);
 
-    vec2 BCParameterMapping(const vec2& bc) const;
+    static vec2 BCParameterMapping(const vec2& bc);
 
     /**
      * Compute index of refraction (IOR) f0 = ((n1-n2)/(n1+n2))^2
@@ -99,7 +99,7 @@ protected:
      * @param n2 Second material
      * @return Index of refraction ((n1-n2)/(n1+n2))^2
      */
-    float getIndexOfRefractionTerm(float n1, float n2) const;
+    static float getIndexOfRefractionTerm(float n1, float n2);
 };
 
 }  // namespace inviwo

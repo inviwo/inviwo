@@ -50,7 +50,8 @@ public:
 
     virtual std::shared_ptr<Layer> readData(const std::filesystem::path& filePath) override;
     using DataReaderType<Layer>::readData;
-    std::shared_ptr<inviwo::Layer> readData(FILE* fp, std::string_view name = "<FileHandle>");
+    static std::shared_ptr<inviwo::Layer> readData(FILE* fp,
+                                                   std::string_view name = "<FileHandle>");
 };
 
 }  // namespace inviwo

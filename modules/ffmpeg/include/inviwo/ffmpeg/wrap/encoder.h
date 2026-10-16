@@ -65,7 +65,7 @@ public:
     AVCodecContext* ctx;
 
 private:
-    const AVCodec* findEncoder(CodecID codecId);
+    static const AVCodec* findEncoder(CodecID codecId);
 };
 
 }  // namespace inviwo::ffmpeg

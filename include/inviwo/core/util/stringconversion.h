@@ -472,7 +472,7 @@ struct IVW_CORE_API CaseInsensitiveStringHash {
     std::size_t operator()(const std::string& str) const { return hash(str); }
 
 private:
-    std::size_t hash(std::string_view str) const {
+    static std::size_t hash(std::string_view str) {
         if (str.size() <= 128) {
             std::array<char, 128> stack;
             std::copy(str.begin(), str.end(), stack.begin());

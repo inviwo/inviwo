@@ -57,7 +57,7 @@ public:
     virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 
 protected:
-    void printMetaInfo(const MetaDataOwner&, std::string_view) const;
+    static void printMetaInfo(const MetaDataOwner&, std::string_view);
 };
 
 class IVW_MODULE_CIMG_API CImgVolumeRAMLoader

@@ -59,7 +59,7 @@ public:
 
     void propagateEvent(Event*, EventPropagator*);
     void setPickingSource(const std::shared_ptr<const Image>& src);
-    bool pickingEnabled() const;
+    static bool pickingEnabled();
 
 private:
     void propagateEvent(TouchEvent*, EventPropagator*);

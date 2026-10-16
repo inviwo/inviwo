@@ -205,7 +205,7 @@ public:
         QTextEdit::resizeEvent(event);
     }
 
-    std::optional<std::filesystem::path> findChangelog() {
+    static std::optional<std::filesystem::path> findChangelog() {
         auto changelog = filesystem::findBasePath() / "CHANGELOG.md";
         if (std::filesystem::is_regular_file(changelog)) {
             return changelog;
@@ -973,7 +973,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     centerStackedWidget_->setCurrentIndex(1);
 }
 
-Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) const {
+Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) {
     const auto* const dateFormat = "yyyy-MM-dd hh:mm:ss";
     const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
     const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));

@@ -296,7 +296,7 @@ void FilePatternProperty::sort() {
     std::sort(files_.begin(), files_.end());
 }
 
-std::string_view FilePatternProperty::guessFilePattern() const {
+std::string_view FilePatternProperty::guessFilePattern() {
     log::error("not implemented yet");
     return "";
 }

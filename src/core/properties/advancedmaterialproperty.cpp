@@ -190,23 +190,23 @@ void AdvancedMaterialProperty::deserialize(Deserializer& d) {
     phaseFunctionChanged();
 }
 
-float AdvancedMaterialProperty::HenyehGreensteinToSchlick(float g) const {
+float AdvancedMaterialProperty::HenyehGreensteinToSchlick(float g) {
     // Should work for intermediate values of k in Schlick
     return 1.55f * g - 0.55f * g * g * g;
     // return 1.5f*g-(1.f-1.5f)*g*g*g;
 }
 
-float AdvancedMaterialProperty::roughnessToShininess(float m) const {
+float AdvancedMaterialProperty::roughnessToShininess(float m) {
     return 2.f / (std::max(1e-4f, m * m)) - 2.f;
 }
 
-float AdvancedMaterialProperty::WardParameterMapping(float x) const { return std::max(x, 1e-4f); }
+float AdvancedMaterialProperty::WardParameterMapping(float x) { return std::max(x, 1e-4f); }
 
-vec2 AdvancedMaterialProperty::BCParameterMapping(const vec2& bc) const {
+vec2 AdvancedMaterialProperty::BCParameterMapping(const vec2& bc) {
     return bc * vec2(13000.f, 1.f);
 }
 
-float AdvancedMaterialProperty::getIndexOfRefractionTerm(float n1, float n2) const {
+float AdvancedMaterialProperty::getIndexOfRefractionTerm(float n1, float n2) {
     // Compute index of refraction (IOR) f0 = ((n1-n2)/(n1+n2))^2
     return std::pow((n1 - n2) / (n1 + n2), 2.f);
 }

@@ -115,9 +115,9 @@ public:
 protected:
     void setupRectangleMesh();
 
-    std::shared_ptr<Texture2DArray> createUITextureObject(
+    static std::shared_ptr<Texture2DArray> createUITextureObject(
         const std::vector<std::filesystem::path>& textureFiles,
-        const std::filesystem::path& sourcePath) const;
+        const std::filesystem::path& sourcePath);
 
     const int defaultFontSize_ = 13;
 

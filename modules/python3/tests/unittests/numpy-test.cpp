@@ -108,7 +108,7 @@ protected:
     virtual void SetUp() {}
     virtual void TearDown() {}
 
-    void testBuffer(std::string numbers, size_t components) {
+    static void testBuffer(std::string numbers, size_t components) {
         std::stringstream src;
         src << "import numpy as np" << '\n';
         src << "a = np.array(" << numbers << " , dtype = np." << GetParam() << " )" << '\n';
@@ -142,7 +142,7 @@ protected:
         EXPECT_TRUE(status);
     }
 
-    void testLayer(std::string numbers, std::string shape, size_t components) {
+    static void testLayer(std::string numbers, std::string shape, size_t components) {
         std::stringstream src;
         src << "import numpy as np" << '\n';
         src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << '\n';
@@ -178,7 +178,7 @@ protected:
 
         EXPECT_TRUE(status);
     }
-    void testVolume(std::string numbers, std::string shape, size_t components) {
+    static void testVolume(std::string numbers, std::string shape, size_t components) {
 
         std::stringstream src;
         src << "import numpy as np" << '\n';

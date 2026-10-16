@@ -123,7 +123,7 @@ struct IVW_CORE_API PropertyDistanceSorter {
 
 private:
     vec2 getPosition(const Property* p);
-    vec2 getPosition(const Processor* processor);
+    static vec2 getPosition(const Processor* processor);
 
     vec2 pos_ = {0, 0};
     std::map<const Property*, vec2> cache_;

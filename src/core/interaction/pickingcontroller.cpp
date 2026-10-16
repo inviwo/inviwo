@@ -184,8 +184,6 @@ size_t PickingController::pickId(const dvec2& coord) {
     return PickingManager::VoidId;
 }
 
-bool PickingController::pickingEnabled() const {
-    return PickingManager::getPtr()->pickingEnabled();
-}
+bool PickingController::pickingEnabled() { return PickingManager::getPtr()->pickingEnabled(); }
 
 }  // namespace inviwo

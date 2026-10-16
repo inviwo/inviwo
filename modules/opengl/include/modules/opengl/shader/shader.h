@@ -167,7 +167,7 @@ public:
     void addShaderObject(ShaderObject object);
 
     void activate();
-    void deactivate();
+    static void deactivate();
 
     void setUniform(std::string_view name, bool value) const;
     void setUniform(std::string_view name, std::span<const bool> values) const;
@@ -246,7 +246,7 @@ public:
 private:
     void bindAttributes();
 
-    void handleError(OpenGLException& e);
+    static void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
     void rebuildShader(ShaderObject* obj);

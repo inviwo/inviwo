@@ -106,7 +106,7 @@ public:
 protected:
     enum class Direction { Up = 0, Down, Left, Right };
 
-    dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
+    static dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
     void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);
     dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
     double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
