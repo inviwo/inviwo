@@ -48,8 +48,8 @@ MeshBnLGL::MeshBnLGL()
     , unitNumber{0} {}
 
 void MeshBnLGL::update() {
-    if ((inport.isConnected()) && (inport.isChanged() || filter.isModified() ||
-                                   select.isModified() || highlight.isModified())) {
+    if (inport.isConnected() && (inport.isChanged() || filter.isModified() || select.isModified() ||
+                                 highlight.isModified())) {
         const auto size = inport.getManager().getMax() + 1;
         if (size > buffer.getSize()) {
             buffer.setSize(bit_ceil(size));

@@ -279,7 +279,7 @@ void ProcessorListModel::build() {
 bool ProcessorListModel::updateItem(std::string_view classIdentifier,
                                     const std::function<bool(Item&)>& updater) {
     const auto it = classIdentifierToItem_.find(classIdentifier);
-    if ((it != classIdentifierToItem_.end()) && (updater(*it->second))) {
+    if ((it != classIdentifierToItem_.end()) && updater(*it->second)) {
         if (grouping_ == Grouping::LastUsed || grouping_ == Grouping::MostUsed) {
             beginResetModel();
             build();

@@ -156,7 +156,7 @@ int PillListView::heightForWidth(int viewWidth) const {
         rowWidth += size.width();
     }
     const auto size = pillDelegate_->sizeHint(option, model()->index(0, 0));
-    return rows * (size.height());
+    return rows * size.height();
 }
 
 QSize PillListView::viewportSizeHint() const {

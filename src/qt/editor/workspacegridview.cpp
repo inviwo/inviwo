@@ -366,7 +366,7 @@ private:
             it->second.sourceCol = sourceIndex.column();
             it->second.sourceParent = sourceIndex.parent();
         }
-        return &(it->second);
+        return &it->second;
     }
     mutable IndexMap sourceIndexMapping_;
     int chunkSize_;

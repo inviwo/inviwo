@@ -241,7 +241,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
         // Emit the first output byte that is produced in each chunk:
         //
         ret.push_back(static_cast<std::string::value_type>(
-            ((pos_of_char(encoded_string[pos + 0])) << 2) + ((pos_of_char_1 & 0x30) >> 4)));
+            (pos_of_char(encoded_string[pos + 0]) << 2) + ((pos_of_char_1 & 0x30) >> 4)));
 
         if ((pos + 2 < length_of_string) &&  // Check for data that is not padded with equal signs
                                              // (which is allowed by RFC 2045)

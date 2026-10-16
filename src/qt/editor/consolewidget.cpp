@@ -485,7 +485,7 @@ void ConsoleWidget::clear() {
 void ConsoleWidget::updateIndicators(LogLevel level) {
     auto* it = util::find_if(levels, [&](const auto& l) { return l.level == level; });
     if (it != levels.end()) {
-        it->label->setText(fmt::to_string(++(it->count)).c_str());
+        it->label->setText(fmt::to_string(++it->count).c_str());
     }
 }
 

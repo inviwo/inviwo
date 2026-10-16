@@ -116,7 +116,7 @@ bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
     for (const auto& _cIt : lhs.metaData_) {
         const auto elem = rhs.metaData_.find(_cIt.first);
         if (elem == rhs.metaData_.end()) return false;
-        if (*(elem->second) != *(_cIt.second)) return false;
+        if (*elem->second != *_cIt.second) return false;
     }
     return true;
 }

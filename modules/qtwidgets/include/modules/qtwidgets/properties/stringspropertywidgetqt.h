@@ -94,7 +94,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     , label_{new EditableLabelQt(this, property_)}
     , lineEdits_{util::make_array<N>([]([[maybe_unused]] auto i) { return new LineEditQt(); })}
     , delegates_{util::make_array<N>([&](auto i) {
-        auto p = &(property_->strings[i]);
+        auto p = &property_->strings[i];
         return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
             const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));

@@ -494,7 +494,7 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
                 for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
-                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
+                    tcoord = vec3(quad.x * elem.x, quad.y * elem.y, 0.0f);
                     vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 
@@ -591,7 +591,7 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
                 for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
-                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
+                    tcoord = vec3(quad.x * elem.x, quad.y * elem.y, 0.0f);
                     vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 

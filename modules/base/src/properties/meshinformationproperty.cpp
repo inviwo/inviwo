@@ -272,7 +272,7 @@ void MeshInformationProperty::updateForNewMesh(const Mesh& mesh) {
 
     const auto updateBufferProperty = [](auto* prop, const auto& elem, const std::string& name) {
         prop->setDisplayName(name);
-        prop->updateFromBuffer(elem.first, *(elem.second.get()));
+        prop->updateFromBuffer(elem.first, *elem.second.get());
     };
 
     // update mesh buffer information

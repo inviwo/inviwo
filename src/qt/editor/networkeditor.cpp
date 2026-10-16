@@ -196,7 +196,7 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     ProcessorGraphicsItem* ret = addProcessorGraphicsItem(processor);
 
     if (auto* processorWidget = processor->getProcessorWidget()) {
-        if (auto* md = processor->getMetaData<BoolMetaData>("PortInspector"); md && (md->get())) {
+        if (auto* md = processor->getMetaData<BoolMetaData>("PortInspector"); md && md->get()) {
             if (auto* widget = dynamic_cast<QWidget*>(processorWidget)) {
                 const auto size = processorWidget->getDimensions();
                 widget->setMinimumSize(size.x, size.y);
@@ -706,8 +706,8 @@ void NetworkEditor::addProcessorMenuItems(QMenu& menu, ProcessorGraphicsItem* pr
         connect(showAction, &QAction::triggered,
                 util::exceptionGuarded([widget]() { widget->setVisible(!widget->isVisible()); }));
     } else if (auto* comp = dynamic_cast<CompositeProcessor*>(processor->getProcessor());
-               comp && (util::any_of(comp->getSubNetwork().processorRange(),
-                                     [](const Processor& p) { return p.hasProcessorWidget(); }))) {
+               comp && util::any_of(comp->getSubNetwork().processorRange(),
+                                    [](const Processor& p) { return p.hasProcessorWidget(); })) {
         QMenu* subMenu = menu.addMenu("Widgets");
         for (const auto& subProcessor : comp->getSubNetwork().processorRange()) {
             if (auto* subWidget = subProcessor.getProcessorWidget()) {

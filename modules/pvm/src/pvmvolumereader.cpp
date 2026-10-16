@@ -75,7 +75,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& f
 
     // Print information
     const size3_t dim = volume->getDimensions();
-    const size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSizeInBytes());
+    const size_t bytes = dim.x * dim.y * dim.z * volume->getDataFormat()->getSizeInBytes();
     log::info("Loaded volume: {} size: {}", filePath, ByteSize{bytes});
     printMetaInfo(*volume, "description");
     printMetaInfo(*volume, "courtesy");

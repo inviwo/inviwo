@@ -423,7 +423,7 @@ void AnimationController::render() {
                     }
                 }
                 if (const auto* exporter = dynamic_cast<Exporter*>(p);
-                    exporter && (exportOptions_.isChecked())) {
+                    exporter && exportOptions_.isChecked()) {
                     auto base = exportBaseName_.get();
                     replaceInString(base, "UPN", p->getIdentifier());
 

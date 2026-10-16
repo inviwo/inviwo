@@ -236,7 +236,7 @@ namespace {
 
 mat4 textTransform(const TextBoundingBox& bbox, vec2 anchor, float angle, const vec3& axisDir) {
 
-    const vec2 translation = vec2{bbox.textExtent} * 0.5f * -(anchor);
+    const vec2 translation = vec2{bbox.textExtent} * 0.5f * -anchor;
     const auto textCenter = glm::round(vec2{bbox.textExtent} * 0.5f);
 
     // translate to anchor pos and apply rotation

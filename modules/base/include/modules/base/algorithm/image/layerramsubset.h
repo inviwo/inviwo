@@ -94,7 +94,7 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
 
     // adjust the output dimensions to match the intersection of output and input regions
     const ivec2 srcOffset(glm::max(ivec2(0), offset));
-    const ivec2 dstOffset = clampBorderOutsideImage ? ivec2(0) : (glm::max(ivec2(0), -offset));
+    const ivec2 dstOffset = clampBorderOutsideImage ? ivec2(0) : glm::max(ivec2(0), -offset);
     // clamp copy extent to source layer
     const ivec2 copyExtent = glm::min(ivec2(extent) - dstOffset, srcDim - srcOffset);
     const ivec2 dstDim = clampBorderOutsideImage ? copyExtent : ivec2(extent);
