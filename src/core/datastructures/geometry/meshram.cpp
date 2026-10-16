@@ -44,7 +44,7 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
     return *this;
 }
 
-std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
+std::type_index MeshRAM::getTypeIndex() const { return {typeid(MeshRAM)}; }
 
 bool MeshRAM::isValid() const {
     return util::all_of(bufferRAM_, [](const auto& b) { return b->isValid(); });

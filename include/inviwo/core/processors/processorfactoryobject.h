@@ -64,7 +64,7 @@ public:
     /**
      * Overload this function to provide additional information
      */
-    virtual Document getMetaInformation() const { return Document(); }
+    virtual Document getMetaInformation() const { return {}; }
 
     const std::string& getTypeName() const { return typeName_; }
 

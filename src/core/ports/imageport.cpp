@@ -124,7 +124,7 @@ void ImageOutport::clear() {
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
 size2_t ImageOutport::getLargestReqDim() const {
-    if (requestedDimensions_.empty()) return size2_t(1, 1);
+    if (requestedDimensions_.empty()) return {1, 1};
 
     return std::max_element(requestedDimensions_.begin(), requestedDimensions_.end(),
                             [](const auto& a, const auto& b) {

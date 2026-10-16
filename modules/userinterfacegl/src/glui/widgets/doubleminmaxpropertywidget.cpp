@@ -125,11 +125,11 @@ int DoubleMinMaxPropertyWidget::reprToSlider(double val) const {
 }
 
 dvec2 DoubleMinMaxPropertyWidget::sliderToRepr(const ivec2& val) const {
-    return dvec2(sliderToRepr(val.x), sliderToRepr(val.y));
+    return {sliderToRepr(val.x), sliderToRepr(val.y)};
 }
 
 ivec2 DoubleMinMaxPropertyWidget::reprToSlider(const dvec2& val) const {
-    return ivec2(reprToSlider(val.x), reprToSlider(val.y));
+    return {reprToSlider(val.x), reprToSlider(val.y)};
 }
 
 int DoubleMinMaxPropertyWidget::reprSeparationToSlider() const {

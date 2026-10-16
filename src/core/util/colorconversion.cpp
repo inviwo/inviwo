@@ -219,13 +219,13 @@ vec3 XYZ2xyY(const vec3& xyz) {
     // if X, Y, and Z are 0, set xy to chromaticity (xy) of ref. white D65.
     if (glm::all(glm::lessThan(xyz, util::epsilon<vec3>()))) {
         // This xy value is obtained by calling XYZ2xyY(D65WhitePoint)
-        return vec3(0.3127266147f, 0.3290231303f, 0.0f);  // brucelindbloom.com D65
+        return {0.3127266147f, 0.3290231303f, 0.0f};  // brucelindbloom.com D65
     } else {
         const auto& X = xyz.x;
         const auto& Y = xyz.y;
         const auto& Z = xyz.z;
         const float sum = X + Y + Z;
-        return vec3(X / sum, Y / sum, Y);
+        return {X / sum, Y / sum, Y};
     }
 }
 
@@ -238,7 +238,7 @@ vec3 xyY2XYZ(const vec3& xyY) {
         const auto& y = xyY.y;
         const auto& Y = xyY.z;
 
-        return vec3(x * Y / y, Y, (1 - x - y) * Y / y);
+        return {x * Y / y, Y, (1 - x - y) * Y / y};
     }
 }
 
@@ -263,7 +263,7 @@ vec3 rgb2ycbcr(const vec3& rgb) {
     const double cb = (b - y) * 0.565;
     const double cr = (r - y) * 0.713;
 
-    return vec3(static_cast<float>(y), static_cast<float>(cb), static_cast<float>(cr));
+    return {static_cast<float>(y), static_cast<float>(cb), static_cast<float>(cr)};
 }
 
 vec3 ycbcr2rgb(const vec3& ycbcr) {
@@ -275,7 +275,7 @@ vec3 ycbcr2rgb(const vec3& ycbcr) {
     const double g = glm::clamp(y - 0.344136 * cb - 0.714136 * cr, 0.0, 1.0);
     const double b = glm::clamp(y + 1.772 * cb, 0.0, 1.0);
 
-    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
+    return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
 }
 
 vec3 LuvChromaticity2rgb(const vec3& LuvChroma, bool clamp, const vec3& whitePointXYZ) {
@@ -312,7 +312,7 @@ vec3 XYZ2LuvChromaticity(const vec3& XYZ, const vec3& whitePointXYZ) {
     // L <- ifelse(yr > epsilon, 116 * yr^(1/3) - 16, kappa * yr);
     const double L = ((yr > epsilon) ? 116.0 * std::pow(yr, 1.0 / 3.0) - 16.0 : kappa * yr);
 
-    return vec3(L, u_prime, v_prime);
+    return {L, u_prime, v_prime};
 }
 
 vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ) {
@@ -341,7 +341,7 @@ vec3 XYZ2Luv(const vec3& XYZ, const vec3& whitePointXYZ) {
     // v <- 13 * L * (v_prime - v0_prime);
     const double v = 13.0 * L * (v_prime - v0_prime);
 
-    return vec3(L, u, v);
+    return {L, u, v};
 }
 
 vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ) {
@@ -379,7 +379,7 @@ vec3 Luv2XYZ(const vec3& Luv, const vec3& whitePointXYZ) {
     // Z <- X * a + b;
     const double Z = X * a + b;
 
-    return vec3(X, Y, Z);
+    return {X, Y, Z};
 }
 
 vec3 rgb2LuvChromaticity(const vec3& rgb, const vec3& whitePointXYZ) {

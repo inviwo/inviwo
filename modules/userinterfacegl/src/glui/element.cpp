@@ -210,7 +210,7 @@ ivec2 Element::getWidgetExtentScaled() const {
         // no custom scaling
         return widgetExtent_;
     } else {
-        return ivec2(dvec2(widgetExtent_) * scalingFactor_ + 0.5);
+        return {dvec2(widgetExtent_) * scalingFactor_ + 0.5};
     }
 }
 
@@ -395,7 +395,7 @@ vec4 Element::adjustColor(const vec4& color) {
     hsv.z -= lumDiff;
     // reduce saturation
     hsv.y = std::max(0.0f, hsv.x - 0.15f);
-    return vec4(color::hsv2rgb(hsv), color.a);
+    return {color::hsv2rgb(hsv), color.a};
 }
 
 TextRenderer& Element::getCurrentTextRenderer() const {

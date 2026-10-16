@@ -169,10 +169,9 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
 
     switch (getSide()) {
         case LinkDialogTreeItem::Side::Left:
-            return QRectF(centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2),
-                          arrowDim);
+            return {centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2), arrowDim};
         case LinkDialogTreeItem::Side::Right:
-            return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
+            return {centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim};
         default: return {};
     }
 }

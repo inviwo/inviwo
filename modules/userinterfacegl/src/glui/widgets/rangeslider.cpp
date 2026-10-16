@@ -336,14 +336,14 @@ vec2 RangeSlider::getSliderPos() const {
                    sliderLength;
         };
 
-        return vec2(calcPos(value_.y), calcPos(value_.x));
+        return {calcPos(value_.y), calcPos(value_.x)};
     } else {
         const auto calcPos = [this, sliderLength](int pos) {
             return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
                    sliderLength;
         };
 
-        return vec2(calcPos(value_.x), calcPos(value_.y));
+        return {calcPos(value_.x), calcPos(value_.y)};
     }
 }
 

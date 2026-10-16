@@ -239,12 +239,12 @@ InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& inpath,
         std::mismatch(srccore.begin(), srccore.end(), path.begin(), path.end()).first ==
             srccore.end()) {
 
-        return InviwoModule(inviwoRepo, InviwoConf{});
+        return {inviwoRepo, InviwoConf{}};
     }
     if (std::mismatch(incqt.begin(), incqt.end(), path.begin(), path.end()).first == incqt.end() ||
         std::mismatch(srcqt.begin(), srcqt.end(), path.begin(), path.end()).first == srcqt.end()) {
 
-        return InviwoModule(inviwoRepo, QtEditorConf{});
+        return {inviwoRepo, QtEditorConf{}};
     }
 
     const auto findOrg = [](const std::filesystem::path& modulePath,

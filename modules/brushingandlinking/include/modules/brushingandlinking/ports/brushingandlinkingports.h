@@ -322,7 +322,7 @@ public:
     virtual bool hasData() const override { return false; }
     virtual void clear() override {}
 
-    virtual glm::uvec3 getColorCode() const override { return uvec3(160, 182, 240); }
+    virtual glm::uvec3 getColorCode() const override { return {160, 182, 240}; }
     virtual Document getInfo() const override;
     virtual DataInfo getDataInfo() const override;
 

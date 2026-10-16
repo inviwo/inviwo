@@ -85,12 +85,12 @@ int AnimationsModel::rowCount(const QModelIndex& parent) const {
 }
 QVariant AnimationsModel::data(const QModelIndex& index, int role) const {
     if (index.row() < 0 || index.row() >= static_cast<int>(animations_.size())) {
-        return QVariant();
+        return {};
     } else if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        return QVariant(utilqt::toQString(animations_[index.row()].getName()));
+        return {utilqt::toQString(animations_[index.row()].getName())};
     }
 
-    return QVariant();
+    return {};
 }
 
 bool AnimationsModel::setData(const QModelIndex& index, const QVariant& value, int role) {

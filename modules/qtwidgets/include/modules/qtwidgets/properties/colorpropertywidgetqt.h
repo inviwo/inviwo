@@ -208,27 +208,25 @@ template <>
 struct ColorConverter<ivec3> {
     static QColor toQColor(const ivec3& color) {
         const auto c = glm::clamp(color, ivec3(0), ivec3(255));
-        return QColor(c.r, c.g, c.b);
+        return {c.r, c.g, c.b};
     }
-    static ivec3 toGLM(const QColor& color) {
-        return ivec3(color.red(), color.green(), color.blue());
-    }
+    static ivec3 toGLM(const QColor& color) { return {color.red(), color.green(), color.blue()}; }
 };
 template <>
 struct ColorConverter<ivec4> {
     static QColor toQColor(const ivec4& color) {
         const auto c = glm::clamp(color, ivec4(0), ivec4(255));
-        return QColor(c.r, c.g, c.b, c.a);
+        return {c.r, c.g, c.b, c.a};
     }
     static ivec4 toGLM(const QColor& color) {
-        return ivec4(color.red(), color.green(), color.blue(), color.alpha());
+        return {color.red(), color.green(), color.blue(), color.alpha()};
     }
 };
 template <>
 struct ColorConverter<vec3> {
     static QColor toQColor(const vec3& color) {
         const auto c = ivec3{255.0f * glm::clamp(color, vec3(0.0), vec3(1.0))};
-        return QColor(c.r, c.g, c.b);
+        return {c.r, c.g, c.b};
     }
     static vec3 toGLM(const QColor& color) {
         return vec3(color.red(), color.green(), color.blue()) / 255.0f;
@@ -238,7 +236,7 @@ template <>
 struct ColorConverter<vec4> {
     static QColor toQColor(const vec4& color) {
         const auto c = ivec4{255.0f * glm::clamp(color, vec4(0.0), vec4(1.0))};
-        return QColor(c.r, c.g, c.b, c.a);
+        return {c.r, c.g, c.b, c.a};
     }
     static vec4 toGLM(const QColor& color) {
         return vec4(color.red(), color.green(), color.blue(), color.alpha()) / 255.0f;
@@ -248,7 +246,7 @@ template <>
 struct ColorConverter<dvec3> {
     static QColor toQColor(const dvec3& color) {
         const auto c = ivec3{255.0 * glm::clamp(color, dvec3(0.0), dvec3(1.0))};
-        return QColor(c.r, c.g, c.b);
+        return {c.r, c.g, c.b};
     }
     static vec3 toGLM(const QColor& color) {
         return dvec3(color.red(), color.green(), color.blue()) / 255.0;
@@ -258,7 +256,7 @@ template <>
 struct ColorConverter<dvec4> {
     static QColor toQColor(const dvec4& color) {
         const auto c = ivec4{255.0 * glm::clamp(color, dvec4(0.0), dvec4(1.0))};
-        return QColor(c.r, c.g, c.b, c.a);
+        return {c.r, c.g, c.b, c.a};
     }
     static vec4 toGLM(const QColor& color) {
         return dvec4(color.red(), color.green(), color.blue(), color.alpha()) / 255.0;

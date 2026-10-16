@@ -63,7 +63,7 @@ VolumeDisk::VolumeDisk(const VolumeReprConfig& config, const std::filesystem::pa
 
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
-std::type_index VolumeDisk::getTypeIndex() const { return std::type_index(typeid(VolumeDisk)); }
+std::type_index VolumeDisk::getTypeIndex() const { return {typeid(VolumeDisk)}; }
 
 const DataFormatBase* VolumeDisk::getDataFormat() const { return dataFormatBase_; }
 

@@ -201,7 +201,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
     // decode(…) is templated so that it can be used with String = const std::string&
     // or std::string_view (requires at least C++17)
 
-    if (encoded_string.empty()) return std::string();
+    if (encoded_string.empty()) return {};
 
     if (remove_linebreaks) {
 

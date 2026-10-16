@@ -684,7 +684,7 @@ vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) 
     if (clamp) {
         newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
     }
-    return vec3(newpos);
+    return {newpos};
 }
 
 void VolumeSliceGL::updateMaxSliceNumber() {

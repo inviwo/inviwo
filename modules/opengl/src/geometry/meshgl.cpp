@@ -114,7 +114,7 @@ void MeshGL::update(bool editable) {
     defaultMeshInfo_ = owner->getDefaultMeshInfo();
 }
 
-std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }
+std::type_index MeshGL::getTypeIndex() const { return {typeid(MeshGL)}; }
 
 bool MeshGL::isValid() const {
     return util::all_of(bufferGLs_, [](const auto& b) { return b->isValid(); });

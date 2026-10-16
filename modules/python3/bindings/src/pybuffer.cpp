@@ -149,7 +149,7 @@ void exposeBuffer(pybind11::module& m) {
                 }
 
                 auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+                return {pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1)};
             },
             [](BufferBase* buffer, py::array data) {
                 auto rep = buffer->getEditableRepresentation<BufferRAM>();
