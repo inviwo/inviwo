@@ -124,7 +124,9 @@ void SyntaxHighlighter::addMultBlockPattern(QTextCharFormat format, std::string_
     });
 }
 
-void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) { defaultFormat_ = format; }
+void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) {
+    defaultFormat_ = std::move(format);
+}
 
 void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view pattern) {
     rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});

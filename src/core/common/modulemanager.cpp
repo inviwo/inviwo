@@ -476,7 +476,7 @@ std::vector<std::string> ModuleManager::deregisterDependentModules(
 
 void ModuleManager::setModuleLocator(
     std::function<std::filesystem::path(const InviwoModule&)> moduleLocator) {
-    moduleLocator_ = moduleLocator;
+    moduleLocator_ = std::move(moduleLocator);
 }
 std::filesystem::path ModuleManager::locateModule(const InviwoModule& m) const {
     if (moduleLocator_) {

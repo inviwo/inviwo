@@ -342,7 +342,7 @@ std::vector<Capabilities*> InviwoApplication::getModuleCapabilities() {
 }
 
 void InviwoApplication::setPoolResizeWaitCallback(std::function<void(LongWait)> callback) {
-    poolResizeCallback_ = callback;
+    poolResizeCallback_ = std::move(callback);
 }
 
 void InviwoApplication::processEvents() {
@@ -350,7 +350,7 @@ void InviwoApplication::processEvents() {
 }
 
 void InviwoApplication::setProcessEventsCallback(std::function<void()> callback) {
-    processEventsCallback_ = callback;
+    processEventsCallback_ = std::move(callback);
 }
 
 void InviwoApplication::resizePool(size_t newSize) {

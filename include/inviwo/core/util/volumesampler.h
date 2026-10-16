@@ -66,7 +66,7 @@ using VolumeDoubleSampler = VolumeSampler<util::glmtype_t<double, N>>;
 template <typename ReturnType>
 VolumeSampler<ReturnType>::VolumeSampler(std::shared_ptr<const Volume> vol, CoordinateSpace space)
     : VolumeSampler(*vol, space) {
-    volume_ = vol;
+    volume_ = std::move(vol);
 }
 
 template <typename ReturnType>

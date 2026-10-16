@@ -69,7 +69,7 @@ template <typename ReturnType, typename DataType>
 TemplateVolumeSampler<ReturnType, DataType>::TemplateVolumeSampler(
     std::shared_ptr<const Volume> sharedVolume, CoordinateSpace space)
     : TemplateVolumeSampler(*sharedVolume, space) {
-    sharedVolume_ = sharedVolume;
+    sharedVolume_ = std::move(sharedVolume);
 }
 
 template <typename ReturnType, typename DataType>
