@@ -156,7 +156,7 @@ bool RenderContext::hasDefaultRenderContext() const { return defaultContext_ != 
 
 CanvasContextHolder::CanvasContextHolder(Canvas* canvas) : canvas_{canvas} {}
 
-void CanvasContextHolder::activate() { return canvas_->activate(); }
+void CanvasContextHolder::activate() { canvas_->activate(); }
 
 std::unique_ptr<Canvas> CanvasContextHolder::createHiddenCanvas() {
     return canvas_->createHiddenCanvas();
