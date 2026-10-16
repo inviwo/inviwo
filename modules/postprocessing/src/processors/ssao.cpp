@@ -322,10 +322,10 @@ void SSAO::initHbao() {
         hbaoRandom[i].z = rand2;
         hbaoRandom[i].w = 0;
 #define SCALE ((1 << 15))
-        hbaoRandomShort[i * 4 + 0] = (signed short)(SCALE * hbaoRandom[i].x);
-        hbaoRandomShort[i * 4 + 1] = (signed short)(SCALE * hbaoRandom[i].y);
-        hbaoRandomShort[i * 4 + 2] = (signed short)(SCALE * hbaoRandom[i].z);
-        hbaoRandomShort[i * 4 + 3] = (signed short)(SCALE * hbaoRandom[i].w);
+        hbaoRandomShort[i * 4 + 0] = static_cast<signed short>(SCALE * hbaoRandom[i].x);
+        hbaoRandomShort[i * 4 + 1] = static_cast<signed short>(SCALE * hbaoRandom[i].y);
+        hbaoRandomShort[i * 4 + 2] = static_cast<signed short>(SCALE * hbaoRandom[i].z);
+        hbaoRandomShort[i * 4 + 3] = static_cast<signed short>(SCALE * hbaoRandom[i].w);
 #undef SCALE
     }
 
@@ -439,11 +439,13 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     const int quarterHeight = ((height + 3) / 4);
 
     hbaoUboData_.InvQuarterResolution =
-        vec2(1.0f / float(quarterWidth), 1.0f / float(quarterHeight));
-    hbaoUboData_.InvFullResolution = vec2(1.0f / float(width), 1.0f / float(height));
+        vec2(1.0f / static_cast<float>(quarterWidth), 1.0f / static_cast<float>(quarterHeight));
+    hbaoUboData_.InvFullResolution =
+        vec2(1.0f / static_cast<float>(width), 1.0f / static_cast<float>(height));
 
     for (int i = 0; i < HBAO_RANDOM_ELEMENTS; i++) {
-        hbaoUboData_.float2Offsets[i] = vec4(float(i % 4) + 0.5f, float(i / 4) + 0.5f, 0, 0);
+        hbaoUboData_.float2Offsets[i] =
+            vec4(static_cast<float>(i % 4) + 0.5f, static_cast<float>(i / 4) + 0.5f, 0, 0);
         hbaoUboData_.jitters[i] = hbaoRandom[i];
     }
 }
@@ -540,7 +542,7 @@ void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int widt
 
     // Uniforms
     glUniform1f(locations_.hbaoBlurSharpness, sharpness / meters2viewspace);
-    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 1.0f / float(width), 0);
+    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 1.0f / static_cast<float>(width), 0);
     glUniform1i(locations_.hbaoBlurTexSource, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -558,7 +560,7 @@ void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int widt
 
     // Uniforms
     glUniform1f(locations_.hbaoBlurSharpness, sharpness / meters2viewspace);
-    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 0, 1.0f / float(height));
+    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 0, 1.0f / static_cast<float>(height));
     glUniform1i(locations_.hbaoBlurTexSource, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);

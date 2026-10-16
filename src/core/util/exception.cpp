@@ -48,7 +48,7 @@ std::vector<std::string> stackTrace() {
     if (InviwoApplication::isInitialized()) {
         if (InviwoApplication::getPtr()->getSystemSettings().stackTraceInException_) {
             auto stack = getStackTrace();
-            const auto offset = std::min(size_t(4), stack.size());
+            const auto offset = std::min(static_cast<size_t>(4), stack.size());
             stack.erase(stack.begin(), stack.begin() + offset);
             return stack;
         }

@@ -91,7 +91,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
     }
 
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
-    const unsigned char* dataPtr = (const unsigned char*)vr->getData();
+    const unsigned char* dataPtr = static_cast<const unsigned char*>(vr->getData());
 
     const size3_t dim = vr->getDimensions();
     const dmat3 basis = data->getBasis();
@@ -113,28 +113,32 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
     unsigned char* description = nullptr;
     if (auto descMetaData = data->getMetaData<StringMetaData>("description")) {
         description = new unsigned char[descMetaData->get().size() + 1];
-        strncpy((char*)description, descMetaData->get().c_str(), descMetaData->get().size());
+        strncpy(reinterpret_cast<char*>(description), descMetaData->get().c_str(),
+                descMetaData->get().size());
         description[descMetaData->get().size()] = '\0';
     }
 
     unsigned char* courtesy = nullptr;
     if (auto courMetaData = data->getMetaData<StringMetaData>("courtesy")) {
         courtesy = new unsigned char[courMetaData->get().size() + 1];
-        strncpy((char*)courtesy, courMetaData->get().c_str(), courMetaData->get().size());
+        strncpy(reinterpret_cast<char*>(courtesy), courMetaData->get().c_str(),
+                courMetaData->get().size());
         courtesy[courMetaData->get().size()] = '\0';
     }
 
     unsigned char* parameter = nullptr;
     if (auto paraMetaData = data->getMetaData<StringMetaData>("parameter")) {
         parameter = new unsigned char[paraMetaData->get().size() + 1];
-        strncpy((char*)parameter, paraMetaData->get().c_str(), paraMetaData->get().size());
+        strncpy(reinterpret_cast<char*>(parameter), paraMetaData->get().c_str(),
+                paraMetaData->get().size());
         parameter[paraMetaData->get().size()] = '\0';
     }
 
     unsigned char* comment = nullptr;
     if (auto commMetaData = data->getMetaData<StringMetaData>("comment")) {
         comment = new unsigned char[commMetaData->get().size() + 1];
-        strncpy((char*)comment, commMetaData->get().c_str(), commMetaData->get().size());
+        strncpy(reinterpret_cast<char*>(comment), commMetaData->get().c_str(),
+                commMetaData->get().size());
         comment[commMetaData->get().size()] = '\0';
     }
 
