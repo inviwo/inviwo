@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
                                   inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                   cmdParser.getModuleSearchPaths());
 
-    auto plw = new inviwo::PropertyListWidget(&mainWindow, &inviwoApp);
+    auto* plw = new inviwo::PropertyListWidget(&mainWindow, &inviwoApp);
     mainWindow.addDockWidget(Qt::RightDockWidgetArea, plw);
     plw->setFloating(false);
     plw->hide();
@@ -136,12 +136,12 @@ int main(int argc, char** argv) {
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
     cmdParser.add(&fullscreenArg, [&]() {
-        auto network = inviwoApp.getProcessorNetwork();
+        auto* network = inviwoApp.getProcessorNetwork();
 
         std::vector<inviwo::ProcessorWidget*> widgets;
         network->forEachProcessor([&](inviwo::Processor* p) {
             if (p->isSink()) {
-                if (auto widget = p->getProcessorWidget(); widget && (widget->isVisible())) {
+                if (auto* widget = p->getProcessorWidget(); widget && (widget->isVisible())) {
                     widgets.push_back(widget);
                 }
             }
@@ -158,9 +158,9 @@ int main(int argc, char** argv) {
         "Processor Identifier");
 
     cmdParser.add(&centralWidget, [&]() {
-        auto network = inviwoApp.getProcessorNetwork();
-        if (auto processor = network->getProcessorByIdentifier(centralWidget.getValue())) {
-            if (auto widget = dynamic_cast<QWidget*>(processor->getProcessorWidget())) {
+        auto* network = inviwoApp.getProcessorNetwork();
+        if (auto* processor = network->getProcessorByIdentifier(centralWidget.getValue())) {
+            if (auto* widget = dynamic_cast<QWidget*>(processor->getProcessorWidget())) {
                 mainWindow.setCentralWidget(widget);
                 widget->setWindowFlags(Qt::Widget);
                 mainWindow.show();
@@ -173,14 +173,14 @@ int main(int argc, char** argv) {
         false, "Property path");
 
     cmdParser.add(&exposeProperties, [&]() {
-        auto network = inviwoApp.getProcessorNetwork();
-        for (auto& path : exposeProperties.getValue()) {
+        auto* network = inviwoApp.getProcessorNetwork();
+        for (const auto& path : exposeProperties.getValue()) {
             auto [processorId, propertyPath] = inviwo::util::splitByFirst(path, '.');
-            if (auto processor = network->getProcessorByIdentifier(processorId)) {
+            if (auto* processor = network->getProcessorByIdentifier(processorId)) {
                 if (propertyPath.empty()) {
                     plw->addProcessorProperties(processor);
                 } else {
-                    if (auto prop = processor->getPropertyByPath(propertyPath)) {
+                    if (auto* prop = processor->getPropertyByPath(propertyPath)) {
                         plw->addPropertyWidgets(prop);
                     }
                 }

@@ -138,11 +138,11 @@ void Recorder::queueFrame(const LayerRAM& layer) {
             }
 
             if (layer.getDataFormat()->getId() == DataFormatId::Vec4UInt8) {
-                auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
+                const auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
                 const util::IndexMapper2D im{layer.getDimensions()};
 
                 for (int y = 0; y < height; y++) {
-                    auto rowStart = glm::value_ptr(data[im(0, y)]);
+                    const auto* rowStart = glm::value_ptr(data[im(0, y)]);
                     std::copy(rowStart, rowStart + 4 * width,
                               &pict->data[0][(height - y - 1) * pict->linesize[0]]);
                 }

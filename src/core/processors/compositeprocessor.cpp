@@ -143,7 +143,7 @@ ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
         subNetwork_->clear();
-        auto wm = app_->getWorkspaceManager();
+        auto* wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
@@ -225,14 +225,14 @@ void CompositeProcessor::onProcessorNetworkDidAddProcessor(Processor* p) {
                                  [this](Property& prop) { registerProperty(&prop); }};
     p->accept(visitor);
 
-    if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
+    if (auto* sink = dynamic_cast<CompositeSinkBase*>(p)) {
         auto& port = sink->getSuperOutport();
         const auto id = util::findUniqueIdentifier(
             port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
         port.setIdentifier(id);
         addPort(port);
         sinks_.push_back(sink);
-    } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
+    } else if (auto* source = dynamic_cast<CompositeSourceBase*>(p)) {
         auto& port = source->getSuperInport();
         const auto id = util::findUniqueIdentifier(
             port.getIdentifier(), [&](std::string_view id) { return getPort(id) == nullptr; }, "");
@@ -250,10 +250,10 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
                                  [this](Property& prop) { unregisterProperty(&prop); }};
     p->accept(visitor);
 
-    if (auto sink = dynamic_cast<CompositeSinkBase*>(p)) {
+    if (auto* sink = dynamic_cast<CompositeSinkBase*>(p)) {
         removePort(&sink->getSuperOutport());
         std::erase(sinks_, sink);
-    } else if (auto source = dynamic_cast<CompositeSourceBase*>(p)) {
+    } else if (auto* source = dynamic_cast<CompositeSourceBase*>(p)) {
         removePort(&source->getSuperInport());
         std::erase(sources_, source);
     }
@@ -290,7 +290,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
     const auto index = [&]() {
-        if (auto meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
+        if (auto* meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
             return meta->get();
         } else {
             subProperty->setMetaData<IntMetaData>(meta::index, static_cast<int>(comp.size()));
@@ -313,16 +313,16 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     comp.insertProperty(std::distance(comp.begin(), it), superProperty.get(), false);
 
     LambdaNetworkVisitor visitor{[&](Property& superProp) {
-        auto subProp = findSubProperty(&superProp);
+        auto* subProp = findSubProperty(&superProp);
         if (!subProp) return;
 
-        if (auto meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
+        if (auto* meta = subProp->getMetaData<StringMetaData>(meta::displayName)) {
             superProp.setDisplayName(meta->get());
         }
-        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::visible)) {
+        if (auto* meta = subProp->getMetaData<BoolMetaData>(meta::visible)) {
             superProp.setVisible(meta->get());
         }
-        if (auto meta = subProp->getMetaData<BoolMetaData>(meta::readOnly)) {
+        if (auto* meta = subProp->getMetaData<BoolMetaData>(meta::readOnly)) {
             superProp.setReadOnly(meta->get());
         }
         superProp.addObserver(&superObserver);
@@ -330,17 +330,17 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     superProperty->accept(visitor);
 
     superObserver.onDisplayNameChange = [this](Property* superProp, std::string_view name) {
-        if (auto subProp = findSubProperty(superProp)) {
+        if (auto* subProp = findSubProperty(superProp)) {
             subProp->setMetaData<StringMetaData>(meta::displayName, std::string{name});
         }
     };
     superObserver.onVisibleChange = [this](Property* superProp, bool visible) {
-        if (auto subProp = findSubProperty(superProp)) {
+        if (auto* subProp = findSubProperty(superProp)) {
             subProp->setMetaData<BoolMetaData>(meta::visible, visible);
         }
     };
     superObserver.onReadOnlyChange = [this](Property* superProp, bool readOnly) {
-        if (auto subProp = findSubProperty(superProp)) {
+        if (auto* subProp = findSubProperty(superProp)) {
             subProp->setMetaData<BoolMetaData>(meta::readOnly, readOnly);
         }
     };
@@ -385,7 +385,7 @@ CompositeProcessor::PropertyHandler::~PropertyHandler() {
 }
 
 void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         std::string superId{orgProp->getPath()};
         replaceInString(superId, ".", "_");
         superProperty->setIdentifier(superId);
@@ -393,25 +393,25 @@ void CompositeProcessor::onSetIdentifier(Property* orgProp, const std::string&) 
 }
 
 void CompositeProcessor::onSetDisplayName(Property* orgProp, const std::string& displayName) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setDisplayName(displayName);
     }
 }
 
 void CompositeProcessor::onSetSemantics(Property* orgProp, const PropertySemantics& semantics) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setSemantics(semantics);
     }
 }
 
 void CompositeProcessor::onSetReadOnly(Property* orgProp, bool readonly) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setReadOnly(readonly);
     }
 }
 
 void CompositeProcessor::onSetVisible(Property* orgProp, bool visible) {
-    if (auto superProperty = getSuperProperty(orgProp)) {
+    if (auto* superProperty = getSuperProperty(orgProp)) {
         superProperty->setVisible(visible);
     }
 }

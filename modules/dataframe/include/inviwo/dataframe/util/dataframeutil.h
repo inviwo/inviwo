@@ -224,7 +224,7 @@ IVW_MODULE_DATAFRAME_API std::string createToolTipForRow(const DataFrame& datafr
 #include <warn/ignore/conversion>
 template <typename Pred>
 std::vector<std::uint32_t> selectRows(std::shared_ptr<const Column> col, Pred pred) {
-    if (auto catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
+    if (const auto* catCol = dynamic_cast<const CategoricalColumn*>(col.get())) {
         std::vector<std::uint32_t> rows;
         for (auto&& [row, v] : util::enumerate<std::uint32_t>(catCol->values())) {
             if (pred(v)) {

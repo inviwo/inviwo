@@ -63,7 +63,7 @@ Document MeshInformationVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> MeshInformationVisualizer::getSupportedFileExtensions() const {
-    auto rf = util::getDataReaderFactory(app_);
+    auto* rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Mesh>();
     return exts;
 }

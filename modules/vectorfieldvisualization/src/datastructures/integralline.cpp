@@ -88,7 +88,7 @@ bool IntegralLine::hasMetaData(const std::string& name) const {
 std::vector<std::string> IntegralLine::getMetaDataKeys() const {
     std::vector<std::string> keys;
     keys.reserve(metaData_.size());
-    for (auto& m : metaData_) {
+    for (const auto& m : metaData_) {
         keys.push_back(m.first);
     }
     return keys;

@@ -281,13 +281,13 @@ QModelIndex WorkspaceTreeModel::index(int row, int column, const QModelIndex& pa
 Qt::ItemFlags WorkspaceTreeModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) return Qt::NoItemFlags;
 
-    auto item = static_cast<TreeItem*>(index.internalPointer());
+    auto* item = static_cast<TreeItem*>(index.internalPointer());
     return item->flags();
 }
 
 QVariant WorkspaceTreeModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return QVariant();
-    auto item = static_cast<TreeItem*>(index.internalPointer());
+    auto* item = static_cast<TreeItem*>(index.internalPointer());
 
     return item->data(index.column(), role);
 }
@@ -301,8 +301,8 @@ QVariant WorkspaceTreeModel::headerData(int, Qt::Orientation orientation, int ro
 QModelIndex WorkspaceTreeModel::parent(const QModelIndex& index) const {
     if (!index.isValid()) return {};
 
-    if (auto item = getItem(index)) {
-        if (auto parent = item->parent(); parent && (parent != root_.get())) {
+    if (auto* item = getItem(index)) {
+        if (auto* parent = item->parent(); parent && (parent != root_.get())) {
             return createIndex(parent->row(), 0, parent);
         }
     }
@@ -359,7 +359,7 @@ QModelIndex WorkspaceTreeModel::getIndex(TreeItem* item, int column) const {
 
 TreeItem* WorkspaceTreeModel::getItem(const QModelIndex& index) const {
     if (index.isValid()) {
-        if (auto item = static_cast<TreeItem*>(index.internalPointer())) {
+        if (auto* item = static_cast<TreeItem*>(index.internalPointer())) {
             return item;
         }
     }
@@ -371,7 +371,7 @@ TreeItem* WorkspaceTreeModel::getCategory(std::string_view caption) const {
 }
 
 QModelIndex WorkspaceTreeModel::getCategoryIndex(std::string_view category) {
-    if (auto item = getCategory(category)) {
+    if (auto* item = getCategory(category)) {
         return getIndex(item);
     } else {
         return QModelIndex{};
@@ -380,7 +380,7 @@ QModelIndex WorkspaceTreeModel::getCategoryIndex(std::string_view category) {
 
 void WorkspaceTreeModel::updateRecentWorkspaces(const QStringList& recentFiles) {
     std::vector<std::unique_ptr<TreeItem>> items;
-    for (auto& elem : recentFiles) {
+    for (const auto& elem : recentFiles) {
         const std::filesystem::path filename = utilqt::toPath(elem);
         if (std::filesystem::is_regular_file(filename)) {
             items.push_back(std::make_unique<TreeItem>(
@@ -433,7 +433,7 @@ void WorkspaceTreeModel::updateCustomEntries() {
 
     std::vector<std::unique_ptr<TreeItem>> items;
     for (const auto* fileProp : props.getPropertiesByType<FileProperty>()) {
-        auto& path = fileProp->get();
+        const auto& path = fileProp->get();
 
         if (!std::filesystem::is_directory(path)) continue;
 

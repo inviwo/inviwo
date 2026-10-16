@@ -411,7 +411,7 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
     // same core version.
     for (const auto& [name, version] : obj.dependencies) {
 
-        if (auto depObj = getFactoryObject(name)) {
+        if (auto* depObj = getFactoryObject(name)) {
             if (!getModuleByIdentifier(depObj->name)) {
                 fmt::format_to(std::back_inserter(err),
                                "\nModule dependency: {} failed to register", depObj->name);

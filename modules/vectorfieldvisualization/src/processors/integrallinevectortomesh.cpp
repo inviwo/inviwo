@@ -287,7 +287,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
             uint32_t idx = 0;
             const auto data = lines_.getData();
-            for (auto& line : *data) {
+            for (const auto& line : *data) {
                 const util::OnScopeExit incIdx([&idx]() { idx++; });
                 const auto size = line.getPositions().size();
                 if (size == 0) continue;
@@ -376,7 +376,7 @@ void IntegralLineVectorToMesh::process() {
 
     uint32_t lineIdx = 0;
     const auto data = lines_.getData();
-    for (auto& line : *data) {
+    for (const auto& line : *data) {
         const util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
         auto size = line.getPositions().size();
 

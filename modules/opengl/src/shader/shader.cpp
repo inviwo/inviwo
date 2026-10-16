@@ -103,7 +103,7 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
     , onReloadCallback_{}
     , label_{} {
 
-    for (auto& item : items) {
+    for (const auto& item : items) {
         addShaderObject(item.first, utilgl::findShaderResource(item.second));
     }
 
@@ -125,7 +125,7 @@ Shader::Shader(
     , onReloadCallback_{}
     , label_{} {
 
-    for (auto& item : items) {
+    for (const auto& item : items) {
         addShaderObject(item.first, item.second);
     }
     if (buildShader) build();
@@ -373,7 +373,7 @@ std::string Shader::processLog(std::string log) const {
 
         const int origLineNumber = utilgl::getLogLineNumber(line);
 
-        auto obj = getShaderObject(type);
+        const auto* obj = getShaderObject(type);
         if (obj && origLineNumber > 0) {
             const auto res = obj->resolveLine(origLineNumber - 1);
             const auto lineNumber = res.second;

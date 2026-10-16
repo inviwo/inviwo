@@ -77,8 +77,8 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(120, 120)));  // default size
 
-    auto centralWidget = new QWidget();
-    auto vLayout = new QVBoxLayout(centralWidget);
+    auto* centralWidget = new QWidget();
+    auto* vLayout = new QVBoxLayout(centralWidget);
     vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -285,7 +285,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
         auto dl = h.append("dl");
         std::map<std::string, LicenseInfo> licenses;
         for (const auto& mfo : app->getModuleManager().getFactoryObjects()) {
-            for (auto& license : mfo.licenses) {
+            for (const auto& license : mfo.licenses) {
                 licenses.try_emplace(license.id, license);
             }
         }
@@ -322,7 +322,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
             const auto moduleName = utilqt::fromQString(query.queryItemValue("module"));
             auto licenseId = utilqt::fromQString(query.queryItemValue("id"));
 
-            auto mfo = app->getModuleManager().getFactoryObject(moduleName);
+            auto* mfo = app->getModuleManager().getFactoryObject(moduleName);
             if (!mfo) return;
 
             auto& licenses = mfo->licenses;
@@ -345,10 +345,10 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
                 li.append("a", license.url, {{"href", license.url}});
             }
 
-            auto mod = app->getModuleByIdentifier(moduleName);
+            auto* mod = app->getModuleByIdentifier(moduleName);
             if (!mod) return;
             const auto modulePath = mod->getPath();
-            for (auto& file : license.files) {
+            for (const auto& file : license.files) {
 
                 const auto defaultLicensePath = modulePath / "licenses" / file;
                 const auto fallbackLicensePath = std::filesystem::path{build::binaryDirectory} /

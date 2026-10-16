@@ -153,7 +153,7 @@ void TextRenderer::setFont(const std::filesystem::path& fontPath) {
 
 std::string_view::const_iterator TextRenderer::validateString(std::string_view str) const {
     // check input string for invalid utf8 encoding, process only valid part
-    auto end = utf8::find_invalid(str.begin(), str.end());
+    const auto* end = utf8::find_invalid(str.begin(), str.end());
     if (end != str.end()) {
         log::warn("Invalid UTF-8 encoding detected. This part is fine: {}",
                   std::string(str.begin(), end));
@@ -182,7 +182,7 @@ TextBoundingBox TextRenderer::computeBoundingBox(std::string_view str) {
     int verticalOffset = 0;
 
     // check input string for invalid utf8 encoding
-    auto end = validateString(str);
+    const auto* end = validateString(str);
 
     for (utf8::iterator it{str.begin(), str.begin(), end};
          it != utf8::iterator{end, str.begin(), end}; ++it) {
@@ -252,14 +252,14 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
     shader_->setUniform("tex", texUnit);
     shader_->setUniform("color", color);
 
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     const utilgl::Enable<MeshGL> enable(rect);
 
     ivec2 glyphPos{0};
     int verticalOffset = 0;
 
     // check input string for invalid utf8 encoding
-    auto end = validateString(str);
+    const auto* end = validateString(str);
 
     for (utf8::iterator it{str.begin(), str.begin(), end};
          it != utf8::iterator{end, str.begin(), end}; ++it) {
@@ -414,7 +414,7 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
     const auto state = setupRenderState(
         texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
-    for (auto& elem : entries) {
+    for (const auto& elem : entries) {
         // set up viewport
         const utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
                                              elem.texExtent.y);

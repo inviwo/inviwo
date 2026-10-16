@@ -188,7 +188,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
 
     const auto& recorders = manager.getRecorderFactories();
 
-    for (auto& key : recorders.getKeyView()) {
+    for (const auto& key : recorders.getKeyView()) {
         auto* recorderFactory = recorders.getFactoryObject(key);
 
         renderOptions.addProperty(recorderFactory->options(), false);
@@ -499,7 +499,7 @@ void AnimationController::eval(Seconds oldTime, Seconds newTime) {
 }
 
 void AnimationController::setAnimation(Animation& animation) {
-    auto oldAnim = animation_;
+    auto* oldAnim = animation_;
     animation_ = &animation;
 
     notifyAnimationChanged(this, oldAnim, animation_);

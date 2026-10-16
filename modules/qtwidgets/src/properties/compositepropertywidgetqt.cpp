@@ -54,7 +54,7 @@ void CompositePropertyWidgetQt::initState() {
     CollapsibleGroupBoxWidgetQt::initState();
     CollapsibleGroupBoxWidgetQt::setCollapsed(compProperty_->isCollapsed());
 
-    for (auto& prop : compProperty_->getProperties()) {
+    for (const auto& prop : compProperty_->getProperties()) {
         addProperty(prop);
     }
     updateFromProperty();

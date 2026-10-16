@@ -73,7 +73,7 @@ void TrianglesToWireframe::process() {
     wireframe->setModelMatrix(mesh->getModelMatrix());
     wireframe->setWorldMatrix(mesh->getWorldMatrix());
 
-    for (auto& buf : mesh->getBuffers()) {
+    for (const auto& buf : mesh->getBuffers()) {
         wireframe->addBuffer(buf.first, std::shared_ptr<BufferBase>(buf.second->clone()));
     }
 
@@ -82,7 +82,7 @@ void TrianglesToWireframe::process() {
     wireframe->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                           std::make_shared<IndexBuffer>(indicesRam));
 
-    for (auto& ib : mesh->getIndexBuffers()) {
+    for (const auto& ib : mesh->getIndexBuffers()) {
         if (ib.first.dt == DrawType::Triangles) {
             meshutil::forEachTriangle(ib.first, *ib.second,
                                       [&vec](uint32_t i0, uint32_t i1, uint32_t i2) {

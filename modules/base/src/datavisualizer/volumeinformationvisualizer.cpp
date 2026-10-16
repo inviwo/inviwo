@@ -63,7 +63,7 @@ Document VolumeInformationVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> VolumeInformationVisualizer::getSupportedFileExtensions() const {
-    auto rf = util::getDataReaderFactory(app_);
+    auto* rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Volume>();
     auto exts2 = rf->getExtensionsForType<VolumeSequence>();
     exts.insert(exts.end(), exts2.begin(), exts2.end());
