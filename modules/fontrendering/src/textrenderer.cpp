@@ -572,7 +572,7 @@ TextRenderer::FontCache& TextRenderer::getFontCache() {
 }
 
 void TextRenderer::createDefaultGlyphAtlas() {
-    if (glyphAtlas_.find(getFontTuple()) != glyphAtlas_.end()) {
+    if (glyphAtlas_.contains(getFontTuple())) {
         // glyph atlas already exists
         return;
     }

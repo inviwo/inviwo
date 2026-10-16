@@ -85,8 +85,8 @@ static void recursiveTopologicalModuleFactoryObjectSort(
         return;
     }
 
-    if (visited.find(lname) != visited.end()) return;  // Already visited;
-    if (tmpVisited.find(lname) != tmpVisited.end()) {
+    if (visited.contains(lname)) return;  // Already visited;
+    if (tmpVisited.contains(lname)) {
         throw Exception(SourceContext{}, "Dependency graph not a DAG");
     }
 
@@ -110,7 +110,7 @@ void topologicalModuleFactoryObjectSort(
     std::vector<std::string> sorted;
     for (auto it = start; it != end; ++it) {
         const auto lname = toLower((*it)->name);
-        if (visited.find(lname) == visited.end()) {
+        if (!visited.contains(lname)) {
             recursiveTopologicalModuleFactoryObjectSort(start, end, lname, visited, tmpVisited,
                                                         sorted);
         }

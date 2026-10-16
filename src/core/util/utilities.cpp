@@ -85,7 +85,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
             StrBuffer filepath;
             if (name.empty()) {
                 filepath.append("{}", cp->getIdentifier());
-            } else if (name.find("UPN") != std::string::npos) {
+            } else if (name.contains("UPN")) {
                 auto [before, after] = util::splitByFirst(name, "UPN");
                 filepath.append("{}{}{}", before, cp->getIdentifier(), after);
             } else if (allConsideredCanvases.size() > 1) {

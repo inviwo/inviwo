@@ -99,9 +99,9 @@ static PickingPressItem mouseButtonToPressItem(MouseButton mb) {
 }
 static PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
     PickingPressItems res = PickingPressItem::None;
-    if (mb.count(MouseButton::Left)) res |= PickingPressItem::Primary;
-    if (mb.count(MouseButton::Middle)) res |= PickingPressItem::Tertiary;
-    if (mb.count(MouseButton::Right)) res |= PickingPressItem::Secondary;
+    if (mb.contains(MouseButton::Left)) res |= PickingPressItem::Primary;
+    if (mb.contains(MouseButton::Middle)) res |= PickingPressItem::Tertiary;
+    if (mb.contains(MouseButton::Right)) res |= PickingPressItem::Secondary;
     return res;
 }
 
