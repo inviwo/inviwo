@@ -46,11 +46,11 @@ H5::Group load(const std::filesystem::path& filename, const std::string& path) {
 
 H5::DSetAccPropList accessPropertyList(const std::filesystem::path& filename) {
     const H5::DSetAccPropList dapl{H5::DSetAccPropList::DEFAULT};
-    if (filename.has_parent_path()) {
-        if (H5Pset_efile_prefix(dapl.getId(), filename.parent_path().generic_string().c_str()) < 0) {
-            throw Exception{"could not set efile prefix"};
-        }
+    if ((filename.has_parent_path()) &&
+        (H5Pset_efile_prefix(dapl.getId(), filename.parent_path().generic_string().c_str()) < 0)) {
+        throw Exception{"could not set efile prefix"};
     }
+
     return dapl;
 }
 

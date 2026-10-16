@@ -266,13 +266,12 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
                 gestureEvent->markAsUsed();
                 return;
             }
-        } else if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-            if (mouseEvent->button() == MouseButton::Middle) {
-                // setLightPosFromScreenCoords(mouseEvent->posNormalized());
-                mouseEvent->markAsUsed();
-                screenPos_->set(static_cast<vec2>(mouseEvent->posNormalized()));
-                return;
-            }
+        } else if (auto mouseEvent = dynamic_cast<MouseEvent*>(event);
+                   mouseEvent && (mouseEvent->button() == MouseButton::Middle)) {
+            // setLightPosFromScreenCoords(mouseEvent->posNormalized());
+            mouseEvent->markAsUsed();
+            screenPos_->set(static_cast<vec2>(mouseEvent->posNormalized()));
+            return;
         }
     }
 

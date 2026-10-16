@@ -359,16 +359,15 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-        if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier())) {
-            if (moduleInfo->version < inviwoModule.getVersion()) {
-                const auto converter = inviwoModule.getConverter(moduleInfo->version);
-                deserializer.convertVersion(converter.get());
-                log::message(
-                    deserializer, LogLevel::Warn,
-                    "Loading old workspace ({}). {} module version: {}. Updating to version: {}.",
-                    deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
-                    inviwoModule.getVersion());
-            }
+        if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier());
+            moduleInfo && (moduleInfo->version < inviwoModule.getVersion())) {
+            const auto converter = inviwoModule.getConverter(moduleInfo->version);
+            deserializer.convertVersion(converter.get());
+            log::message(
+                deserializer, LogLevel::Warn,
+                "Loading old workspace ({}). {} module version: {}. Updating to version: {}.",
+                deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
+                inviwoModule.getVersion());
         }
     }
 }

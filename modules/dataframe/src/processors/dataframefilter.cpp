@@ -130,11 +130,10 @@ void DataFrameFilter::process() {
         return;
     }
 
-    if (brushingMode_.isModified()) {
-        if ((brushingMode_ == BrushingMode::None) || (brushingMode_ == BrushingMode::FilterOnly)) {
-            // unset any previous local filtering
-            brushing_.filter(getIdentifier(), BitSet());
-        }
+    if ((brushingMode_.isModified()) &&
+        ((brushingMode_ == BrushingMode::None) || (brushingMode_ == BrushingMode::FilterOnly))) {
+        // unset any previous local filtering
+        brushing_.filter(getIdentifier(), BitSet());
     }
 
     auto rows = dataframe::selectRows(*df, createFilters());

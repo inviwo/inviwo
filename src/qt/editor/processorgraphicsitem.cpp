@@ -646,11 +646,10 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
             std::string bestModule;
             for (const auto& m : app->getModuleManager().getInviwoModules()) {
                 const auto relpath = processorFile.lexically_relative(m.getPath());
-                if (!relpath.empty() && !relpath.string().starts_with("..")) {
-                    if (best.empty() || relpath.string().length() < best.string().length()) {
-                        best = relpath;
-                        bestModule = m.getIdentifier();
-                    }
+                if ((!relpath.empty() && !relpath.string().starts_with("..")) &&
+                    (best.empty() || relpath.string().length() < best.string().length())) {
+                    best = relpath;
+                    bestModule = m.getIdentifier();
                 }
             }
 

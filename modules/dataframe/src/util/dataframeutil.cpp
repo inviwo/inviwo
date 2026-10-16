@@ -526,13 +526,11 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                                     "one of the others",
                                     col->getHeader());
                 }
-                if (it->second != col->getBuffer()->getDataFormat()) {
-                    if (it == columnType.end()) {
-                        throw Exception(SourceContext{},
-                                        "Column {} has different format in DataFrames ({}, {})",
-                                        col->getHeader(), it->second->getString(),
-                                        col->getBuffer()->getDataFormat()->getString());
-                    }
+                if ((it->second != col->getBuffer()->getDataFormat()) && (it == columnType.end())) {
+                    throw Exception(SourceContext{},
+                                    "Column {} has different format in DataFrames ({}, {})",
+                                    col->getHeader(), it->second->getString(),
+                                    col->getBuffer()->getDataFormat()->getString());
                 }
             }
         }

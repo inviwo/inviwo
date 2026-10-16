@@ -301,10 +301,8 @@ QModelIndex WorkspaceTreeModel::parent(const QModelIndex& index) const {
     if (!index.isValid()) return {};
 
     if (auto item = getItem(index)) {
-        if (auto parent = item->parent()) {
-            if (parent != root_.get()) {
-                return createIndex(parent->row(), 0, parent);
-            }
+        if (auto parent = item->parent(); parent && (parent != root_.get())) {
+            return createIndex(parent->row(), 0, parent);
         }
     }
     return {};
