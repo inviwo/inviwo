@@ -96,6 +96,7 @@ PythonEditorWidget::PythonEditorWidget(
     std::function<void(UnorderedStringMap<QVariant>&)> stateLoader,
     std::function<void(const UnorderedStringMap<QVariant>&)> stateSaver)
     : InviwoDockWidget(tr("Python Editor[*]"), parent, "PythonEditorWidget")
+    , mainWindow_(new QMainWindow())
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , runAction_(nullptr)
@@ -108,7 +109,6 @@ PythonEditorWidget::PythonEditorWidget(
     , stateSaver_{stateSaver} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
-    mainWindow_ = new QMainWindow();
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
     QToolBar* toolBar = new QToolBar();
     toolBar->setObjectName("PythonEditorWidgetToolBar");

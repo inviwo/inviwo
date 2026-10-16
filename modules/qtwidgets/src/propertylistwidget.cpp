@@ -287,7 +287,10 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
 }
 
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
-    : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
+    : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget")
+    , app_{app}
+    , scrollArea_(new QScrollArea(this))
+    , frame_(new PropertyListFrame(this, app->getPropertyWidgetFactory())) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(45, 80)));  // default size
@@ -299,7 +302,6 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 
     const auto space = utilqt::refSpacePx(this);
 
-    scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -312,7 +314,6 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, space, 0, space);
 
-    frame_ = new PropertyListFrame(this, app->getPropertyWidgetFactory());
     scrollArea_->setWidget(frame_);
     setWidget(scrollArea_);
 }

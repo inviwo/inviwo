@@ -59,8 +59,10 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwo
     : QGraphicsScene(parent)
     , curve_(this)
     , startProperty_(nullptr)
-    , srcProcessor_(nullptr)
-    , dstProcessor_(nullptr)
+    , srcProcessor_(
+          new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Left, srcProcessor))
+    , dstProcessor_(
+          new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Right, dstProcessor))
     , network_(network)
     , expandProperties_(false) {
     // The default bsp tends to crash...
@@ -69,11 +71,6 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwo
     network_->addObserver(this);
 
     setBackgroundBrush(QColor("#4d4d4d"));
-
-    srcProcessor_ =
-        new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Left, srcProcessor);
-    dstProcessor_ =
-        new LinkDialogProcessorGraphicsItem(LinkDialogTreeItem::Side::Right, dstProcessor);
 
     const auto yPos = linkdialog::processorHeight;
     const float xPos1 = linkdialog::dialogWidth / 10.0 + linkdialog::processorWidth / 2;

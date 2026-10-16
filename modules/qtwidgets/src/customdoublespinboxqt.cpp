@@ -39,9 +39,10 @@ class QWidget;
 
 namespace inviwo {
 
-CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent) : QDoubleSpinBox(parent) {
+CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent)
+    : QDoubleSpinBox(parent), displayDecimals_(decimals()) {
     // Enables setting number of decimals to display
-    displayDecimals_ = decimals();
+
     // Save default sizeHint before changing decimal property
     cachedSizeHint_ = QDoubleSpinBox::sizeHint();
     // Set decimals to large value so that QDoubleSpinBox does not truncate the value

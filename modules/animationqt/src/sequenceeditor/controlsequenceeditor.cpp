@@ -57,7 +57,12 @@ namespace {
 class ControlEditorWidget : public QWidget, public KeyframeObserver {
 public:
     ControlEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
-        : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
+        : QWidget(parent)
+        , keyframe_(keyframe)
+        , sequenceEditorWidget_(parent)
+        , timeSpinner_(new DoubleValueDragSpinBox())
+        , actionWidget_(new QComboBox())
+        , jumpToWidget_(new DoubleValueDragSpinBox()) {
 
         auto& ctrlKey = dynamic_cast<ControlKeyframe&>(keyframe);
 
@@ -69,7 +74,6 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(7);
 
-        timeSpinner_ = new DoubleValueDragSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
         timeSpinner_->setSingleStep(0.1);
         timeSpinner_->setDecimals(3);
@@ -85,11 +89,9 @@ public:
 
         layout->addWidget(timeSpinner_);
 
-        actionWidget_ = new QComboBox();
         actionWidget_->addItems({"Pause", "Jump To"});
         actionWidget_->setCurrentIndex(static_cast<int>(ctrlKey.getAction()));
 
-        jumpToWidget_ = new DoubleValueDragSpinBox();
         jumpToWidget_->setValue(ctrlKey.getJumpTime().count());
         jumpToWidget_->setSingleStep(0.1);
         jumpToWidget_->setDecimals(3);

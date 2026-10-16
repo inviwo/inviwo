@@ -126,7 +126,7 @@ public:
     KDTree();
     virtual ~KDTree();
 
-    KDTree(const KDTree& tree) { root_ = tree.root_->clone(); }
+    KDTree(const KDTree& tree) : root_(tree.root_->clone()) {}
     KDTree& operator=(const KDTree& rhs) {
         if (this != &rhs) {
             delete root_;

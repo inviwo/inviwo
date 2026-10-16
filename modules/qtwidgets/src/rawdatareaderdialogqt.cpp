@@ -64,7 +64,24 @@ class QHBoxLayout;
 
 namespace inviwo {
 
-RawDataReaderDialogQt::RawDataReaderDialogQt() {
+RawDataReaderDialogQt::RawDataReaderDialogQt()
+    : fileName_(new QLabel())
+    , bitDepth_(new QComboBox())
+    , channels_(new QSpinBox())
+    , dataRangeMin_(new QDoubleSpinBox())
+    , dataRangeMax_(new QDoubleSpinBox())
+    , valueRangeMin_(new QDoubleSpinBox())
+    , valueRangeMax_(new QDoubleSpinBox())
+    , valueUnit_(new QLineEdit())
+    , dimX_(new QSpinBox())
+    , dimY_(new QSpinBox())
+    , dimZ_(new QSpinBox())
+    , spaceX_(new QLineEdit(this))
+    , spaceY_(new QLineEdit(this))
+    , spaceZ_(new QLineEdit(this))
+    , byteOffset_(new QSpinBox())
+    , byteOrder_(new QComboBox())
+    , useCompression_(new QCheckBox{}) {
     setWindowTitle("Importing Raw Data");
     auto* mainLayout = new QGridLayout(this);
     {
@@ -72,10 +89,10 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
         mainLayout->setContentsMargins(space, space, space, space);
     }
     auto* fileNameLabel = new QLabel("Importing file:");
-    fileName_ = new QLabel();
+
     auto* dataTypeLayout = new QGridLayout();
     auto* bitDepthLabel = new QLabel("Data format");
-    bitDepth_ = new QComboBox();
+
     bitDepth_->addItem("char (8-bit signed integer)", static_cast<int>(DataFormatId::Int8));
     bitDepth_->addItem("unsigned char (8-bit unsigned integer)",
                        static_cast<int>(DataFormatId::UInt8));
@@ -96,17 +113,17 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     connect(bitDepth_, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             [this](int index) { selectedDataTypeChanged(index); });
     auto* channelLabel = new QLabel("Data channels");
-    channels_ = new QSpinBox();
+
     channels_->setRange(1, 4);
     channels_->setValue(1);
     channelLabel->setFocusProxy(channels_);
 
     auto* dataRangeLabel = new QLabel("Data format range");
     dataRangeLabel->setToolTip("Data range refer to the range of the data");
-    dataRangeMin_ = new QDoubleSpinBox();
+
     dataRangeMin_->setRange(-std::numeric_limits<double>::max(),
                             std::numeric_limits<double>::max());
-    dataRangeMax_ = new QDoubleSpinBox();
+
     dataRangeMax_->setRange(-std::numeric_limits<double>::max(),
                             std::numeric_limits<double>::max());
     dataRangeMax_->setValue(255.0);
@@ -115,15 +132,15 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     valueRangeLabel->setToolTip(
         "Value range refer to the physical meaning of the value, i.e. Hounsfield value range for "
         "human tissue [-1000 3000]");
-    valueRangeMin_ = new QDoubleSpinBox();
+
     valueRangeMin_->setRange(-std::numeric_limits<double>::max(),
                              std::numeric_limits<double>::max());
-    valueRangeMax_ = new QDoubleSpinBox();
+
     valueRangeMax_->setRange(-std::numeric_limits<double>::max(),
                              std::numeric_limits<double>::max());
     valueRangeLabel->setFocusProxy(valueRangeMin_);
     auto* unit = new QLabel("Unit (m/s, HU, W)");
-    valueUnit_ = new QLineEdit();  ///< Unit, i.e. Hounsfield/absorption/W.
+    ///< Unit, i.e. Hounsfield/absorption/W.
     unit->setFocusProxy(valueUnit_);
 
     auto rowCount = 0;
@@ -151,13 +168,13 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataTypeBox->setLayout(dataTypeLayout);
     auto* dataSizeLayout = new QGridLayout();
     auto* dimensionLabel = new QLabel("Dimensions");
-    dimX_ = new QSpinBox();
+
     dimX_->setRange(0, 4096);
     dimX_->setValue(256);
-    dimY_ = new QSpinBox();
+
     dimY_->setRange(0, 4096);
     dimY_->setValue(256);
-    dimZ_ = new QSpinBox();
+
     dimZ_->setRange(0, 4096);
     dimZ_->setValue(256);
     auto* dimensions = new QWidget(this);
@@ -168,14 +185,14 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dimensions->setLayout(dimensionsLayout);
 
     auto* spaceLabel = new QLabel("Spacing");
-    spaceX_ = new QLineEdit(this);
+
     const QLocale locale(spaceX_->locale());
     spaceX_->setText(locale.toString(0.01));
     spaceX_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceX_));
-    spaceY_ = new QLineEdit(this);
+
     spaceY_->setText(locale.toString(0.01));
     spaceY_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceY_));
-    spaceZ_ = new QLineEdit(this);
+
     spaceZ_->setText(locale.toString(0.01));
     spaceZ_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceZ_));
     auto* space = new QWidget(this);
@@ -201,7 +218,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 
     auto* readOptionsLayout = new QGridLayout();
     auto* byteOffsetLabel = new QLabel("Byte offset");
-    byteOffset_ = new QSpinBox();
+
     byteOffset_->setRange(0, std::numeric_limits<int>::max());
     byteOffset_->setValue(0);
     byteOffset_->setSuffix(" Byte");
@@ -213,7 +230,7 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     timeStepOffset_->setValue(0);
     timeStepOffset_->setSuffix(" Byte");
     */
-    byteOrder_ = new QComboBox();
+
     byteOrder_->addItem("Little Endian", QVariant::fromValue(ByteOrder::LittleEndian));
     byteOrder_->addItem("Big Endian", QVariant::fromValue(ByteOrder::BigEndian));
     auto* endianessLabel = new QLabel("Byte order");
@@ -227,7 +244,6 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     readOptionsLayout->addWidget(endianessLabel, 1, 0);
     readOptionsLayout->addWidget(byteOrder_, 1, 1);
 
-    useCompression_ = new QCheckBox{};
     auto* useCompressionLabel = new QLabel("Compressed data (bzip, gz, lzma)");
     useCompressionLabel->setFocusProxy(useCompression_);
     readOptionsLayout->addWidget(useCompressionLabel, 2, 0);

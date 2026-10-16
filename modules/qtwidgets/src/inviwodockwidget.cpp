@@ -50,7 +50,8 @@ class QShowEvent;
 
 namespace inviwo {
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget(title, parent) {
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
+    : QDockWidget(title, parent), dockWidgetTitleBar_(new InviwoDockWidgetTitleBar(this)) {
 
     setObjectName(title);
 #ifdef __APPLE__
@@ -58,7 +59,6 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget
 #endif
 
     // adding custom title bar to dock widget
-    dockWidgetTitleBar_ = new InviwoDockWidgetTitleBar(this);
     setTitleBarWidget(dockWidgetTitleBar_);
 
     QObject::connect(dockWidgetTitleBar_, &InviwoDockWidgetTitleBar::stickyFlagChanged, this,

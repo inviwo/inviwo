@@ -33,13 +33,12 @@ namespace inviwo {
 
 ConfigurableGTestEventListener::ConfigurableGTestEventListener(
     ::testing::TestEventListener* theEventListener)
-    : eventListener{theEventListener} {
-    showTestCases = true;
-    showTestNames = true;
-    showSuccesses = true;
-    showInlineFailures = true;
-    showEnvironment = true;
-}
+    : showTestCases(true)
+    , showTestNames(true)
+    , showSuccesses(true)
+    , showInlineFailures(true)
+    , showEnvironment(true)
+    , eventListener{theEventListener} {}
 ConfigurableGTestEventListener& ConfigurableGTestEventListener::setup() {
     ::testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
     auto default_printer = listeners.Release(listeners.default_result_printer());

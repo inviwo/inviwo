@@ -176,15 +176,12 @@ private:
 };
 
 AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEditorQt* aScene)
-    : QGraphicsView(), scene_{aScene}, controller_(controller) {
+    : QGraphicsView(), scene_{aScene}, controller_(controller), timeline_(new TimeLine{this}) {
 
     setObjectName("AnimationView");
     setScene(scene_);
     setViewportMargins(0, timelineHeight, 0, 0);
     setSceneRect(QRectF());
-
-    // Time Line widget
-    timeline_ = new TimeLine{this};
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 

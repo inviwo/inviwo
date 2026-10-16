@@ -174,8 +174,11 @@ std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_ =
 NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
 NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
-    : QDoubleSpinBox(parent), integerMode_(intMode), minimumWidth_{utilqt::emToPx(this, 4)} {
-    validator_ = new QDoubleValidator(this);
+    : QDoubleSpinBox(parent)
+    , integerMode_(intMode)
+    , minimumWidth_{utilqt::emToPx(this, 4)}
+    , validator_(new QDoubleValidator(this)) {
+
     validator_->setNotation(QDoubleValidator::ScientificNotation);
     lineEdit()->setValidator(validator_);
     // need a high precision in QDoubleSpinBox since min and max values are rounded using the
