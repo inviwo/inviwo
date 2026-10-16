@@ -82,7 +82,7 @@ private:
      *
      * @return minimum texture size required to accommodate atlas
      */
-    ivec2 calcTexLayout(const std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
+    ivec2 calcTexLayout(std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
                         double minArea);
 
     void initAtlas(TextRenderer& textRenderer, const std::vector<TexAtlasEntry>& entries,

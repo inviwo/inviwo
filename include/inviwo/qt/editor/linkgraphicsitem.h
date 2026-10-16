@@ -98,9 +98,9 @@ public:
     virtual int type() const override { return Type; }
 
 protected:
-    static QPointF compare(const QPointF startLeft, const QPointF& startRight,
-                           const QPointF& endLeft, const QPointF& endRight, const QPointF& left,
-                           const QPointF& center, const QPointF& right);
+    static QPointF compare(QPointF startLeft, const QPointF& startRight, const QPointF& endLeft,
+                           const QPointF& endRight, const QPointF& left, const QPointF& center,
+                           const QPointF& right);
 
     QPointF inLeft_;
     QPointF inRight_;

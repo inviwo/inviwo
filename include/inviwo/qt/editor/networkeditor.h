@@ -261,7 +261,7 @@ private:
 
     // Get QGraphicsItems
     template <typename T>
-    T* getGraphicsItemAt(const QPointF pos) const;
+    T* getGraphicsItemAt(QPointF pos) const;
 
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;

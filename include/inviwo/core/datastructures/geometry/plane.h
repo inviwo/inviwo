@@ -110,7 +110,7 @@ public:
      */
     mat4 inPlaneBasis() const;
 
-    void setPoint(const vec3);
+    void setPoint(vec3);
     void setNormal(const vec3&);
 
     Plane transform(const mat4& transform) const;
