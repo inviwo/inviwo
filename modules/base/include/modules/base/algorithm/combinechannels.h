@@ -107,6 +107,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 
     auto&& [type, precision] = [&]() {
         std::vector<const DataFormatBase*> formats;
+        formats.reserve(activePorts.size());
         for (const auto p : activePorts) {
             formats.push_back(p.first->getData()->getDataFormat());
         }
