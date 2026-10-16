@@ -6,8 +6,10 @@ below for current progress and the exact resume point). 55 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more:
 `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-isolate-declaration`,
-`readability-avoid-return-with-void-value`), ~46 remaining (plus 3
-permanently-skipped false positives, see below).
+`readability-avoid-return-with-void-value`), ~45 remaining (plus 4
+permanently-skipped false positives, see below —
+`cppcoreguidelines-pro-type-static-cast-downcast` was evaluated and skipped
+this session too).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -202,6 +204,37 @@ checks again without manual review)**:
   data, calibration coefficients, lookup tables) — double check every hit
   against a generated/data file or a known standards-derived coefficient
   before trusting it.
+- `cppcoreguidelines-pro-type-static-cast-downcast` — evaluated and skipped
+  (reverted in full, no commit) after applying it to all 125 warnings /
+  61 files and finding the dominant pattern was a false positive: this
+  codebase has its own fast type-tag dispatch mechanisms that already prove
+  a downcast is safe in a way the checker can't see, so "fixing" `static_cast`
+  to `dynamic_cast` only adds RTTI overhead with zero safety benefit —
+  worst case in the hottest, most frequently-executed code in the whole
+  app: event propagation. Concretely:
+  - This project's own `Event::hash()`/`EventType::chash()` tag-dispatch
+    (`switch (event->hash()) { case MouseEvent::chash(): ... }` or
+    `if (event->hash() == X::chash())`) exists specifically so event
+    propagation (`ViewManager::propagateEvent`, `PickingController::
+    propagateEvent`, and dozens of per-processor `eventFoo(Event*)`
+    callbacks registered for one specific event type) can avoid RTTI on
+    every single mouse/touch/wheel/key event. This check's fix reintroduces
+    exactly the RTTI cost that mechanism was built to avoid, on literally
+    every interaction event in the application, with no case where the
+    cast could ever actually be wrong.
+  - Several other hits were casts that are correct *by construction*, not
+    just "probably correct": e.g.
+    `static_cast<TestProcessor*>(net.addProcessor(std::make_unique<TestProcessor>(...)))`
+    casts the literal return value of adding the exact type just
+    constructed one expression earlier — there's no runtime type to check.
+  - A few others were guarded by an adjacent non-RTTI type proof instead
+    (e.g. `if (buffer->getDataFormat() == DataFormat<T>::get())` just
+    before `static_cast<Buffer<T>*>(buffer)`).
+  Given how pervasive this pattern was across the diff (the two largest
+  hit files, `viewmanager.cpp` and `pickingcontroller.cpp`, were *entirely*
+  this pattern), this check is not safe to blanket-apply here. If revisited
+  later, each hit would need individual proof that no adjacent type-tag
+  check/invariant already exists before accepting the `dynamic_cast` fix.
 
 ### Two notable `-fix` bugs hit while applying this batch (not false
 positives — the underlying warning was correct, but clang-tidy's suggested
@@ -303,9 +336,11 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~46 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); next up by size:
-   `cppcoreguidelines-pro-type-static-cast-downcast`,
+   **~45 fixable checks remaining** (out of 98 total fixable checks found by
+   the dry run); next up by size (skipping
+   `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
+   reverted this session — see "Reverted as false positives" above, do not
+   reapply it without per-instance review):
    `readability-const-return-type`,
    `modernize-use-integer-sign-comparison`,
    `performance-inefficient-vector-operation`,
