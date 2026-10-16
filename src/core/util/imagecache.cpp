@@ -42,7 +42,7 @@ void ImageCache::setMaster(std::shared_ptr<const Image> master) {
     if (master_ && master && master_->getDataFormat() != master->getDataFormat()) {
         cache_.clear();
     }
-    master_ = master;
+    master_ = std::move(master);
     valid_ = false;
 }
 

@@ -320,7 +320,7 @@ void ColorWheel::updateSquareImage(const int& hue) {
             square.setPixel(i, j, vv);
         }
     }
-    squareImage_ = square;
+    squareImage_ = std::move(square);
 }
 
 void ColorWheel::drawIndicator(QPainter& painter) {

@@ -89,7 +89,7 @@ void ToolButton::setImage(const std::filesystem::path& filename) {
     labelImage_ = loadImage(filename);
 }
 
-void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = texture; }
+void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = std::move(texture); }
 
 void ToolButton::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);

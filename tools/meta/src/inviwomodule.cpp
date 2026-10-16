@@ -193,7 +193,7 @@ void InviwoModule::sortArgs(cmake::Command& cmd) {
     for (const auto& arg : args) {
         addArg(arguments, arg);
     }
-    cmd.arguments = arguments;
+    cmd.arguments = std::move(arguments);
 }
 
 void InviwoModule::addArg(std::vector<cmake::ArgElement>& args, std::string_view arg) {
