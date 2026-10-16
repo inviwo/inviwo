@@ -48,6 +48,8 @@
 #include <QRgb>
 #include <QStyle>
 #include <QStyleOption>
+
+#include <numbers>
 #include <qmath.h>
 #include <Qt>
 #include <QtGlobal>
@@ -251,12 +253,12 @@ void ColorWheel::resizeEvent(QResizeEvent* event) {
     const int w = qMin(width(), height());
     const qreal r = w / 2.0 - margin_;              // radius of outer circle
     const qreal ir = r - wheelWidth_;               // radius of inner circle
-    const qreal m = w / 2.0 - ir / std::sqrt(2.0);  // left corner of square
+    const qreal m = w / 2.0 - ir / std::numbers::sqrt2;  // left corner of square
 
     QRectF rect;
     rect.setTopLeft(QPointF(m, m));
-    rect.setWidth(2.0 * ir / std::sqrt(2.0));
-    rect.setHeight(2.0 * ir / std::sqrt(2.0));
+    rect.setWidth(2.0 * ir / std::numbers::sqrt2);
+    rect.setHeight(2.0 * ir / std::numbers::sqrt2);
     squareRegion_ = QRegion(rect.toRect());
 }
 
