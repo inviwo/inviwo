@@ -474,9 +474,9 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMin(unsigned int d) {
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         minChild = rightChild_->findMin(d);
-    } else if (isRightLeaf())
+    } else if (isRightLeaf()) {
         minChild = leftChild_->findMin(d);
-    else {
+    } else {
         l = leftChild_->findMin(d);
         r = rightChild_->findMin(d);
         minChild = (l->pos_[d] <= r->pos_[d]) ? l : r;
@@ -497,9 +497,9 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMax(unsigned int d) {
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         maxChild = rightChild_->findMax(d);
-    } else if (isRightLeaf())
+    } else if (isRightLeaf()) {
         maxChild = leftChild_->findMax(d);
-    else {
+    } else {
         l = leftChild_->findMax(d);
         r = rightChild_->findMax(d);
         maxChild = (l->pos_[d] >= r->pos_[d]) ? l : r;
