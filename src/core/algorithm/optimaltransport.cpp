@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/optimaltransport.h>
+#include <inviwo/core/util/colorconversion.h>
 
 #include <algorithm>
 #include <cmath>
@@ -150,17 +151,37 @@ std::pair<double, double> minMaxPos(std::span<const TFPrimitiveData> tf) {
     return {lo, hi};
 }
 
-// Remove the synthetic boundary vertex that extendToClampSupport inserts at x=0 (and/or x=1)
-// so the returned TF spans only the original input support again. The removal is gated and
-// safe-by-construction:
-//   * supportMin > eps confirms the original input did not already reach the edge (so the
-//     vertex at 0 is synthetic, not a genuine control point the caller supplied);
-//   * the vertex is dropped only when it is collinear with its neighbour in both alpha and
-//     color, which is always true for the constant flat edge extendToClampSupport creates but
-//     not for a real ramp, so a one-sided extension over genuine structure is never cut.
+// (1-t)*x + t*x is not always x. A control point that should sit on 0 or 1 can land a
+// few ulps outside. Relative transfer functions reject those positions, and a failed
+// assignment leaves the volume lookup table unchanged while the editor shows the new
+// points. Clamp back into [0, 1] and collapse the duplicates that clamp creates.
+std::vector<TFPrimitiveData> clampToRelativeDomain(std::vector<TFPrimitiveData> tf) {
+    for (auto& p : tf) {
+        p.pos = std::clamp(p.pos, 0.0, 1.0);
+    }
+    std::vector<TFPrimitiveData> deduped;
+    deduped.reserve(tf.size());
+    for (const auto& p : tf) {
+        if (!deduped.empty() && std::abs(p.pos - deduped.back().pos) <= eps) {
+            deduped.back() = p;
+        } else {
+            deduped.push_back(p);
+        }
+    }
+    return deduped;
+}
+
+// Remove the synthetic clamp shelf that extendToClampSupport inserts outside the original
+// support. Quantile sampling subdivides that shelf, so deleting only the vertex at 0 or 1
+// leaves interior samples (for example at 0.1/16) outside the caller's domain. The removal
+// is gated and safe-by-construction:
+//   * supportMin > eps confirms the original input did not already reach the edge;
+//   * a vertex is dropped only while it lies strictly outside [supportMin, supportMax] and
+//     is collinear with its neighbour in both alpha and color. That is true for the constant
+//     flat extendToClampSupport creates, and false for a real ramp, so genuine structure is
+//     never cut.
 // Because the dropped span is constant, clamp-to-edge sampling of the trimmed TF reproduces it
-// exactly, and the (also-extended) oracle returns the same constant there: render- and
-// accuracy-neutral. At most one vertex is removed per end, and at least two are kept.
+// exactly. At least two vertices are kept.
 std::vector<TFPrimitiveData> trimSyntheticEdges(std::vector<TFPrimitiveData> tf, double supportMin,
                                                 double supportMax) {
     const auto collinear = [](const TFPrimitiveData& a, const TFPrimitiveData& b) {
@@ -171,12 +192,13 @@ std::vector<TFPrimitiveData> trimSyntheticEdges(std::vector<TFPrimitiveData> tf,
                std::abs(a.color.a - b.color.a) <= colorEps;
     };
 
-    if (tf.size() >= 3 && std::isfinite(supportMin) && supportMin > eps &&
-        tf.front().pos <= eps && collinear(tf[0], tf[1])) {
+    while (tf.size() >= 3 && std::isfinite(supportMin) && supportMin > eps &&
+           tf.front().pos < supportMin - eps && collinear(tf[0], tf[1])) {
         tf.erase(tf.begin());
     }
-    if (tf.size() >= 3 && std::isfinite(supportMax) && supportMax < 1.0 - eps &&
-        tf.back().pos >= 1.0 - eps && collinear(tf[tf.size() - 1], tf[tf.size() - 2])) {
+    while (tf.size() >= 3 && std::isfinite(supportMax) && supportMax < 1.0 - eps &&
+           tf.back().pos > supportMax + eps &&
+           collinear(tf[tf.size() - 1], tf[tf.size() - 2])) {
         tf.pop_back();
     }
     return tf;
@@ -685,21 +707,23 @@ std::vector<QuantilePoint> buildInterpolatedVertices(const TransportContext& ctx
         interpolatedCdf.push_back(transportedQuantilePointCursor(ctx, q, cursorA, cursorB, evalCursorA, evalCursorB));
     }
 
-    // The transported levels are already sorted by q (levels is sorted ascending and
-    // transportedQuantilePointCursor preserves q). addStructuralVertices appends a much
-    // smaller, unsorted batch of knot vertices. Rather than re-sorting the whole array in
+    // The transported levels are already sorted by position since quantile transport is
+    // monotone. addStructuralVertices appends a much smaller, unsorted batch of knot vertices.
+    // Rather than re-sorting the whole array in
     // O(M log M), sort only the appended suffix and merge it into the sorted prefix in
     // O(M), which dominates for large samplesPerSegment.
     const std::size_t sortedPrefix = interpolatedCdf.size();
 
     addStructuralVertices(ctx.aspan, ctx.bspan, ctx.cdfA, ctx.cdfB, ctx.t, interpolatedCdf);
 
-    const auto byQ = [](const QuantilePoint& lhs, const QuantilePoint& rhs) {
-        return lhs.q < rhs.q;
+    // A plateau has several positions at the same q. Sorting only by q leaves their
+    // spatial order dependent on which input supplied the structural vertices first.
+    const auto byPosition = [](const QuantilePoint& lhs, const QuantilePoint& rhs) {
+        return lhs.pos < rhs.pos || (lhs.pos == rhs.pos && lhs.q < rhs.q);
     };
     const auto mid = interpolatedCdf.begin() + sortedPrefix;
-    std::stable_sort(mid, interpolatedCdf.end(), byQ);
-    std::inplace_merge(interpolatedCdf.begin(), mid, interpolatedCdf.end(), byQ);
+    std::stable_sort(mid, interpolatedCdf.end(), byPosition);
+    std::inplace_merge(interpolatedCdf.begin(), mid, interpolatedCdf.end(), byPosition);
 
     std::vector<QuantilePoint> vertices;
     vertices.reserve(interpolatedCdf.size());
@@ -816,10 +840,26 @@ AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
         if (compLen == 2) {
             const double dx = vertices[compStart + 1].pos - vertices[compStart].pos;
             const double dq = vertices[compStart + 1].q - vertices[compStart].q;
-            if (dx > eps) {
+            if (dx > eps && dq > eps) {
                 const double d = ctx.targetMass * dq / dx;
-                result.alpha[compStart] = std::max(bc0, d);
-                result.alpha[compEnd] = std::max(bcN, d);
+                // A zero delimiter has to stay zero. One free end can carry the whole
+                // trapezoidal mass (alpha = 2d); pinning both ends cannot, so that case
+                // keeps the flat secant, matching the closed-form compromise.
+                const bool pinStart = compStart > 0 || zeroAtStart;
+                const bool pinEnd = compEnd < n - 1 || zeroAtEnd;
+                if (pinStart && pinEnd) {
+                    result.alpha[compStart] = d;
+                    result.alpha[compEnd] = d;
+                } else if (pinStart) {
+                    result.alpha[compStart] = 0.0;
+                    result.alpha[compEnd] = std::max(bcN, 2.0 * d);
+                } else if (pinEnd) {
+                    result.alpha[compStart] = std::max(bc0, 2.0 * d);
+                    result.alpha[compEnd] = 0.0;
+                } else {
+                    result.alpha[compStart] = std::max(bc0, d);
+                    result.alpha[compEnd] = std::max(bcN, d);
+                }
             }
         } else {
             for (std::size_t j = 0; j < compLen; ++j) {
@@ -1898,6 +1938,165 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFormFromLevels(
     return result;
 }
 
+struct FeatureRange {
+    std::size_t first;
+    std::size_t last;
+};
+
+// Zero controls are shared boundaries; consecutive zeros delimit gaps, not features.
+// Inputs already include clamp-to-edge support.
+std::vector<FeatureRange> extractFeatures(std::span<const TFPrimitiveData> tf) {
+    std::vector<FeatureRange> features;
+    std::size_t first = 0;
+    bool hasOpacity = false;
+    for (std::size_t i = 0; i < tf.size(); ++i) {
+        hasOpacity = hasOpacity || alphaOf(tf[i]) > 0.0;
+        if (alphaOf(tf[i]) == 0.0 || i + 1 == tf.size()) {
+            if (hasOpacity && i > first) features.push_back({first, i});
+            first = i;
+            hasOpacity = false;
+        }
+    }
+    return features;
+}
+
+using FeatureMatch = std::pair<std::span<const TFPrimitiveData>, std::span<const TFPrimitiveData>>;
+
+std::span<const TFPrimitiveData> featureSpan(std::span<const TFPrimitiveData> tf,
+                                           const std::vector<FeatureRange>& features,
+                                           std::size_t first, std::size_t last) {
+    return tf.subspan(features[first].first,
+                      features[last].last - features[first].first + 1);
+}
+
+struct FeatureDescriptor {
+    double minPos = 0.0;
+    double maxPos = 0.0;
+    double opacityMass = 0.0;
+    vec3 meanColor = vec3{0.0f};
+};
+
+FeatureDescriptor describeFeature(std::span<const TFPrimitiveData> feature) {
+    FeatureDescriptor result;
+    if (feature.empty()) return result;
+
+    result.minPos = feature.front().pos;
+    result.maxPos = feature.back().pos;
+    vec3 colorMoment{0.0f};
+    for (std::size_t i = 1; i < feature.size(); ++i) {
+        const auto& left = feature[i - 1];
+        const auto& right = feature[i];
+        const double dx = right.pos - left.pos;
+        if (dx <= eps) continue;
+
+        const double alphaLeft = alphaOf(left);
+        const double alphaRight = alphaOf(right);
+        result.opacityMass += 0.5 * (alphaLeft + alphaRight) * dx;
+
+        // Integrate the product of linearly interpolated opacity and color over this segment.
+        const float scale = static_cast<float>(dx / 6.0);
+        colorMoment += scale * static_cast<float>(alphaLeft) *
+                       (2.0f * vec3{left.color} + vec3{right.color});
+        colorMoment += scale * static_cast<float>(alphaRight) *
+                       (vec3{left.color} + 2.0f * vec3{right.color});
+    }
+    if (result.opacityMass > eps) {
+        result.meanColor = colorMoment / static_cast<float>(result.opacityMass);
+    }
+    return result;
+}
+
+double featureOverlap(const FeatureDescriptor& a, const FeatureDescriptor& b) {
+    const double intersection = std::max(0.0, std::min(a.maxPos, b.maxPos) -
+                                                  std::max(a.minPos, b.minPos));
+    const double unionLength = std::max(a.maxPos, b.maxPos) - std::min(a.minPos, b.minPos);
+    if (unionLength <= eps) return 1.0;
+    return intersection / unionLength;
+}
+
+// Perceptual color distance between opacity-weighted mean colors, weighted by the smaller mass.
+// Overlap remains the primary score; this only breaks ties, and the mass
+// weight stops a low-mass group from outvoting a high-mass one.
+double featureColorDistance(const FeatureDescriptor& a, const FeatureDescriptor& b) {
+    if (a.opacityMass <= eps || b.opacityMass <= eps) return 0.0;
+    const vec3 delta = color::rgb2lab(a.meanColor) - color::rgb2lab(b.meanColor);
+    return std::min(a.opacityMass, b.opacityMass) * static_cast<double>(glm::length(delta));
+}
+
+struct FeatureMatchScore {
+    double overlap = 0.0;
+    double colorDistance = 0.0;
+};
+
+bool betterMatchScore(const FeatureMatchScore& candidate, const FeatureMatchScore& current) {
+    if (candidate.overlap > current.overlap + eps) return true;
+    if (candidate.overlap < current.overlap - eps) return false;
+    return candidate.colorDistance < current.colorDistance - eps;
+}
+
+std::vector<FeatureMatch> matchFeatures(std::span<const TFPrimitiveData> a,
+                                       std::span<const TFPrimitiveData> b) {
+    const auto featuresA = extractFeatures(a);
+    const auto featuresB = extractFeatures(b);
+    if (featuresA.empty() || featuresB.empty()) return {{a, b}};
+
+    // Preserve order and introduce only the splits/merges required by the feature counts.
+    // Partition the larger list into nonempty contiguous groups, one per smaller feature.
+    const bool swap = featuresA.size() > featuresB.size();
+    const auto small = swap ? b : a;
+    const auto large = swap ? a : b;
+    const auto& smallFeatures = swap ? featuresB : featuresA;
+    const auto& largeFeatures = swap ? featuresA : featuresB;
+    const std::size_t n = smallFeatures.size();
+    const std::size_t m = largeFeatures.size();
+    std::vector<FeatureMatch> matches;
+    matches.reserve(n);
+    if (n == m) {
+        for (std::size_t i = 0; i < n; ++i) {
+            matches.emplace_back(featureSpan(a, featuresA, i, i),
+                                 featureSpan(b, featuresB, i, i));
+        }
+        return matches;
+    }
+
+    const auto index = [m](std::size_t i, std::size_t j) { return i * (m + 1) + j; };
+    std::vector<FeatureMatchScore> scores((n + 1) * (m + 1));
+    std::vector<bool> reachable(scores.size(), false);
+    std::vector<std::size_t> previous(scores.size(), 0);
+    reachable[0] = true;
+    for (std::size_t i = 1; i <= n; ++i) {
+        const auto smallDescriptor =
+            describeFeature(featureSpan(small, smallFeatures, i - 1, i - 1));
+        for (std::size_t j = i; j <= m - (n - i); ++j) {
+            for (std::size_t k = i - 1; k < j; ++k) {
+                if (!reachable[index(i - 1, k)]) continue;
+                const auto group = featureSpan(large, largeFeatures, k, j - 1);
+                const auto largeDescriptor = describeFeature(group);
+                const FeatureMatchScore candidate{
+                    scores[index(i - 1, k)].overlap +
+                        featureOverlap(smallDescriptor, largeDescriptor),
+                    scores[index(i - 1, k)].colorDistance +
+                        featureColorDistance(smallDescriptor, largeDescriptor)};
+                const auto current = index(i, j);
+                if (!reachable[current] || betterMatchScore(candidate, scores[current])) {
+                    scores[current] = candidate;
+                    reachable[current] = true;
+                    previous[index(i, j)] = k;
+                }
+            }
+        }
+    }
+    for (std::size_t i = n, j = m; i > 0; --i) {
+        const std::size_t k = previous[index(i, j)];
+        const auto one = featureSpan(small, smallFeatures, i - 1, i - 1);
+        const auto group = featureSpan(large, largeFeatures, k, j - 1);
+        matches.push_back(swap ? FeatureMatch{group, one} : FeatureMatch{one, group});
+        j = k;
+    }
+    std::reverse(matches.begin(), matches.end());
+    return matches;
+}
+
 // Shared driver for every optimal-transport interpolation entry point. The public variants
 // differ only in how they pick quantile levels and reconstruct vertex opacities; everything
 // around that is identical: clamp t, capture the interior support, sanitise the inputs (which
@@ -1909,8 +2108,17 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFormFromLevels(
 template <typename Reconstruct>
 std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const TFPrimitiveData> tfA,
                                                                std::span<const TFPrimitiveData> tfB,
-                                                               double t, Reconstruct&& reconstruct) {
+                                                               double t, bool useFeatureMatching,
+                                                               Reconstruct&& reconstruct) {
     t = std::clamp(t, 0.0, 1.0);
+
+    // Sitting on a keyframe must reproduce that keyframe exactly. Sanitizing and
+    // trimming can drop or rewrite control points, which the editor still draws
+    // like the original while the volume lookup table does not.
+    if (tfA.empty()) return std::vector<TFPrimitiveData>(tfB.begin(), tfB.end());
+    if (tfB.empty()) return std::vector<TFPrimitiveData>(tfA.begin(), tfA.end());
+    if (t <= 0.0) return std::vector<TFPrimitiveData>(tfA.begin(), tfA.end());
+    if (t >= 1.0) return std::vector<TFPrimitiveData>(tfB.begin(), tfB.end());
 
     const auto [interiorMinA, interiorMaxA] = minMaxPos(tfA);
     const auto [interiorMinB, interiorMaxB] = minMaxPos(tfB);
@@ -1921,29 +2129,64 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
     const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
     const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
 
-    if (a.empty()) return trimSyntheticEdges(std::move(b), interiorMinB, interiorMaxB);
-    if (b.empty()) return trimSyntheticEdges(std::move(a), interiorMinA, interiorMaxA);
-    if (t <= 0.0) return trimSyntheticEdges(std::move(a), interiorMinA, interiorMaxA);
-    if (t >= 1.0) return trimSyntheticEdges(std::move(b), interiorMinB, interiorMaxB);
-
     const Cdf cdfA = computeCdf(aspan);
     const Cdf cdfB = computeCdf(bspan);
 
     if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
         (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return linearBlend(aspan, bspan, t);
+        return clampToRelativeDomain(linearBlend(aspan, bspan, t));
     }
 
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
+    std::vector<TFPrimitiveData> result;
+    const auto transportGroup = [&](std::span<const TFPrimitiveData> featureA,
+                                    std::span<const TFPrimitiveData> featureB) {
+        const auto featureCdfA = computeCdf(featureA);
+        const auto featureCdfB = computeCdf(featureB);
+        const double domainMin = (1.0 - t) * featureA.front().pos + t * featureB.front().pos;
+        const double domainMax = (1.0 - t) * featureA.back().pos + t * featureB.back().pos;
+        auto part = [&]() {
+            if (featureCdfA.totalMass <= eps || featureCdfB.totalMass <= eps) {
+                return linearBlend(featureA, featureB, t);
+            }
+            const auto ctx = makeTransportContext(featureA, featureB, featureCdfA, featureCdfB, t);
+            return reconstruct(ctx, domainMin, domainMax);
+        }();
+        for (const auto& p : part) {
+            if (!result.empty() && std::abs(result.back().pos - p.pos) <= eps) {
+                // Shared feature boundaries are zero on at least one side. Keep that
+                // zero so the right-hand copy cannot paint opacity back across the gap.
+                auto joined = p;
+                if (result.back().color.a == 0.0f || p.color.a == 0.0f) joined.color.a = 0.0f;
+                result.back() = joined;
+            } else {
+                result.push_back(p);
+            }
+        }
+    };
+    if (useFeatureMatching) {
+        for (const auto& [featureA, featureB] : matchFeatures(aspan, bspan)) {
+            transportGroup(featureA, featureB);
+        }
+    } else {
+        transportGroup(aspan, bspan);
+    }
 
+    // Keep transparent outer margins without extending internal features to [0, 1].
     const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
     const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
-
-    auto result = reconstruct(ctx, domainMin, domainMax);
+    if (!result.empty() && result.front().pos - domainMin > eps) {
+        auto color = glm::mix(evaluate(aspan, domainMin), evaluate(bspan, domainMin),
+                              static_cast<float>(t));
+        color.a = 0.0f;
+        result.insert(result.begin(), TFPrimitiveData{domainMin, color});
+    }
+    if (!result.empty() && domainMax - result.back().pos > eps) {
+        appendZeroAlphaBoundary(result, aspan, bspan, domainMax, t);
+    }
 
     const double trimMin = (1.0 - t) * interiorMinA + t * interiorMinB;
     const double trimMax = (1.0 - t) * interiorMaxA + t * interiorMaxB;
-    return trimSyntheticEdges(std::move(result), trimMin, trimMax);
+    return clampToRelativeDomain(trimSyntheticEdges(std::move(result), trimMin, trimMax));
 }
 
 }  // namespace
@@ -1962,9 +2205,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQ(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    std::size_t samplesPerSegment) {
+    std::size_t samplesPerSegment, bool matchFeatures) {
     return optimalTransportInterpolationImpl(
-        tfA, tfB, t,
+        tfA, tfB, t, matchFeatures,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Legacy uniform quantile sampling: sub-divide each CDF segment into
             // samplesPerSegment equal steps in q. Kept unchanged for comparison with the
@@ -1976,9 +2219,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQ(
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    std::size_t samplesPerSegment) {
+    std::size_t samplesPerSegment, bool matchFeatures) {
     return optimalTransportInterpolationImpl(
-        tfA, tfB, t,
+        tfA, tfB, t, matchFeatures,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Same uniform quantile grid as optimalTransportInterpolationUniformQ, but
             // reconstruct vertex opacities with the exact closed-form alpha_k = m_t / X_t'(q_k).
@@ -1990,9 +2233,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQExact(
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts) {
+    const QuantileRefinementOptions& opts, bool matchFeatures) {
     return optimalTransportInterpolationImpl(
-        tfA, tfB, t,
+        tfA, tfB, t, matchFeatures,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Knot-induced quantile levels, then bisect sub-intervals where the
             // piecewise-linear chord between endpoint opacities deviates from the closed-form
@@ -2010,9 +2253,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQExact(
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationOpacityOptimalQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts) {
+    const QuantileRefinementOptions& opts, bool matchFeatures) {
     return optimalTransportInterpolationImpl(
-        tfA, tfB, t,
+        tfA, tfB, t, matchFeatures,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Knot-induced quantile levels, then insert each new level at the quantile q* that
             // maximises the opacity deviation between the exact transported opacity and the
@@ -2032,9 +2275,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationOpacityOptimalQExact(
 
 std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQSecant(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts) {
+    const QuantileRefinementOptions& opts, bool matchFeatures) {
     return optimalTransportInterpolationImpl(
-        tfA, tfB, t,
+        tfA, tfB, t, matchFeatures,
         [&](const TransportContext& ctx, double domainMin, double domainMax) {
             // Adaptive vertex placement identical to the closed-form path: start from the
             // knot-induced quantile breakpoints and bisect where the chord between exact
@@ -2053,42 +2296,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQSecant(
 
 double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
                                  std::span<const TFPrimitiveData> tfB, double t, double x) {
-    t = std::clamp(t, 0.0, 1.0);
-
-    auto a = sanitize(tfA);
-    auto b = sanitize(tfB);
-
-    const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
-    const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
-
-    if (a.empty() || b.empty()) return 0.0;
-    if (t <= 0.0) return static_cast<double>(evaluate(aspan, x).a);
-    if (t >= 1.0) return static_cast<double>(evaluate(bspan, x).a);
-
-    const Cdf cdfA = computeCdf(aspan);
-    const Cdf cdfB = computeCdf(bspan);
-
-    if (cdfA.totalMass <= eps || cdfB.totalMass <= eps) return 0.0;
-
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-    const auto intervals = buildSubIntervals(ctx);
-    if (intervals.empty()) return 0.0;
-
-    // Transfer function uses clamp-to-edge
-    x = std::clamp(x, intervals.front().xLo, intervals.back().xHi);
-
-    // Binary search the sub-interval that brackets x in output coordinates. The xLo
-    // values are strictly increasing because X_t is monotone (it is a sum of two
-    // monotone-in-q quantile functions).
-    auto it = std::upper_bound(intervals.begin(), intervals.end(), x,
-                               [](double xv, const SubInterval& s) { return xv < s.xHi; });
-    if (it == intervals.end()) it = intervals.end() - 1;
-    const SubInterval& sub = *it;
-
-    const double q = invertXtOnSegmentPrecomputed(sub, t, x);
-    if (std::isnan(q)) return 0.0;
-
-    return densityAtQuantile(sub.segA, sub.segB, t, q, ctx.targetMass);
+    return evaluateInterpolatedAlphaGrid(tfA, tfB, t, std::span<const double>{&x, 1}).front();
 }
 
 std::vector<double> evaluateInterpolatedAlphaGrid(std::span<const TFPrimitiveData> tfA,
@@ -2121,38 +2329,40 @@ std::vector<double> evaluateInterpolatedAlphaGrid(std::span<const TFPrimitiveDat
     const Cdf cdfB = computeCdf(bspan);
     if (cdfA.totalMass <= eps || cdfB.totalMass <= eps) return out;
 
-    const TransportContext ctx = makeTransportContext(aspan, bspan, cdfA, cdfB, t);
-    const auto intervals = buildSubIntervals(ctx);
-    if (intervals.empty()) return out;
-
-    const double xMin = intervals.front().xLo;
-    const double xMax = intervals.back().xHi;
-    const double alphaAtMin = densityAtQuantile(intervals.front().segA, intervals.front().segB, t,
-                                                intervals.front().qLo, ctx.targetMass);
-    const double alphaAtMax = densityAtQuantile(intervals.back().segA, intervals.back().segB, t,
-                                                intervals.back().qHi, ctx.targetMass);   
-
-    std::size_t si = 0;  // current sub-interval index
-    for (std::size_t i = 0; i < xs.size(); ++i) {
-        const double x = xs[i];
-        if (x <= xMin) {
-            out[i] = alphaAtMin;
+    const auto matches = matchFeatures(aspan, bspan);
+    for (std::size_t f = 0; f < matches.size(); ++f) {
+        const auto& [featureA, featureB] = matches[f];
+        const auto featureCdfA = computeCdf(featureA);
+        const auto featureCdfB = computeCdf(featureB);
+        const double domainMin = (1.0 - t) * featureA.front().pos + t * featureB.front().pos;
+        const double domainMax = (1.0 - t) * featureA.back().pos + t * featureB.back().pos;
+        if (featureCdfA.totalMass <= eps || featureCdfB.totalMass <= eps) {
+            for (std::size_t i = 0; i < xs.size(); ++i) {
+                if ((f > 0 && xs[i] < domainMin) ||
+                    (f + 1 < matches.size() && xs[i] > domainMax)) continue;
+                out[i] = (1.0 - t) * evaluate(featureA, xs[i]).a +
+                         t * evaluate(featureB, xs[i]).a;
+            }
             continue;
         }
-        if (x >= xMax) {
-            out[i] = alphaAtMax;
-            continue;
+        const auto ctx = makeTransportContext(featureA, featureB, featureCdfA, featureCdfB, t);
+        const auto intervals = buildSubIntervals(ctx);
+        if (intervals.empty()) continue;
+
+        for (std::size_t i = 0; i < xs.size(); ++i) {
+            if ((f > 0 && xs[i] < domainMin) ||
+                (f + 1 < matches.size() && xs[i] > domainMax)) continue;
+            const double x = std::clamp(xs[i], intervals.front().xLo, intervals.back().xHi);
+            auto it = std::upper_bound(intervals.begin(), intervals.end(), x,
+                                       [](double xv, const SubInterval& sub) {
+                                           return xv < sub.xHi;
+                                       });
+            if (it == intervals.end()) it = intervals.end() - 1;
+            if (x < it->xLo) continue;
+            const double q = invertXtOnSegmentPrecomputed(*it, t, x);
+            if (std::isnan(q)) continue;
+            out[i] = densityAtQuantile(it->segA, it->segB, t, q, ctx.targetMass);
         }
-
-        // Advance si to the first sub-interval whose xHi > x.
-        while (si + 1 < intervals.size() && intervals[si].xHi <= x) ++si;
-
-        const SubInterval& sub = intervals[si];
-        if (x < sub.xLo) continue;  // sits in a gap → 0
-
-        const double q = invertXtOnSegmentPrecomputed(sub, t, x);
-        if (std::isnan(q)) continue;
-        out[i] = densityAtQuantile(sub.segA, sub.segB, t, q, ctx.targetMass);
     }
     return out;
 }

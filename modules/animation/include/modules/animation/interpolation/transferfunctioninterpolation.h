@@ -71,6 +71,7 @@ public:
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 
+    BoolProperty matchFeatures;
     OrdinalProperty<size_t> segments;
     OrdinalProperty<double> simplify;
 };
@@ -97,6 +98,7 @@ public:
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 
+    BoolProperty matchFeatures;
     OrdinalProperty<size_t> segments;
     OrdinalProperty<double> simplify;
 };
@@ -123,6 +125,7 @@ public:
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 
+    BoolProperty matchFeatures;
     OrdinalProperty<double> relativeTolerance;
     OrdinalProperty<size_t> maxQuantileLevels;
     OrdinalProperty<size_t> maxRefinementIterations;
@@ -151,6 +154,7 @@ public:
         const std::vector<std::unique_ptr<ValueKeyframe<TransferFunction>>>& keys, Seconds from,
         Seconds to, TransferFunction& out) const override;
 
+    BoolProperty matchFeatures;
     OrdinalProperty<double> relativeTolerance;
     OrdinalProperty<size_t> maxQuantileLevels;
     OrdinalProperty<size_t> maxRefinementIterations;
@@ -181,8 +185,8 @@ namespace detail {
 
 template <>
 struct DefaultInterpolationCreator<ValueKeyframe<TransferFunction>> {
-    static std::unique_ptr<TFInterpolationOptimalTransport> create() {
-        return std::make_unique<TFInterpolationOptimalTransport>();
+    static std::unique_ptr<TFInterpolationOTAdaptiveQExact> create() {
+        return std::make_unique<TFInterpolationOTAdaptiveQExact>();
     }
 };
 

@@ -56,19 +56,21 @@ namespace {}  // namespace
 
 TFInterpolationOTUniformQ::TFInterpolationOTUniformQ(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , matchFeatures{"matchFeatures", "Feature matching", true}
     , segments{"segments", "Segments", util::ordinalCount(16uz)}
     , simplify{"simplify", "Simplify", util::ordinalLength(0.0, 0.1).setInc(0.0001)} {
 
-    addProperties(segments, simplify);
+    addProperties(matchFeatures, segments, simplify);
 }
 
 TFInterpolationOTUniformQ::TFInterpolationOTUniformQ(
     const TFInterpolationOTUniformQ& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , matchFeatures{rhs.matchFeatures}
     , segments{rhs.segments}
     , simplify{rhs.simplify} {
 
-    addProperties(segments, simplify);
+    addProperties(matchFeatures, segments, simplify);
 }
 
 TFInterpolationOTUniformQ* TFInterpolationOTUniformQ::clone() const {
@@ -112,8 +114,8 @@ void TFInterpolationOTUniformQ::operator()(
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
-    const auto interpolated =
-        algorithm::optimalTransportInterpolationUniformQ(v1.get(), v2.get(), t, segments.get());
+    const auto interpolated = algorithm::optimalTransportInterpolationUniformQ(
+        v1.get(), v2.get(), t, segments.get(), matchFeatures.get());
 
     if (simplify.get() > 0.0) {
         out.set(TransferFunction::simplify(interpolated, simplify.get()));
@@ -125,19 +127,21 @@ void TFInterpolationOTUniformQ::operator()(
 
 TFInterpolationOTUniformQExact::TFInterpolationOTUniformQExact(InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , matchFeatures{"matchFeatures", "Feature matching", true}
     , segments{"segments", "Segments", util::ordinalCount(16uz)}
     , simplify{"simplify", "Simplify", util::ordinalLength(0.0, 0.1).setInc(0.0001)} {
 
-    addProperties(segments, simplify);
+    addProperties(matchFeatures, segments, simplify);
 }
 
 TFInterpolationOTUniformQExact::TFInterpolationOTUniformQExact(
     const TFInterpolationOTUniformQExact& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , matchFeatures{rhs.matchFeatures}
     , segments{rhs.segments}
     , simplify{rhs.simplify} {
 
-    addProperties(segments, simplify);
+    addProperties(matchFeatures, segments, simplify);
 }
 
 TFInterpolationOTUniformQExact* TFInterpolationOTUniformQExact::clone() const {
@@ -181,8 +185,8 @@ void TFInterpolationOTUniformQExact::operator()(
 
     const auto t = util::ease(static_cast<double>((to - t1) / (t2 - t1)), easeIn, easeOut);
 
-    const auto interpolated =
-        algorithm::optimalTransportInterpolationUniformQExact(v1.get(), v2.get(), t, segments.get());
+    const auto interpolated = algorithm::optimalTransportInterpolationUniformQExact(
+        v1.get(), v2.get(), t, segments.get(), matchFeatures.get());
 
     if (simplify.get() > 0.0) {
         out.set(TransferFunction::simplify(interpolated, simplify.get()));
@@ -195,21 +199,23 @@ void TFInterpolationOTUniformQExact::operator()(
 TFInterpolationOTAdaptiveQExact::TFInterpolationOTAdaptiveQExact(
     InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , matchFeatures{"matchFeatures", "Feature matching", true}
     , relativeTolerance{"relativeTolerance", "relativeTolerance",
                         util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
     , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
     , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
                               util::ordinalCount(256uz)} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    addProperties(matchFeatures, relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
 TFInterpolationOTAdaptiveQExact::TFInterpolationOTAdaptiveQExact(
     const TFInterpolationOTAdaptiveQExact& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , matchFeatures{rhs.matchFeatures}
     , relativeTolerance{rhs.relativeTolerance}
     , maxQuantileLevels{rhs.maxQuantileLevels}
     , maxRefinementIterations{rhs.maxRefinementIterations} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    addProperties(matchFeatures, relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
 TFInterpolationOTAdaptiveQExact* TFInterpolationOTAdaptiveQExact::clone() const {
@@ -259,27 +265,30 @@ void TFInterpolationOTAdaptiveQExact::operator()(
             .relativeTolerance = relativeTolerance.get(),
             .maxQuantileLevels = maxQuantileLevels.get(),
             .maxRefinementIterations = maxRefinementIterations.get(),
-        }));
+        },
+        matchFeatures.get()));
 }
 
 TFInterpolationOTOpacityOptimalQExact::TFInterpolationOTOpacityOptimalQExact(
     InviwoApplication* app)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(app)
+    , matchFeatures{"matchFeatures", "Feature matching", true}
     , relativeTolerance{"relativeTolerance", "relativeTolerance",
                         util::ordinalLength(1e-3, 0.1).setMin(1e-6).setInc(1e-4)}
     , maxQuantileLevels{"maxQuantileLevels", "maxQuantileLevels", util::ordinalCount(2048uz)}
     , maxRefinementIterations{"maxRefinementIterations", "maxRefinementIterations",
                               util::ordinalCount(256uz)} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    addProperties(matchFeatures, relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
 TFInterpolationOTOpacityOptimalQExact::TFInterpolationOTOpacityOptimalQExact(
     const TFInterpolationOTOpacityOptimalQExact& rhs)
     : InterpolationTyped<ValueKeyframe<TransferFunction>, TransferFunction>(rhs)
+    , matchFeatures{rhs.matchFeatures}
     , relativeTolerance{rhs.relativeTolerance}
     , maxQuantileLevels{rhs.maxQuantileLevels}
     , maxRefinementIterations{rhs.maxRefinementIterations} {
-    addProperties(relativeTolerance, maxQuantileLevels, maxRefinementIterations);
+    addProperties(matchFeatures, relativeTolerance, maxQuantileLevels, maxRefinementIterations);
 }
 
 TFInterpolationOTOpacityOptimalQExact*
@@ -330,7 +339,8 @@ void TFInterpolationOTOpacityOptimalQExact::operator()(
             .relativeTolerance = relativeTolerance.get(),
             .maxQuantileLevels = maxQuantileLevels.get(),
             .maxRefinementIterations = maxRefinementIterations.get(),
-        }));
+        },
+        matchFeatures.get()));
 }
 
 

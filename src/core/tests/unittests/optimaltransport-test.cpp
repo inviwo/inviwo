@@ -805,4 +805,356 @@ TEST(OptimalTransport, OptimalSamplingMonotonePositions) {
     }
 }
 
+namespace {
+
+class FeatureTransport : public ::testing::TestWithParam<int> {
+protected:
+    TF interpolate(const TF& a, const TF& b, double t) const {
+        switch (GetParam()) {
+            case 0:
+                return algorithm::optimalTransportInterpolationUniformQ(a, b, t);
+            case 1:
+                return algorithm::optimalTransportInterpolationUniformQExact(a, b, t);
+            case 2:
+                return algorithm::optimalTransportInterpolationAdaptiveQSecant(a, b, t);
+            case 3:
+                return algorithm::optimalTransportInterpolationAdaptiveQExact(a, b, t);
+            default:
+                return algorithm::optimalTransportInterpolationOpacityOptimalQExact(a, b, t);
+        }
+    }
+
+    static TF join(TF a, const TF& b) {
+        a.insert(a.end(), b.begin(), b.end());
+        return a;
+    }
+
+    void checkIndependentGroups(const TF& leftA, const TF& rightA, const TF& leftB,
+                                const TF& rightB) const {
+        const auto a = join(leftA, rightA);
+        const auto b = join(leftB, rightB);
+        for (double t : {0.25, 0.5, 0.75}) {
+            const auto result = interpolate(a, b, t);
+            ASSERT_FALSE(result.empty());
+            const TransferFunction tf{result};
+            const TransferFunction left{interpolate(leftA, leftB, t)};
+            const TransferFunction right{interpolate(rightA, rightB, t)};
+            const TransferFunction reverse{interpolate(b, a, 1.0 - t)};
+            EXPECT_NEAR(totalMass(result), (1.0 - t) * totalMass(a) + t * totalMass(b),
+                        2e-3);
+            for (std::size_t i = 1; i < result.size(); ++i) {
+                EXPECT_GT(result[i].pos, result[i - 1].pos);
+                EXPECT_TRUE(std::isfinite(result[i].color.a));
+                EXPECT_GE(result[i].color.a, 0.0f);
+            }
+            for (int i = 0; i <= 100; ++i) {
+                const double x = i / 100.0;
+                const auto actual = tf.sample(x);
+                const auto expected = x < 0.5 ? left.sample(x) : right.sample(x);
+                EXPECT_NEAR(actual.a, expected.a, 1e-5) << "x=" << x << " t=" << t;
+                EXPECT_NEAR(actual.a, reverse.sample(x).a, 1e-5);
+                if (actual.a > 1e-5f) {
+                    EXPECT_NEAR(actual.r, expected.r, 1e-5);
+                    EXPECT_NEAR(actual.b, expected.b, 1e-5);
+                }
+            }
+        }
+    }
+};
+
+TEST_P(FeatureTransport, OpacityChangesDoNotMixFeatures) {
+    checkIndependentGroups(spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f}),
+                           spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.2f}),
+                           spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.2f}),
+                           spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.8f}));
+}
+
+TEST_P(FeatureTransport, SplitAndMergeRightKeepLeftIndependent) {
+    const auto split = join(spikeTF(0.65, 0.05, vec4{0, 0, 1, 0.8f}),
+                            spikeTF(0.85, 0.05, vec4{0, 0, 1, 0.8f}));
+    checkIndependentGroups(spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.4f}),
+                           spikeTF(0.75, 0.15, vec4{0, 0, 1, 0.8f}),
+                           spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f}), split);
+    const auto merged = spikeTF(0.75, 0.15, vec4{0, 0, 1, 0.8f});
+    for (double t : {0.25, 0.5, 0.75}) {
+        const TransferFunction forward{interpolate(merged, split, t)};
+        const TransferFunction reverse{interpolate(split, merged, 1.0 - t)};
+        EXPECT_NEAR(forward.sample(0.75).a, 0.0f, 1e-6);
+        EXPECT_NEAR(reverse.sample(0.75).a, 0.0f, 1e-6);
+    }
+}
+
+TEST_P(FeatureTransport, SplitAndMergeLeftKeepRightIndependent) {
+    const auto split = join(spikeTF(0.15, 0.05, vec4{1, 0, 0, 0.8f}),
+                            spikeTF(0.35, 0.05, vec4{1, 0, 0, 0.8f}));
+    checkIndependentGroups(spikeTF(0.25, 0.15, vec4{1, 0, 0, 0.8f}),
+                           spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.4f}), split,
+                           spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.8f}));
+}
+
+TEST_P(FeatureTransport, FeatureGroupingPrefersSpatialOverlap) {
+    const auto a = join(spikeTF(0.3, 0.2, vec4{1, 0, 0, 0.8f}),
+                        spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.8f}));
+    const auto b = join(join(spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f}),
+                             spikeTF(0.5, 0.1, vec4{1, 0, 0, 0.8f})),
+                        spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.8f}));
+
+    const TransferFunction result{interpolate(a, b, 0.5)};
+    EXPECT_NEAR(result.sample(0.65).a, 0.0f, 1e-5f);
+}
+
+TEST_P(FeatureTransport, FeatureGroupingUsesMassWeightedColorToBreakOverlapTies) {
+    // IoU of the two order-preserving cuts is exactly equal. The earliest cut pairs the
+    // heavy red features at a modest Lab distance; the other cut pairs them with a much
+    // larger Lab distance on a very small spike. An unweighted color sum keeps the earliest
+    // cut, which is still red at x=0.84. Weighting by the
+    // smaller mass selects the second cut: A's right triangle against only the blue spike.
+    // That spike's zero delimiter is red, so the foot of the feature stays red; the blue
+    // appears at the transported peak, (1-t)*0.75 + t*0.875 = 0.84375 when t=0.75.
+    const vec4 red0{1.f, 0.f, 0.f, 0.f};
+    const vec4 red1{1.f, 0.f, 0.f, 1.f};
+    const TF a{{0.0, red0}, {0.25, red1}, {0.5, red0}, {0.75, red1}, {1.0, red0}};
+    const TF b{{0.0, vec4{0.7f, 0.f, 0.f, 0.f}},
+               {0.125, vec4{0.7f, 0.f, 0.f, 1.f}},
+               {0.25, vec4{0.7f, 0.f, 0.f, 0.f}},
+               {0.5, red1},
+               {0.75, red0},
+               {0.875, vec4{0.f, 0.f, 1.f, 0.05f}},
+               {1.0, vec4{0.f, 0.f, 1.f, 0.f}}};
+
+    const TransferFunction result{interpolate(a, b, 0.75)};
+    const auto color = result.sample(0.84);
+    EXPECT_GT(color.a, 0.02f);
+    EXPECT_GT(color.b, color.r + 0.2f);
+}
+
+TEST_P(FeatureTransport, FeatureGroupingTieAttachesSurplusToTheRight) {
+    // Equal IoU and equal color. The earliest cut wins, so the extra feature joins the
+    // right-hand feature of the smaller list: B0 alone, then B1 with B2.
+    const vec4 red0{1.f, 0.f, 0.f, 0.f};
+    const vec4 red1{1.f, 0.f, 0.f, 1.f};
+    const TF a{{0.0, red0}, {0.25, red1}, {0.5, red0}, {0.75, red1}, {1.0, red0}};
+    const TF b{{0.0, red0}, {0.125, red1}, {0.25, red0}, {0.5, red1},
+               {0.75, red0}, {0.875, red1}, {1.0, red0}};
+    const TF aLeft{{0.0, red0}, {0.25, red1}, {0.5, red0}};
+    const TF aRight{{0.5, red0}, {0.75, red1}, {1.0, red0}};
+    const TF bLeft{{0.0, red0}, {0.125, red1}, {0.25, red0}};
+    const TF bRight{{0.25, red0}, {0.5, red1}, {0.75, red0}, {0.875, red1}, {1.0, red0}};
+
+    const TransferFunction result{interpolate(a, b, 0.5)};
+    const TransferFunction left{interpolate(aLeft, bLeft, 0.5)};
+    const TransferFunction right{interpolate(aRight, bRight, 0.5)};
+    for (int i = 0; i <= 100; ++i) {
+        const double x = i / 100.0;
+        const auto expected = x < 0.375 ? left.sample(x) : right.sample(x);
+        EXPECT_NEAR(result.sample(x).a, expected.a, 1e-4) << "x=" << x;
+    }
+}
+
+TEST_P(FeatureTransport, MultipleSplitsAndMerges) {
+    const auto left = join(spikeTF(0.15, 0.05, vec4{1, 0, 0, 0.8f}),
+                           spikeTF(0.35, 0.05, vec4{1, 0, 0, 0.4f}));
+    const auto right = join(spikeTF(0.65, 0.05, vec4{0, 0, 1, 0.4f}),
+                            spikeTF(0.85, 0.05, vec4{0, 0, 1, 0.8f}));
+    checkIndependentGroups(spikeTF(0.25, 0.15, vec4{1, 0, 0, 0.4f}),
+                           spikeTF(0.75, 0.15, vec4{0, 0, 1, 0.8f}), left, right);
+}
+
+TEST_P(FeatureTransport, SharedZeroBoundarySeparatesFeatures) {
+    const TF a{{0.0, vec4{1, 0, 0, 0}}, {0.2, vec4{1, 0, 0, 0.8f}},
+               {0.5, vec4{0, 0, 0, 0}}, {0.8, vec4{0, 0, 1, 0.2f}},
+               {1.0, vec4{0, 0, 1, 0}}};
+    auto b = a;
+    b[1].color.a = 0.2f;
+    b[3].color.a = 0.8f;
+    const TransferFunction tf{interpolate(a, b, 0.5)};
+    EXPECT_FLOAT_EQ(tf.sample(0.5).a, 0.0f);
+    EXPECT_NEAR(tf.sample(0.2).a, 0.5f, 0.02f);
+    EXPECT_NEAR(tf.sample(0.8).a, 0.5f, 0.02f);
+}
+
+TEST_P(FeatureTransport, NonzeroOuterEndpointsRemainFeatureBoundaries) {
+    const TF a{{0.15, vec4{1, 0, 0, 0.8f}}, {0.4, vec4{1, 0, 0, 0}},
+               {0.6, vec4{0, 0, 1, 0}}, {0.85, vec4{0, 0, 1, 0.2f}}};
+    auto b = a;
+    b.front().color.a = 0.2f;
+    b.back().color.a = 0.8f;
+    const TransferFunction tf{interpolate(a, b, 0.5)};
+    const TransferFunction left{interpolate(TF{a.begin(), a.begin() + 2},
+                                            TF{b.begin(), b.begin() + 2}, 0.5)};
+    const TransferFunction right{interpolate(TF{a.begin() + 2, a.end()},
+                                             TF{b.begin() + 2, b.end()}, 0.5)};
+    EXPECT_GT(tf.sample(0.0).a, 0.0f);
+    EXPECT_NEAR(tf.sample(0.0).a, left.sample(0.0).a, 1e-5);
+    EXPECT_FLOAT_EQ(tf.sample(0.5).a, 0.0f);
+    EXPECT_GT(tf.sample(1.0).a, 0.0f);
+    EXPECT_NEAR(tf.sample(1.0).a, right.sample(1.0).a, 1e-5);
+}
+
+TEST_P(FeatureTransport, TransparentMarginsAndUnsortedInputs) {
+    auto a = join(spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f}),
+                  spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.2f}));
+    auto b = a;
+    b[1].color.a = 0.2f;
+    b[4].color.a = 0.8f;
+    const TransferFunction expected{interpolate(a, b, 0.5)};
+    a.insert(a.begin(), {0.0, vec4{1, 0, 0, 0}});
+    a.push_back({1.0, vec4{0, 0, 1, 0}});
+    a.insert(a.begin() + 4, {0.5, vec4{0}});
+    std::reverse(a.begin(), a.end());
+    std::reverse(b.begin(), b.end());
+    const TransferFunction actual{interpolate(a, b, 0.5)};
+    for (int i = 0; i <= 100; ++i) {
+        EXPECT_NEAR(actual.sample(i / 100.0).a, expected.sample(i / 100.0).a, 1e-5);
+    }
+}
+
+TEST_P(FeatureTransport, DegenerateInputsAndExactEndpoints) {
+    const auto a = spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f});
+    const auto b = join(spikeTF(0.65, 0.05, vec4{0, 0, 1, 0.4f}),
+                        spikeTF(0.85, 0.05, vec4{0, 0, 1, 0.8f}));
+    EXPECT_EQ(interpolate(a, b, 0.0), a);
+    EXPECT_EQ(interpolate(a, b, 1.0), b);
+    EXPECT_TRUE(interpolate({}, {}, 0.5).empty());
+    EXPECT_EQ(interpolate({}, a, 0.5), a);
+    EXPECT_EQ(interpolate(a, {}, 0.5), a);
+    const TF transparent{{0.0, vec4{0}}, {0.5, vec4{0}}, {1.0, vec4{0}}};
+    const TransferFunction tf{interpolate(transparent, transparent, 0.5)};
+    EXPECT_FLOAT_EQ(tf.sample(0.5).a, 0.0f);
+}
+
+INSTANTIATE_TEST_SUITE_P(AllInterpolators, FeatureTransport, ::testing::Values(0, 1, 2, 3, 4));
+
+}  // namespace
+
+TEST(OptimalTransport, FeatureAwareAlphaEvaluators) {
+    TF a = spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f});
+    const auto right = spikeTF(0.8, 0.1, vec4{0, 0, 1, 0.2f});
+    a.insert(a.end(), right.begin(), right.end());
+    auto b = a;
+    b[1].color.a = 0.2f;
+    b[4].color.a = 0.8f;
+    const std::vector<double> xs{0.8, 0.5, 0.2, 0.0, 1.0};
+    const auto values = algorithm::evaluateInterpolatedAlphaGrid(a, b, 0.5, xs);
+    ASSERT_EQ(values.size(), xs.size());
+    EXPECT_NEAR(values[0], 0.5, 1e-6);
+    EXPECT_DOUBLE_EQ(values[1], 0.0);
+    EXPECT_NEAR(values[2], 0.5, 1e-6);
+    EXPECT_DOUBLE_EQ(values[3], 0.0);
+    EXPECT_DOUBLE_EQ(values[4], 0.0);
+    for (std::size_t i = 0; i < xs.size(); ++i) {
+        EXPECT_DOUBLE_EQ(values[i], algorithm::evaluateInterpolatedAlpha(a, b, 0.5, xs[i]));
+    }
+}
+
+TEST(OptimalTransport, FeatureAwareAlphaEvaluatorSplitsMergesAndSupport) {
+    const TF leftA = spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.8f});
+    const TF rightA = spikeTF(0.75, 0.15, vec4{0, 0, 1, 0.8f});
+    const TF leftB = spikeTF(0.2, 0.1, vec4{1, 0, 0, 0.4f});
+    TF rightB = spikeTF(0.65, 0.05, vec4{0, 0, 1, 0.8f});
+    const auto rightFar = spikeTF(0.85, 0.05, vec4{0, 0, 1, 0.8f});
+    rightB.insert(rightB.end(), rightFar.begin(), rightFar.end());
+    TF a = leftA;
+    a.insert(a.end(), rightA.begin(), rightA.end());
+    TF b = leftB;
+    b.insert(b.end(), rightB.begin(), rightB.end());
+
+    const double t = 0.5;
+    const double gap = algorithm::evaluateInterpolatedAlpha(a, b, t, 0.75);
+    const double outsideLeft = algorithm::evaluateInterpolatedAlpha(a, b, t, 0.0);
+    const double outsideRight = algorithm::evaluateInterpolatedAlpha(a, b, t, 1.0);
+    const double leftPeak = algorithm::evaluateInterpolatedAlpha(a, b, t, 0.2);
+    const double leftOnly = algorithm::evaluateInterpolatedAlpha(leftA, leftB, t, 0.2);
+    EXPECT_DOUBLE_EQ(gap, 0.0);
+    EXPECT_DOUBLE_EQ(outsideLeft, 0.0);
+    EXPECT_DOUBLE_EQ(outsideRight, 0.0);
+    EXPECT_NEAR(leftPeak, leftOnly, 1e-9);
+
+    const std::vector<double> xs{0.85, 0.0, 0.75, 0.2, 1.0, 0.65};
+    const auto grid = algorithm::evaluateInterpolatedAlphaGrid(a, b, t, xs);
+    ASSERT_EQ(grid.size(), xs.size());
+    for (std::size_t i = 0; i < xs.size(); ++i) {
+        EXPECT_DOUBLE_EQ(grid[i], algorithm::evaluateInterpolatedAlpha(a, b, t, xs[i]))
+            << "x=" << xs[i];
+    }
+    EXPECT_GT(grid[0], 0.05);
+    EXPECT_DOUBLE_EQ(grid[2], 0.0);
+    EXPECT_GT(grid[3], 0.05);
+
+    const auto pwl = algorithm::optimalTransportInterpolationUniformQExact(a, b, t, 32);
+    const TransferFunction tf{pwl};
+    EXPECT_NEAR(tf.sample(0.75).a, 0.0f, 1e-4f);
+    EXPECT_NEAR(static_cast<double>(tf.sample(0.2).a), leftOnly, 0.05);
+
+    const TF shelfA{{0.1, vec4{1, 0, 0, 0.8f}},
+                    {0.3, vec4{1, 0, 0, 0}},
+                    {0.7, vec4{0, 0, 1, 0}},
+                    {0.9, vec4{0, 0, 1, 0.4f}}};
+    TF shelfB = shelfA;
+    shelfB.front().color.a = 0.2f;
+    shelfB.back().color.a = 0.8f;
+    const TF shelfLeftA{shelfA.begin(), shelfA.begin() + 2};
+    const TF shelfLeftB{shelfB.begin(), shelfB.begin() + 2};
+    EXPECT_GT(algorithm::evaluateInterpolatedAlpha(shelfA, shelfB, t, 0.0), 0.2);
+    EXPECT_DOUBLE_EQ(algorithm::evaluateInterpolatedAlpha(shelfA, shelfB, t, 0.5), 0.0);
+    EXPECT_GT(algorithm::evaluateInterpolatedAlpha(shelfA, shelfB, t, 1.0), 0.2);
+    EXPECT_NEAR(algorithm::evaluateInterpolatedAlpha(shelfA, shelfB, t, 0.0),
+                algorithm::evaluateInterpolatedAlpha(shelfLeftA, shelfLeftB, t, 0.0), 1e-9);
+}
+
+TEST(OptimalTransport, SecantTwoKnotFeatureKeepsZeroDelimiter) {
+    const TF a{{0.0, vec4{1, 0, 0, 1}},
+               {0.4, vec4{1, 0, 0, 0}},
+               {0.6, vec4{0, 0, 1, 0}},
+               {1.0, vec4{0, 0, 1, 1}}};
+    TF b = a;
+    b.front().color.a = 0.5f;
+    b.back().color.a = 0.5f;
+
+    const auto secant = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5, 1);
+    const auto exact = algorithm::optimalTransportInterpolationUniformQExact(a, b, 0.5, 1);
+    const TransferFunction secantTf{secant};
+    const TransferFunction exactTf{exact};
+    EXPECT_NEAR(secantTf.sample(0.5).a, 0.0f, 1e-5f);
+    EXPECT_NEAR(exactTf.sample(0.5).a, 0.0f, 1e-5f);
+    EXPECT_GT(secantTf.sample(0.0).a, 0.2f);
+    EXPECT_GT(secantTf.sample(1.0).a, 0.2f);
+    // 0.5 * ((0.2 + 0.1) + (0.2 + 0.1)) at the two ramps.
+    EXPECT_NEAR(totalMass(secant), 0.3, 0.02);
+}
+
+TEST(OptimalTransport, RefinementBudgetAppliesPerFeatureGroup) {
+    // Symmetric triangles transport to a piecewise-linear opacity, so the chord error is
+    // zero and refinement never runs. Peaks at different mass fractions pair a falling
+    // flank with a rising one. That interval has an interior opacity extremum, and
+    // midpoint refinement keeps splitting it until the level cap. The cap is per group.
+    const algorithm::QuantileRefinementOptions opts{
+        .relativeTolerance = 1e-12,
+        .maxQuantileLevels = 8,
+        .maxRefinementIterations = 32,
+    };
+    const auto bump = [](double left, double peak, double right, vec4 color) {
+        auto zero = color;
+        zero.a = 0.f;
+        return TF{{left, zero}, {peak, color}, {right, zero}};
+    };
+    const auto transport = [&](const TF& a, const TF& b) {
+        return algorithm::optimalTransportInterpolationAdaptiveQExact(a, b, 0.5, opts);
+    };
+    const auto one = transport(bump(0.05, 0.10, 0.40, vec4{1, 0, 0, 1}),
+                               bump(0.10, 0.35, 0.45, vec4{0, 0, 1, 1}));
+
+    auto a = bump(0.05, 0.10, 0.40, vec4{1, 0, 0, 1});
+    const auto aRight = bump(0.55, 0.60, 0.90, vec4{1, 0, 0, 1});
+    a.insert(a.end(), aRight.begin(), aRight.end());
+    auto b = bump(0.10, 0.35, 0.45, vec4{0, 0, 1, 1});
+    const auto bRight = bump(0.60, 0.85, 0.95, vec4{0, 0, 1, 1});
+    b.insert(b.end(), bRight.begin(), bRight.end());
+    const auto two = transport(a, b);
+
+    EXPECT_GT(one.size(), 4u);
+    EXPECT_GT(two.size(), opts.maxQuantileLevels);
+    EXPECT_GT(two.size(), one.size());
+}
+
 }  // namespace inviwo

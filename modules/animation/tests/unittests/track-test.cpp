@@ -49,6 +49,7 @@
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/interpolation/constantinterpolation.h>
 #include <modules/animation/interpolation/linearinterpolation.h>
+#include <modules/animation/interpolation/transferfunctioninterpolation.h>
 #include <modules/animation/datastructures/keyframesequence.h>
 #include <modules/animation/datastructures/animation.h>
 
@@ -62,6 +63,33 @@
 
 namespace inviwo {
 namespace animation {
+
+TEST(AnimationTests, TransferFunctionBlendMovesTrailingControlPoints) {
+    using Keyframe = ValueKeyframe<TransferFunction>;
+
+    const TransferFunction first{{{0.0, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+                                  {0.2, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+                                  {0.8, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+                                  {1.0, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+    const TransferFunction second{{{0.0, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+                                   {0.2, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+                                   {0.85, vec4{1.0f, 0.0f, 0.0f, 0.9f}},
+                                   {0.95, vec4{0.0f, 0.0f, 0.0f, 0.1f}}}};
+
+    std::vector<std::unique_ptr<Keyframe>> keys;
+    keys.push_back(std::make_unique<Keyframe>(Seconds{0.0}, first));
+    keys.push_back(std::make_unique<Keyframe>(Seconds{1.0}, second));
+
+    TransferFunction result;
+    TFInterpolationBlend interpolation;
+    interpolation(keys, Seconds{0.0}, Seconds{0.5}, result);
+
+    ASSERT_EQ(result.size(), 6);
+    EXPECT_DOUBLE_EQ(result[2].getPosition(), 0.8);
+    EXPECT_DOUBLE_EQ(result[3].getPosition(), 0.85);
+    EXPECT_DOUBLE_EQ(result[4].getPosition(), 0.95);
+    EXPECT_GT(result[2].getAlpha(), first[2].getAlpha());
+}
 
 TEST(AnimationTests, FloatInterpolation) {
 

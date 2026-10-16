@@ -60,7 +60,7 @@ struct IVW_CORE_API QuantileRefinementOptions {
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQ(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    std::size_t samplesPerSegment = 16);
+    std::size_t samplesPerSegment = 16, bool matchFeatures = true);
 
 /**
  * @brief Uniform-q sampling with exact opacity reconstruction.
@@ -68,7 +68,7 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQ(
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    std::size_t samplesPerSegment = 16);
+    std::size_t samplesPerSegment = 16, bool matchFeatures = true);
 
 /**
  * @brief Adaptive-q sampling (midpoint bisection) with secant opacity reconstruction.
@@ -76,7 +76,7 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationUniformQE
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQSecant(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts = {});
+    const QuantileRefinementOptions& opts = {}, bool matchFeatures = true);
 
 /**
  * @brief Adaptive-q sampling (midpoint bisection) with exact opacity reconstruction.
@@ -91,7 +91,7 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQ
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts = {});
+    const QuantileRefinementOptions& opts = {}, bool matchFeatures = true);
 
 /**
  * @brief Interpolate two transfer functions using 1D optimal transport with opacity-optimal q
@@ -101,7 +101,24 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQ
  * transfer functions, this method uses earth movers distance to interpolate between the source
  * and destination transfer functions.
  *
- * The algorithm:
+ * The exact alpha evaluators always use feature-aware transport. The interpolators do as well
+ * unless @p matchFeatures is false, in which case each transfer function is one distribution.
+ * Zero-opacity control points delimit features; the first and last control points
+ * also delimit features even when their opacity is nonzero. Consecutive zero points describe
+ * transparent gaps, not additional features. Clamp-to-edge support belongs to the outer features.
+ *
+ * Features are matched in scalar-position order. Equal counts give one-to-one matches. For
+ * unequal counts, the larger feature list is partitioned into nonempty contiguous groups, one
+ * per feature in the smaller list. The partition maximizes the sum of interval intersection-over-
+ * union scores. Ties in that sum are broken by minimizing the sum of mass-weighted color
+ * distances. Each group's distance is the CIE Lab distance between opacity-weighted mean
+ * colors, multiplied by the smaller of the two opacity masses, so a low-mass group cannot
+ * outvote a high-mass one. Overlap stays the primary identity cue. When overlap and
+ * mass-weighted color both tie, the earliest cut is kept, which attaches surplus features to
+ * the rightmost feature of the smaller list. Each group then transports and interpolates its
+ * own opacity mass independently. Refinement limits apply separately to each matched group.
+ *
+ * Within each matched group, the algorithm:
  * 1. Treats the alpha channel of each TF as a piecewise linear density (PDF).
  * 2. Computes the cumulative distribution function (CDF) for each TF.
  * 3. Inverts the CDFs to obtain quantile functions.
@@ -140,11 +157,13 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQ
  * @param tfB  Second transfer function as sorted TFPrimitiveData points.
  * @param t    Interpolation parameter in [0, 1]. t=0 returns tfA, t=1 returns tfB.
  * @param opts Refinement tolerance and limits for the quantile level set.
+ * @param matchFeatures When true (the default), features are matched and transported
+ *                      independently. When false, each transfer function is one distribution.
  * @return     Interpolated transfer function as a vector of TFPrimitiveData.
  */
 IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationOpacityOptimalQExact(
     std::span<const TFPrimitiveData> tfA, std::span<const TFPrimitiveData> tfB, double t,
-    const QuantileRefinementOptions& opts = {});
+    const QuantileRefinementOptions& opts = {}, bool matchFeatures = true);
 
 IVW_CORE_API double evaluateInterpolatedAlpha(std::span<const TFPrimitiveData> tfA,
                                               std::span<const TFPrimitiveData> tfB, double t,
