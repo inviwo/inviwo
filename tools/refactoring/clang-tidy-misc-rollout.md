@@ -2,14 +2,14 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 65 checks done so
+below for current progress and the exact resume point). 66 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
 + `modernize-use-equals-default` + `modernize-use-nullptr`
 + `performance-faster-string-find` + `modernize-unary-static-assert`
-+ `modernize-return-braced-init-list`),
-~35 remaining (plus 5 permanently-skipped false positives, see below).
++ `modernize-return-braced-init-list` + `readability-inconsistent-ifelse-braces`),
+~34 remaining (plus 5 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -156,7 +156,8 @@ plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `performance-inefficient-vector-operation`, `readability-qualified-auto`,
 `readability-make-member-function-const`, `modernize-use-equals-default`,
 `modernize-use-nullptr`, `performance-faster-string-find`,
-`modernize-unary-static-assert`, and `modernize-return-braced-init-list`.
+`modernize-unary-static-assert`, `modernize-return-braced-init-list`, and
+`readability-inconsistent-ifelse-braces`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
