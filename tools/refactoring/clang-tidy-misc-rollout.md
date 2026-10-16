@@ -2,14 +2,11 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 55 checks done so
-far (34 + a batch of 11 + a batch of 6 + 4 more:
-`google-upgrade-googletest-case`, `performance-use-std-move`,
-`readability-isolate-declaration`,
-`readability-avoid-return-with-void-value`), ~45 remaining (plus 4
-permanently-skipped false positives, see below —
-`cppcoreguidelines-pro-type-static-cast-downcast` was evaluated and skipped
-this session too).
+below for current progress and the exact resume point). 56 checks done so
+far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`),
+~44 remaining (plus 4 permanently-skipped false positives, see below).
+**Branch:** `feature/more-conv-warnings`
+**Last commit:** see `git log --oneline -1` on that branch.
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -308,6 +305,21 @@ edit was broken or dangerous and had to be corrected manually)
    whitespace-only added lines. Worth running that same grep on any future
    check's diff that merges/restructures control flow (loop fusion,
    if/else collapsing, etc.) before committing.
+7. **`readability-const-return-type` broke an `auto&` binding.**
+   `src/qt/editor/toolsmenu.cpp` had `auto& processors = m->getProcessors();`
+   where `getProcessors()` returned `const std::vector<T*>` *by value*.
+   `auto&` deduces the referent's cv-qualification from the initializer
+   expression's type, so with the `const` return type it deduced
+   `const std::vector<T*>&` (legal: a const lvalue reference can bind to,
+   and extend the lifetime of, a temporary). Stripping the top-level
+   `const` from the return type (exactly what this check does) made `auto&`
+   deduce a plain, non-const `std::vector<T*>&`, which **cannot** bind to a
+   temporary at all — the build failed immediately with "non-const lvalue
+   reference ... cannot bind to a temporary". Fixed forward by changing
+   that one call site to `const auto&` (it never mutated `processors`)
+   rather than reverting the check. Grepped the whole repo for the same
+   `auto&` (non-const) pattern against every other getter this check
+   renamed to confirm no other call site had it before committing.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -336,12 +348,11 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~45 fixable checks remaining** (out of 98 total fixable checks found by
+   **~44 fixable checks remaining** (out of 98 total fixable checks found by
    the dry run); next up by size (skipping
    `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
    reverted this session — see "Reverted as false positives" above, do not
    reapply it without per-instance review):
-   `readability-const-return-type`,
    `modernize-use-integer-sign-comparison`,
    `performance-inefficient-vector-operation`,
    `readability-qualified-auto`, `readability-make-member-function-const`,
