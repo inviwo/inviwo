@@ -311,7 +311,7 @@ void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
 
 void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
     if (p->getPressState() & PickingPressState::Move &&
-        p->getPressItems().count(PickingPressItem::Primary)) {
+        p->getPressItems().contains(PickingPressItem::Primary)) {
         callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);

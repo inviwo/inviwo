@@ -382,7 +382,7 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
     return serializers_.add([callback, modes](Serializer& s,
                                               const ExceptionHandler& exceptionHandler,
                                               WorkspaceSaveMode mode) {
-        if (modes.count(mode)) {
+        if (modes.contains(mode)) {
             try {
                 callback(s);
             } catch (Exception& e) {
@@ -399,7 +399,7 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
     return deserializers_.add([callback, modes](Deserializer& d,
                                                 const ExceptionHandler& exceptionHandler,
                                                 WorkspaceSaveMode mode) {
-        if (modes.count(mode)) {
+        if (modes.contains(mode)) {
             try {
                 callback(d);
             } catch (Exception& e) {

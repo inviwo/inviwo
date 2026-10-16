@@ -299,8 +299,7 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
     const auto valid = [&](const std::filesystem::path& file) {
         const auto name = file.filename().generic_string();
         return libraryTypes.contains(file.extension()) &&
-               (name.find("inviwo-module") != std::string::npos ||
-                name.find("inviwo-core") != std::string::npos);
+               (name.contains("inviwo-module") || name.contains("inviwo-core"));
     };
 
     std::vector<ModuleContainer> modules;

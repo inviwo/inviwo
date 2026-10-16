@@ -49,22 +49,22 @@ void to_json(json& j, const DirectoryProperty& p) {
 }
 
 void from_json(const json& j, DirectoryProperty& p) {
-    if (j.count("value") > 0) {
+    if (j.contains("value")) {
         p.set(j.at("value").get<std::string>());
     }
-    if (j.count("selectedExtension") > 0) {
+    if (j.contains("selectedExtension")) {
         p.setSelectedExtension(j.at("selectedExtension").get<FileExtension>());
     }
-    if (j.count("acceptMode") > 0) {
+    if (j.contains("acceptMode")) {
         p.setAcceptMode(j.at("acceptMode").get<AcceptMode>());
     }
-    if (j.count("fileMode") > 0) {
+    if (j.contains("fileMode")) {
         p.setFileMode(j.at("fileMode").get<FileMode>());
     }
-    if (j.count("contentType") > 0) {
+    if (j.contains("contentType")) {
         p.setContentType(j.at("contentType").get<std::string>());
     }
-    if (j.count("requestFile") > 0) {
+    if (j.contains("requestFile")) {
         p.requestFile();
     }
 }

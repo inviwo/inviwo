@@ -230,7 +230,7 @@ constexpr std::array<bool, 256> urlEscapeMap = []() {
     const std::string_view urlValid = "~-_.+!*(),%#@?=;:/,+$";
     for (int i = 0; i < 256; ++i) {
         const char c = static_cast<char>(i);
-        map[i] = !isalnum(c) && urlValid.find(c) == std::string_view::npos;
+        map[i] = !isalnum(c) && !urlValid.contains(c);
     }
     return map;
 }();

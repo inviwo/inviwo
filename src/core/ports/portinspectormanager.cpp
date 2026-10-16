@@ -141,7 +141,7 @@ PortInspectorManager::~PortInspectorManager() {
 }
 
 bool PortInspectorManager::hasPortInspector(Outport* outport) const {
-    return embeddedProcessors_.count(outport->getPath());
+    return embeddedProcessors_.contains(outport->getPath());
 }
 
 ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 pos) {

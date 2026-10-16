@@ -190,7 +190,7 @@ bool BrushingAndLinkingInport::canConnectTo(const Port* port) const {
 
     // Check for circular depends.
     auto pd = util::getPredecessors(port->getProcessor());
-    if (pd.find(getProcessor()) != pd.end()) return false;
+    if (pd.contains(getProcessor())) return false;
 
     if (dynamic_cast<const BrushingAndLinkingOutport*>(port)) {
         return true;

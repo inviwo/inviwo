@@ -306,7 +306,7 @@ static size_t parse(std::string_view str, std::string_view delimiters,
     }
 
     // Handle the trailing delimiter with empty data
-    if (!str.empty() && delimiters.find(str.back()) != std::string_view::npos) {
+    if (!str.empty() && delimiters.contains(str.back())) {
         // Ignore them if we don't expect them.
         if ((expectedParts && index < *expectedParts) || !expectedParts) {
             std::invoke(func, std::string_view{}, index, part);
