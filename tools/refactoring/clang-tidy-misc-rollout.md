@@ -10,8 +10,10 @@ far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type
 + `performance-faster-string-find` + `modernize-unary-static-assert`
 + `modernize-return-braced-init-list` + `readability-inconsistent-ifelse-braces`
 + `modernize-redundant-void-arg` + `readability-avoid-const-params-in-decls`
-+ `readability-convert-member-functions-to-static`),
-~31 remaining (plus 5 permanently-skipped false positives, see below).
++ `readability-convert-member-functions-to-static`
++ `cppcoreguidelines-prefer-member-initializer`),
+~27 remaining (plus 5 permanently-skipped false positives, and 2 stale
+aliases of already-done checks that need no further action, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -214,6 +216,23 @@ checks again without manual review)**:
   data, calibration coefficients, lookup tables) — double check every hit
   against a generated/data file or a known standards-derived coefficient
   before trusting it.
+- `cppcoreguidelines-explicit-constructor` and `llvm-qualified-auto` are
+  **stale aliases**, not new work — when clang-tidy runs with multiple
+  alias names of the same underlying check simultaneously enabled (e.g.
+  `misc-explicit-constructor` + `google-explicit-constructor` +
+  `cppcoreguidelines-explicit-constructor` are all aliases of one check;
+  same for `readability-qualified-auto`/`llvm-qualified-auto`), the
+  all-checks dry run (Workflow v2) attributes each diagnostic to only one
+  of the enabled alias names — seemingly whichever happens to win some
+  internal tie-break, not necessarily the one already fixed under its
+  other alias. Since `misc-explicit-constructor` and
+  `readability-qualified-auto` were already fixed (checks 3 and one of the
+  "4 more" batch respectively) using their own alias name, the *other*
+  alias name's entry in `clang-tidy-warnings-by-check.json` is 100% stale
+  — verified by direct single-file `clang-tidy -checks="-*,X"` on several
+  sample files from each one's recorded file list: 0 warnings on all of
+  them. No action needed; just skip these two names when picking the next
+  checks (don't recount them in "remaining").
 - `cppcoreguidelines-pro-type-static-cast-downcast` — evaluated and skipped
   (reverted in full, no commit) after applying it to all 125 warnings /
   61 files and finding the dominant pattern was a false positive: this
@@ -442,6 +461,43 @@ edit was broken or dangerous and had to be corrected manually)
     adds/removes `static` from a method should prompt a repo-wide grep for
     `&ClassName::methodName` referencing it, same as the existing advice
     for `const`/`noexcept` changes and pointer-to-member-function casts.
+12. **`cppcoreguidelines-prefer-member-initializer`'s fix cannot see
+    cross-statement data dependencies within the constructor body, and
+    its two-phase scoped-apply tooling path fails outright on multi-member
+    constructors.** Two distinct problems in one check:
+    - *Tooling*: constructors with N body-assignments to move each produce
+      N insertion fixes at the exact same source location (right after the
+      existing `:`/parameter list). `clang-apply-replacements` (used by
+      `clang-tidy-fix-check.sh`'s export+apply two-phase approach) only
+      keeps one such insertion per location and errors on the rest,
+      unlike `clang-tidy -fix` run directly per-TU, which merges them
+      correctly via its own internal conflict resolution. Worked around by
+      running `clang-tidy -fix` directly (no export/apply split): in
+      parallel for TU-local fixes, serially (one representative TU per
+      header) for the handful of diagnostics that actually live in a
+      shared header — see the commit message and build-notes.md for the
+      exact recipe.
+    - *Correctness*: 3 of the fixed diagnostics were genuine false
+      positives because the check cannot see *why* a member was assigned
+      in the body instead of the init list:
+      `include/inviwo/core/util/dispatcher.h` (moving a mutex-guarded
+      `callbacks_ = std::move(rhs.callbacks_)` into the init list makes it
+      run *before* the lock is acquired, reintroducing a data race in an
+      explicitly thread-safe class), `firstivwprocessor.cpp` (moving
+      `quadGL_`/`triangleGL_`'s initializer earlier than the `quad_`/
+      `triangle_` buffers they read, which are only assigned a real value
+      later in the body — would deref an empty buffer), and
+      `inviwomainwindow.cpp` (moving `networkEditorView_`'s initializer
+      earlier than the `networkEditor_ = std::make_unique<...>(this)`
+      assignment it depends on — would construct the view with a null
+      network pointer). All three: the body-assignment ordering was
+      load-bearing, not accidental. Pattern to watch for in any future
+      check that moves code across the init-list/body boundary: check
+      whether the moved expression references *another member* of the
+      same class (not just constructor parameters or `this`), and if so,
+      verify that member already holds its *final* value at the point the
+      init list runs (i.e. it's itself set via the init list, not
+      assigned later in the body) before trusting the move.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -469,25 +525,34 @@ rollout.
 2. Re-run the Python snippet above with the full `DONE_CHECKS` set (copy from
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
-   smallest remaining fixable checks. As of the last commit there were
-   **~38 fixable checks remaining** (out of 98 total fixable checks found by
-   the dry run); next up by size (skipping
-   `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
-   reverted this session — see "Reverted as false positives" above, do not
-   reapply it without per-instance review):
-   `performance-faster-string-find`, `bugprone-macro-parentheses`,
-   `modernize-unary-static-assert`, `modernize-return-braced-init-list`, ...
-   (`google-readability-todo` was evaluated and skipped — see "Reverted as
-   false positives" above — do not reapply it.)
-3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>`,
-   review the diff (don't skip this — two of the fixes applied so far needed
-   hand-correction, see above), build, test, commit. Batch several small
-   checks' fixes before doing one build+test pass if they touch disjoint
-   files, to save iteration time, but still commit one check per commit.
+   smallest remaining fixable checks. As of commit `e8a1e6599d` there were
+   **~27 fixable checks remaining** (skip `cppcoreguidelines-pro-type-static-cast-downcast`,
+   `cppcoreguidelines-explicit-constructor` and `llvm-qualified-auto` — the
+   latter two are stale aliases of already-done checks, see "Reverted as
+   false positives" above). Next up by size:
+   `bugprone-reserved-identifier`, `modernize-min-max-use-initializer-list`,
+   `readability-redundant-parentheses`, `google-readability-casting`,
+   `google-readability-braces-around-statements`,
+   `cppcoreguidelines-pro-type-member-init`, `modernize-use-auto`, ...
+3. For each check: `./tools/refactoring/clang-tidy-fix-check.sh <check>` —
+   **but first check whether the script fails outright** (exit 1, zero
+   files touched in `git status --short`). If so, it's very likely the
+   same same-location-multi-insertion limitation hit by
+   `cppcoreguidelines-prefer-member-initializer` (see lesson 12 below) —
+   fall back to running `clang-tidy -fix` directly per-TU instead (parallel
+   for TU-local fixes, serial one-TU-per-header for any diagnostic whose
+   real location is in a shared header; find those via a safe read-only
+   `-export-fixes` pass first, see lesson 12 and build-notes.md). Then
+   review the diff (don't skip this — several of the fixes applied so far
+   needed hand-correction, see above), build, test, commit. Batch several
+   small checks' fixes before doing one build+test pass if they touch
+   disjoint files, to save iteration time, but still commit one check per
+   commit.
 4. Watch for the same false-positive categories documented in "Lessons
    learned" below (non-deduced template parameter types, defensive copies
    masked by comments, "transparent wrapper" implicit-conversion types,
-   brace-init-list element construction, mutation inside `if constexpr`).
+   brace-init-list element construction, mutation inside `if constexpr`,
+   and the init-list/body cross-member-dependency category from lesson 12).
 
 ## Goal
 
