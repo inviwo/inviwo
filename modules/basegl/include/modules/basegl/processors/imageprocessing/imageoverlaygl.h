@@ -72,7 +72,7 @@ public:
     OverlayProperty(std::string identifier, std::string displayName,
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
-    virtual ~OverlayProperty() {}
+    virtual ~OverlayProperty() = default;
 
     void setViewDimensions(ivec2 viewDim);
 

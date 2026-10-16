@@ -131,7 +131,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     timeRange_.y = wrappers_.back()->timestamp_ + wrappers_.back()->duration_;
 }
 
-VolumeSequenceSampler::~VolumeSequenceSampler() {}
+VolumeSequenceSampler::~VolumeSequenceSampler() = default;
 
 dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
     const auto spatialPos = dvec3(pos);

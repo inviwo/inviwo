@@ -35,7 +35,7 @@ namespace inviwo {
 
 PropertyConverterManager::PropertyConverterManager() : identityConverter_("", "") {}
 
-PropertyConverterManager::~PropertyConverterManager() {}
+PropertyConverterManager::~PropertyConverterManager() = default;
 
 bool PropertyConverterManager::registerObject(PropertyConverter* converter) {
     std::string src = converter->getSourcePropertyClassIdenetifier();

@@ -118,7 +118,7 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     seed_.onChange([&]() { samples_.clear(); });
 }
 
-RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() {}
+RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() = default;
 
 void RBFVectorFieldGenerator2D::process() {
     if (samples_.size() != static_cast<size_t>(seeds_.get())) {

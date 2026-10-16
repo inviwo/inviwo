@@ -72,7 +72,7 @@ namespace inviwo {
 namespace shuntingyard {
 
 struct IVW_CORE_API TokenBase {
-    virtual ~TokenBase() {}
+    virtual ~TokenBase() = default;
 };
 
 template <class T>

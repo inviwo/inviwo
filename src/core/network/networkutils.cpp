@@ -218,7 +218,7 @@ std::vector<Processor*> getSelected(const ProcessorNetwork* network) {
            std::views::transform([](Processor& p) { return &p; }) | std::ranges::to<std::vector>();
 }
 
-PropertyDistanceSorter::PropertyDistanceSorter() {}
+PropertyDistanceSorter::PropertyDistanceSorter() = default;
 
 void PropertyDistanceSorter::setTarget(vec2 pos) { pos_ = pos; }
 void PropertyDistanceSorter::setTarget(const Property* target) { pos_ = getPosition(target); }

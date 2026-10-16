@@ -59,7 +59,7 @@ PVMVolumeWriter::PVMVolumeWriter() : DataWriterType<Volume>() {
     addExtension(FileExtension("pvm", "PVM file format"));
 }
 
-PVMVolumeWriter::PVMVolumeWriter(const PVMVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {}
+PVMVolumeWriter::PVMVolumeWriter(const PVMVolumeWriter& rhs) = default;
 
 PVMVolumeWriter& PVMVolumeWriter::operator=(const PVMVolumeWriter& that) {
     if (this != &that) DataWriterType<Volume>::operator=(that);

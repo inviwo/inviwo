@@ -37,8 +37,7 @@ namespace inviwo {
 
 DataWriter::DataWriter() : overwrite_(Overwrite::No), extensions_() {}
 
-DataWriter::DataWriter(const DataWriter& rhs)
-    : overwrite_(rhs.overwrite_), extensions_(rhs.extensions_) {}
+DataWriter::DataWriter(const DataWriter& rhs) = default;
 
 DataWriter& DataWriter::operator=(const DataWriter& that) {
     if (this != &that) {

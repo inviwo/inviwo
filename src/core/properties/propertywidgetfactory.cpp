@@ -35,9 +35,9 @@
 
 namespace inviwo {
 
-PropertyWidgetFactory::PropertyWidgetFactory() {}
+PropertyWidgetFactory::PropertyWidgetFactory() = default;
 
-PropertyWidgetFactory::~PropertyWidgetFactory() {}
+PropertyWidgetFactory::~PropertyWidgetFactory() = default;
 
 bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* propertyWidget) {
     const auto className = propertyWidget->getClassIdentifier();

@@ -35,7 +35,7 @@ PositionMetaData::PositionMetaData() : IntVec2MetaData(ivec2(0, 0)) {}
 
 PositionMetaData::PositionMetaData(int x, int y) : IntVec2MetaData(ivec2(x, y)) {}
 
-PositionMetaData::~PositionMetaData() {}
+PositionMetaData::~PositionMetaData() = default;
 
 PositionMetaData* PositionMetaData::clone() const { return new PositionMetaData(*this); }
 

@@ -35,7 +35,7 @@ namespace inviwo {
 
 namespace glui {
 
-Layout::Layout() {}
+Layout::Layout() = default;
 
 void Layout::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);
