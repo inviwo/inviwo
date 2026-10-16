@@ -2,14 +2,13 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 62 checks done so
+below for current progress and the exact resume point). 63 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
-+ `modernize-use-equals-default` + `modernize-use-nullptr`),
-~38 remaining (plus 4 permanently-skipped false positives, see below).
-**Branch:** `feature/more-conv-warnings`
-**Last commit:** see `git log --oneline -1` on that branch.
++ `modernize-use-equals-default` + `modernize-use-nullptr`
++ `performance-faster-string-find`),
+~37 remaining (plus 5 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
@@ -155,7 +154,7 @@ plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-const-return-type`, `modernize-use-integer-sign-comparison`,
 `performance-inefficient-vector-operation`, `readability-qualified-auto`,
 `readability-make-member-function-const`, `modernize-use-equals-default`,
-and `modernize-use-nullptr`.
+`modernize-use-nullptr`, and `performance-faster-string-find`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -239,6 +238,30 @@ checks again without manual review)**:
   this pattern), this check is not safe to blanket-apply here. If revisited
   later, each hit would need individual proof that no adjacent type-tag
   check/invariant already exists before accepting the `dynamic_cast` fix.
+- `bugprone-macro-parentheses` — reverted in full, no commit. All 686
+  diagnostics (one per TU) traced back to a single macro,
+  `IVW_ASSERT(condition, message)` in `include/inviwo/core/util/assertion.h`,
+  whose body is `stream << message;` where `stream` is a local
+  `std::ostringstream`. The check's fix wraps the macro parameter in
+  parentheses (`stream << (message);`), which is the textbook-correct fix
+  *when a macro parameter is used as a free-standing expression* — but this
+  macro's whole design intentionally lets callers pass a **chain** of `<<`
+  operations as `message` (e.g.
+  `IVW_ASSERT(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");`
+  in `modules/base/src/processors/imagesourceseries.cpp` and
+  `layerseriessource.cpp`, and `modules/userinterfacegl/src/processors/
+  presentationprocessor.cpp`), relying on `<<`'s left-associativity so the
+  whole thing chains onto the macro body's own `stream <<`. Parenthesizing
+  only the macro argument turns `stream << "prefix" << x << "suffix";` into
+  `stream << ("prefix" << x << "suffix");` — evaluating the parenthesized
+  part *first*, as a standalone `const char* << T` expression, which isn't
+  stream insertion at all and fails to compile (confirmed via
+  `compile_commands.json`: `-DIVW_FORCE_ASSERTIONS` is set in this build, so
+  the macro body is actually compiled, not `#if 0`-ed out). Any future macro
+  whose body uses a parameter as the RHS of a chainable/associative operator
+  (`<<`, `+`, `&&`, `||`, ...) rather than a free-standing expression is the
+  same false-positive category — grep the macro body for how the parameter
+  is used before trusting this check's fix.
 
 ### Two notable `-fix` bugs hit while applying this batch (not false
 positives — the underlying warning was correct, but clang-tidy's suggested
