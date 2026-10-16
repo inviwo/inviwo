@@ -1410,9 +1410,9 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
 }
 
 bool InviwoMainWindow::saveWorkspace() {
-    if (!currentWorkspaceFileName_)
+    if (!currentWorkspaceFileName_) {
         return saveWorkspaceAs();
-    else {
+    } else {
         return saveWorkspace(*currentWorkspaceFileName_);
     }
 }
