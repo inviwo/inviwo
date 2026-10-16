@@ -491,7 +491,7 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
                 vec3 vertex;
                 vec3 tcoord;
                 const vec4 color((quad + 1.0f) / 2.0f, 1.0f);
-                for (auto& elem : spheremesh) {
+                for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
                     tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
@@ -499,11 +499,11 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.x, idxOffset + elem.y, idxOffset + elem.z});
                     }
                 } else {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.z, idxOffset + elem.y, idxOffset + elem.x});
                     }
                 }
@@ -1034,7 +1034,7 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     colorVertices.reserve(faces.size() * faces[0].size());
     normalVertices.reserve(faces.size() * faces[0].size());
 
-    for (auto& face : faces) {
+    for (const auto& face : faces) {
         const auto normal = calcNnormal(face);
         const auto ind = static_cast<uint32_t>(positionVertices.size());
         for (const auto i : face) {

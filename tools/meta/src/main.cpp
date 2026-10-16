@@ -122,31 +122,31 @@ int main(int argc, char* const* argv) {
             {verbose.getValue(), dryrun.getValue(), force.getValue(), std::cout});
 
         if (modules.isSet()) {
-            for (auto& item : modules.getValue()) {
+            for (const auto& item : modules.getValue()) {
                 creator.createModule(std::filesystem::path{item}, org.getValue());
             }
         }
 
         if (files.isSet()) {
-            for (auto& item : files.getValue()) {
+            for (const auto& item : files.getValue()) {
                 creator.createFile(std::filesystem::path{item});
             }
         }
 
         if (processors.isSet()) {
-            for (auto& item : processors.getValue()) {
+            for (const auto& item : processors.getValue()) {
                 creator.createProcessor(std::filesystem::path{item});
             }
         }
 
         if (tests.isSet()) {
-            for (auto& item : tests.getValue()) {
+            for (const auto& item : tests.getValue()) {
                 creator.createTest(std::filesystem::path{item});
             }
         }
 
         if (updateModule.isSet()) {
-            for (auto& item : updateModule.getValue()) {
+            for (const auto& item : updateModule.getValue()) {
                 creator.updateModule(std::filesystem::path{item}, org.getValue(),
                                      updatePathFilter.getValue());
             }

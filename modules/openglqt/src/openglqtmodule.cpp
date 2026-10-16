@@ -102,9 +102,9 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(std::make_unique<OpenGLQtCapabilities>());
 
-    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+    if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         openglMenu_ = std::make_unique<OpenGLQtMenu>(nullptr);
-        auto menuBar = mainWindow->menuBar();
+        auto* menuBar = mainWindow->menuBar();
         menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(), openglMenu_.get());
     }
 
@@ -129,8 +129,8 @@ OpenGLQtModule::~OpenGLQtModule() {
     }
 
     if (openglMenu_) {
-        if (auto mainWindow = utilqt::getApplicationMainWindow()) {
-            auto menuBar = mainWindow->menuBar();
+        if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
+            auto* menuBar = mainWindow->menuBar();
             menuBar->removeAction(openglMenu_->menuAction());
         }
     }

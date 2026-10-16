@@ -96,7 +96,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     }
 
     const auto posBuffer = pit->second;
-    const auto posRam = posBuffer->getRepresentation<BufferRAM>();
+    const auto* const posRam = posBuffer->getRepresentation<BufferRAM>();
     if (!posRam) {
         throw DataWriterException("Error: could not find a position buffer ram");
     }
@@ -129,7 +129,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
     auto normalprinter = [&]() {
         if (nit != data->getBuffers().end()) {
-            if (const auto normRam = nit->second->getRepresentation<BufferRAM>();
+            if (const auto* const normRam = nit->second->getRepresentation<BufferRAM>();
                 normRam && (normRam->getDataFormat()->getComponents() == 3)) {
                 return normRam
                     ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,

@@ -359,7 +359,7 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-        if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier());
+        if (const auto* moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier());
             moduleInfo && (moduleInfo->version < inviwoModule.getVersion())) {
             const auto converter = inviwoModule.getConverter(moduleInfo->version);
             deserializer.convertVersion(converter.get());

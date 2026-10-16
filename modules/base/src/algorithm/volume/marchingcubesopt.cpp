@@ -176,7 +176,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         while (it + 1 != edgeGroup.end()) {
             // find an edge that share a face with *it
             const auto nit = std::find_if(it + 1, edgeGroup.end(), [&](auto edge) {
-                auto& faces1 = edgeIdToFaceIds[*it];
+                const auto& faces1 = edgeIdToFaceIds[*it];
                 auto& faces2 = edgeIdToFaceIds[edge];
                 return faces1[0] == faces2[0] || faces1[0] == faces2[1] || faces1[1] == faces2[0] ||
                        faces1[1] == faces2[1];
@@ -190,7 +190,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         }
 
         // apply the triangulations
-        for (auto& triangle : triangulations.at(edgeGroup.size())) {
+        for (const auto& triangle : triangulations.at(edgeGroup.size())) {
             const auto e0 = edgeGroup[triangle[0]];
             const auto e1 = edgeGroup[triangle[1]];
             const auto e2 = edgeGroup[triangle[2]];

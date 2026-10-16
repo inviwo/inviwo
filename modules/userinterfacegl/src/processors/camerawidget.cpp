@@ -374,7 +374,7 @@ void CameraWidget::initializeResources() {
 std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
     const ivec2& widgetSize) {
     auto img = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
-    auto rep = img->getEditableRepresentation<ImageGL>();
+    auto* rep = img->getEditableRepresentation<ImageGL>();
 
     return {std::move(img), rep};
 }
@@ -679,7 +679,7 @@ void CameraWidget::loadMesh() {
     });
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
-        if (auto mesh = meshes_[i].get()) {
+        if (const auto* mesh = meshes_[i].get()) {
             meshDrawers_[i] = std::make_unique<MeshDrawerGL>(mesh);
         }
     }

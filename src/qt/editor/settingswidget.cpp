@@ -78,7 +78,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
             [&]() { updateSettingsWidget(); });
     onModulesWillUnregister_ =
         mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&]() {
-            while (auto item = layout_->takeAt(0)) {
+            while (auto* item = layout_->takeAt(0)) {
                 delete item;
             }
         });
@@ -92,13 +92,13 @@ SettingsWidget::~SettingsWidget() = default;
 void SettingsWidget::updateSettingsWidget() {
     const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
 
-    for (auto setting : settings) {
-        auto settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
+    for (auto* setting : settings) {
+        auto* settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
         settingsGroup->setShowIfEmpty(true);
         layout_->addWidget(settingsGroup);
         settingsGroup->initState();
 
-        for (auto prop : setting->getProperties()) {
+        for (auto* prop : setting->getProperties()) {
             settingsGroup->addProperty(prop);
         }
 

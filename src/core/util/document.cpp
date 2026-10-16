@@ -141,7 +141,7 @@ Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& at
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
         return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
-            for (auto& attr : attributes) {
+            for (const auto& attr : attributes) {
                 const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;
@@ -158,7 +158,7 @@ Document::PathComponent::PathComponent(std::string_view name,
         return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
             if (e->name() != name) return false;
-            for (auto& attr : attributes) {
+            for (const auto& attr : attributes) {
                 const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;

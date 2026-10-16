@@ -82,7 +82,7 @@ SeedsFromMaskSequence::SeedsFromMaskSequence()
 
 void SeedsFromMaskSequence::process() {
     const auto inSequence = sequence_.getData();
-    auto& volumes = *inSequence;
+    const auto& volumes = *inSequence;
     const auto outvec = std::make_shared<SeedPoint4DVector>();
     auto& points = *outvec;
 

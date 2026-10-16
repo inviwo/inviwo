@@ -63,19 +63,19 @@ void LinkDragHelper::reset() {
 
 bool LinkDragHelper::eventFilter(QObject*, QEvent* event) {
     if (link_ && event->type() == QEvent::GraphicsSceneMouseMove) {
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
         link_->setEndPoint(e->scenePos());
         link_->reactToProcessorHover(editor_.getProcessorGraphicsItemAt(e->scenePos()));
         e->accept();
     } else if (link_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
         // link drag mode
-        auto startProcessor =
+        auto* startProcessor =
             link_->getSrcProcessorLinkGraphicsItem()->getProcessorGraphicsItem()->getProcessor();
 
         reset();
 
-        if (auto endProcessorItem = editor_.getProcessorGraphicsItemAt(e->scenePos())) {
+        if (auto* endProcessorItem = editor_.getProcessorGraphicsItemAt(e->scenePos())) {
             Processor* endProcessor = endProcessorItem->getProcessor();
             if (startProcessor != endProcessor) {
                 editor_.showLinkDialog(startProcessor, endProcessor);

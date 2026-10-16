@@ -55,8 +55,8 @@ namespace util {
 
 std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor) {
     std::unordered_set<Processor*> predecessors;
-    for (auto port : processor->getInports()) {
-        for (auto connectedPort : port->getConnectedOutports()) {
+    for (auto* port : processor->getInports()) {
+        for (auto* connectedPort : port->getConnectedOutports()) {
             predecessors.insert(connectedPort->getProcessor());
         }
     }
@@ -65,8 +65,8 @@ std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor)
 
 std::unordered_set<Processor*> getDirectSuccessors(const Processor* processor) {
     std::unordered_set<Processor*> successors;
-    for (auto port : processor->getOutports()) {
-        for (auto connectedPort : port->getConnectedInports()) {
+    for (auto* port : processor->getOutports()) {
+        for (auto* connectedPort : port->getConnectedInports()) {
             successors.insert(connectedPort->getProcessor());
         }
     }
@@ -100,7 +100,7 @@ std::vector<Processor*> topologicalSort(const ProcessorNetwork* network) {
 
     std::unordered_set<Processor*> state;
     std::vector<Processor*> sorted;
-    for (auto processor : sinkProcessors) {
+    for (auto* processor : sinkProcessors) {
         traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
             state, processor, [&sorted](Processor* p) { sorted.push_back(p); });
     }
@@ -116,7 +116,7 @@ std::vector<Processor*> topologicalSortFiltered(const ProcessorNetwork* network)
 
     std::unordered_set<Processor*> state;
     std::vector<Processor*> sorted;
-    for (auto processor : sinkProcessors) {
+    for (auto* processor : sinkProcessors) {
         traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
             state, processor, [&sorted](Processor* p) { sorted.push_back(p); },
             [](Processor* p, Inport* from, Outport* to) {
@@ -140,7 +140,7 @@ ivec2 getCenterPosition(const std::vector<Processor*>& processors) {
     ivec2 center{0};
     if (processors.empty()) return center;
 
-    for (auto p : processors) {
+    for (auto* p : processors) {
         center += getPosition(p);
     }
     return center / static_cast<int>(processors.size());
@@ -165,7 +165,7 @@ std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors
     ivec2 minPos{std::numeric_limits<int>::max()};
     ivec2 maxPos{std::numeric_limits<int>::lowest()};
 
-    for (auto p : processors) {
+    for (auto* p : processors) {
         const auto pos = getPosition(p);
         minPos = glm::min(minPos, pos);
         maxPos = glm::max(maxPos, pos);
@@ -198,14 +198,14 @@ void offsetPosition(Processor* processor, ivec2 offset) {
 
 void offsetPosition(const std::vector<Processor*>& processors, ivec2 offset) {
     for (auto* p : processors) {
-        if (auto meta = getMetaData(p)) {
+        if (auto* meta = getMetaData(p)) {
             meta->setPosition(meta->getPosition() + offset);
         }
     }
 }
 
 void setSelected(const std::vector<Processor*>& processors, bool selected) {
-    for (auto p : processors) {
+    for (auto* p : processors) {
         setSelected(p, selected);
     }
 }
@@ -299,8 +299,8 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<NetworkEdge> internalConnections;
     std::vector<NetworkEdge> externalConnections;
     for (const auto& connection : network_->getConnections()) {
-        const auto in = connection.getInport()->getProcessor();
-        const auto out = connection.getOutport()->getProcessor();
+        auto* const in = connection.getInport()->getProcessor();
+        auto* const out = connection.getOutport()->getProcessor();
         if (util::contains(processors_, in)) {
             if (util::contains(processors_, out)) {
                 internalConnections.emplace_back(connection);
@@ -314,8 +314,8 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<NetworkEdge> outLinks;
     std::vector<NetworkEdge> inLinks;
     for (const auto& link : network_->getLinks()) {
-        const auto src = link.getSource()->getOwner()->getProcessor();
-        const auto dst = link.getDestination()->getOwner()->getProcessor();
+        auto* const src = link.getSource()->getOwner()->getProcessor();
+        auto* const dst = link.getDestination()->getOwner()->getProcessor();
         const auto srcInt = util::contains(processors_, src);
         const auto dstInt = util::contains(processors_, dst);
 
@@ -624,7 +624,7 @@ std::vector<Processor*> appendProcessorNetwork(ProcessorNetwork* destinationNetw
                         ivec2{150, 0} - ivec2{bounds.first.x, bounds.first.y};
     util::offsetPosition(processors, offset);
 
-    for (auto p : processors) {
+    for (auto* p : processors) {
         const auto proc = network.removeProcessor(p);
         destinationNetwork->addProcessor(proc);
     }

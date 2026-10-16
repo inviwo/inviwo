@@ -939,7 +939,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
 
 template <typename T, bool Shared>
 auto Deserializer::getRegisteredType(std::string_view className) const {
-    for (auto base : registeredFactories_) {
+    for (auto* base : registeredFactories_) {
         if (base->hasKey(className)) {
             if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
                 if constexpr (Shared) {

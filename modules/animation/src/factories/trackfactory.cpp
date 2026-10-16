@@ -54,7 +54,7 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
     const auto it = propertyToTrackMap_.find(property->getClassIdentifier());
     if (it != propertyToTrackMap_.end()) {
         if (auto track = create(it->second)) {
-            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+            if (auto* basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {

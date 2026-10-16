@@ -142,7 +142,7 @@ const std::vector<T>& IntegralLine::getMetaData(const std::string& name) const {
         throw Exception(SourceContext{}, "No meta data with name: {}", name);
     }
     auto askedDF = DataFormat<T>::get();
-    auto isDF = it->second->getDataFormat();
+    const auto* isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
         throw Exception(SourceContext{},
                         "Incorrect dataformat for meta data {} asking for {} but is {}", name,
@@ -162,7 +162,7 @@ std::vector<T>& IntegralLine::getMetaData(const std::string& name, bool create) 
         return md->getEditableRAMRepresentation()->getDataContainer();
     }
     auto askedDF = DataFormat<T>::get();
-    auto isDF = it->second->getDataFormat();
+    const auto* isDF = it->second->getDataFormat();
     if (isDF != askedDF) {
         throw Exception(SourceContext{},
                         "Incorrect dataformat for meta data {} asking for {} but is {}", name,

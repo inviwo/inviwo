@@ -76,7 +76,7 @@ namespace inviwo {
 namespace {
 
 void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
-    auto factory = app->getProcessorFactory();
+    auto* factory = app->getProcessorFactory();
 
     std::vector<InviwoModule*> modules;
     for (auto& m : app->getModuleManager().getInviwoModules()) {
@@ -91,9 +91,9 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
         const auto& processors = m->getProcessors();
         if (processors.empty()) continue;
 
-        auto modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
-        for (auto& pfo : processors) {
-            auto action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
+        auto* modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
+        for (const auto& pfo : processors) {
+            auto* action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
             docsMenu->connect(action, &QAction::triggered, [pfo, factory]() {
                 const auto processor = factory->createShared(pfo->getClassIdentifier());
                 const auto& inports = processor->getInports();
@@ -152,7 +152,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
     });
     for (const size_t i : order) {
         const auto& module = modules[i];
-        auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
+        auto* action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
         QObject::connect(
             action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app]() {
@@ -197,27 +197,27 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
 }  // namespace
 
 ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
-    auto docsMenu = addMenu("Create &Processors Docs");
+    auto* docsMenu = addMenu("Create &Processors Docs");
     connect(docsMenu, &QMenu::aboutToShow, [docsMenu, win]() {
         docsMenu->clear();
         createProcessorDocMenu(win->getInviwoApplication(), docsMenu);
     });
 
-    auto regressionMenu = addMenu("Create &Regression Test");
+    auto* regressionMenu = addMenu("Create &Regression Test");
     connect(regressionMenu, &QMenu::aboutToShow, [regressionMenu, win]() {
         regressionMenu->clear();
         createRegressionActions(win, win->getInviwoApplication(), regressionMenu);
     });
 
 #ifdef IVW_INVIWO_META
-    auto sourceMenu = addMenu("Create &Sources");
+    auto* sourceMenu = addMenu("Create &Sources");
     addInviwoMetaAction(sourceMenu);
 #endif
 
-    auto workspaceMenu = addMenu("Workspaces");
+    auto* workspaceMenu = addMenu("Workspaces");
     workspaceMenu->setToolTipsVisible(true);
 
-    auto loadExampleWorkspaces = workspaceMenu->addAction("Load Example Workspaces");
+    auto* loadExampleWorkspaces = workspaceMenu->addAction("Load Example Workspaces");
     loadExampleWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces");
@@ -231,7 +231,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto updateExampleWorkspaces = workspaceMenu->addAction("Update Example Workspaces");
+    auto* updateExampleWorkspaces = workspaceMenu->addAction("Update Example Workspaces");
     updateExampleWorkspaces->setToolTip(
         "Load and save each workspace after each other, useful to update workspace versions");
     connect(updateExampleWorkspaces, &QAction::triggered, [win]() {
@@ -244,7 +244,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto loadRegressionWorkspaces = workspaceMenu->addAction("Load Regression Workspaces");
+    auto* loadRegressionWorkspaces = workspaceMenu->addAction("Load Regression Workspaces");
     loadRegressionWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces");
@@ -258,7 +258,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto updateRegressionWorkspaces = workspaceMenu->addAction("Update Regression Workspaces");
+    auto* updateRegressionWorkspaces = workspaceMenu->addAction("Update Regression Workspaces");
     updateRegressionWorkspaces->setToolTip(
         "Load and save each workspace after each other, useful to update workspace versions");
 
@@ -272,7 +272,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto loadWorkspaces = workspaceMenu->addAction("Load Workspaces In Folder...");
+    auto* loadWorkspaces = workspaceMenu->addAction("Load Workspaces In Folder...");
     loadWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces. Loads all workspace found in the folder recursively.");
@@ -294,7 +294,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto updateWorkspaces = workspaceMenu->addAction("Update Workspaces In Folder...");
+    auto* updateWorkspaces = workspaceMenu->addAction("Update Workspaces In Folder...");
     updateWorkspaces->setToolTip(
         "Load and save each workspace after each other, useful to update workspace versions. Loads "
         "all workspace found in the folder recursively.");
@@ -317,10 +317,10 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         }
     });
 
-    auto propertyPaths = workspaceMenu->addAction("Load and log all properties");
+    auto* propertyPaths = workspaceMenu->addAction("Load and log all properties");
     connect(propertyPaths, &QAction::triggered, [win]() {
-        auto app = win->getInviwoApplication();
-        auto factory = app->getProcessorFactory();
+        auto* app = win->getInviwoApplication();
+        auto* factory = app->getProcessorFactory();
 
         std::string buffer;
 

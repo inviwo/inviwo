@@ -76,7 +76,7 @@ Document VolumeRaycastVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> VolumeRaycastVisualizer::getSupportedFileExtensions() const {
-    auto rf = util::getDataReaderFactory(app_);
+    auto* rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Volume>();
     auto exts2 = rf->getExtensionsForType<VolumeSequence>();
     exts.insert(exts.end(), exts2.begin(), exts2.end());
@@ -141,10 +141,10 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
 
     net->evaluateLinksFromProperty(vrc->getPropertyByIdentifier("camera"));
 
-    if (auto camera = dynamic_cast<CameraProperty*>(vrc->getPropertyByIdentifier("camera"))) {
+    if (auto* camera = dynamic_cast<CameraProperty*>(vrc->getPropertyByIdentifier("camera"))) {
         camera->fitData();
     }
-    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+    if (auto* canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
         canvas->setCanvasSize(size2_t{768, 768});
     }
 

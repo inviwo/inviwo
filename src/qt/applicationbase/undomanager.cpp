@@ -289,7 +289,7 @@ QAction* UndoManager::getUndoAction() const { return undoAction_; }
 QAction* UndoManager::getRedoAction() const { return redoAction_; }
 
 bool UndoManager::hasRestore() const {
-    if (auto& str = autoSaver_->getRestored()) {
+    if (const auto& str = autoSaver_->getRestored()) {
         return !str->empty();
     }
     return false;
@@ -320,7 +320,7 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
                 return true;
             }
             case QEvent::TouchEnd: {
-                auto te = static_cast<QTouchEvent*>(e);
+                auto* te = static_cast<QTouchEvent*>(e);
                 return util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
                     return tp.state() == QEventPoint::Released;
                 });

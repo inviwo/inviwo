@@ -252,7 +252,7 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
     shader_->setUniform("tex", texUnit);
     shader_->setUniform("color", color);
 
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     const utilgl::Enable<MeshGL> enable(rect);
 
     ivec2 glyphPos{0};
@@ -414,7 +414,7 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
     const auto state = setupRenderState(
         texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
-    for (auto& elem : entries) {
+    for (const auto& elem : entries) {
         // set up viewport
         const utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
                                              elem.texExtent.y);

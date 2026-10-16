@@ -159,25 +159,25 @@ void PropertyWidgetQt::onSetReadOnly(Property*, bool readonly) {
 std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
     std::unique_ptr<QMenu> menu = std::make_unique<QMenu>();
 
-    if (auto app = util::getInviwoApplication(property_)) {
+    if (auto* app = util::getInviwoApplication(property_)) {
         // need to replace all '&' with '&&'. Otherwise Qt will interpret it as keyboard shortcut.
         menu->addAction(utilqt::toQString(property_->getDisplayName()).replace("&", "&&"));
         menu->addSeparator();
 
         {
-            auto copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
+            auto* copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
             connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
                 QApplication::clipboard()->setMimeData(getPropertyMimeData().release());
             });
 
-            auto pasteAction = menu->addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
+            auto* pasteAction = menu->addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
             if (property_->getReadOnly()) pasteAction->setEnabled(false);
             connect(pasteAction, &QAction::triggered, this, [this, app]() {
                 if (!property_) return;
 
-                auto clipboard = QApplication::clipboard();
-                auto mimeData = clipboard->mimeData();
+                auto* clipboard = QApplication::clipboard();
+                const auto* mimeData = clipboard->mimeData();
                 QByteArray data;
                 if (mimeData->formats().contains(
                         QString("application/x.vnd.inviwo.property+xml"))) {
@@ -208,7 +208,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 }
             });
 
-            auto copyPathAction = menu->addAction("Copy Path");
+            auto* copyPathAction = menu->addAction("Copy Path");
             connect(copyPathAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
                 QApplication::clipboard()->setText(utilqt::toQString(property_->getPath()));
@@ -218,14 +218,14 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addSeparator();
 
         {
-            auto factory = app->getPropertyWidgetFactory();
+            auto* factory = app->getPropertyWidgetFactory();
             const auto semantics = factory->getSupportedSemanicsForProperty(property_);
             if (semantics.size() > 1) {
-                auto semanicsMenu = menu->addMenu(tr("&Semantics"));
-                auto semanticsGroup = new QActionGroup(semanicsMenu);
+                auto* semanicsMenu = menu->addMenu(tr("&Semantics"));
+                auto* semanticsGroup = new QActionGroup(semanicsMenu);
 
                 for (const auto& semantic : semantics) {
-                    auto action = semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
+                    auto* action = semanicsMenu->addAction(utilqt::toQString(semantic.getString()));
                     semanticsGroup->addAction(action);
                     action->setCheckable(true);
                     action->setChecked(semantic == property_->getSemantics());
@@ -243,7 +243,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
         addPresetMenuActions(menu.get(), app);
 
-        auto resetAction = menu->addAction(tr("&Reset to default"));
+        auto* resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         connect(resetAction, &QAction::triggered, this,
                 [this]() { property_->resetToDefaultState(); });
@@ -289,10 +289,10 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
 
     for (const auto& [moduleName, actions] : callbackMapPerModule) {
         if (actions.empty()) continue;
-        auto submenu = menu->addMenu(QString::fromStdString(moduleName));
+        auto* submenu = menu->addMenu(QString::fromStdString(moduleName));
         for (const auto& mAction : actions) {
             const auto& actionName = mAction->getActionName();
-            auto action = submenu->addAction(QString::fromStdString(actionName));
+            auto* action = submenu->addAction(QString::fromStdString(actionName));
             connect(action, &QAction::triggered, this,
                     [app, actionName, property = property_](bool /*checked*/) {
                         const auto& mActions = app->getCallbackActions();
@@ -346,14 +346,14 @@ void PropertyWidgetQt::mouseReleaseEvent(QMouseEvent* event) {
 void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app) {
     if (!property_) return;
 
-    auto presetMenu = menu->addMenu("Presets");
-    auto presetManager = app->getPropertyPresetManager();
+    auto* presetMenu = menu->addMenu("Presets");
+    auto* presetManager = app->getPropertyPresetManager();
 
     {
         const auto addPresetToMenu = [presetManager, this](QMenu* menu, const std::string& name,
                                                            Property* property,
                                                            PropertyPresetType type) {
-            auto action = menu->addAction(QString::fromStdString(name));
+            auto* action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
             action->setToolTip(utilqt::toQString(fmt::format("{} Preset", type)));
             this->connect(action, &QAction::triggered, menu,
@@ -405,7 +405,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
         std::array<PropertyPresetType, 3> types = {PropertyPresetType::Property,
                                                    PropertyPresetType::Workspace,
                                                    PropertyPresetType::Application};
-        auto saveMenu = presetMenu->addMenu("Save");
+        auto* saveMenu = presetMenu->addMenu("Save");
         for (auto& type : types) {
             const auto* saveAction =
                 saveMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
@@ -416,8 +416,8 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             });
         }
 
-        auto clearMenu = presetMenu->addMenu("Clear");
-        for (auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
+        auto* clearMenu = presetMenu->addMenu("Clear");
+        for (const auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
             const auto* clearAction =
                 clearMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
             connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
@@ -435,7 +435,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
         event->accept();
-        auto helpEvent = static_cast<QHelpEvent*>(event);
+        auto* helpEvent = static_cast<QHelpEvent*>(event);
 
         Document desc{};
         auto html = desc.append("html");

@@ -62,7 +62,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
     std::vector<CanvasProcessor*> allConsideredCanvases;
     if (onlyActiveCanvases) {
         allConsideredCanvases.reserve(allCanvases.size());
-        for (auto cp : allCanvases) {
+        for (auto* cp : allCanvases) {
             if (cp->isSink()) allConsideredCanvases.push_back(cp);
         }
     } else {
@@ -71,7 +71,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
 
     // Save them
     int i = 0;
-    for (auto cp : allConsideredCanvases) {
+    for (auto* cp : allConsideredCanvases) {
         if (!cp->isValid() || !cp->isReady()) {
             const std::ostringstream msg;
             log::error(
