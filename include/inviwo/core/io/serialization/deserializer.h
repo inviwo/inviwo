@@ -976,13 +976,13 @@ bool Deserializer::objectNeedsRecreation(const T& data) {
 
 template <typename T, bool Shared>
 auto Deserializer::getNonRegisteredType() {
-    if constexpr (std::is_default_constructible_v<T>)
+    if constexpr (std::is_default_constructible_v<T>) {
         if constexpr (Shared) {
             return std::make_shared<T>();
         } else {
             return std::make_unique<T>();
         }
-    else {
+    } else {
         if constexpr (Shared) {
             return std::shared_ptr<T>();
         } else {

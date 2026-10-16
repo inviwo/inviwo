@@ -482,16 +482,16 @@ void IntegralLineVectorToMesh::process() {
             line.getMetaDataBuffer(metaDataKey)
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void>([&](auto mdBuf) {
-                    if (output == Output::Lines)
+                    if (output == Output::Lines) {
                         lineLoop(line, mdBuf->getDataContainer());
-                    else {
+                    } else {
                         ribbonLoop(line, mdBuf->getDataContainer());
                     }
                 });
         } else {
-            if (output == Output::Lines)
+            if (output == Output::Lines) {
                 lineLoop(line, std::vector<int>(line.getPositions().size()));
-            else {
+            } else {
                 ribbonLoop(line, std::vector<int>(line.getPositions().size()));
             }
         }
