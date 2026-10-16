@@ -138,27 +138,26 @@ public:
      */
     virtual std::unique_ptr<VersionConverter> getConverter(int oldModuleVersion) const;
 
-    const std::vector<CameraFactoryObject*> getCameras() const;
-    const std::vector<Capabilities*> getCapabilities() const;
-    const std::vector<DataReader*> getDataReaders() const;
-    const std::vector<DataWriter*> getDataWriters() const;
-    const std::vector<DialogFactoryObject*> getDialogs() const;
-    const std::vector<MeshDrawer*> getDrawers() const;
-    const std::vector<MetaData*> getMetaData() const;
-    const std::vector<InportFactoryObject*> getInports() const;
-    const std::vector<OutportFactoryObject*> getOutports() const;
-    const std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
-    const std::vector<ProcessorFactoryObject*> getProcessors() const;
-    const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
-    const std::vector<PropertyFactoryObject*> getProperties() const;
-    const std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
+    std::vector<CameraFactoryObject*> getCameras() const;
+    std::vector<Capabilities*> getCapabilities() const;
+    std::vector<DataReader*> getDataReaders() const;
+    std::vector<DataWriter*> getDataWriters() const;
+    std::vector<DialogFactoryObject*> getDialogs() const;
+    std::vector<MeshDrawer*> getDrawers() const;
+    std::vector<MetaData*> getMetaData() const;
+    std::vector<InportFactoryObject*> getInports() const;
+    std::vector<OutportFactoryObject*> getOutports() const;
+    std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
+    std::vector<ProcessorFactoryObject*> getProcessors() const;
+    std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
+    std::vector<PropertyFactoryObject*> getProperties() const;
+    std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
 
-    const std::vector<BaseRepresentationFactoryObject*> getRepresentationFactoryObjects() const;
-    const std::vector<BaseRepresentationFactory*> getRepresentationFactories() const;
+    std::vector<BaseRepresentationFactoryObject*> getRepresentationFactoryObjects() const;
+    std::vector<BaseRepresentationFactory*> getRepresentationFactories() const;
 
-    const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
-    const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
-        const;
+    std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
+    std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories() const;
     const std::vector<Settings*>& getSettings() const;
 
     auto cameras() const { return cameras_ | deref; }
@@ -345,7 +344,7 @@ private:
         return res;
     }
     template <typename T>
-    const std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
+    std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
         std::vector<T*> res;
         for (auto& elem : v) res.push_back(elem.get());
         return res;

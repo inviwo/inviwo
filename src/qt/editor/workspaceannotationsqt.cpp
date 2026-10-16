@@ -106,7 +106,7 @@ void WorkspaceAnnotationsQt::deserialize(Deserializer& d) {
 auto WorkspaceAnnotationsQt::getProcessorList() const -> const std::vector<ProcessorShim>& {
     return processorList_;
 }
-const std::map<std::string, int> WorkspaceAnnotationsQt::getProcessorCounts() const {
+std::map<std::string, int> WorkspaceAnnotationsQt::getProcessorCounts() const {
     return processorCounts_;
 }
 
