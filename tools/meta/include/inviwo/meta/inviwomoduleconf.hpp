@@ -72,34 +72,34 @@ public:
     explicit LegacyModuleConf(const std::string& name) : ModuleConf(name, "modules") {}
     path registrationFile() const { return fmt("{lname}module.cpp"); }
     path listFile() const { return cmlists; }
-    path incPath() const { return ""; }
-    path srcPath() const { return ""; }
+    static path incPath() { return ""; }
+    static path srcPath() { return ""; }
 };
 
 class INVIWO_META_API InviwoConf : public ModuleConf {
 public:
     InviwoConf() : ModuleConf("Core", "inviwo") {}
-    std::string api() const { return "IVW_CORE_API"; }
-    path moduleInclude() const { return "inviwo/core/common/inviwocore.h"; }
-    path defineInclude() const { return "inviwo/core/common/inviwocoredefine.h"; }
-    path registrationFile() const { return "src/core/common/inviwocore.cpp"; }
+    static std::string api() { return "IVW_CORE_API"; }
+    static path moduleInclude() { return "inviwo/core/common/inviwocore.h"; }
+    static path defineInclude() { return "inviwo/core/common/inviwocoredefine.h"; }
+    static path registrationFile() { return "src/core/common/inviwocore.cpp"; }
     path listFile() const { return path{"src"} / "core" / cmlists; }
-    path incPath() const { return "include/inviwo/core"; }
-    path srcPath() const { return "src/core"; }
-    path includePrefix() const { return "inviwo/core"; }
+    static path incPath() { return "include/inviwo/core"; }
+    static path srcPath() { return "src/core"; }
+    static path includePrefix() { return "inviwo/core"; }
 };
 
 class INVIWO_META_API QtEditorConf : public ModuleConf {
 public:
     QtEditorConf() : ModuleConf("QtEditor", "inviwo") {}
-    std::string api() const { return "IVW_QTEDITOR_API"; }
-    path moduleInclude() const { return "!!SHOULD NOT BE USED!!"; }
-    path defineInclude() const { return "inviwo/qt/editor/inviwoqteditordefine.h"; }
-    path registrationFile() const { return "!!SHOULD NOT BE USED!!"; }
+    static std::string api() { return "IVW_QTEDITOR_API"; }
+    static path moduleInclude() { return "!!SHOULD NOT BE USED!!"; }
+    static path defineInclude() { return "inviwo/qt/editor/inviwoqteditordefine.h"; }
+    static path registrationFile() { return "!!SHOULD NOT BE USED!!"; }
     path listFile() const { return path{"src"} / "qt" / "editor" / cmlists; }
-    path incPath() const { return "include/inviwo/qt/editor"; }
-    path srcPath() const { return "src/qt/editor"; }
-    path includePrefix() const { return "inviwo/qt/editor"; }
+    static path incPath() { return "include/inviwo/qt/editor"; }
+    static path srcPath() { return "src/qt/editor"; }
+    static path includePrefix() { return "inviwo/qt/editor"; }
 };
 
 }  // namespace inviwo::meta

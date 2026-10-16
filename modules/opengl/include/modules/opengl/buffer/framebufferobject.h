@@ -77,7 +77,7 @@ public:
     /**
      * @brief Unbind the framebuffer (binds id 0)
      */
-    void deactivate();
+    static void deactivate();
 
     /**
      * @brief Unbind the framebuffer (binds id 0)

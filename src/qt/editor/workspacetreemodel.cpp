@@ -78,7 +78,7 @@ public:
     int row() const;
 
     int childCount() const;
-    int columnCount() const;
+    static int columnCount();
     TreeItem* parent() const;
 
     QVariant data(int column, int role) const;
@@ -184,7 +184,7 @@ int TreeItem::row() const { return row_; }
 
 int TreeItem::childCount() const { return static_cast<int>(children_.size()); }
 
-int TreeItem::columnCount() const { return 1; }
+int TreeItem::columnCount() { return 1; }
 
 TreeItem* TreeItem::parent() const { return parent_; }
 

@@ -135,7 +135,7 @@ public:
 
     enum class Role : std::uint16_t { Level = Qt::UserRole + 100 };
 
-    QString getName(LogTableModelEntry::ColumnID ind) const;
+    static QString getName(LogTableModelEntry::ColumnID ind);
 
     void clear();
     void log(std::vector<LogTableModelEntry>& entries);

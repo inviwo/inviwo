@@ -61,7 +61,7 @@ std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::filesystem::
     return readData(file);
 }
 
-std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::istream& stream) const {
+std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::istream& stream) {
     json j;
     stream >> j;
     auto dataFrame = std::make_shared<DataFrame>();

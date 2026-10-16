@@ -346,7 +346,7 @@ public:
         dataChanged(pos, pos, {Qt::DisplayRole});
     }
 
-    PropertyOwner* getParent(const QModelIndex& index) const {
+    static PropertyOwner* getParent(const QModelIndex& index) {
         return static_cast<PropertyOwner*>(index.internalPointer());
     }
 

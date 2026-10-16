@@ -59,7 +59,7 @@ std::unique_ptr<std::vector<unsigned char>> JSONDataFrameWriter::writeDataToBuff
     return std::make_unique<std::vector<unsigned char>>(stringData.begin(), stringData.end());
 }
 
-void JSONDataFrameWriter::writeData(const DataFrame* data, std::ostream& os) const {
+void JSONDataFrameWriter::writeData(const DataFrame* data, std::ostream& os) {
     if (data) {
         json j;
         j = *data;

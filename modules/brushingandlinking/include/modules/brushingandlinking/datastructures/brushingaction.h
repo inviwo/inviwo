@@ -103,7 +103,7 @@ struct IVW_MODULE_BRUSHINGANDLINKING_API BrushingTarget {
     void deserialize(Deserializer& d);
 
 private:
-    std::string_view findOrAdd(std::string_view target);
+    static std::string_view findOrAdd(std::string_view target);
 
     std::string_view target_;
 };

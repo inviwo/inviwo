@@ -86,7 +86,7 @@ std::unique_ptr<std::vector<unsigned char>> StlWriter::writeDataToBuffer(
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 
-void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
+void StlWriter::writeData(const Mesh* data, std::ostream& f) {
     const auto pit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });

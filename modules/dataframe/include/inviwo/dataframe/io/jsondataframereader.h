@@ -81,7 +81,7 @@ public:
      * @param stream    input stream with the json data
      * @return a DataFrame containing the data
      */
-    std::shared_ptr<DataFrame> readData(std::istream& stream) const;
+    static std::shared_ptr<DataFrame> readData(std::istream& stream);
 };
 
 }  // namespace inviwo

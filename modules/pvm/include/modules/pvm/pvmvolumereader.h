@@ -56,7 +56,7 @@ public:
     static std::shared_ptr<Volume> readPVMData(const std::filesystem::path& filePath);
 
 protected:
-    void printMetaInfo(const MetaDataOwner&, std::string_view) const;
+    static void printMetaInfo(const MetaDataOwner&, std::string_view);
 };
 
 }  // namespace inviwo

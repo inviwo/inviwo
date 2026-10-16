@@ -53,7 +53,7 @@ std::unique_ptr<std::vector<unsigned char>> JSONWriter::writeDataToBuffer(const 
     return std::make_unique<std::vector<unsigned char>>(stringData.begin(), stringData.end());
 }
 
-void JSONWriter::writeData(const json* data, std::ostream& os) const {
+void JSONWriter::writeData(const json* data, std::ostream& os) {
     if (data) {
         os << *data;
     }

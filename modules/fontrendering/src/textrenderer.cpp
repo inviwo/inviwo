@@ -151,7 +151,7 @@ void TextRenderer::setFont(const std::filesystem::path& fontPath) {
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
-std::string_view::const_iterator TextRenderer::validateString(std::string_view str) const {
+std::string_view::const_iterator TextRenderer::validateString(std::string_view str) {
     // check input string for invalid utf8 encoding, process only valid part
     auto end = utf8::find_invalid(str.begin(), str.end());
     if (end != str.end()) {

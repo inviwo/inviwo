@@ -736,7 +736,7 @@ Qt::ItemFlags LogTableModel::flags(const QModelIndex& index) const {
     return flags;
 }
 
-QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
+QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) {
     switch (ind) {
         case LogTableModelEntry::ColumnID::Date:     return {"Date"};
         case LogTableModelEntry::ColumnID::Time:     return {"Time"};

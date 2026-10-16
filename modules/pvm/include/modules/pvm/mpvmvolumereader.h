@@ -56,7 +56,7 @@ public:
 
 protected:
     void printPVMMeta(const Volume&, const std::filesystem::path&) const;
-    void printMetaInfo(const MetaDataOwner&, std::string_view) const;
+    static void printMetaInfo(const MetaDataOwner&, std::string_view);
 };
 
 }  // namespace inviwo

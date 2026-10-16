@@ -86,7 +86,7 @@ std::unique_ptr<std::vector<unsigned char>> WaveFrontWriter::writeDataToBuffer(
 
 void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& info,
                                       const IndexBuffer& indices, bool hasNormals,
-                                      bool hasTextures) const {
+                                      bool hasTextures) {
     if (info.dt == DrawType::Triangles) {
         if (hasTextures && hasNormals) {
             meshutil::forEachTriangle(info, indices,

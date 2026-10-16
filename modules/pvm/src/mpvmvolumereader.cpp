@@ -195,8 +195,7 @@ void MPVMVolumeReader::printPVMMeta(const Volume& volume,
     printMetaInfo(volume, "comment");
 }
 
-void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
-                                     std::string_view key) const {
+void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
