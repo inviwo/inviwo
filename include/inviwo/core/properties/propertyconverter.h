@@ -36,7 +36,9 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/ordinaloptproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -124,6 +126,40 @@ protected:
         if (dst->isLinkingMaxBound()) dst->setMaxValue(static_cast<T>(src->getMaxValue()));
         dst->setIncrement(static_cast<T>(src->getIncrement()));
         if (const auto v = src->get()) dst->set(static_cast<T>(*v));
+    }
+};
+
+template <typename T>
+concept Vec2OrdinalProperty = (std::is_base_of_v<OrdinalProperty<typename T::value_type>, T> ||
+                               std::is_base_of_v<OrdinalRefProperty<typename T::value_type>, T>) &&
+                              util::extent<typename T::value_type>::value == 2;
+
+template <Vec2OrdinalProperty SrcProperty, typename DstProperty>
+class OrdinalToMinMaxPropertyConverter
+    : public TemplatePropertyConverter<SrcProperty, DstProperty> {
+protected:
+    virtual void convertimpl(const SrcProperty* src, DstProperty* dst) const override {
+        using dst_type = DstProperty::value_type;
+        using dst_scalar = util::value_type_t<dst_type>;
+        const dst_type range{static_cast<dst_scalar>(glm::compMin(src->getMinValue()),
+                                                     glm::compMax(src->getMaxValue()))};
+        dst->set(static_cast<dst_type>(src->get()), range,
+                 static_cast<dst_scalar>(glm::compMin(src->getIncrement())),
+                 static_cast<dst_scalar>(0));
+    }
+};
+
+template <typename SrcProperty, Vec2OrdinalProperty DstProperty>
+class MinMaxToOrdinalPropertyConverter
+    : public TemplatePropertyConverter<SrcProperty, DstProperty> {
+protected:
+    virtual void convertimpl(const SrcProperty* src, DstProperty* dst) const override {
+        using dst_type = DstProperty::value_type;
+        using dst_scalar = DstProperty::component_type;
+        dst->set(static_cast<dst_type>(src->get()),
+                 dst_type{static_cast<dst_scalar>(src->getRangeMin())},
+                 dst_type{static_cast<dst_scalar>(src->getRangeMax())},
+                 dst_type{static_cast<dst_scalar>(src->getIncrement())});
     }
 };
 

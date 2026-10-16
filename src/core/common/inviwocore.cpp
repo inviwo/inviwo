@@ -378,6 +378,26 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<Mat3s>{}(ordinalOptConverters);
     util::for_each_type<Mat4s>{}(ordinalOptConverters);
 
+    static_assert(Vec2OrdinalProperty<OrdinalProperty<vec2>>);
+
+    const auto ordinalMinMaxConverters = [&]<typename T, typename U>() {
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalToMinMaxPropertyConverter<OrdinalProperty<T>, MinMaxProperty<U>>>());
+        registerPropertyConverter(
+            std::make_unique<
+                MinMaxToOrdinalPropertyConverter<MinMaxProperty<U>, OrdinalProperty<T>>>());
+
+        registerPropertyConverter(
+            std::make_unique<
+                OrdinalToMinMaxPropertyConverter<OrdinalRefProperty<T>, MinMaxProperty<U>>>());
+        registerPropertyConverter(
+            std::make_unique<
+                MinMaxToOrdinalPropertyConverter<MinMaxProperty<U>, OrdinalRefProperty<T>>>());
+    };
+    util::for_each_type_pair<Vec2s, Scalars>{}(ordinalMinMaxConverters);
+
+
     const auto scalarStringConverter = [&]<typename T>() {
         registerPropertyConverter(std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
         registerPropertyConverter(
