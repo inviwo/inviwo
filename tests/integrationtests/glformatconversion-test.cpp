@@ -234,7 +234,7 @@ void GLSLShaderOutputTest::render(const std::vector<float>& sourceValues, Layer&
     if (const auto& glFormat = GLFormats::get(output.getDataFormat()->getId());
         glFormat.layoutQualifier.ends_with("ui")) {
         shader_.getFragmentShaderObject()->addShaderDefine("OUTPUT", "uvec4");
-    } else if (glFormat.layoutQualifier.ends_with("i")) {
+    } else if (glFormat.layoutQualifier.ends_with('i')) {
         shader_.getFragmentShaderObject()->addShaderDefine("OUTPUT", "ivec4");
     } else {
         shader_.getFragmentShaderObject()->addShaderDefine("OUTPUT", "vec4");
@@ -278,7 +278,7 @@ void GLFormatConversionTest::render(const Layer& input, Layer& output, TestOutpu
     if (const auto& glFormat = GLFormats::get(input.getDataFormat()->getId());
         glFormat.layoutQualifier.ends_with("ui")) {
         shader_.getFragmentShaderObject()->addShaderDefine("TEXSAMPLER", "usampler2D");
-    } else if (glFormat.layoutQualifier.ends_with("i")) {
+    } else if (glFormat.layoutQualifier.ends_with('i')) {
         shader_.getFragmentShaderObject()->addShaderDefine("TEXSAMPLER", "isampler2D");
     } else {
         shader_.getFragmentShaderObject()->addShaderDefine("TEXSAMPLER", "sampler2D");

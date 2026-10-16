@@ -615,7 +615,7 @@ std::string ShaderObject::resolveLog(std::string_view compileLog) const {
             if (origLineNumber > 0) {
                 const auto& [source, line] = lnr_.resolveLine(origLineNumber - 1);
                 fmt::format_to(std::back_inserter(result), "\n{} ({}): {}", source, line,
-                               curLine.substr(curLine.find(":") + 1));
+                               curLine.substr(curLine.find(':') + 1));
             } else {
                 fmt::format_to(std::back_inserter(result), "\n{}", curLine);
             }
