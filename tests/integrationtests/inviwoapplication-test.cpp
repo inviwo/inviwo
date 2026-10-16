@@ -38,7 +38,7 @@ namespace inviwo {
 
 TEST(InviwoApplicationTest, initTest) {
     const InviwoApplication* app = InviwoApplication::getPtr();
-    ASSERT_TRUE(app != 0);
+    ASSERT_TRUE(app != nullptr);
 }
 
 }  // namespace inviwo

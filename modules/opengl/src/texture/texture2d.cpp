@@ -69,9 +69,9 @@ Texture2D::Texture2D(const Texture2D& rhs) : Texture(rhs), dimensions_(rhs.dimen
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glDeleteSync(syncObj);
-            syncObj = 0;
+            syncObj = nullptr;
         }
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
@@ -93,9 +93,9 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
 
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             const std::scoped_lock lock{syncMutex};
-            if (syncObj != 0) {
+            if (syncObj != nullptr) {
                 glDeleteSync(syncObj);
-                syncObj = 0;
+                syncObj = nullptr;
             }
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,

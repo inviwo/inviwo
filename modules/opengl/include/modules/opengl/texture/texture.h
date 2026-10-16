@@ -142,7 +142,7 @@ protected:
     static size_t dataTypeSize(GLenum dataType);
 
     mutable std::mutex syncMutex;
-    mutable GLsync syncObj = 0;
+    mutable GLsync syncObj = nullptr;
 
 private:
     GLuint pboBack_;  // For asynchronous readback to CPU

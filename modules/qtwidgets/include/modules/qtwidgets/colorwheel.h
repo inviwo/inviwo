@@ -57,7 +57,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API ColorWheel : public QWidget {
     Q_OBJECT
 public:
-    explicit ColorWheel(const QSize& initialSize = QSize(200, 200), QWidget* parent = 0);
+    explicit ColorWheel(const QSize& initialSize = QSize(200, 200), QWidget* parent = nullptr);
 
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
