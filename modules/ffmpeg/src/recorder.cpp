@@ -37,6 +37,8 @@ extern "C" {
 
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
+
+#include <utility>
 }
 
 namespace inviwo::ffmpeg {
@@ -128,8 +130,8 @@ void Recorder::queueFrame(const LayerRAM& layer) {
     if (frame) {
         // this requires that .sourceFormat = AV_PIX_FMT_RGBA,
         stream.fillFrame(*frame, [&](AVFrame* pict, int width, int height) {
-            if (static_cast<int>(layer.getDimensions().x) != width ||
-                static_cast<int>(layer.getDimensions().y) != height) {
+            if (std::cmp_not_equal(layer.getDimensions().x, width) ||
+                std::cmp_not_equal(layer.getDimensions().y, height)) {
                 throw inviwo::Exception(
                     SourceContext{}, "Video dimensions do not match, expected: {}x{} got: {}x{}",
                     width, height, layer.getDimensions().x, layer.getDimensions().y);

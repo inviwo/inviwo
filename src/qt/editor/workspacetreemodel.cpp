@@ -40,6 +40,7 @@
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/editorsettings.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFontMetrics>
@@ -164,7 +165,7 @@ void TreeItem::addChildren(std::vector<std::unique_ptr<TreeItem>> children) {
 void TreeItem::removeChildren() { children_.clear(); }
 
 TreeItem* TreeItem::child(int row) const {
-    if ((row < 0) || (row >= static_cast<int>(children_.size()))) return nullptr;
+    if ((row < 0) || (std::cmp_greater_equal(row, children_.size()))) return nullptr;
     return children_[row].get();
 }
 

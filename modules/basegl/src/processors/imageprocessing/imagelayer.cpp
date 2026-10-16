@@ -51,6 +51,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace inviwo {
@@ -107,7 +108,7 @@ void ImageLayer::process() {
         case LayerEnum::Picking: colorUnit = pickingTexUnit.getUnitNumber(); break;
         default:                 {
             const auto nColorLayers = inport_.getData()->getNumberOfColorLayers();
-            if (outputLayer_.get() >= static_cast<int>(nColorLayers)) {
+            if (std::cmp_greater_equal(outputLayer_.get(), nColorLayers)) {
                 throw Exception(SourceContext{}, "Selected color layer '{}' is out of bounds '{}'",
                                 outputLayer_.get(), nColorLayers);
             }

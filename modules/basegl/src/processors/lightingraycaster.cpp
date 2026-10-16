@@ -62,6 +62,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 #include <fmt/base.h>
 
@@ -123,7 +124,7 @@ void LightingRaycaster::initializeResources() {
 
 void LightingRaycaster::process() {
     const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-    if (channel_.get() >= static_cast<int>(channels)) {
+    if (std::cmp_greater_equal(channel_.get(), channels)) {
         throw Exception(SourceContext{},
                         "Selected channel '{}' does not exist volume has '{}' channels",
                         channel_.get(), channels);

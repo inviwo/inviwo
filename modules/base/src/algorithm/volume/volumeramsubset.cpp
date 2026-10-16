@@ -40,6 +40,7 @@
 
 #include <glm/common.hpp>
 #include <glm/vec3.hpp>
+#include <utility>
 
 #ifdef IVW_USE_OPENMP
 #include <omp.h>
@@ -111,11 +112,11 @@ constexpr auto dispatcher = []<typename T>(
     T* dst = static_cast<T*>(newVolume->getData());
     // memcpy each row for every slice to form sub volume
 
-    for (int i = 0; i < static_cast<int>(copyDimsWithoutBorder.z); i++) {
+    for (int i = 0; std::cmp_less(i, copyDimsWithoutBorder.z); i++) {
 #ifdef IVW_USE_OPENMP
 #pragma omp parallel for
 #endif
-        for (int j = 0; j < static_cast<int>(copyDimsWithoutBorder.y); j++) {
+        for (int j = 0; std::cmp_less(j, copyDimsWithoutBorder.y); j++) {
             const size_t volumePos = (j * dataDims.x) + (i * dataDims.x * dataDims.y);
             const size_t subVolumePos =
                 ((j + trueBorder.llf.y) * dimsWithBorder.x) +

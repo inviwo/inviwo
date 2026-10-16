@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
@@ -704,7 +705,7 @@ QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int
         case Qt::Horizontal: {
             switch (role) {
                 case Qt::DisplayRole:
-                    return section < static_cast<int>(LogTableModelEntry::size())
+                    return std::cmp_less(section, LogTableModelEntry::size())
                                ? getName(static_cast<LogTableModelEntry::ColumnID>(section))
                                : QVariant{};
                 case Qt::TextAlignmentRole: return Qt::AlignLeft;

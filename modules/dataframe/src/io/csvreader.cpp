@@ -65,6 +65,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <variant>
 #include <cerrno>
 
@@ -603,7 +604,7 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
                     }};
                 for (const auto& f : filters) {
                     if ((!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) &&
-                        f.column == static_cast<int>(colIndex)) {
+                        std::cmp_equal(f.column, colIndex)) {
                         retval |= std::visit(test, f.filter);
                     }
                 }
