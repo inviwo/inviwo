@@ -323,7 +323,7 @@ void exposeProcessors(pybind11::module& m) {
                      throw Exception(SourceContext{}, "No writer for {}", filePath);
                  }
 
-                 if (auto layer = canvas->getVisibleLayer()) {
+                 if (const auto* layer = canvas->getVisibleLayer()) {
                      rendercontext::activateDefault();
                      writer->writeData(layer, filePath);
                  } else {
@@ -341,7 +341,7 @@ void exposeProcessors(pybind11::module& m) {
                 throw Exception(SourceContext{}, "No writer for {}", filePath);
             }
 
-            if (auto layer = canvas->getVisibleLayer()) {
+            if (const auto* layer = canvas->getVisibleLayer()) {
                 /* Unfortunately we need to clone the layer here since in most cases the layer comes
                  * from an ImageOutport and that will generally render new data into the layer on
                  * the next evaluation.

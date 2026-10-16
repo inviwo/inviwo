@@ -187,7 +187,8 @@ void ScatterPlotProcessor::process() {
 
         indexToRowMap_ = [&]() {
             const auto iCol = dataFramePort_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            const auto& indexCol =
+                iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
             indexToRow.reserve(indexCol.size());
             for (auto&& [row, index] : util::enumerate(indexCol)) {

@@ -44,7 +44,7 @@ CodecID::CodecID(AVCodecID id) : id{id} {}
 
 std::string_view CodecID::name() const { return avcodec_get_name(id); }
 std::optional<std::string_view> CodecID::longName() const {
-    auto desc = avcodec_descriptor_get(id);
+    const auto* desc = avcodec_descriptor_get(id);
     if (desc && desc->long_name) {
         return desc->long_name;
     } else {
@@ -52,7 +52,7 @@ std::optional<std::string_view> CodecID::longName() const {
     }
 }
 std::string_view CodecID::typeString() const {
-    if (auto* chr = av_get_media_type_string(type())) {
+    if (const auto* chr = av_get_media_type_string(type())) {
         return chr;
     } else {
         return "";

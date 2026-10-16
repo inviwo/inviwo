@@ -47,10 +47,10 @@ namespace inviwo {
 
 template <typename T>
 static std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
-    if (auto buffer = mesh.getBuffer(ind)) {
+    if (auto* buffer = mesh.getBuffer(ind)) {
         if (buffer->getDataFormat() == DataFormat<T>::get()) {
-            auto tbuffer = static_cast<Buffer<vec3>*>(buffer);
-            if (auto ram = tbuffer->getEditableRAMRepresentation()) {
+            auto* tbuffer = static_cast<Buffer<vec3>*>(buffer);
+            if (auto* ram = tbuffer->getEditableRAMRepresentation()) {
                 return ram->getDataContainer();
             }
         }
@@ -59,8 +59,8 @@ static std::vector<T>& getBufferData(Mesh& mesh, size_t ind) {
 }
 
 static std::vector<uint32_t>& getBufferIndexData(Mesh& mesh, size_t ind) {
-    if (auto buffer = mesh.getIndices(ind)) {
-        if (auto ram = buffer->getEditableRAMRepresentation()) {
+    if (auto* buffer = mesh.getIndices(ind)) {
+        if (auto* ram = buffer->getEditableRAMRepresentation()) {
             return ram->getDataContainer();
         }
     }
@@ -114,7 +114,7 @@ TEST(Marchingcubes, one) {
 
     const vec3 center{0.5f};
 
-    for (auto& v : voxels) {
+    for (const auto& v : voxels) {
         const auto vol = std::shared_ptr<Volume>(
             util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t& ind) {
                 if (ind == v) {
@@ -146,7 +146,7 @@ TEST(Marchingcubes, one) {
         EXPECT_TRUE(glm::dot(triNormal, (center - vert)) > 0.0);
     }
 
-    for (auto& v : voxels) {
+    for (const auto& v : voxels) {
         const auto vol = std::shared_ptr<Volume>(
             util::generateVolume(size3_t{2}, mat3(1.0f), [&](const size3_t& ind) {
                 if (ind != v) {
@@ -201,8 +201,8 @@ TEST(Marchingcubes, two) {
     int n1nn = 0;
     int n2nn = 0;
     int n3nn = 0;
-    for (auto& v1 : voxels) {
-        for (auto& v2 : voxels) {
+    for (const auto& v1 : voxels) {
+        for (const auto& v2 : voxels) {
             if (v1 == v2) continue;
 
             const auto vol = std::shared_ptr<Volume>(
@@ -283,14 +283,14 @@ TEST(Marchingcubes, minimal) {
     ASSERT_EQ(buffer1->getDataFormat(), DataVec3Float32::get());
     ASSERT_EQ(buffer2->getDataFormat(), DataVec3Float32::get());
 
-    auto posBuffer1 = static_cast<Buffer<vec3>*>(buffer1.get());
-    auto posBuffer2 = static_cast<Buffer<vec3>*>(buffer2.get());
+    auto* posBuffer1 = static_cast<Buffer<vec3>*>(buffer1.get());
+    auto* posBuffer2 = static_cast<Buffer<vec3>*>(buffer2.get());
 
-    auto ram1 = posBuffer1->getRAMRepresentation();
-    auto ram2 = posBuffer2->getRAMRepresentation();
+    const auto* ram1 = posBuffer1->getRAMRepresentation();
+    const auto* ram2 = posBuffer2->getRAMRepresentation();
 
-    auto& data1 = ram1->getDataContainer();
-    auto& data2 = ram2->getDataContainer();
+    const auto& data1 = ram1->getDataContainer();
+    const auto& data2 = ram2->getDataContainer();
 
     EXPECT_EQ(data1.size(), 6);
     EXPECT_EQ(data2.size(), 6);
@@ -300,11 +300,11 @@ TEST(Marchingcubes, minimal) {
     ASSERT_EQ(mesh1->getNumberOfIndices(), 1);
     ASSERT_EQ(mesh2->getNumberOfIndices(), 1);
 
-    auto indBuffer1 = mesh1->getIndices(0);
-    auto indBuffer2 = mesh2->getIndices(0);
+    auto* indBuffer1 = mesh1->getIndices(0);
+    auto* indBuffer2 = mesh2->getIndices(0);
 
-    auto& ind1 = indBuffer1->getRAMRepresentation()->getDataContainer();
-    auto& ind2 = indBuffer2->getRAMRepresentation()->getDataContainer();
+    const auto& ind1 = indBuffer1->getRAMRepresentation()->getDataContainer();
+    const auto& ind2 = indBuffer2->getRAMRepresentation()->getDataContainer();
 
     EXPECT_EQ(ind1.size(), 8 * 3);
     EXPECT_EQ(ind2.size(), 8 * 3);

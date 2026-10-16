@@ -97,12 +97,12 @@ void LinkDialogPropertyGraphicsItem::updatePositions() {
 }
 
 bool LinkDialogPropertyGraphicsItem::propertyVisible() const {
-    if (auto p = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(parentItem())) {
+    if (auto* p = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(parentItem())) {
         if (!p->isExpanded()) return false;
         if (!p->propertyVisible()) return false;
     }
     bool show = false;
-    if (auto s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
+    if (auto* s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
         show = s->isShowingHidden();
     }
     return item_->getVisible() || !connections_.empty() || show;
@@ -185,7 +185,7 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(
 QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
                                                     const QVariant& value) {
     if (change == QGraphicsItem::ItemScenePositionHasChanged) {
-        for (auto connection : connections_) {
+        for (auto* connection : connections_) {
             connection->updateShape();
         }
     }
@@ -224,10 +224,10 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 
     std::vector<LinkDialogPropertyGraphicsItem*> subProps;
 
-    for (auto& elem : subProperties_) {
+    for (const auto& elem : subProperties_) {
         subProps.push_back(elem);
         const auto props = elem->getSubPropertyItemList(recursive);
-        for (auto& prop : props) subProps.push_back(prop);
+        for (const auto& prop : props) subProps.push_back(prop);
     }
 
     return subProps;
@@ -290,7 +290,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
     p->save();
 
     const auto isBidirectional = [](DialogConnectionGraphicsItem* item) {
-        auto net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
+        auto* net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
 
         return net->isLinkedBidirectional(item->getPropertyLink().getSource(),
                                           item->getPropertyLink().getDestination());

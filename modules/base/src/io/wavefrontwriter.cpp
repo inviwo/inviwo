@@ -125,7 +125,7 @@ void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& inf
         }
 
     } else if (info.dt == DrawType::Points) {
-        auto& ram = indices.getRAMRepresentation()->getDataContainer();
+        const auto& ram = indices.getRAMRepresentation()->getDataContainer();
         fmt::print(f, "p ");
         for (const auto i : ram) fmt::print(f, "{} ", i + 1);
         fmt::print(f, "\n");
@@ -147,7 +147,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
         if (!buffer) {
             throw DataWriterException("Error: could not find a position buffer");
         }
-        const auto posRam = buffer->getRepresentation<BufferRAM>();
+        const auto* const posRam = buffer->getRepresentation<BufferRAM>();
         if (!posRam) {
             throw DataWriterException("Error: could not find a position buffer ram");
         }
@@ -166,7 +166,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     bool hasTextures = false;
     if (auto [buffer, loc] = data->findBuffer(BufferType::TexCoordAttrib); buffer) {
-        if (const auto texRam = buffer->getRepresentation<BufferRAM>()) {
+        if (const auto* const texRam = buffer->getRepresentation<BufferRAM>()) {
             fmt::print(f, "# List of texture coordinates ({})\n", texRam->getSize());
             if (texRam->getDataFormat()->getComponents() == 3) {
                 hasTextures = true;
@@ -188,7 +188,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     bool hasNormals = false;
     if (auto [buffer, loc] = data->findBuffer(BufferType::NormalAttrib); buffer) {
-        if (const auto normRam = buffer->getRepresentation<BufferRAM>()) {
+        if (const auto* const normRam = buffer->getRepresentation<BufferRAM>()) {
             fmt::print(f, "# List of vertex normal ({})\n", normRam->getSize());
             if (normRam->getDataFormat()->getComponents() == 3) {
                 hasNormals = true;

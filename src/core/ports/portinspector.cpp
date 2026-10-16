@@ -52,7 +52,7 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
 
     // Deserialize the network
     if (auto istream = std::ifstream(inspectorNetworkFileName_)) {
-        auto app = InviwoApplication::getPtr();
+        auto* app = InviwoApplication::getPtr();
         auto deserializer = app->getWorkspaceManager()->createWorkspaceDeserializer(
             istream, inspectorNetworkFileName_);
 
@@ -74,16 +74,16 @@ PortInspector::PortInspector(std::string_view portClassIdentifier,
                          std::back_inserter(inports_),
                          [](const auto& inport) { return !inport->isConnected(); });
 
-            auto meta =
+            auto* meta =
                 processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
             meta->setVisible(false);
             meta->setSelected(false);
 
             // Find and save the canvasProcessor
-            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor.get())) {
+            if (auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(processor.get())) {
                 canvasProcessor_ = canvasProcessor;
                 // Mark the widget as a "PortInspector"
-                auto md = canvasProcessor->createMetaData<BoolMetaData>("PortInspector");
+                auto* md = canvasProcessor->createMetaData<BoolMetaData>("PortInspector");
                 md->set(true);
             }
         }

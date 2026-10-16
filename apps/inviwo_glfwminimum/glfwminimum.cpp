@@ -117,12 +117,12 @@ int main(int argc, char** argv) {
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
     cmdParser.add(&fullscreenArg, [&]() {
-        auto network = inviwoApp.getProcessorNetwork();
+        auto* network = inviwoApp.getProcessorNetwork();
 
         std::vector<ProcessorWidget*> widgets;
         network->forEachProcessor([&](Processor* p) {
             if (p->isSink()) {
-                if (auto widget = p->getProcessorWidget(); widget && (widget->isVisible())) {
+                if (auto* widget = p->getProcessorWidget(); widget && (widget->isVisible())) {
                     widgets.push_back(widget);
                 }
             }

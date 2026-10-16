@@ -80,7 +80,7 @@ bool OutputFormat::supportsCodec(CodecID codecId, std::optional<int> stdComplian
 std::vector<CodecID> OutputFormat::supportedCodecs(AVMediaType type) const {
     if (!of) return {};
 
-    auto* tags = of->codec_tag;
+    const auto* tags = of->codec_tag;
 
     std::set<CodecID> codecs;
     for (int i = 0; tags && tags[i]; i++) {

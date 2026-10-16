@@ -189,7 +189,7 @@ void StreamRibbonsDeprecated::process() {
     size_t lineId = 0;
 
     for (const auto& seeds : seedPoints_) {
-        for (auto& p : (*seeds)) {
+        for (const auto& p : (*seeds)) {
             const vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec3(P));
 

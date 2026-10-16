@@ -347,7 +347,7 @@ bool PropertyListWidget::event(QEvent* e) {
         auto* ple = static_cast<PropertyListEvent*>(e);
         ple->accept();
 
-        auto network = app_->getProcessorNetwork();
+        auto* network = app_->getProcessorNetwork();
 
         switch (ple->action) {
             case PropertyListEvent::Action::Add: {

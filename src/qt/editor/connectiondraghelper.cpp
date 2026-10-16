@@ -55,18 +55,18 @@ ConnectionOutDragHelper::~ConnectionOutDragHelper() = default;
 bool ConnectionOutDragHelper::eventFilter(QObject*, QEvent* event) {
     if (outConnection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
 
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
         outConnection_->setEndPoint(e->scenePos());
         outConnection_->reactToPortHover(editor_.getProcessorInportGraphicsItemAt(e->scenePos()));
         e->accept();
     } else if (outConnection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
 
-        auto startPort = outConnection_->getOutportGraphicsItem()->getPort();
+        auto* startPort = outConnection_->getOutportGraphicsItem()->getPort();
         reset();
 
         RenderContext::getPtr()->activateDefaultRenderContext();
-        auto endItem = editor_.getProcessorInportGraphicsItemAt(e->scenePos());
+        auto* endItem = editor_.getProcessorInportGraphicsItemAt(e->scenePos());
         if (endItem && endItem->getPort()->canConnectTo(startPort)) {
             Inport* endPort = endItem->getPort();
 
@@ -102,18 +102,18 @@ ConnectionInDragHelper::~ConnectionInDragHelper() = default;
 
 bool ConnectionInDragHelper::eventFilter(QObject*, QEvent* event) {
     if (inConnection_ && event->type() == QEvent::GraphicsSceneMouseMove) {
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
         inConnection_->setStartPoint(e->scenePos());
         inConnection_->reactToPortHover(editor_.getProcessorOutportGraphicsItemAt(e->scenePos()));
         e->accept();
     } else if (inConnection_ && event->type() == QEvent::GraphicsSceneMouseRelease) {
-        auto e = static_cast<QGraphicsSceneMouseEvent*>(event);
+        auto* e = static_cast<QGraphicsSceneMouseEvent*>(event);
 
-        auto endPort = inConnection_->getInportGraphicsItem()->getPort();
+        auto* endPort = inConnection_->getInportGraphicsItem()->getPort();
         reset();
 
         RenderContext::getPtr()->activateDefaultRenderContext();
-        auto startItem = editor_.getProcessorOutportGraphicsItemAt(e->scenePos());
+        auto* startItem = editor_.getProcessorOutportGraphicsItemAt(e->scenePos());
         if (startItem && endPort->canConnectTo(startItem->getPort())) {
             Outport* startPort = startItem->getPort();
 

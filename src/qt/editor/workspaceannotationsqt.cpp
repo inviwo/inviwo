@@ -123,7 +123,7 @@ void WorkspaceAnnotationsQt::setCanvasImages(
     std::vector<Base64Image> images;
     images.reserve(canvasImages.size());
 
-    for (auto& elem : canvasImages) {
+    for (const auto& elem : canvasImages) {
         images.emplace_back(elem.first, utilqt::toBase64(elem.second, "JPEG", 90),
                             elem.second.width(), elem.second.height());
     }

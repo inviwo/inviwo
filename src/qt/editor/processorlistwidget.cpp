@@ -101,7 +101,7 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
                           utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
         clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
                           utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
-        auto clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+        auto* clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
         clearAction->setVisible(false);
         connect(clearAction, &QAction::triggered, lineEdit_, &QLineEdit::clear);
         connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {

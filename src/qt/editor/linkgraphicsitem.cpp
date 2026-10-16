@@ -249,11 +249,11 @@ private:
 
 void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     using namespace std::literals;
-    auto p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
-    auto p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
-    auto network = p1->getNetwork();
+    auto* p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
+    auto* p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
+    auto* network = p1->getNetwork();
 
-    const auto w = scene()->views().front();
+    auto* const w = scene()->views().front();
     const auto size = utilqt::emToPx(w, 1.5);
     const auto img = [&](const auto& file) {
         QSvgRenderer renderer(utilqt::toQString(file));
@@ -277,8 +277,8 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     const UnorderedStringMap<std::string> right = {{"align", "right"}};
     const UnorderedStringMap<std::string> left = {{"align", "left"}};
     for (const auto& link : network->getLinksBetweenProcessors(p1, p2)) {
-        auto src = link.getSource();
-        auto dst = link.getDestination();
+        auto* src = link.getSource();
+        auto* dst = link.getDestination();
         if (network->isLinkedBidirectional(src, dst)) {
             if (src < dst) {
                 tb(A{right, src->getDisplayName()}, imgBi, A{left, dst->getDisplayName()});

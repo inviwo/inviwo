@@ -129,7 +129,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
     auto normalprinter = [&]() {
         if (nit != data->getBuffers().end()) {
-            if (const auto normRam = nit->second->getRepresentation<BufferRAM>();
+            if (const auto* const normRam = nit->second->getRepresentation<BufferRAM>();
                 normRam && (normRam->getDataFormat()->getComponents() == 3)) {
                 return normRam
                     ->dispatch<std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>,

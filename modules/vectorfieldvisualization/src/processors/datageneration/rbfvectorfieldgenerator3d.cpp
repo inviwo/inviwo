@@ -197,7 +197,7 @@ void RBFVectorFieldGenerator3D::process() {
     volume->setBasis(basis);
     volume->setOffset(offset);
 
-    auto data = static_cast<vec3*>(volume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto* data = static_cast<vec3*>(volume->getEditableRepresentation<VolumeRAM>()->getData());
 
     int i = 0;
     for (size_t z = 0; z < size_.get().z; z++) {

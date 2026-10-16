@@ -317,11 +317,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     fileAssociations_->registerFileType(
         "Inviwo.volume", "Inviwo Volume", ".dat", 0,
         {{"Open", "-d \"%1\"", "data", [this](const std::filesystem::path& file) {
-              auto net = app_->getProcessorNetwork();
+              auto* net = app_->getProcessorNetwork();
               util::insertNetworkForData(file, net);
           }}});
 
-    auto screen = QGuiApplication::primaryScreen();
+    auto* screen = QGuiApplication::primaryScreen();
     const float maxRatio = 0.8f;
     const auto ssize = screen->availableSize();
 
@@ -340,7 +340,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     app->getCommandLineParser().add(
         &openData_,
         [this]() {
-            auto net = app_->getProcessorNetwork();
+            auto* net = app_->getProcessorNetwork();
             util::insertNetworkForData(openData_.getValue(), net, true);
         },
         900);
@@ -1047,7 +1047,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             }
         });
 
-        auto invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
+        auto* invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
         connect(invalidateResourcesNetwork, &QAction::triggered, [this](bool /*state*/) {
             auto* net = app_->getProcessorNetwork();
             const NetworkLock lock{net};
@@ -1653,7 +1653,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     // destroyed. This way, the main window can stay open if a child widget does not close, i.e.
     // calls event->ignore().
     // @see QWidget::closeEvent()
-    for (auto& child : children()) {
+    for (const auto& child : children()) {
         QApplication::sendEvent(child, event);
         if (!event->isAccepted()) {
             return;
@@ -1761,7 +1761,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 hideWelcomeScreen();
 
                 bool first = true;
-                for (auto& file : urlList) {
+                for (const auto& file : urlList) {
                     const std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
 
                     if (toLower(filename.extension().string()) == ".inv") {

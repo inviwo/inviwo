@@ -214,7 +214,7 @@ void PresentationProcessor::updateSlideImage() {
 
     const auto currentFileName = fileList_[index];
 
-    auto factory = getInviwoApplication()->getDataReaderFactory();
+    auto* factory = getInviwoApplication()->getDataReaderFactory();
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions

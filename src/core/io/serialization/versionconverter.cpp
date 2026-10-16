@@ -62,7 +62,7 @@ bool xml::copyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProp
     bool res = false;
     std::vector<TxElement*> toBeDeleted;
 
-    for (auto& p : prop.getProperties()) {
+    for (const auto& p : prop.getProperties()) {
         bool match = false;
 
         for (TiXmlElement* child = node->FirstChildElement(); child;
@@ -135,7 +135,7 @@ bool xml::findMatchingSubPropertiesForComposites(
     if (pelm.empty()) return false;
 
     bool res = false;
-    for (auto& prop : props) {
+    for (const auto& prop : props) {
         if (!xml::hasProp(pelm[0], *prop)) {
             const bool foundMatchingComposite = xml::copyMatchingCompositeProperty(pelm[0], *prop);
             bool foundSubProp = false;
@@ -203,7 +203,7 @@ void util::renamePort(Deserializer& d, std::vector<std::pair<const Port*, std::s
         bool didChanges = false;
         for (auto rule : rules) {
             TxElement* elem = nullptr;
-            if (auto p1 = dynamic_cast<const Outport*>(rule.first)) {
+            if (const auto* p1 = dynamic_cast<const Outport*>(rule.first)) {
                 elem = xml::getElement(node, fmt::format("OutPorts/OutPort&type={}&identifier={}",
                                                          p1->getClassIdentifier(), rule.second));
             } else if (const auto* p2 = dynamic_cast<const Inport*>(rule.first)) {

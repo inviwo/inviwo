@@ -76,7 +76,7 @@ void MultiFileProperty::set(const std::vector<std::filesystem::path>& values) {
     bool modified = files_.update(values);
 
     // figure out best matching extension based on first filename
-    if (auto* file = front()) {
+    if (const auto* file = front()) {
         modified |= updateExtension(*file);
     } else {
         modified |= selectedExtension_.update(FileExtension{});
@@ -109,9 +109,9 @@ void MultiFileProperty::set(const FileProperty* property) {
 }
 
 void MultiFileProperty::set(const Property* property) {
-    if (auto mfp = dynamic_cast<const MultiFileProperty*>(property)) {
+    if (const auto* mfp = dynamic_cast<const MultiFileProperty*>(property)) {
         set(mfp);
-    } else if (auto fp = dynamic_cast<const FileProperty*>(property)) {
+    } else if (const auto* fp = dynamic_cast<const FileProperty*>(property)) {
         set(fp);
     }
 }
@@ -231,8 +231,8 @@ void MultiFileProperty::deserialize(Deserializer& d) {
 }
 
 void MultiFileProperty::requestFile() {
-    for (auto widget : getWidgets()) {
-        if (auto fileRequester = dynamic_cast<FileRequestable*>(widget)) {
+    for (auto* widget : getWidgets()) {
+        if (auto* fileRequester = dynamic_cast<FileRequestable*>(widget)) {
             fileRequester->requestFile();
             return;
         }

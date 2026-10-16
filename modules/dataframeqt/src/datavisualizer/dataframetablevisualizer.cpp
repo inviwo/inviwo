@@ -61,7 +61,7 @@ Document DataFrameTableVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> DataFrameTableVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto* rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }

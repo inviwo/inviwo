@@ -147,7 +147,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     using namespace animation;
 
-    if (auto win = utilqt::getApplicationMainWindow()) {
+    if (auto* win = utilqt::getApplicationMainWindow()) {
         const QString animationMenuName("Animation");
         QMenu* menu = nullptr;
         // Find view menu

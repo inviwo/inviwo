@@ -467,7 +467,7 @@ TEST(AnimationTests, TrackSerializationTest) {
         TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
         trackFactory.registerObject(&floatTFO);
 
-        auto floatProcessor = static_cast<TestProcessor*>(
+        auto* floatProcessor = static_cast<TestProcessor*>(
             net.addProcessor(std::make_unique<TestProcessor>("float", "Float")));
         PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(
             &(floatProcessor->floatProperty));
@@ -505,7 +505,7 @@ TEST(AnimationTests, TrackSerializationTest) {
         d.deserialize("Network", net);
         d.deserialize("Track", track);
 
-        auto floatTrack2 =
+        auto* floatTrack2 =
             dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track.get());
         EXPECT_NE(nullptr, floatTrack2);
 
@@ -547,7 +547,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
         TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
         trackFactory.registerObject(&floatTFO);
 
-        auto floatProcessor = static_cast<TestProcessor*>(
+        auto* floatProcessor = static_cast<TestProcessor*>(
             net.addProcessor(std::make_unique<TestProcessor>("float", "Float")));
 
         std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
