@@ -308,8 +308,8 @@ private:
 template <typename T>
 T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
-    for (int i = 0; i < graphicsItems.size(); i++) {
-        if (auto item = qgraphicsitem_cast<T*>(graphicsItems[i])) return item;
+    for (auto& graphicsItem : graphicsItems) {
+        if (auto item = qgraphicsitem_cast<T*>(graphicsItem)) return item;
     }
     return nullptr;
 }

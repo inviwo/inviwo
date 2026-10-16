@@ -75,8 +75,7 @@ void DemoController::setFileOptions() {
         filesystem::getDirectoryContents(demoFolder_.get(), filesystem::ListMode::Files);
 
     int invNum = 0;
-    for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
-        const auto& elem = elements[elIdx];
+    for (const auto& elem : elements) {
         std::string ext = elem.extension().string();
         ext = toLower(ext);
         if (ext == ".inv") {  // Found a workspace

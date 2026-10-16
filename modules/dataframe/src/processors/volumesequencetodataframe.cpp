@@ -170,8 +170,8 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
         if (dis(gen) <= probability) {
             if (omitOutliers) {
                 bool add = true;
-                for (size_t j = 0; j < volumeData.size(); j++) {
-                    if (volumeData[j][i] > threshold) {
+                for (auto& j : volumeData) {
+                    if (j[i] > threshold) {
                         add = false;
                         break;
                     }

@@ -374,9 +374,9 @@ void ScatterPlotMatrixProcessor::createLabels() {
         textRenderer_.setFontSize(fontSize_.get());
 
         auto& dataFrame = *dataFrame_.getData();
-        for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
-            if (!isIncluded(*x)) continue;
-            const auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
+        for (const auto& x : dataFrame) {
+            if (!isIncluded(x)) continue;
+            const auto tex = util::createTextTexture(textRenderer_, x->getHeader(), fontColor_);
             labelsTextures_.push_back(tex);
         }
     }
