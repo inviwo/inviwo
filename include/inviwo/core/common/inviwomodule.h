@@ -207,6 +207,12 @@ public:
      */
     void registerCompositeProcessor(const std::filesystem::path& file);
 
+    /**
+     * Register a workspace file as a SequenceProcessor.
+     * The SequenceProcessor will load the file as its sub network on construction.
+     */
+    void registerSequenceProcessor(const std::filesystem::path& file);
+
     void registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactoryObject> widget);
     template <typename T, typename P>
     void registerProcessorWidget();

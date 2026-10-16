@@ -924,6 +924,29 @@ void NetworkEditor::addSequenceMenuItems(
                     new SubPropertySelectionDialog(*selectedSequences.begin(), mainWindow_);
                 dialog->show();
             }));
+
+    auto* saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Sequence"));
+    connect(
+        saveCompAction, &QAction::triggered, this, util::exceptionGuarded([selectedSequences]() {
+            for (auto* p : selectedSequences) {
+                const auto compDir = filesystem::getPath(PathType::Settings, "/sequences", true);
+                const auto filename = util::findUniqueIdentifier(
+                    util::stripIdentifier(p->getDisplayName()),
+                    [&](std::string_view basename) {
+                        const auto path = compDir / fmt::format("{}.inv", basename);
+                        return !std::filesystem::is_regular_file(path);
+                    },
+                    "");
+                std::filesystem::create_directories(compDir);
+                const auto path = compDir / (filename + ".inv");
+                p->saveSubNetwork(path);
+                log::info(
+                    "Saved Sequence to \"{}\".\nSequence is now available in the "
+                    "Processor list (restart may be required).",
+                    path);
+            }
+        }));
+    saveCompAction->setDisabled(selectedSequences.empty());
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
