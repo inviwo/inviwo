@@ -256,24 +256,24 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
                 e->markAsUsed();
             }
         }
-    } else if (auto touchEvent = e->getEventAs<TouchEvent>()) {
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto& touchPoint = touchEvent->touchPoints().front();
+    } else if (auto touchEvent = e->getEventAs<TouchEvent>();
+               touchEvent && (touchEvent->touchPoints().size() == 1)) {
+        // allow interaction only for a single touch point
+        const auto& touchPoint = touchEvent->touchPoints().front();
 
-            if (touchPoint.state() == TouchState::Started) {
-                hoveredSplitter_ = pickId;
-                triggerUpdate = true;
-            } else if (touchPoint.state() == TouchState::Finished) {
-                hoveredSplitter_ = -1;
-                triggerUpdate = true;
-            } else if (touchPoint.state() == TouchState::Updated) {
-                moveAction(touchPoint.pos());
-                triggerUpdate = true;
-                e->markAsUsed();
-            }
+        if (touchPoint.state() == TouchState::Started) {
+            hoveredSplitter_ = pickId;
+            triggerUpdate = true;
+        } else if (touchPoint.state() == TouchState::Finished) {
+            hoveredSplitter_ = -1;
+            triggerUpdate = true;
+        } else if (touchPoint.state() == TouchState::Updated) {
+            moveAction(touchPoint.pos());
+            triggerUpdate = true;
+            e->markAsUsed();
         }
     }
+
     if (triggerUpdate && invalidate_) {
         invalidate_();
     }

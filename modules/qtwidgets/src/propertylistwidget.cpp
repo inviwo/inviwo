@@ -351,19 +351,19 @@ bool PropertyListWidget::event(QEvent* e) {
 
         switch (ple->action) {
             case PropertyListEvent::Action::Add: {
-                if (auto* processor = network->getProcessorByIdentifier(ple->identifier)) {
-                    if (processor->getNetwork() == network) {
-                        addProcessorProperties(processor);
-                    }
+                if (auto* processor = network->getProcessorByIdentifier(ple->identifier);
+                    processor && (processor->getNetwork() == network)) {
+                    addProcessorProperties(processor);
                 }
+
                 break;
             }
             case PropertyListEvent::Action::Remove: {
-                if (auto* processor = network->getProcessorByIdentifier(ple->identifier)) {
-                    if (processor->getNetwork() == network) {
-                        removeProcessorProperties(processor);
-                    }
+                if (auto* processor = network->getProcessorByIdentifier(ple->identifier);
+                    processor && (processor->getNetwork() == network)) {
+                    removeProcessorProperties(processor);
                 }
+
                 break;
             }
             case PropertyListEvent::Action::FocusProperty: {

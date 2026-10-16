@@ -726,10 +726,9 @@ void InviwoMainWindow::addActions() {  // NOLINT
                             if (qApp->keyboardModifiers() == Qt::ControlModifier) {
                                 appendWorkspace(utilqt::toPath(action->data().toString()));
                                 hideWelcomeScreen();
-                            } else if (askToSaveWorkspaceChanges()) {
-                                if (openWorkspace(utilqt::toPath(action->data().toString()))) {
-                                    hideWelcomeScreen();
-                                }
+                            } else if ((askToSaveWorkspaceChanges()) &&
+                                       (openWorkspace(utilqt::toPath(action->data().toString())))) {
+                                hideWelcomeScreen();
                             }
                         });
                     }
@@ -794,12 +793,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     if (action == ModifierAction::AppendWorkspace) {
                         appendWorkspace(path);
                         hideWelcomeScreen();
-                    } else if (askToSaveWorkspaceChanges()) {
+                    } else if ((askToSaveWorkspaceChanges()) &&
+                               (openWorkspace(path, action != ModifierAction::OpenWithPath))) {
                         // open examples as regular workspace with filename and full path if
                         // modifier key is pressed
-                        if (openWorkspace(path, action != ModifierAction::OpenWithPath)) {
-                            hideWelcomeScreen();
-                        }
+                        hideWelcomeScreen();
                     }
                 });
             }
@@ -846,10 +844,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
                         if (action == ModifierAction::AppendWorkspace) {
                             appendWorkspace(path);
                             hideWelcomeScreen();
-                        } else if (askToSaveWorkspaceChanges()) {
-                            if (openWorkspace(path)) {
-                                hideWelcomeScreen();
-                            }
+                        } else if ((askToSaveWorkspaceChanges()) && (openWorkspace(path))) {
+                            hideWelcomeScreen();
                         }
                     });
                 }

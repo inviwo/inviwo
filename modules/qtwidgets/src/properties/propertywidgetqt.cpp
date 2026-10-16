@@ -379,14 +379,14 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                         break;
                     }
                 }
-                if (actionExists) {
-                    if (QMessageBox::question(
-                            parent, "Overwrite Preset?",
-                            QString("Preset named \"%1\" already exists.<br><br>Overwrite?")
-                                .arg(text)) == QMessageBox::No) {
-                        return false;
-                    }
+                if ((actionExists) &&
+                    (QMessageBox::question(
+                         parent, "Overwrite Preset?",
+                         QString("Preset named \"%1\" already exists.<br><br>Overwrite?")
+                             .arg(text)) == QMessageBox::No)) {
+                    return false;
                 }
+
                 // save current state as a preset
                 presetManager->savePreset(presetName, property, type);
             }

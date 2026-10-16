@@ -648,21 +648,19 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto moveDownBtn = createButton("moveListItemDownButton", "Move down");
     connect(moveUpBtn, &QToolButton::clicked, this, [prop]() {
         if (auto owner = prop->getOwner()) {
-            if (const auto it = owner->find(prop); it != owner->cend()) {
-                if (it != owner->cbegin()) {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
-                    owner->move(prop, std::distance(owner->cbegin(), it) - 1);
-                }
+            if (const auto it = owner->find(prop);
+                (it != owner->cend()) && (it != owner->cbegin())) {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+                owner->move(prop, std::distance(owner->cbegin(), it) - 1);
             }
         }
     });
     connect(moveDownBtn, &QToolButton::clicked, this, [prop]() {
         if (auto owner = prop->getOwner()) {
-            if (const auto it = owner->find(prop); it != owner->cend()) {
-                if (it + 1 != owner->cend()) {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
-                    owner->move(prop, std::distance(owner->cbegin(), it) + 1);
-                }
+            if (const auto it = owner->find(prop);
+                (it != owner->cend()) && (it + 1 != owner->cend())) {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+                owner->move(prop, std::distance(owner->cbegin(), it) + 1);
             }
         }
     });

@@ -551,10 +551,9 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
 
     // Copy over the value of old props to new ones if id and class name are equal.
     for (const auto* oldProp : oldProcessor->getProperties()) {
-        if (auto* newProp = newProcessor.getPropertyByIdentifier(oldProp->getIdentifier())) {
-            if (newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
-                newProp->set(oldProp);
-            }
+        if (auto* newProp = newProcessor.getPropertyByIdentifier(oldProp->getIdentifier());
+            newProp && (newProp->getClassIdentifier() == oldProp->getClassIdentifier())) {
+            newProp->set(oldProp);
         }
     }
 

@@ -531,11 +531,9 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
         auto headerCopy = header;
         Unit unit{};
 
-        if (unitsInHeaders_ && counts.string == 0) {
-            if (std::regex_match(header, m, re)) {
-                headerCopy = util::trim(m.str(1));
-                unit = units::unit_from_string(m.str(2));
-            }
+        if ((unitsInHeaders_ && counts.string == 0) && (std::regex_match(header, m, re))) {
+            headerCopy = util::trim(m.str(1));
+            unit = units::unit_from_string(m.str(2));
         }
 
         if (counts.index) {

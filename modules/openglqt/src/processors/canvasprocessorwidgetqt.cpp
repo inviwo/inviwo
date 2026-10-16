@@ -192,9 +192,9 @@ void CanvasProcessorWidgetQt::propagateResizeEvent() {
 }
 
 bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories actions) {
-    if (const auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
-        if (!canvasProcessor->isContextMenuAllowed()) return false;
-    }
+    if (const auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor());
+        canvasProcessor && (!canvasProcessor->isContextMenuAllowed()))
+        return false;
 
     if (actions.contains(ContextMenuCategory::Widget)) {
         if (!menu.actions().empty()) {

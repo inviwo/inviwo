@@ -422,24 +422,21 @@ void AnimationController::render() {
                         }
                     }
                 }
-                if (const auto* exporter = dynamic_cast<Exporter*>(p)) {
-                    if (exportOptions_.isChecked()) {
-                        auto base = exportBaseName_.get();
-                        replaceInString(base, "UPN", p->getIdentifier());
+                if (const auto* exporter = dynamic_cast<Exporter*>(p);
+                    exporter && (exportOptions_.isChecked())) {
+                    auto base = exportBaseName_.get();
+                    replaceInString(base, "UPN", p->getIdentifier());
 
-                        const auto digits =
-                            std::max(fmt::formatted_size("{}", numFrames), size_t{4});
+                    const auto digits = std::max(fmt::formatted_size("{}", numFrames), size_t{4});
 
-                        recordingFunctors.emplace_back(
-                            [exporter, writer = exportWriter_.get(),
-                             dir = exportOutputDirectory_.get(), base,
-                             overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
-                             counter = size_t{0}, digits]() mutable {
-                                const auto name = fmt::format("{}{:0{}}", base, counter, digits);
-                                exporter->exportFile(dir, name, {writer}, overwrite);
-                                ++counter;
-                            });
-                    }
+                    recordingFunctors.emplace_back(
+                        [exporter, writer = exportWriter_.get(), dir = exportOutputDirectory_.get(),
+                         base, overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
+                         counter = size_t{0}, digits]() mutable {
+                            const auto name = fmt::format("{}{:0{}}", base, counter, digits);
+                            exporter->exportFile(dir, name, {writer}, overwrite);
+                            ++counter;
+                        });
                 }
             }
         });

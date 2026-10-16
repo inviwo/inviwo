@@ -66,10 +66,9 @@ LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& fi
 }
 
 void LayerSource::configureReader(DataReader& reader) {
-    if (index_.get().has_value()) {
-        if (!reader.setOption(reader::option::index, index_.get().value())) {
-            log::warn("Reader does not support the index option");
-        }
+    if ((index_.get().has_value()) &&
+        (!reader.setOption(reader::option::index, index_.get().value()))) {
+        log::warn("Reader does not support the index option");
     }
 }
 
