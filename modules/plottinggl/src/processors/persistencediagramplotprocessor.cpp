@@ -136,7 +136,7 @@ void PersistenceDiagramPlotProcessor::process() {
         const auto dfSize = dataframe->getNumberOfRows();
 
         const auto iCol = dataframe->getIndexColumn();
-        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         const auto filteredIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;

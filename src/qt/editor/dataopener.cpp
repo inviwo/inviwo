@@ -67,32 +67,32 @@ public:
 
         setWindowTitle("Select Data Visualizer");
 
-        auto mainLayout = new QGridLayout(this);
+        auto* mainLayout = new QGridLayout(this);
         mainLayout->setSpacing(15);
 
         int row = 0;
 
-        auto fileNameLabel = new QLabel(utilqt::toQString(file));
+        auto* fileNameLabel = new QLabel(utilqt::toQString(file));
         mainLayout->addWidget(fileNameLabel, row, 0, 1, 2);
         {
             loader_ = new QCheckBox("Data Loader");
             mainLayout->addWidget(loader_, ++row, 0, 1, 1);
-            auto text = new QLabel("Add a data source processor");
+            auto* text = new QLabel("Add a data source processor");
             text->setWordWrap(true);
             mainLayout->addWidget(text, row, 1, 1, 1);
         }
 
-        for (auto visualizer : visualizers) {
-            auto use = new QCheckBox(utilqt::toQString(visualizer->getName()));
+        for (auto* visualizer : visualizers) {
+            auto* use = new QCheckBox(utilqt::toQString(visualizer->getName()));
             useVisualizers.push_back(use);
             mainLayout->addWidget(use, ++row, 0, 1, 1);
             const std::string info = visualizer->getDescription();
-            auto text = new QLabel(utilqt::toQString(info));
+            auto* text = new QLabel(utilqt::toQString(info));
             text->setWordWrap(true);
             mainLayout->addWidget(text, row, 1, 1, 1);
         }
 
-        auto buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        auto* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
         connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
         mainLayout->addWidget(buttons, ++row, 0, 1, 2, Qt::AlignRight);
@@ -108,7 +108,7 @@ public:
 std::vector<Processor*> util::insertNetworkForData(const std::filesystem::path& dataFile,
                                                    ProcessorNetwork* net, bool alwaysFirst,
                                                    bool onlySource, QWidget* parent) {
-    auto app = net->getApplication();
+    auto* app = net->getApplication();
     const NetworkLock lock{net};
 
     auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForFile(dataFile);
@@ -133,7 +133,7 @@ std::vector<Processor*> util::insertNetworkForData(const std::filesystem::path& 
     if (visualizers.size() == 1 || alwaysFirst) {
         return addVisualizer(visualizers.front(), onlySource);
     } else {
-        auto dialog = new SelectVisualizerDialog(dataFile, visualizers, parent);
+        auto* dialog = new SelectVisualizerDialog(dataFile, visualizers, parent);
         std::vector<Processor*> added;
         if (dialog->exec() == QDialog::Accepted) {
             if (dialog->loader_->isChecked()) {

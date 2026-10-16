@@ -320,7 +320,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         const auto normalizeValue = [range = minmaxC_](double value) {
             return (value - range.x) / (range.y - range.x);
         };
-        auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
+        const auto* colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
 
         const auto getColor =
             [this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
@@ -535,7 +535,8 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
         if (!indexColumn_) {
             return std::nullopt;
         }
-        auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        const auto& indexCol =
+            indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
         const auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
             return *it;

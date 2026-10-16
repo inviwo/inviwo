@@ -68,7 +68,7 @@ Document ScatterPlotDataFrameVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> ScatterPlotDataFrameVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto* rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }

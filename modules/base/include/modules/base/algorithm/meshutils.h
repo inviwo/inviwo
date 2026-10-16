@@ -194,7 +194,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::
 
 template <typename Callback>
 void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Triangles) {
         throw Exception(SourceContext{}, "Only works for triangles, got {}", info.dt);
     }
@@ -252,7 +252,7 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
 
 template <typename Callback>
 void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback&& callback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
         throw Exception(SourceContext{}, "Only works for lines, got {}", info.dt);
     }
@@ -303,7 +303,7 @@ template <typename LineStartCallback, typename LinePointCallback, typename LineE
 void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
                  LineStartCallback&& lineStartCallback, LinePointCallback&& linePointCallback,
                  LineEndCallback&& lineEndCallback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
         throw Exception(SourceContext{}, "Only works for lines, got {}", info.dt);
     }

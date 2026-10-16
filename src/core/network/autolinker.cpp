@@ -110,7 +110,7 @@ void AutoLinker::sortAutoLinkCandidates() {
 void AutoLinker::addLinksToClosestCandidates(ProcessorNetwork& network, bool bidirectional) {
     const NetworkLock lock(&network);
     sortAutoLinkCandidates();
-    for (auto& item : getAutoLinkCandidates()) {
+    for (const auto& item : getAutoLinkCandidates()) {
         const auto existingSources = network.getPropertiesLinkedTo(item.first);
         if (std::ranges::find(existingSources, item.second.front()) == existingSources.end()) {
             network.addLink(item.second.front(), item.first);

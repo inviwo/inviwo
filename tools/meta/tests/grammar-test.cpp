@@ -147,7 +147,7 @@ static void print_node(const p::parse_tree::node& n, const std::string& s = "") 
     // print all child nodes
     if (!n.children.empty()) {
         const auto s2 = s + "  ";
-        for (auto& up : n.children) {
+        for (const auto& up : n.children) {
             print_node(*up, s2);
         }
     }
@@ -156,7 +156,7 @@ static void print_node(const p::parse_tree::node& n, const std::string& s = "") 
 static std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
 
     if (n.children.empty() && n.has_content()) os << n.string_view();
-    for (auto& up : n.children) {
+    for (const auto& up : n.children) {
         print(os, *up);
     }
     return os;

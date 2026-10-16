@@ -221,9 +221,9 @@ vec3 XYZ2xyY(const vec3& xyz) {
         // This xy value is obtained by calling XYZ2xyY(D65WhitePoint)
         return vec3(0.3127266147f, 0.3290231303f, 0.0f);  // brucelindbloom.com D65
     } else {
-        auto& X = xyz.x;
-        auto& Y = xyz.y;
-        auto& Z = xyz.z;
+        const auto& X = xyz.x;
+        const auto& Y = xyz.y;
+        const auto& Z = xyz.z;
         const float sum = X + Y + Z;
         return vec3(X / sum, Y / sum, Y);
     }
@@ -234,9 +234,9 @@ vec3 xyY2XYZ(const vec3& xyY) {
     if (xyY.y < glm::epsilon<float>()) {
         return vec3(0.0f);
     } else {
-        auto& x = xyY.x;
-        auto& y = xyY.y;
-        auto& Y = xyY.z;
+        const auto& x = xyY.x;
+        const auto& y = xyY.y;
+        const auto& Y = xyY.z;
 
         return vec3(x * Y / y, Y, (1 - x - y) * Y / y);
     }

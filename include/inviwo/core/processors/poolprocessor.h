@@ -457,7 +457,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     const auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
     Submission sub{state, {}, [this]() { setupProgress<Job>(); }};
 
-    auto app = getInviwoApplication();
+    auto* app = getInviwoApplication();
     size_t i = 0;
     for (auto& job : jobs) {
         const auto task =
@@ -510,7 +510,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     const auto task =
         makeTask<Result>(std::forward<Job>(job), state->getStop(), state->getProgress(0));
     state->futures.push_back(task->get_future());
-    auto app = getInviwoApplication();
+    auto* app = getInviwoApplication();
 
     Submission sub{state,
                    {[state, task, app]() {

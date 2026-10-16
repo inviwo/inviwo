@@ -76,13 +76,13 @@ ShaderType ShaderType::typeFromExtension(std::string_view ext) {
 }
 
 ShaderType ShaderType::typeFromString(std::string_view str) {
-    for (auto& [ext, type] : extToShaderType) {
+    for (const auto& [ext, type] : extToShaderType) {
         if (str.ends_with(ext)) return type;
     }
     return ShaderType(GLenum{0});
 }
 ShaderType ShaderType::typeFromFile(const std::filesystem::path& file) {
-    for (auto& [ext, type] : extToShaderType) {
+    for (const auto& [ext, type] : extToShaderType) {
         if (file.extension() == ext) return type;
     }
     return ShaderType(GLenum{0});

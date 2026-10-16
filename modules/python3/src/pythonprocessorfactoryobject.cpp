@@ -106,11 +106,11 @@ void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
 }
 
 void PythonProcessorFactoryObject::reloadProcessors() {
-    auto net = app_->getProcessorNetwork();
+    auto* net = app_->getProcessorNetwork();
     const auto processors =
         net->getProcessors();  // Save a list of the processors here since we will be
                                // modifying the list below by replacing them
-    for (auto p : processors) {
+    for (auto* p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
             log::info(R"(Updating python processor: "{}" id: "{}")", name_, p->getIdentifier());
             if (const auto replacement = static_cast<std::shared_ptr<Processor>>(create(app_))) {

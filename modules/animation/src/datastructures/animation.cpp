@@ -177,7 +177,7 @@ std::vector<KeyframeSequence*> Animation::addKeyframeSequence(Property* property
 
 Animation::iterator Animation::findTrack(Property* property) {
     return std::find_if(begin(), end(), [property](auto& track) {
-        if (auto pTrack = dynamic_cast<BasePropertyTrack*>(&track)) {
+        if (auto* pTrack = dynamic_cast<BasePropertyTrack*>(&track)) {
             return pTrack->getProperty() == property;
         } else {
             return false;
@@ -257,7 +257,7 @@ void Animation::clear() {
 std::vector<Seconds> Animation::getAllTimes() const {
     std::vector<Seconds> result;
 
-    for (auto& track : tracks_) {
+    for (const auto& track : tracks_) {
         auto times = track->getAllTimes();
         result.insert(result.end(), times.begin(), times.end());
     }
@@ -352,8 +352,8 @@ void Animation::trackAddedInternal(Track* track) {
     priorityTracks_.push_back(track);
     doPrioritySort();
     track->addObserver(this);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
-        if (auto propertyOwner = propertyTrack->getProperty()->getOwner()) {
+    if (auto* propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        if (auto* propertyOwner = propertyTrack->getProperty()->getOwner()) {
             propertyOwner->addObserver(this);
         }
     }
@@ -362,12 +362,12 @@ void Animation::trackAddedInternal(Track* track) {
 
 void Animation::trackRemovedInternal(Track* track) {
     std::erase(priorityTracks_, track);
-    if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
-        if (auto owner = propertyTrack->getProperty()->getOwner()) {
+    if (auto* propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
+        if (auto* owner = propertyTrack->getProperty()->getOwner()) {
             // Only stop observing property owner if no other track needs it
             const auto sameOwnerIt =
                 std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
-                    if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
+                    if (auto* ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
                         return ptrck->getProperty()->getOwner() == owner;
                     } else {
                         return false;

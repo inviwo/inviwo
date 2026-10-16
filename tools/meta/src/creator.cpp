@@ -252,11 +252,11 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
 
     auto file = templates_["file"];
 
-    if (auto sources = im.findGroup(*file.source->cmakeGroup)) {
+    if (auto* sources = im.findGroup(*file.source->cmakeGroup)) {
         auto& args = sources->arguments;
         args.erase(++args.begin(), args.end());
     }
-    if (auto headers = im.findGroup(*file.header->cmakeGroup)) {
+    if (auto* headers = im.findGroup(*file.header->cmakeGroup)) {
         auto& args = headers->arguments;
         args.erase(++args.begin(), args.end());
     }
@@ -279,7 +279,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
 
     std::set<fs::path> oldFolders;
     log(" * Moving files:");
-    for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
+    for (const auto& item : fs::recursive_directory_iterator(oldIm.path())) {
         const auto relpath = fs::relative(item.path(), oldIm.path());
         if (filter(relpath)) continue;
 

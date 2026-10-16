@@ -82,10 +82,10 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
     for (const auto& it : *this) {
         if (it.getFirstTime() <= to && it.getLastTime() >= to) {
             const auto [processorId, propertyPath] = util::splitByFirst(it.path, ".");
-            if (auto processor = network->getProcessorByIdentifier(processorId)) {
+            if (auto* processor = network->getProcessorByIdentifier(processorId)) {
                 if (propertyPath.empty()) {
                     processor->invalidate(InvalidationLevel::InvalidOutput);
-                } else if (auto property = processor->getPropertyByPath(propertyPath)) {
+                } else if (auto* property = processor->getPropertyByPath(propertyPath)) {
                     property->propertyModified();
                 } else {
                     log::warn("Unable to find property '{}' of processor '{}'", propertyPath,

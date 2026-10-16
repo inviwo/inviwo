@@ -67,7 +67,7 @@ Tags& Tags::addTag(const Tag& t) {
 }
 
 Tags& Tags::addTags(const Tags& t) {
-    for (auto& tag : t.tags_) {
+    for (const auto& tag : t.tags_) {
         addTag(tag);
     }
     return *this;
@@ -85,8 +85,8 @@ std::string Tags::getString() const {
 
 int Tags::getMatches(const Tags& input) const {
     int matches = 0;
-    for (auto& elem : input.tags_) {
-        for (auto& t : tags_) {
+    for (const auto& elem : input.tags_) {
+        for (const auto& t : tags_) {
             if (elem == t) {
                 matches++;
             }

@@ -68,7 +68,7 @@ Document ImageBackgroundVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> ImageBackgroundVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto* rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<Layer>();
     return exts;
 }

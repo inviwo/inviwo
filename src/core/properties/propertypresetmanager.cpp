@@ -182,14 +182,14 @@ std::vector<std::string> PropertyPresetManager::getAvailablePresets(
                        [&](const auto& pair) { return pair.first; });
     }
     if (types & PropertyPresetType::Workspace) {
-        for (auto& item : workspacePresets_) {
+        for (const auto& item : workspacePresets_) {
             if (item.classIdentifier == property->getClassIdentifier()) {
                 result.push_back(item.name);
             }
         }
     }
     if (types & PropertyPresetType::Application) {
-        for (auto& item : appPresets_) {
+        for (const auto& item : appPresets_) {
             if (item.classIdentifier == property->getClassIdentifier()) {
                 result.push_back(item.name);
             }

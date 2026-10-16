@@ -191,7 +191,7 @@ constexpr Version::Version(std::string_view version) {
 
     size_t begin = 0;
     size_t end = majorMinorPatch.find('.', 0);
-    for (auto e : v) {
+    for (auto* e : v) {
         const auto num = majorMinorPatch.substr(begin, end - begin);
         if (auto val = toNumber(num)) {
             *e = *val;

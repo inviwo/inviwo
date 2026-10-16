@@ -130,14 +130,14 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
             [this](const QItemSelection& selected, const QItemSelection& /*deselected*/) {
                 for (const auto& index : selected.indexes()) {
-                    if (auto tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
-                        if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {
+                    if (auto* tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
+                        if (auto* propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {
                             // Deselect all processors first
                             util::setSelected(controller_.getInviwoApplication()
                                                   ->getProcessorNetwork()
                                                   ->getProcessors(),
                                               false);
-                            auto property = propertytrack->getProperty();
+                            auto* property = propertytrack->getProperty();
                             // Select the processor the selected property belongs to
                             Processor* processor = property->getOwner()->getProcessor();
                             util::setSelected(processor, true);
@@ -146,7 +146,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
                 }
             });
 
-    auto deleteAction = new QAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"), this);
+    auto* deleteAction = new QAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"), this);
     deleteAction->setShortcuts(QKeySequence::Delete);
     deleteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(deleteAction);
@@ -160,7 +160,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
 
 void AnimationLabelViewQt::onTrackAdded(Track* track) {
     QList<QStandardItem*> row;
-    auto item = new TrackItem(track);
+    auto* item = new TrackItem(track);
     row.append(item);
     QWidget* widget = new TrackControlsWidgetQt(item, *track, controller_);
     model_->appendRow(row);

@@ -172,7 +172,7 @@ void extractRows(const json& data, DataFrame& df) {
         if (column->getColumnType() == ColumnType::Categorical) {
             auto* categorical = static_cast<CategoricalColumn*>(column.get());
             const auto addValue = categorical->addMany();
-            for (auto& row : data) {
+            for (const auto& row : data) {
                 addValue(row[colIndex - 1].get<std::string_view>());
             }
         } else {
@@ -198,7 +198,7 @@ auto generateColumnPrinters(const DataFrame& df) {
     for (const auto& col : df) {
         if (col->getColumnType() == ColumnType::Index) continue;
 
-        auto format = col->getBuffer()->getDataFormat();
+        const auto* format = col->getBuffer()->getDataFormat();
         if (col->getColumnType() == ColumnType::Categorical) {
             printers.emplace_back(
                 [cc = static_cast<const CategoricalColumn*>(col.get()), header = col->getHeader()](

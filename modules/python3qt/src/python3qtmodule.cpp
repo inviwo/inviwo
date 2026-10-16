@@ -110,7 +110,7 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
         .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
         .def("execWithTimer",
              []() {
-                 auto timer = new QTimer(qApp);
+                 auto* timer = new QTimer(qApp);
                  QObject::connect(timer, &QTimer::timeout, []() {
                      try {
                          py::exec("lambda x: 1");
@@ -217,7 +217,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
     , abortPythonEvaluation_{false}
     , menu_([&]() -> std::unique_ptr<PythonMenu> {
-        if (auto win = utilqt::getApplicationMainWindow()) {
+        if (auto* win = utilqt::getApplicationMainWindow()) {
             return std::make_unique<PythonMenu>(getPath(), app, win);
         } else {
             return nullptr;
