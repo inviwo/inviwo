@@ -777,13 +777,13 @@ size_t TemplateColumn<T>::getSize() const {
 }
 
 inline auto CategoricalColumn::begin() const -> ConstIterator {
-    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
-                                   buffer_->getRAMRepresentation()->getDataContainer().begin());
+    return {detail::categoricalTransform(lookUpTable_),
+            buffer_->getRAMRepresentation()->getDataContainer().begin()};
 }
 
 inline auto CategoricalColumn::end() const -> ConstIterator {
-    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
-                                   buffer_->getRAMRepresentation()->getDataContainer().end());
+    return {detail::categoricalTransform(lookUpTable_),
+            buffer_->getRAMRepresentation()->getDataContainer().end()};
 }
 
 inline auto CategoricalColumn::values() const -> util::iter_range<ConstIterator> {

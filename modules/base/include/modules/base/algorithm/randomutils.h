@@ -372,9 +372,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     processList.push_back(firstPoint);
     samplePoints.push_back(firstPoint);
 
-    const auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 {
-        return glm::i32vec2(vec2(p) / minDist);
-    };
+    const auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 { return {vec2(p) / minDist}; };
 
     gridData[gridIndex(toGrid(firstPoint))] = firstPoint;
 

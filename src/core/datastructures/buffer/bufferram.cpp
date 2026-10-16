@@ -39,7 +39,7 @@ namespace inviwo {
 BufferRAM::BufferRAM(BufferUsage usage, BufferTarget target)
     : BufferRepresentation(usage, target) {}
 
-std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(BufferRAM)); }
+std::type_index BufferRAM::getTypeIndex() const { return {typeid(BufferRAM)}; }
 
 std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
                                            BufferUsage usage, BufferTarget target) {

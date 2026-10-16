@@ -63,9 +63,9 @@ AngleRadiusWidget::AngleRadiusWidget(QWidget* parent)
     setAutoFillBackground(true);
     resize(200, 200);
 }
-QSize AngleRadiusWidget::sizeHint() const { return QSize(120, 100); }
+QSize AngleRadiusWidget::sizeHint() const { return {120, 100}; }
 
-QSize AngleRadiusWidget::minimumSizeHint() const { return QSize(50, 50); }
+QSize AngleRadiusWidget::minimumSizeHint() const { return {50, 50}; }
 
 void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     const int referenceRadius = getMaxPixelSpaceRadius();

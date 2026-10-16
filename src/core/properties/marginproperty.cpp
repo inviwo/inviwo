@@ -144,7 +144,7 @@ void MarginProperty::setUpperRightMargin(vec2 upperRight) {
 }
 
 vec4 MarginProperty::getAsVec4() const {
-    return vec4(top_.get(), right_.get(), bottom_.get(), left_.get());
+    return {top_.get(), right_.get(), bottom_.get(), left_.get()};
 }
 
 std::pair<vec2, vec2> MarginProperty::getRect(vec2 size) const {

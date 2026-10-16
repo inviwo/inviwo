@@ -159,7 +159,7 @@ std::string FilePatternProperty::getFilePattern() const {
     if (!pattern_.get().empty()) {
         return pattern_.get().front().filename().string();
     } else {
-        return std::string();
+        return {};
     }
 }
 

@@ -378,7 +378,7 @@ double DepthOfField::calculateFocusDepth() {
 
 vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount) {
     if (evalCount == 0) {
-        return vec2(0.0f, 0.0f);
+        return {0.0f, 0.0f};
     } else {
         const double currAngle = 2.0 * std::numbers::pi * (static_cast<double>(evalCount) - 0.5) /
                                  static_cast<double>(maxEvalCount - 1);

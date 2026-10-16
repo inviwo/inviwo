@@ -96,7 +96,7 @@ void VolumeGL::setDimensions(size3_t dimensions) { texture_->uploadAndResize(nul
 
 const size3_t& VolumeGL::getDimensions() const { return texture_->getDimensions(); }
 
-std::type_index VolumeGL::getTypeIndex() const { return std::type_index(typeid(VolumeGL)); }
+std::type_index VolumeGL::getTypeIndex() const { return {typeid(VolumeGL)}; }
 
 void VolumeGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }
 

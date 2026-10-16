@@ -49,7 +49,7 @@ std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
     if (it != drawers_.end()) {
         return std::unique_ptr<MeshDrawer>((*it)->create(geom));
     } else {
-        return std::unique_ptr<MeshDrawer>();
+        return {};
     }
 }
 

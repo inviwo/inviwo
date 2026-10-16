@@ -238,7 +238,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 }
 
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
-    if (!index.isValid()) return QSize();
+    if (!index.isValid()) return {};
 
     auto size = QStyledItemDelegate::sizeHint(o, index);
     if (utilqt::getData(index, Role::Type) == Type::File) {

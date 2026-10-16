@@ -512,7 +512,7 @@ QIcon fromBase64ToIcon(std::string_view base64, std::string_view format) {
     pm.loadFromData(
         QByteArray::fromBase64(QByteArray{base64.data(), static_cast<int>(base64.size())}),
         format.empty() ? nullptr : SafeCStr{format}.c_str());
-    return QIcon(pm);
+    return {pm};
 }
 
 std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {

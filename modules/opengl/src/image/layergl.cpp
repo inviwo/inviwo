@@ -122,7 +122,7 @@ bool LayerGL::copyRepresentationsTo(LayerRepresentation* /*targetLayerGL*/) cons
     return false;
 }
 
-std::type_index LayerGL::getTypeIndex() const { return std::type_index(typeid(LayerGL)); }
+std::type_index LayerGL::getTypeIndex() const { return {typeid(LayerGL)}; }
 
 void LayerGL::setDimensions(size2_t dimensions) {
     texture_->unbind();

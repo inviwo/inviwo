@@ -44,9 +44,9 @@ bool isBricked(const std::shared_ptr<const Volume>& volume) {
 
 size3_t getBrickDimensions(const std::shared_ptr<const Volume>& volume) {
     if (!volume) {
-        return size3_t(1, 1, 1);
+        return {1, 1, 1};
     }
-    return size3_t(volume->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1)));
+    return {volume->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1))};
 }
 
 std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume>& volume) {

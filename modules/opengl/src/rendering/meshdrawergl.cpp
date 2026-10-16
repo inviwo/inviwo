@@ -48,11 +48,11 @@ MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
-    return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo());
+    return {meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo()};
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject(const Mesh* mesh) {
-    return DrawObject(mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo());
+    return {mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo()};
 }
 
 void MeshDrawerGL::draw() {

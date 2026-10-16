@@ -126,7 +126,7 @@ LayerRAM* ImageRAM::getPickingLayerRAM() { return pickingLayerRAM_; }
 
 size_t ImageRAM::getNumberOfColorLayers() const { return colorLayersRAM_.size(); }
 
-std::type_index ImageRAM::getTypeIndex() const { return std::type_index(typeid(ImageRAM)); }
+std::type_index ImageRAM::getTypeIndex() const { return {typeid(ImageRAM)}; }
 
 const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const { return colorLayersRAM_.at(idx); }
 

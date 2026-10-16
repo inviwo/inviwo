@@ -60,7 +60,7 @@ ProcessorGraphicsItem* ProcessorLinkGraphicsItem::getProcessorGraphicsItem() con
     return processor_;
 }
 
-QRectF ProcessorLinkGraphicsItem::boundingRect() const { return QRectF(); }
+QRectF ProcessorLinkGraphicsItem::boundingRect() const { return {}; }
 void ProcessorLinkGraphicsItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) {}
 
 QVariant ProcessorLinkGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {

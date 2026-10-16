@@ -347,17 +347,15 @@ xml::Kind xml::Kind::processor(const std::string& type) {
     return kind;
 }
 
-xml::Kind xml::Kind::inport(const std::string& type) { return Kind("InPort", "InPorts", type); }
+xml::Kind xml::Kind::inport(const std::string& type) { return {"InPort", "InPorts", type}; }
 
-xml::Kind xml::Kind::outport(const std::string& type) { return Kind("OutPort", "OutPorts", type); }
+xml::Kind xml::Kind::outport(const std::string& type) { return {"OutPort", "OutPorts", type}; }
 
 xml::Kind xml::Kind::portgroup(const std::string& type) {
-    return Kind("PortGroup", "PortGroups", type);
+    return {"PortGroup", "PortGroups", type};
 }
 
-xml::Kind xml::Kind::property(const std::string& type) {
-    return Kind("Property", "Properties", type);
-}
+xml::Kind xml::Kind::property(const std::string& type) { return {"Property", "Properties", type}; }
 
 xml::Kind xml::Kind::propertyLinkSource(const std::string& type, const std::string& identifier) {
     Kind kind("SourceProperty", "PropertyLink", type);

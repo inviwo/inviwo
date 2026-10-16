@@ -269,13 +269,13 @@ WorkspaceTreeModel::WorkspaceTreeModel(InviwoApplication* app, QObject* parent)
 WorkspaceTreeModel::~WorkspaceTreeModel() = default;
 
 QModelIndex WorkspaceTreeModel::index(int row, int column, const QModelIndex& parent) const {
-    if (parent.isValid() && parent.column() != 0) return QModelIndex();
+    if (parent.isValid() && parent.column() != 0) return {};
 
     const TreeItem* parentItem = getItem(parent);
     const TreeItem* childItem = parentItem->child(row);
 
     if (childItem) return createIndex(row, column, childItem);
-    return QModelIndex();
+    return {};
 }
 
 Qt::ItemFlags WorkspaceTreeModel::flags(const QModelIndex& index) const {
@@ -286,7 +286,7 @@ Qt::ItemFlags WorkspaceTreeModel::flags(const QModelIndex& index) const {
 }
 
 QVariant WorkspaceTreeModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid()) return QVariant();
+    if (!index.isValid()) return {};
     auto* item = static_cast<TreeItem*>(index.internalPointer());
 
     return item->data(index.column(), role);
@@ -295,7 +295,7 @@ QVariant WorkspaceTreeModel::data(const QModelIndex& index, int role) const {
 QVariant WorkspaceTreeModel::headerData(int, Qt::Orientation orientation, int role) const {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) return "Workspaces";
 
-    return QVariant();
+    return {};
 }
 
 QModelIndex WorkspaceTreeModel::parent(const QModelIndex& index) const {
@@ -352,7 +352,7 @@ void WorkspaceTreeModel::addEntry(TreeItem* parent, std::unique_ptr<TreeItem> ch
 }
 
 QModelIndex WorkspaceTreeModel::getIndex(TreeItem* item, int column) const {
-    if (!item) return QModelIndex();
+    if (!item) return {};
 
     return createIndex(item->row(), column, item);
 }

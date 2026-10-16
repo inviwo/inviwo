@@ -153,11 +153,11 @@ size2_t ImageScaling::calcInputImageSize() const {
     if (!enabled_) return lastValidOutputSize_;
 
     if (scalingFactor_ == -1.0) {
-        return size2_t(dvec2(lastValidOutputSize_) / customFactor_.get());
+        return {dvec2(lastValidOutputSize_) / customFactor_.get()};
     } else if (scalingFactor_ == -2.0) {
         return absoluteSize_;
     } else {
-        return size2_t(dvec2(lastValidOutputSize_) / scalingFactor_.get());
+        return {dvec2(lastValidOutputSize_) / scalingFactor_.get()};
     }
 }
 
