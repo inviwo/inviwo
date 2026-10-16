@@ -50,19 +50,20 @@
 namespace inviwo {
 
 SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
+    : InviwoDockWidget(title, mainwindow, "SettingsWidget")
+    , mainwindow_(mainwindow)
+    , scrollArea_(new QScrollArea())
+    , mainWidget_(new QWidget()) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
-    scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, 0, 0, 0);
 
-    mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
     const auto space = utilqt::refSpacePx(this);

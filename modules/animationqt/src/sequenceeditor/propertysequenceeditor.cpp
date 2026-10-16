@@ -82,7 +82,10 @@ namespace {
 class PropertyEditorWidget : public QWidget, public KeyframeObserver {
 public:
     PropertyEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
-        : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
+        : QWidget(parent)
+        , keyframe_(keyframe)
+        , sequenceEditorWidget_(parent)
+        , timeSpinner_(new DoubleValueDragSpinBox()) {
 
         auto& propTrack = dynamic_cast<BasePropertyTrack&>(parent->getTrack());
 
@@ -98,7 +101,6 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(utilqt::refSpacePx(this));
 
-        timeSpinner_ = new DoubleValueDragSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
         timeSpinner_->setSingleStep(0.1);
         timeSpinner_->setDecimals(3);
@@ -253,7 +255,7 @@ private:
 
 PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track& track,
                                                AnimationManager& manager)
-    : SequenceEditorWidget(sequence, track, manager) {
+    : SequenceEditorWidget(sequence, track, manager), interpolation_(new QComboBox()) {
 
     sequence.addObserver(this);
 
@@ -282,7 +284,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     layout->addLayout(sublayout);
     sublayout->setContentsMargins(0, 0, 0, 0);
     sublayout->setSpacing(7);
-    interpolation_ = new QComboBox();
+
     sublayout->addWidget(new QLabel("Interpolation"), 0, 0);
     sublayout->addWidget(interpolation_, 0, 1);
 

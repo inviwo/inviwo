@@ -58,7 +58,11 @@ class KeyframeSequence;
 
 SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, AnimationManager& manager,
                                          SequenceEditorFactory& editorFactory, QWidget* parent)
-    : QScrollArea(parent), manager_(manager), factory_{editorFactory} {
+    : QScrollArea(parent)
+    , manager_(manager)
+    , factory_{editorFactory}
+    , sequenceEditors_(new QVBoxLayout())
+    , optionLayout_(new QVBoxLayout()) {
     setObjectName("SequenceEditorPanel");
 
     setWidgetResizable(true);
@@ -74,14 +78,14 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationController& controller, Animat
     setContentsMargins(0, 0, 0, 0);
 
     auto upper = new QWidget();
-    sequenceEditors_ = new QVBoxLayout();
+
     upper->setLayout(sequenceEditors_);
     sequenceEditors_->setAlignment(Qt::AlignTop);
     sequenceEditors_->setContentsMargins(7, 7, 0, 7);
     sequenceEditors_->setSpacing(7);
 
     auto lower = new QWidget();
-    optionLayout_ = new QVBoxLayout();
+
     lower->setLayout(optionLayout_);
     optionLayout_->setAlignment(Qt::AlignBottom);
     optionLayout_->setContentsMargins(7, 7, 0, 7);

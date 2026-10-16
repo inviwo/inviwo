@@ -58,14 +58,12 @@ namespace animation {
 
 TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
                                              AnimationController& controller)
-    : QWidget(), controller_(controller), track_{track} {
+    : QWidget(), controller_(controller), track_{track}, layout_(new QHBoxLayout()) {
 
     setObjectName("TrackControlsWidget");
     setAutoFillBackground(true);
 
     track_.addObserver(this);
-
-    layout_ = new QHBoxLayout();
 
     layout_->setSpacing(1);
     layout_->setContentsMargins(0, 0, 0, 0);

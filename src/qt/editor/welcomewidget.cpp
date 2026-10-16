@@ -1114,10 +1114,12 @@ private:
 };
 
 ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QSplitter* parent)
-    : QSplitterHandle{orientation, parent}, prevWidth_{250}, collapsed_{false} {
+    : QSplitterHandle{orientation, parent}
+    , label_((this->orientation() == Qt::Horizontal) ? new VerticalLabel() : new QLabel())
+    , prevWidth_{250}
+    , collapsed_{false} {
     const auto space = utilqt::refSpacePx(this);
 
-    label_ = (this->orientation() == Qt::Horizontal) ? new VerticalLabel() : new QLabel();
     label_->setObjectName("splitterHandleTitle");
     label_->setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
     label_->setMinimumHeight(20);

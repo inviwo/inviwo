@@ -101,7 +101,8 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
             l->setCursorPosition(0);
             l->clearFocus();
         });
-    })} {
+    })}
+    , hWidgetLayout_(new QHBoxLayout()) {
 
     setFocusPolicy(lineEdits_[0]->focusPolicy());
     setFocusProxy(lineEdits_[0]);
@@ -111,7 +112,6 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     setLayout(hLayout);
     hLayout->addWidget(label_);
 
-    hWidgetLayout_ = new QHBoxLayout();
     {
         hWidgetLayout_->setContentsMargins(0, 0, 0, 0);
         auto widget = new QWidget();

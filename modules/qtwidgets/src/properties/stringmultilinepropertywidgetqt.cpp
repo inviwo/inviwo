@@ -61,15 +61,16 @@ class QWidget;
 namespace inviwo {
 
 StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , label_(new EditableLabelQt(this, property_))
+    , textEdit_(new MultilineTextEdit) {
 
     QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
-    textEdit_ = new MultilineTextEdit;
     setFocusPolicy(textEdit_->focusPolicy());
     setFocusProxy(textEdit_);
 
@@ -106,15 +107,16 @@ void StringMultilinePropertyWidgetQt::updateFromProperty() {
 }
 
 MultiFileStringPropertyWidgetQt::MultiFileStringPropertyWidgetQt(MultiFileProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , label_(new EditableLabelQt(this, property_))
+    , textEdit_(new MultilineTextEdit) {
 
     QHBoxLayout* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
-    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
-    textEdit_ = new MultilineTextEdit;
     setFocusPolicy(textEdit_->focusPolicy());
     setFocusProxy(textEdit_);
 
