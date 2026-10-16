@@ -41,6 +41,7 @@
 
 #include <functional>
 #include <unordered_set>
+#include <utility>
 
 namespace inviwo {
 
@@ -66,7 +67,7 @@ public:
         std::vector<std::unique_ptr<Node>> children;
 
         Node* child(int i) {
-            if (i < 0 || i >= static_cast<int>(children.size())) return nullptr;
+            if (i < 0 || std::cmp_greater_equal(i, children.size())) return nullptr;
             return children[i].get();
         }
         int size() const { return static_cast<int>(children.size()); }

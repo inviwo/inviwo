@@ -98,6 +98,7 @@
 #include <QWidget>
 #include <Qt>
 #include <QDockWidget>
+#include <utility>
 #include <fmt/base.h>
 
 namespace inviwo::utilqt {
@@ -423,7 +424,7 @@ std::shared_ptr<Layer> toLayer(const QImage& image) {
     const auto ramMemSize =
         glm::compMul(ram->getDimensions()) * ram->getDataFormat()->getSizeInBytes();
 
-    if (static_cast<size_t>(qImage.sizeInBytes()) != ramMemSize) {
+    if (std::cmp_not_equal(qImage.sizeInBytes(), ramMemSize)) {
         throw Exception(
             SourceContext{},
             "Expected the QImage byte size {}, and Inviwo Layer byte size {}, to be equal",

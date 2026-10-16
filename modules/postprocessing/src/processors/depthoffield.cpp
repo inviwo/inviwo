@@ -511,9 +511,9 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
         screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
     const ivec3 pos(round(simScreenpos.x), round(simScreenpos.y),
                     viewCountApprox_.get() + viewIndex);
-    if (pos.x < 0 || pos.x >= static_cast<int>(dimLightField.x) || pos.y < 0 ||
-        pos.y >= static_cast<int>(dimLightField.y) || pos.z < 0 ||
-        pos.z >= static_cast<int>(dimLightField.z))
+    if (pos.x < 0 || std::cmp_greater_equal(pos.x, dimLightField.x) || pos.y < 0 ||
+        std::cmp_greater_equal(pos.y, dimLightField.y) || pos.z < 0 ||
+        std::cmp_greater_equal(pos.z, dimLightField.z))
         return;
 
     const double currDepth = lightFieldDepth->getAsDouble(pos);
