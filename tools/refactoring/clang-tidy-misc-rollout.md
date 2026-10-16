@@ -2,10 +2,11 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 57 checks done so
+below for current progress and the exact resume point). 60 checks done so
 far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
-+ `modernize-use-integer-sign-comparison`),
-~43 remaining (plus 4 permanently-skipped false positives, see below).
++ `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
++ `readability-qualified-auto` + `readability-make-member-function-const`),
+~40 remaining (plus 4 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 **Branch:** `feature/more-conv-warnings`
@@ -150,7 +151,9 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-isolate-declaration`,
 `readability-avoid-return-with-void-value` — plus
-`readability-const-return-type` and `modernize-use-integer-sign-comparison`.
+`readability-const-return-type`, `modernize-use-integer-sign-comparison`,
+`performance-inefficient-vector-operation`, `readability-qualified-auto`,
+and `readability-make-member-function-const`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -346,6 +349,24 @@ edit was broken or dangerous and had to be corrected manually)
    both patterns — `(size_t)-1`/`(T)-1` sentinel comparisons, and any
    property-wrapper member passed bare instead of via `.get()` — in any
    future check that touches integer comparisons.
+9. **`readability-make-member-function-const` broke an explicit
+   member-function-pointer `static_cast` at a call site.**
+   `modules/python3/bindings/src/pydocument.cpp` disambiguates the
+   overloaded `Document::insert`/`Document::append` by taking their
+   address and `static_cast`-ing to an explicit, fully-spelled-out
+   pointer-to-member-function type (needed because pybind11's `.def()`
+   can't otherwise tell which overload to bind). Once the check added
+   `const` to those `Document` methods, the hand-written cast's target
+   type no longer matched any overload (a member function pointer type
+   must include the same cv-qualifier as the member function it points
+   to), so overload resolution for the cast failed outright — a hard
+   compile error, not a silent bug. Fixed forward by adding `const` to
+   the 4 affected pointer-to-member-function cast types in that one
+   file. This is a mechanical consequence of this check, not a false
+   positive — any check that adds/removes `const` (or `noexcept`, etc.)
+   from a method should prompt a repo-wide grep for
+   `static_cast<.*(ClassName::\*)` casts referencing that method before
+   committing.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -374,13 +395,11 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~43 fixable checks remaining** (out of 98 total fixable checks found by
+   **~40 fixable checks remaining** (out of 98 total fixable checks found by
    the dry run); next up by size (skipping
    `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
    reverted this session — see "Reverted as false positives" above, do not
    reapply it without per-instance review):
-   `performance-inefficient-vector-operation`,
-   `readability-qualified-auto`, `readability-make-member-function-const`,
    `modernize-use-equals-default`, `modernize-use-nullptr`,
    `performance-faster-string-find`, `bugprone-macro-parentheses`, ...
    (`google-readability-todo` was evaluated and skipped — see "Reverted as
