@@ -65,7 +65,7 @@ class KDNode {
     bool compare(const P pos[N]) const;
 
 public:
-    KDNode(const P pos[N], const T& data, KDNode* parent = 0);
+    KDNode(const P pos[N], const T& data, KDNode* parent = nullptr);
     virtual ~KDNode();
 
     KDNode* clone();
@@ -217,7 +217,7 @@ unsigned long KDTree<N, T, P>::depth() const {
 
 template <unsigned char N, typename T, typename P>
 unsigned long KDTree<N, T, P>::size() const {
-    if (root_ == 0) return 0;
+    if (root_ == nullptr) return 0;
     return root_->size();
 }
 
@@ -229,19 +229,19 @@ bool KDTree<N, T, P>::isOk() const {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDTree<N, T, P>::findMin(unsigned int d) {
-    if (root_ == 0) return 0;
+    if (root_ == nullptr) return nullptr;
     return root_->findMin(d);
 }
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDTree<N, T, P>::findMax(unsigned int d) {
-    if (root_ == 0) return 0;
+    if (root_ == nullptr) return nullptr;
     return root_->findMax(d);
 }
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDTree<N, T, P>::insert(const P pos[N], const T& data) {
-    if (root_ == 0) {
+    if (root_ == nullptr) {
         root_ = new KDNode<N, T, P>(pos, data);
         return root_;
     }
@@ -297,8 +297,8 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P>* node, KDNode<N, T, P>* parent) {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDTree<N, T, P>::findNearest(const P pos[N]) {
-    if (root_ == 0) return 0;
-    return root_->findNearest(pos, 0);
+    if (root_ == nullptr) return nullptr;
+    return root_->findNearest(pos, nullptr);
 }
 
 template <unsigned char N, typename T, typename P>
@@ -327,7 +327,7 @@ template <unsigned char N, typename T, typename P>
 std::vector<KDNode<N, T, P>*> KDTree<N, T, P>::findNNearest(const P pos[N], int amount) {
     std::vector<KDNodeDistWrapper<N, T, P>> nearnodes;
     std::vector<Node*> nodes;
-    if (root_ == 0) return nodes;
+    if (root_ == nullptr) return nodes;
     root_->findNNearest(pos, amount, nearnodes);
     for (size_t i = 0; i < nearnodes.size(); ++i) {
         nodes.push_back(nearnodes[i].node);
@@ -337,11 +337,11 @@ std::vector<KDNode<N, T, P>*> KDTree<N, T, P>::findNNearest(const P pos[N], int 
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>::KDNode(const P pos[N], const T& data, KDNode* parent)
-    : leftChild_(0), rightChild_(0), data_(data) {
+    : leftChild_(nullptr), rightChild_(nullptr), data_(data) {
     for (size_t i = 0; i < N; i++) {
         pos_[i] = pos[i];
     }
-    dimmension_ = parent == 0 ? 0 : (parent->dimmension_ + 1) % N;
+    dimmension_ = parent == nullptr ? 0 : (parent->dimmension_ + 1) % N;
 }
 
 template <unsigned char N, typename T, typename P>
@@ -389,11 +389,11 @@ bool KDNode<N, T, P>::isLeaf() const {
 }
 template <unsigned char N, typename T, typename P>
 bool KDNode<N, T, P>::isRightLeaf() const {
-    return rightChild_ == 0;
+    return rightChild_ == nullptr;
 }
 template <unsigned char N, typename T, typename P>
 bool KDNode<N, T, P>::isLeftLeaf() const {
-    return leftChild_ == 0;
+    return leftChild_ == nullptr;
 }
 
 template <unsigned char N, typename T, typename P>
@@ -433,13 +433,13 @@ template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDNode<N, T, P>::insert(const P pos[N], const T& data) {
     const bool right = goRight(pos);
     if (right) {
-        if (rightChild_ == 0) {
+        if (rightChild_ == nullptr) {
             rightChild_ = new KDNode(pos, data, this);
             return rightChild_;
         }
         return rightChild_->insert(pos, data);
     } else {
-        if (leftChild_ == 0) {
+        if (leftChild_ == nullptr) {
             leftChild_ = new KDNode(pos, data, this);
             return leftChild_;
         }
@@ -537,8 +537,8 @@ KDNode<N, T, P>* KDNode<N, T, P>::findParent(const KDNode* n) {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* __closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P>* n1) {
-    if (n0 == 0) return n1;
-    if (n1 == 0 || n0 == n1) return n0;
+    if (n0 == nullptr) return n1;
+    if (n1 == nullptr || n0 == n1) return n0;
     P d0 = 0;
     P d1 = 0;
     P dx;

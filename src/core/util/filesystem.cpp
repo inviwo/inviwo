@@ -611,7 +611,7 @@ const fs::path& findBasePath() {
         //    Inviwo.app/Contents/Resources
 
         CFURLRef appUrlRef =
-            CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
+            CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), nullptr, nullptr);
         if (appUrlRef) {
             CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
             const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);

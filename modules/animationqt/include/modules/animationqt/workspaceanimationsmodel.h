@@ -50,7 +50,7 @@ class Animation;
 class IVW_MODULE_ANIMATIONQT_API AnimationsModel : public QAbstractListModel,
                                                    public AnimationObserver {
 public:
-    explicit AnimationsModel(WorkspaceAnimations& animations, QObject* parent = 0);
+    explicit AnimationsModel(WorkspaceAnimations& animations, QObject* parent = nullptr);
     Qt::ItemFlags flags(const QModelIndex& index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const override;

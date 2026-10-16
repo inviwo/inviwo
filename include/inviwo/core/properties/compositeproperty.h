@@ -99,7 +99,7 @@ public:
 
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = 0) override;
+                            Property* modifiedProperty = nullptr) override;
 
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;

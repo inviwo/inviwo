@@ -65,9 +65,9 @@ Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glDeleteSync(syncObj);
-            syncObj = 0;
+            syncObj = nullptr;
         }
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
@@ -89,9 +89,9 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             const std::scoped_lock lock{syncMutex};
-            if (syncObj != 0) {
+            if (syncObj != nullptr) {
                 glDeleteSync(syncObj);
-                syncObj = 0;
+                syncObj = nullptr;
             }
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
