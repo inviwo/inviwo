@@ -83,14 +83,15 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
         throw DataReaderException(SourceContext{}, "File is not a PNG, {}", name);
     }
 
-    auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
         throw DataReaderException(SourceContext{},
                                   "Internal PNG Error: Failed to create read struct: {}", name);
     }
-    const util::OnScopeExit cleanup1([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
+    const util::OnScopeExit cleanup1(
+        [&]() { png_destroy_read_struct(&png_ptr, nullptr, nullptr); });
     png_set_error_fn(
-        png_ptr, NULL,
+        png_ptr, nullptr,
         [](png_structp, png_const_charp message) {
             throw DataReaderException(SourceContext{}, "Error reading PNG: {}", message);
         },
@@ -101,7 +102,8 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
         throw DataReaderException(SourceContext{},
                                   "Internal PNG Error: Failed to create info struct {}", name);
     }
-    const util::OnScopeExit cleanup2([&]() { png_destroy_read_struct(NULL, &info_ptr, NULL); });
+    const util::OnScopeExit cleanup2(
+        [&]() { png_destroy_read_struct(nullptr, &info_ptr, nullptr); });
 
     png_init_io(png_ptr, fp);
     png_set_sig_bytes(png_ptr, 8);

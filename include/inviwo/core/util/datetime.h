@@ -42,7 +42,7 @@ namespace inviwo {
 #include <warn/ignore/unused-function>
 
 inline std::string currentDateTime() {
-    const time_t currentDateTime = time(0);
+    const time_t currentDateTime = time(nullptr);
     struct tm dateTimeStruct;
     char dateTimeBuffer[20];
     dateTimeStruct = *localtime(&currentDateTime);

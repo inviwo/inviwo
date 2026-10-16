@@ -156,7 +156,8 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto& img = option.state & QStyle::State_Open ? downArrow : rightArrow;
 
-        const auto indent = style->pixelMetric(QStyle::PM_TreeViewIndentation, 0, option.widget);
+        const auto indent =
+            style->pixelMetric(QStyle::PM_TreeViewIndentation, nullptr, option.widget);
 
         const auto level = [&]() {
             auto i = index.parent();

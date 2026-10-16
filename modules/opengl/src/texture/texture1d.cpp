@@ -64,9 +64,9 @@ Texture1D::Texture1D(const Texture1D& rhs) : Texture(rhs), width_(rhs.width_) {
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glDeleteSync(syncObj);
-            syncObj = 0;
+            syncObj = nullptr;
         }
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
@@ -87,9 +87,9 @@ Texture1D& Texture1D::operator=(const Texture1D& rhs) {
 
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             const std::scoped_lock lock{syncMutex};
-            if (syncObj != 0) {
+            if (syncObj != nullptr) {
                 glDeleteSync(syncObj);
-                syncObj = 0;
+                syncObj = nullptr;
             }
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
