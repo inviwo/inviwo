@@ -73,7 +73,7 @@ public:
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 private:
-    QString elidedText(const QString& str, const QFontMetrics& metrics, int width) const;
+    static QString elidedText(const QString& str, const QFontMetrics& metrics, int width);
 
     QImage rightArrow;
     QImage downArrow;
@@ -193,8 +193,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
     painter->restore();
 }
 
-QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metrics,
-                                    int width) const {
+QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metrics, int width) {
     if (str.isEmpty() || (metrics.boundingRect(str).width() <= width)) {
         return str;
     }

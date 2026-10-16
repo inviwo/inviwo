@@ -61,7 +61,7 @@ static inline void checkContext(std::string_view error, Canvas::ContextID org,
     }
 }
 
-size_t BufferObjectArray::maxSize() const {
+size_t BufferObjectArray::maxSize() {
     static const size_t size = []() {
         GLint glsize = 0;
         // usually about 16 should be more than BufferType::NumberOfBufferTypes.
@@ -138,7 +138,7 @@ void BufferObjectArray::bind() const {
     glBindVertexArray(id_);
 }
 
-void BufferObjectArray::unbind() const { glBindVertexArray(0); }
+void BufferObjectArray::unbind() { glBindVertexArray(0); }
 
 bool BufferObjectArray::isActive() const {
     checkContext("VAO used in a different context"sv, creationContext_);

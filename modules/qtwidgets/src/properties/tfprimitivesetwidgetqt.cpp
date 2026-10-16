@@ -154,8 +154,7 @@ void TFPrimitiveSetWidgetQt::initializeWidget() {
     updateFromProperty();
 }
 
-std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
-    const std::string& str) const {
+std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(const std::string& str) {
     std::string errorMsg;
 
     const auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,

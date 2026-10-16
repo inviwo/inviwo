@@ -91,7 +91,7 @@ public:
     }
 
 private:
-    bool bundleProcessorNetwork(TxElement* root) {
+    static bool bundleProcessorNetwork(TxElement* root) {
 
         // create
         TxElement newNode("ProcessorNetwork");

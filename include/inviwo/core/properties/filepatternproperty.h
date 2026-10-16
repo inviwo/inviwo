@@ -105,7 +105,7 @@ public:
 protected:
     void updateFileList();
     void sort();
-    std::string_view guessFilePattern() const;
+    static std::string_view guessFilePattern();
 
 private:
     StringProperty helpText_;

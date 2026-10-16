@@ -169,8 +169,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     return volume;
 }
 
-void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
-                                    std::string_view key) const {
+void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");

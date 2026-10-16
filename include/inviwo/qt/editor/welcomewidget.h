@@ -91,7 +91,7 @@ private:
 
     void updateDetails(const QModelIndex& index);
 
-    Document createDetailsDocument(const QFileInfo& info) const;
+    static Document createDetailsDocument(const QFileInfo& info);
 
     Document createDetailsDocument(const QFileInfo& info,
                                    const WorkspaceAnnotationsQt& annotations) const;

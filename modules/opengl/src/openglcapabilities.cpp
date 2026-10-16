@@ -292,7 +292,7 @@ int OpenGLCapabilities::getMaxColorAttachments() const { return maxColorAttachme
 const std::string& OpenGLCapabilities::getRenderString() const { return glRenderStr_; }
 const std::string& OpenGLCapabilities::getVendorString() const { return glVendorStr_; }
 const std::string& OpenGLCapabilities::getProfileString() const { return glProfileStr_; }
-const std::string& OpenGLCapabilities::getGLVersionString() const { return glVersionStr_; }
+const std::string& OpenGLCapabilities::getGLVersionString() { return glVersionStr_; }
 const std::string& OpenGLCapabilities::getGLSLVersionString() const { return glslVersionStr_; }
 OpenGLCapabilities::GlVendor OpenGLCapabilities::getVendor() const { return glVendor_; }
 

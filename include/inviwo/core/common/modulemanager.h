@@ -94,7 +94,7 @@ public:
         std::span<const std::filesystem::path> searchPaths,
         std::function<bool(std::string_view)> filter);
 
-    std::vector<ModuleContainer> findRuntimeModules(
+    static std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths,
         std::function<bool(std::string_view)> filter, bool runtimeReloading);
 

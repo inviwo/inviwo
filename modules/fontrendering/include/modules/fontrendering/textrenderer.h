@@ -327,11 +327,11 @@ protected:
     FontCache& getFontCache();
 
     void createDefaultGlyphAtlas();
-    std::shared_ptr<Texture2D> createAtlasTexture(FontCache& fc);
+    static std::shared_ptr<Texture2D> createAtlasTexture(FontCache& fc);
 
     FontFamilyStyle getFontTuple() const;
 
-    std::string_view::const_iterator validateString(std::string_view str) const;
+    static std::string_view::const_iterator validateString(std::string_view str);
 
     static constexpr char lf = '\n';   // Line Feed Ascii for std::endl, \n
     static constexpr char tab = '\t';  // Tab Ascii

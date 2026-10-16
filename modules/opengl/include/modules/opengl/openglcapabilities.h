@@ -115,7 +115,7 @@ public:
     const std::string& getRenderString() const;
     const std::string& getVendorString() const;
     const std::string& getProfileString() const;
-    const std::string& getGLVersionString() const;
+    static const std::string& getGLVersionString();
     const std::string& getGLSLVersionString() const;
     GlVendor getVendor() const;
 

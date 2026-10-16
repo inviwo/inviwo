@@ -221,7 +221,7 @@ public:
     /**
      * Check if sourcePort can be connected to destPort
      */
-    bool canConnect(const Outport* sourcePort, const Inport* destPort) const;
+    static bool canConnect(const Outport* sourcePort, const Inport* destPort);
 
     /**
      * @brief Removes a PortConnection from the ProcessorNetwork.
