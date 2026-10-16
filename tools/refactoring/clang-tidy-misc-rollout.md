@@ -2,9 +2,10 @@
 
 **Status:** `misc-*` complete. Now working through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 56 checks done so
-far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`),
-~44 remaining (plus 4 permanently-skipped false positives, see below).
+below for current progress and the exact resume point). 57 checks done so
+far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
++ `modernize-use-integer-sign-comparison`),
+~43 remaining (plus 4 permanently-skipped false positives, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 **Branch:** `feature/more-conv-warnings`
@@ -148,7 +149,8 @@ plus: `readability-delete-null-pointer`, `modernize-make-unique`,
 `cppcoreguidelines-init-variables`, `readability-container-contains` —
 plus 4 more: `google-upgrade-googletest-case`, `performance-use-std-move`,
 `readability-isolate-declaration`,
-`readability-avoid-return-with-void-value`.
+`readability-avoid-return-with-void-value` — plus
+`readability-const-return-type` and `modernize-use-integer-sign-comparison`.
 
 **Reverted as false positives for this codebase (do NOT blanket-apply these
 checks again without manual review)**:
@@ -320,6 +322,30 @@ edit was broken or dangerous and had to be corrected manually)
    rather than reverting the check. Grepped the whole repo for the same
    `auto&` (non-const) pattern against every other getter this check
    renamed to confirm no other call site had it before committing.
+8. **`modernize-use-integer-sign-comparison` turned a `(size_t)-1` sentinel
+   check into an always-false comparison.** `src/core/util/stringconversion.cpp`'s
+   `toWstring()`/`fromWstring()` check `mbsrtowcs`/`wcsrtombs`'s error return
+   via `len == static_cast<std::size_t>(-1)` (the POSIX way to test for
+   `(size_t)-1`, i.e. every bit set). The fix rewrote this as
+   `std::cmp_equal(len, -1)` — but `std::cmp_equal` is specified to treat a
+   negative operand compared against an unsigned one as *never* equal
+   (it's answering "are these mathematically the same integer", and no
+   unsigned value is mathematically negative), so the replacement is
+   unconditionally `false` and silently disables the error path entirely.
+   This is the inverse of the usual sign-comparison bug this check fixes:
+   here the original code's cast-based comparison against a sentinel was
+   the *correct* idiom, and the "safe" replacement broke it. Reverted both
+   call sites (4 occurrences total) to the original `static_cast` form and
+   dropped the now-unused `<utility>` include. Also had to manually add
+   `.get()` to 4 bare `OptionPropertyInt channel_` property-object uses
+   (`volumesliceextractor.cpp`, `isoraycaster.cpp`, `volumeraycaster.cpp`,
+   `volumeslicegl.cpp`) that the fix left unconverted — `std::cmp_*`
+   requires actual integer types via a constrained template, not a
+   property wrapper class with an implicit `int` conversion, so those
+   failed to compile (not a silent bug, a hard compile error). Watch for
+   both patterns — `(size_t)-1`/`(T)-1` sentinel comparisons, and any
+   property-wrapper member passed bare instead of via `.get()` — in any
+   future check that touches integer comparisons.
 
 ### `bugprone-parent-virtual-call` — the one check so far that is a real
 behavior change, not just style
@@ -348,12 +374,11 @@ rollout.
    this doc, or just grep `git log --oneline` for `"clang-tidy: apply"` commit
    subjects — one per check, named exactly) to get the next batch of
    smallest remaining fixable checks. As of the last commit there were
-   **~44 fixable checks remaining** (out of 98 total fixable checks found by
+   **~43 fixable checks remaining** (out of 98 total fixable checks found by
    the dry run); next up by size (skipping
    `cppcoreguidelines-pro-type-static-cast-downcast`, evaluated and
    reverted this session — see "Reverted as false positives" above, do not
    reapply it without per-instance review):
-   `modernize-use-integer-sign-comparison`,
    `performance-inefficient-vector-operation`,
    `readability-qualified-auto`, `readability-make-member-function-const`,
    `modernize-use-equals-default`, `modernize-use-nullptr`,
