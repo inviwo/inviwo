@@ -230,12 +230,12 @@ OrdinalLikePropertySettingsWidgetQt<Prop>::OrdinalLikePropertySettingsWidgetQt(P
                 }
                 if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
                     const size_t dstCol = srcCol == 0 ? 2 : 0;
-                    for (size_t row = 0; row < settings_.size(); row++) {
-                        const QSignalBlocker block{settings_[row].additionalFields_[dstCol]};
-                        const QLocale locale = settings_[row].additionalFields_[dstCol]->locale();
-                        settings_[row].additionalFields_[dstCol]->setText(
+                    for (auto& setting : settings_) {
+                        const QSignalBlocker block{setting.additionalFields_[dstCol]};
+                        const QLocale locale = setting.additionalFields_[dstCol]->locale();
+                        setting.additionalFields_[dstCol]->setText(
                             QStringHelper<BT>::toLocaleString(
-                                locale, static_cast<BT>(-settings_[row].getFieldAsDouble(srcCol))));
+                                locale, static_cast<BT>(-setting.getFieldAsDouble(srcCol))));
                     }
                 }
             } else if (symmetric->isChecked() && (srcCol == 0 || srcCol == 2)) {
