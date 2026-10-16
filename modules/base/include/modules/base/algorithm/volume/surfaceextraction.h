@@ -71,8 +71,8 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
                    std::vector<vec3>& positions, std::vector<vec3>& normals, double iso,
                    bool invert, double dx, double dy, double dz) {
     const auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
-        if (n == 1) return {size_t(0)};
-        return {size_t(0), n - 1};
+        if (n == 1) return {static_cast<size_t>(0)};
+        return {static_cast<size_t>(0), n - 1};
     };
 
     std::array<vec3, 4> pos;

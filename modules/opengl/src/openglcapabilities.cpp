@@ -361,7 +361,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         std::string((glrender != nullptr ? reinterpret_cast<const char*>(glrender) : "INVALID"));
 
     GLint contextMask = 0;
-    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, (GLint*)&contextMask);
+    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &contextMask);
     const auto profileMask = static_cast<unsigned int>(contextMask);
     if (profileMask & static_cast<unsigned int>(GL_CONTEXT_CORE_PROFILE_BIT)) {
         glProfileStr_ = "core";
@@ -473,29 +473,29 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     // Texturing
     // With glbinding, all GL constants are available; use runtime version checks instead
     texSupported_ = true;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&maxTexSize_);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize_);
 
     tex3DSupported_ = true;
-    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, (GLint*)&max3DTexSize_);
+    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &max3DTexSize_);
 
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&maxArrayVertexAttribs_);
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxArrayVertexAttribs_);
 
     if (glVersion_ >= 300) {
         texArraySupported_ = true;
-        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTexSize_);
     } else {
         texArraySupported_ = isExtensionSupported("GL_EXT_texture_array");
 
         if (isTextureArraysSupported())
-            glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
+            glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTexSize_);
         else
             maxArrayTexSize_ = 0;
     }
     numTexUnits_ = -1;
 
-    if (isShadersSupported()) glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, (GLint*)&numTexUnits_);
+    if (isShadersSupported()) glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &numTexUnits_);
 
-    if (getNumTexUnits() < 0) glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&numTexUnits_);
+    if (getNumTexUnits() < 0) glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTexUnits_);
 
     numTexUnits_ = std::max(numTexUnits_, 0);
     // FBO

@@ -832,7 +832,8 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
                 } else if (columnId < axes_.size()) {
                     const auto rect = getDisplayRect(outport_.getDimensions());
                     lines_.axisPositions[columnId] =
-                        glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
+                        glm::clamp(static_cast<float>(p->getPosition().x * p->getCanvasSize().x -
+                                                      rect.first.x) /
                                        (rect.second.x - rect.first.x),
                                    0.0f, 1.0f);
                     invalidate(InvalidationLevel::InvalidOutput);

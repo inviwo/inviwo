@@ -324,7 +324,7 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent* event) {
 
         block = block.next();
         top = bottom;
-        bottom = top + (int)blockBoundingRect(block).height();
+        bottom = top + static_cast<int>(blockBoundingRect(block).height());
         ++blockNumber;
     }
 }

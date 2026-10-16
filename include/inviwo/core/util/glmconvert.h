@@ -169,9 +169,9 @@ constexpr auto bigger() {
     if constexpr (std::is_unsigned_v<T>) {
         return std::make_unsigned_t<decltype(bigger<std::make_signed_t<T>>())>{};
     } else if constexpr (std::is_same_v<char, T>) {
-        return short(0);
+        return static_cast<short>(0);
     } else if constexpr (std::is_same_v<short, T>) {
-        return int(0);
+        return static_cast<int>(0);
     } else if constexpr (std::is_same_v<int, T>) {
         const long long v{0};
         return v;
