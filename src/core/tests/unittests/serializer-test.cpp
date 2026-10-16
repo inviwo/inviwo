@@ -147,7 +147,8 @@ public:
 };
 
 TEST(SerializationTest, IvwSerializableClassTest) {
-    MinimumSerializableClass inValue(12), outValue;
+    MinimumSerializableClass inValue(12);
+    MinimumSerializableClass outValue;
     const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
@@ -176,7 +177,8 @@ TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
 }
 
 TEST(SerializationTest, floatVectorTest) {
-    std::vector<float> inVector, outVector;
+    std::vector<float> inVector;
+    std::vector<float> outVector;
     inVector.push_back(0.1f);
     inVector.push_back(0.2f);
     inVector.push_back(0.3f);
@@ -231,14 +233,16 @@ TEST(SerializationTest, vectorOfPointersTest) {
 }
 
 TEST(SerializationTest, vec2Tests) {
-    vec2 inVec(1.1f, 2.2f), outVec;
+    vec2 inVec(1.1f, 2.2f);
+    vec2 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
 }
 
 TEST(SerializationTest, vec3Tests) {
-    vec3 inVec(1.1f, 2.2f, 3.3f), outVec;
+    vec3 inVec(1.1f, 2.2f, 3.3f);
+    vec3 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -246,7 +250,8 @@ TEST(SerializationTest, vec3Tests) {
 }
 
 TEST(SerializationTest, vec4Tests) {
-    vec4 inVec(1.1f, 2.2f, 3.3f, 4.4f), outVec;
+    vec4 inVec(1.1f, 2.2f, 3.3f, 4.4f);
+    vec4 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -255,14 +260,16 @@ TEST(SerializationTest, vec4Tests) {
 }
 
 TEST(SerializationTest, ivec2Tests) {
-    ivec2 inVec(1, 2), outVec;
+    ivec2 inVec(1, 2);
+    ivec2 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
 }
 
 TEST(SerializationTest, ivec3Tests) {
-    ivec3 inVec(1, 2, 3), outVec;
+    ivec3 inVec(1, 2, 3);
+    ivec3 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -270,7 +277,8 @@ TEST(SerializationTest, ivec3Tests) {
 }
 
 TEST(SerializationTest, ivec4Tests) {
-    ivec4 inVec(1, 2, 3, 4), outVec;
+    ivec4 inVec(1, 2, 3, 4);
+    ivec4 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -279,14 +287,16 @@ TEST(SerializationTest, ivec4Tests) {
 }
 
 TEST(SerializationTest, uvec2Tests) {
-    uvec2 inVec(1, 2), outVec;
+    uvec2 inVec(1, 2);
+    uvec2 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
 }
 
 TEST(SerializationTest, uvec3Tests) {
-    uvec3 inVec(1, 2, 3), outVec;
+    uvec3 inVec(1, 2, 3);
+    uvec3 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -294,7 +304,8 @@ TEST(SerializationTest, uvec3Tests) {
 }
 
 TEST(SerializationTest, uvec4Tests) {
-    uvec4 inVec(1, 2, 3, 4), outVec;
+    uvec4 inVec(1, 2, 3, 4);
+    uvec4 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -303,14 +314,16 @@ TEST(SerializationTest, uvec4Tests) {
 }
 
 TEST(SerializationTest, bvec2Tests) {
-    bvec2 inVec(false, true), outVec;
+    bvec2 inVec(false, true);
+    bvec2 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
 }
 
 TEST(SerializationTest, bvec3Tests) {
-    bvec3 inVec(false, true, false), outVec;
+    bvec3 inVec(false, true, false);
+    bvec3 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -318,7 +331,8 @@ TEST(SerializationTest, bvec3Tests) {
 }
 
 TEST(SerializationTest, bvec4Tests) {
-    bvec4 inVec(false, true, false, true), outVec;
+    bvec4 inVec(false, true, false, true);
+    bvec4 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -327,14 +341,16 @@ TEST(SerializationTest, bvec4Tests) {
 }
 
 TEST(SerializationTest, dvec2Tests) {
-    dvec2 inVec(1.1, 2.2), outVec;
+    dvec2 inVec(1.1, 2.2);
+    dvec2 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
 }
 
 TEST(SerializationTest, dvec3Tests) {
-    dvec3 inVec(1.1, 2.2, 3.3), outVec;
+    dvec3 inVec(1.1, 2.2, 3.3);
+    dvec3 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -342,7 +358,8 @@ TEST(SerializationTest, dvec3Tests) {
 }
 
 TEST(SerializationTest, dvec4Tests) {
-    dvec4 inVec(1.1, 2.2, 3.3, 4.4), outVec;
+    dvec4 inVec(1.1, 2.2, 3.3, 4.4);
+    dvec4 outVec;
     outVec = serializationOfType(inVec);
     EXPECT_EQ(inVec.x, outVec.x);
     EXPECT_EQ(inVec.y, outVec.y);
@@ -351,7 +368,8 @@ TEST(SerializationTest, dvec4Tests) {
 }
 
 TEST(SerializationTest, mat2Tests) {
-    mat2 inMat(0.0f, 1.0f, 2.0f, 3.0f), outMat;
+    mat2 inMat(0.0f, 1.0f, 2.0f, 3.0f);
+    mat2 outMat;
     outMat = serializationOfType(inMat);
     const int s = 2;
 
@@ -360,7 +378,8 @@ TEST(SerializationTest, mat2Tests) {
 }
 
 TEST(SerializationTest, mat3Tests) {
-    mat3 inMat(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f), outMat;
+    mat3 inMat(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f);
+    mat3 outMat;
     outMat = serializationOfType(inMat);
     const int s = 3;
 
@@ -370,8 +389,8 @@ TEST(SerializationTest, mat3Tests) {
 
 TEST(SerializationTest, mat4Tests) {
     mat4 inMat(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f,
-               13.0f, 14.0f, 15.0f),
-        outMat;
+               13.0f, 14.0f, 15.0f);
+    mat4 outMat;
     outMat = serializationOfType(inMat);
     const int s = 4;
 

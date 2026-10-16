@@ -475,7 +475,10 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
     if (propertyWidget) {
         if (isChildRemovable()) {
             const int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidget);
-            int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+            int row = 0;
+            int col = 0;
+            int rowSpan = 0;
+            int colSpan = 0;
             propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                         &colSpan);
 
@@ -565,7 +568,10 @@ void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible)
         for (auto&& elem : util::zip(properties_, propertyWidgets_)) {
             if (elem.first() == property) {
                 const int widgetIndex = propertyWidgetGroupLayout_->indexOf(elem.second());
-                int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+                int row = 0;
+                int col = 0;
+                int rowSpan = 0;
+                int colSpan = 0;
                 propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                             &colSpan);
 
@@ -779,7 +785,10 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
                 const int widgetIndex = propertyWidgetGroupLayout_->indexOf(w);
                 if (widgetIndex > -1) {
                     // move widget from previous layout to new layout
-                    int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+                    int row = 0;
+                    int col = 0;
+                    int rowSpan = 0;
+                    int colSpan = 0;
                     propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                                 &colSpan);
                     layout->addWidget(w, insertRow, 0, rowSpan, colSpan);
