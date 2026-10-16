@@ -478,7 +478,7 @@ TEST(GLMTest, Epsilon) {
 }
 
 TEST(GLMTest, AlmostEqual) {
-    static_assert(util::is_floating_point<typename util::value_type<float>::type>::value, "");
+    static_assert(util::is_floating_point<typename util::value_type<float>::type>::value);
     EXPECT_TRUE(util::almostEqual(1, 1));
     EXPECT_TRUE(util::almostEqual(1.0, 1.0));
     EXPECT_TRUE(util::almostEqual(vec3{1.0f}, vec3{1.0f}));
