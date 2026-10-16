@@ -866,6 +866,7 @@ std::vector<fs::path> getLoadedLibraries() {
 std::vector<fs::path> getLoadedLibraries() {
     std::vector<fs::path> res;
     const uint32_t count = _dyld_image_count();
+    res.reserve(count);
     for (uint32_t i = 0; i < count; i++) {
         res.emplace_back(_dyld_get_image_name(i));
     }

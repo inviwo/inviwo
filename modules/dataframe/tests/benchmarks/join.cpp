@@ -57,6 +57,7 @@ const std::vector<int> left_ = []() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> left;
+    left.reserve(lenLeft);
     for (int i = 0; i < lenLeft; ++i) {
         left.push_back(i % maxValue);
     }
