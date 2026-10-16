@@ -95,7 +95,7 @@ private:
 
     inline static std::string getVariable(std::stringstream& expr) {
         std::stringstream ss;
-        char c;
+        char c = 0;
         expr.get(c);
         ss << c;
         while (isvariablechar(static_cast<char>(expr.peek())) || isdigit(expr.peek())) {

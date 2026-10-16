@@ -366,7 +366,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
-            bool ok;
+            bool ok = false;
             const QString text =
                 QInputDialog::getText(parent, tr("Save Preset"), tr("Name:"), QLineEdit::Normal, "",
                                       &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);

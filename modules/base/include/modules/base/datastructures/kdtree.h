@@ -278,7 +278,7 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P>* node, KDNode<N, T, P>* parent) {
         return;
     }
 
-    KDNode<N, T, P>* min;
+    KDNode<N, T, P>* min = nullptr;
     if (!parent) parent = root_->findParent(node);
 
     if (!node->isRightLeaf()) {
@@ -466,7 +466,7 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMin(unsigned int d) {
     if (isLeaf())  // leaf node
         return this;
 
-    KDNode *l, *r, *minChild;
+    KDNode *l = nullptr, *r = nullptr, *minChild = nullptr;
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         minChild = rightChild_->findMin(d);
@@ -487,7 +487,7 @@ KDNode<N, T, P>* KDNode<N, T, P>::findMax(unsigned int d) {
     }
     if (isLeaf()) return this;
 
-    KDNode *l, *r, *maxChild;
+    KDNode *l = nullptr, *r = nullptr, *maxChild = nullptr;
     if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
                          // in right subtree
         maxChild = rightChild_->findMax(d);

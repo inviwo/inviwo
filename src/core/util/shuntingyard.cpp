@@ -74,7 +74,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
     bool lastTokenWasOp = true;
 
     std::stringstream expr(expression);
-    char c;
+    char c = 0;
 
     // In one pass, ignore whitespace and parse the expression into RPN
     // using Dijkstra's Shunting-yard algorithm.
