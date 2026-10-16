@@ -233,7 +233,7 @@ public:
         return lookup_.getRepresentation<T>();
     }
     size_t getLookUpTableSize() const { return lookup_.getSize(); }
-    void setLookUpTableSize(size_t size) { return lookup_.setSize(size); }
+    void setLookUpTableSize(size_t size) { lookup_.setSize(size); }
 
     virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
     TransferFunctionProperty& setDefault(const TransferFunction& tf);

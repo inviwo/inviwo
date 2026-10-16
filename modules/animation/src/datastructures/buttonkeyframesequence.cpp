@@ -57,9 +57,11 @@ void ButtonKeyframeSequence::operator()(Seconds from, Seconds to, bool& pressed)
                                        [](const auto& a, const auto& b) { return a < *b; });
     if (toIt != fromIt) {
         if (from < to) {
-            return (**fromIt)(from, to, pressed);
+            (**fromIt)(from, to, pressed);
+            return;
         } else {
-            return (**toIt)(from, to, pressed);
+            (**toIt)(from, to, pressed);
+            return;
         }
     }
 }
