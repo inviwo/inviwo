@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef _IVW_QTAPPLICATIONBASE_DEFINE_H_
-#define _IVW_QTAPPLICATIONBASE_DEFINE_H_
+#ifndef IVW_QTAPPLICATIONBASE_DEFINE_H_
+#define IVW_QTAPPLICATIONBASE_DEFINE_H_
 
 #ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport

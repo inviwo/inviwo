@@ -1,5 +1,5 @@
-#ifndef _IVW_MODULE_JSON_DEFINE_H_
-#define _IVW_MODULE_JSON_DEFINE_H_
+#ifndef IVW_MODULE_JSON_DEFINE_H_
+#define IVW_MODULE_JSON_DEFINE_H_
 
 #ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport

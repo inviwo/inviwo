@@ -536,7 +536,7 @@ KDNode<N, T, P>* KDNode<N, T, P>::findParent(const KDNode* n) {
 }
 
 template <unsigned char N, typename T, typename P>
-KDNode<N, T, P>* __closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P>* n1) {
+KDNode<N, T, P>* _closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P>* n1) {
     if (n0 == nullptr) return n1;
     if (n1 == nullptr || n0 == n1) return n0;
     P d0 = 0;
@@ -560,7 +560,7 @@ KDNode<N, T, P>* __closestTo(const P pos[N], KDNode<N, T, P>* n0, KDNode<N, T, P
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* nearest) {
     if (isLeaf()) {
-        nearest = __closestTo<N, T, P>(pos, this, nearest);
+        nearest = _closestTo<N, T, P>(pos, this, nearest);
         return nearest;
     }
 
@@ -568,11 +568,11 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
     P d1;
     if (goRight(pos)) {        // pos is within right sub tree
         if (!isRightLeaf()) {  // Look forit in right sub tree
-            nearest = __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
+            nearest = _closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
         }
-        nearest = __closestTo<N, T, P>(pos, nearest, this);
+        nearest = _closestTo<N, T, P>(pos, nearest, this);
         if (nearest == this && !isLeftLeaf()) {  // if current node is the closest in
-            nearest = __closestTo<N, T, P>(pos, this, leftChild_->findNearest(pos, nearest));
+            nearest = _closestTo<N, T, P>(pos, this, leftChild_->findNearest(pos, nearest));
         } else if (!isLeftLeaf()) {  // can it
             d0 = pos[dimmension_] - this->pos_[dimmension_];
             d1 = pos[dimmension_] - nearest->pos_[dimmension_];
@@ -580,16 +580,16 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
             d1 = d1 * d1;
 
             if (d0 <= d1) {
-                nearest = __closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
+                nearest = _closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
             }
         }
     } else {
         if (!isLeftLeaf()) {  // Look forit in right sub tree
-            nearest = __closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
+            nearest = _closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
         }
-        nearest = __closestTo<N, T, P>(pos, nearest, this);
+        nearest = _closestTo<N, T, P>(pos, nearest, this);
         if (nearest == this && !isRightLeaf()) {  // if current node is the closest in
-            nearest = __closestTo<N, T, P>(pos, this, rightChild_->findNearest(pos, nearest));
+            nearest = _closestTo<N, T, P>(pos, this, rightChild_->findNearest(pos, nearest));
         } else if (!isRightLeaf()) {  // can it
             d0 = pos[dimmension_] - this->pos_[dimmension_];
             d1 = pos[dimmension_] - nearest->pos_[dimmension_];
@@ -597,8 +597,7 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
             d1 = d1 * d1;
 
             if (d0 < d1) {
-                nearest =
-                    __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
+                nearest = _closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
             }
         }
     }
@@ -606,7 +605,7 @@ KDNode<N, T, P>* KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P>* n
 }
 
 template <unsigned char N, typename T, typename P>
-P __sqDist(const P p0[N], const P p1[N]) {
+P _sqDist(const P p0[N], const P p1[N]) {
     P d = 0;
     P a;
     for (size_t i = 0; i < N; i++) {
@@ -650,7 +649,7 @@ void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KD
     }
 }
 
-#define __FF__ std::cout << "Failed at " << __FILE__ << "@" << __LINE__ << std::endl
+#define FF_ std::cout << "Failed at " << __FILE__ << "@" << __LINE__ << std::endl
 template <unsigned char N, typename T, typename P>
 void KDNode<N, T, P>::swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T, P>* p0,
                            KDNode<N, T, P>* p1) {
@@ -688,7 +687,7 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T
         } else if (p0 != 0 && p0->rightChild_ == n0) {
             p0->rightChild_ = n1;
         } else if (p0 != 0) {
-            __FF__;
+            FF_;
         }
 
         if (p1->leftChild_ == n1) {
@@ -696,7 +695,7 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T
         } else if (p1->rightChild_ == n1) {
             p1->rightChild_ = n0;
         } else {
-            __FF__;
+            FF_;
         }
     }
 
@@ -706,7 +705,7 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T
 template <unsigned char N, typename T, typename P>
 void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
                                    std::vector<KDNodeDistWrapper<N, T, P>>& current) {
-    P sqDist = __sqDist<N, T, P>(pos, pos_);
+    P sqDist = _sqDist<N, T, P>(pos, pos_);
     if (current.size() < amount) {
         KDNodeDistWrapper<N, T, P> holder;
         holder.node = this;
