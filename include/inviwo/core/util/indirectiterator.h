@@ -43,7 +43,7 @@ using require_t = typename require<Tag, Iter>::type;
 
 template <typename Iterator>
 struct is_const_iterator {
-    typedef typename std::iterator_traits<Iterator>::pointer pointer;
+    using pointer = typename std::iterator_traits<Iterator>::pointer;
     static constexpr bool value = std::is_const<typename std::remove_pointer<pointer>::type>::value;
 };
 

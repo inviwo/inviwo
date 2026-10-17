@@ -117,7 +117,7 @@ public:
 template <unsigned char N, typename T = char, typename P = double>
 class KDTree {
 public:
-    typedef KDNode<N, T, P> Node;
+    using Node = KDNode<N, T, P>;
 
 private:
     Node* root_;
@@ -166,8 +166,8 @@ public:
     KDTreeGlm() : KDTree<N, T, P>() {}
     virtual ~KDTreeGlm() = default;
 
-    typedef KDNode<N, T, P> Node;
-    typedef KDTree<N, T, P> Tree;
+    using Node = KDNode<N, T, P>;
+    using Tree = KDTree<N, T, P>;
 
     Node* insert(const Vector<N, P>& pos, const T& data) {
         return Tree::insert(glm::value_ptr(pos), data);

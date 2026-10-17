@@ -307,7 +307,7 @@ constexpr To glm_convert_normalized(From x) {
     } else if constexpr (!std::is_same_v<To, From> && util::rank_v<From> == 1 &&
                          util::rank_v<To> == 1) {
         // 12 Vector to Vector
-        typedef typename To::value_type T;
+        using T = typename To::value_type;
         To res(static_cast<T>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = glm_convert_normalized<T>(x[i]);

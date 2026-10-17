@@ -38,10 +38,10 @@ extern "C" {
 #include <libavutil/avutil.h>
 }
 
-typedef struct AVCodecTag {
+struct AVCodecTag {
     enum AVCodecID id;
     unsigned int tag;
-} AVCodecTag;
+};
 
 namespace inviwo::ffmpeg {
 

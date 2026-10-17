@@ -41,7 +41,7 @@
 #include <memory>
 #include <string>
 
-typedef struct GLFWwindow GLFWwindow;
+struct GLFWwindow;
 
 namespace inviwo {
 
