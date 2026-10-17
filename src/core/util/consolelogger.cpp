@@ -102,7 +102,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
         }
     }
 
-    struct winsize w;
+    struct winsize w{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     const auto width = w.ws_col;
 #endif

@@ -158,7 +158,7 @@ struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
 
 protected:
     GLint mode_;
-    GLint oldMode_;
+    GLint oldMode_{};
 };
 
 /**

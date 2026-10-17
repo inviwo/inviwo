@@ -122,7 +122,7 @@ private:
 
     mutable double length_ = -1;  // length is only calculated on demand hence it need to be mutable
 
-    uint32_t idx_;
+    uint32_t idx_{};
 };
 
 template <typename T>

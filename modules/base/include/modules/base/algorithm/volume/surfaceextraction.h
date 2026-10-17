@@ -75,8 +75,8 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         return {static_cast<size_t>(0), n - 1};
     };
 
-    std::array<vec3, 4> pos;
-    std::array<double, 4> values;
+    std::array<vec3, 4> pos{};
+    std::array<double, 4> values{};
 
     {
         K3DTree<size_t, float> sideVertexTree;

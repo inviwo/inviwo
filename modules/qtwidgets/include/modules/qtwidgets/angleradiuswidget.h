@@ -98,8 +98,8 @@ private:
 
     double angle_;
     double radius_;
-    double minAngle_;
-    double maxAngle_;
+    double minAngle_{};
+    double maxAngle_{};
     double minRadius_;
     double maxRadius_;
 };

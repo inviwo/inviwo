@@ -104,8 +104,8 @@ protected:
 
     PortIter portIter_;
     PortIter portEnd_;
-    size_t dataIndex_;
-    size_t dataSize_;
+    size_t dataIndex_{};
+    size_t dataSize_{};
 };
 
 template <typename T>

@@ -708,13 +708,13 @@ void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
                                    std::vector<KDNodeDistWrapper<N, T, P>>& current) {
     P sqDist = _sqDist<N, T, P>(pos, pos_);
     if (current.size() < amount) {
-        KDNodeDistWrapper<N, T, P> holder;
+        KDNodeDistWrapper<N, T, P> holder{};
         holder.node = this;
         holder.sqDist = sqDist;
         current.push_back(holder);
         std::sort(current.begin(), current.end());
     } else if (sqDist <= current[0].sqDist) {
-        KDNodeDistWrapper<N, T, P> holder;
+        KDNodeDistWrapper<N, T, P> holder{};
         holder.node = this;
         holder.sqDist = sqDist;
         current.push_back(holder);
