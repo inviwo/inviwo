@@ -88,7 +88,7 @@ public:
 private:
     void initBuffer();
     const unsigned char magicCode_ = 0xaf;
-    FILE* handle_;
+    FILE* handle_{};
     std::vector<unsigned char> buffer_;
 };
 

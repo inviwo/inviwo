@@ -167,12 +167,12 @@ protected:
     dvec3 lastNDC_;
     dvec3 pressNDC_;
 
-    double trackBallWorldSpaceRadius_;
+    double trackBallWorldSpaceRadius_{};
 
     static constexpr double radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
     static constexpr double stepSize = 0.05f;
 
-    glm::dquat lastRot_;
+    glm::dquat lastRot_{};
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;

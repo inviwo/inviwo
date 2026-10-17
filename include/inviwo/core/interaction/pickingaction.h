@@ -112,7 +112,7 @@ private:
     size_t capacity_;
 
     Callback action_;
-    Processor* processor_;
+    Processor* processor_{};
 
     bool enabled_ = true;
 };

@@ -167,7 +167,7 @@ fs::path getWorkingDirectory() {
         throw Exception("Error querying current directory");
     return fs::path{buff};
 #else
-    std::array<char, FILENAME_MAX> workingDir;
+    std::array<char, FILENAME_MAX> workingDir{};
     if (!getcwd(workingDir.data(), workingDir.size())) {
         throw Exception("Error querying current directory");
     }
@@ -219,7 +219,7 @@ fs::path getExecutablePath() {
 
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
+    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath{};
     const auto pid = getpid();
     if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path

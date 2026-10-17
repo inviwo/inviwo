@@ -99,7 +99,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash,
         it = widthToDigits_
                  .insert({fontHash,
                           []() {
-                              std::array<int, 513> ret;
+                              std::array<int, 513> ret{};
                               ret.fill(-1);
                               return ret;
                           }()})

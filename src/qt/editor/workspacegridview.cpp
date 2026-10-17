@@ -353,8 +353,8 @@ private:
         size_t operator()(const QModelIndex& idx) const { return qHash(idx); }
     };
     struct Mapping {
-        int sourceRow;
-        int sourceCol;
+        int sourceRow{};
+        int sourceCol{};
         QPersistentModelIndex sourceParent;
     };
     using IndexMap = std::unordered_map<QModelIndex, Mapping, Hash>;

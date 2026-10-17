@@ -189,10 +189,10 @@ protected:
     std::shared_ptr<const BufferBase> color_;
     std::shared_ptr<const TemplateColumn<uint32_t>> indexColumn_;
 
-    vec2 minmaxX_;
-    vec2 minmaxY_;
-    vec2 minmaxC_;
-    vec2 minmaxR_;
+    vec2 minmaxX_{};
+    vec2 minmaxY_{};
+    vec2 minmaxC_{};
+    vec2 minmaxR_{};
 
     std::array<AxisRenderer, 2> axisRenderers_;
 

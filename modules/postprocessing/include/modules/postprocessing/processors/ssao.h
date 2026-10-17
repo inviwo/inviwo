@@ -181,8 +181,8 @@ private:
         */
     } locations_;
 
-    ProjectionParam projParam_;
-    HBAOData hbaoUboData_;
+    ProjectionParam projParam_{};
+    HBAOData hbaoUboData_{};
 };
 
 }  // namespace inviwo

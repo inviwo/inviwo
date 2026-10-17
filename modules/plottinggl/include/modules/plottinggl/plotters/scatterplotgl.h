@@ -216,7 +216,7 @@ protected:
         IndexBuffer indices;
 
         // startFilter, startRegular, startSelected, startHighlighted, end
-        std::array<std::uint32_t, 5> offsets;
+        std::array<std::uint32_t, 5> offsets{};
 
         std::shared_ptr<const BufferBase> xCoord;
         std::shared_ptr<const BufferBase> yCoord;

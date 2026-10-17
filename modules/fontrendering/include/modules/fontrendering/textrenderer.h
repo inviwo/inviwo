@@ -338,7 +338,7 @@ protected:
 
     std::unordered_map<FontFamilyStyle, FontCache> glyphAtlas_;
 
-    FT_Library fontlib_;
+    FT_Library fontlib_{};
     FT_Face fontface_;
 
     int fontSize_;        //<! font size in pixel

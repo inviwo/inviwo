@@ -51,7 +51,7 @@ public:
 
 protected:
     std::array<VolumeInport, 3> vols_;
-    std::array<bool, 3> active_;
+    std::array<bool, 3> active_{};
     virtual void preProcess(TextureUnitContainer& cont, Shader& shader,
                             VolumeConfig& config) override;
 };

@@ -62,7 +62,7 @@ struct IVW_CORE_API BuildInfo {
         std::string sha;
         std::string repo;
         std::filesystem::path repoDir;
-        bool dirty;
+        bool dirty{};
     };
 
     std::vector<ModulesDir> modulesDirs;

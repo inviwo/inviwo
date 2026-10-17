@@ -186,12 +186,12 @@ public:
 private:
     void initialize(const void* data, GLsizeiptr sizeInBytes);
 
-    GLuint id_;
+    GLuint id_{};
     GLenum usageGL_;
     GLenum target_;
     GLFormat glFormat_;
-    GLsizeiptr sizeInBytes_;
-    GLsizeiptr capacityInBytes_;
+    GLsizeiptr sizeInBytes_{};
+    GLsizeiptr capacityInBytes_{};
 };
 
 inline GLFormat BufferObject::getGLFormat() const { return glFormat_; }

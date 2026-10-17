@@ -83,7 +83,7 @@ private:
 
     Shader lineShader_;
 
-    bool drawModeEnabled_;
+    bool drawModeEnabled_{};
 };
 
 }  // namespace inviwo

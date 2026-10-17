@@ -303,7 +303,7 @@ void Texture::setSwizzleMask(SwizzleMask mask) {
 }
 
 SwizzleMask Texture::getSwizzleMask() const {
-    std::array<GLint, 4> swizzleMaskGL;
+    std::array<GLint, 4> swizzleMaskGL{};
     bind();
     glGetTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     unbind();

@@ -43,7 +43,7 @@ namespace inviwo {
 
 inline std::string currentDateTime() {
     const time_t currentDateTime = time(nullptr);
-    struct tm dateTimeStruct;
+    struct tm dateTimeStruct{};
     char dateTimeBuffer[20];
     dateTimeStruct = *localtime(&currentDateTime);
     strftime(dateTimeBuffer, sizeof(dateTimeBuffer), "%Y%m%d_%H%M%S", &dateTimeStruct);

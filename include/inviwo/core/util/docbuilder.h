@@ -49,7 +49,7 @@ struct IVW_CORE_API HelpInport {
     std::string classIdentifier;
     std::string displayName;
     std::string typeName;
-    glm::uvec3 colorCode;
+    glm::uvec3 colorCode{};
     DataInfo data;
     Document help;
 
@@ -61,7 +61,7 @@ struct IVW_CORE_API HelpOutport {
     std::string classIdentifier;
     std::string displayName;
     std::string typeName;
-    glm::uvec3 colorCode;
+    glm::uvec3 colorCode{};
     DataInfo data;
     Document help;
 

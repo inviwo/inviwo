@@ -71,7 +71,7 @@ private:
                                       std::vector<std::shared_ptr<Volume>>::const_iterator start,
                                       std::vector<std::shared_ptr<Volume>>::const_iterator end);
 
-    int maxSamplers_;
+    int maxSamplers_{};
 
     DataInport<std::vector<std::shared_ptr<Volume>>> inport_;
     VolumeOutport outport_;

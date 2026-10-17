@@ -200,7 +200,7 @@ std::span<const glm::vec<2, T>> convexHull(std::span<const glm::vec<2, T>, N> po
     }
 
     // sort points according to x coordinate, if equal chose lower y coordinate
-    std::array<E, N> p;
+    std::array<E, N> p{};
     std::ranges::copy(points, p.begin());
     const auto compare = [](const E& a, const E& b) {
         return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y));

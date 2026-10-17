@@ -84,7 +84,7 @@ public:
 
 private:
     std::vector<ImageLabel> labels_;
-    ivec2 dimensions_;
+    ivec2 dimensions_{};
 };
 
 }  // namespace inviwo

@@ -46,7 +46,7 @@ namespace inviwo {
 struct IVW_CORE_API DataInfo {
     std::string cid;
     std::string name;
-    uvec3 color;
+    uvec3 color{};
 };
 
 /**
