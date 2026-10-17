@@ -33,7 +33,7 @@
 #include <unordered_map>
 #include <any>
 
-typedef struct GLFWwindow GLFWwindow;
+struct GLFWwindow;
 
 namespace inviwo {
 

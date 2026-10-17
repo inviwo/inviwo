@@ -50,7 +50,7 @@ public:
 
 private:
     class Converter : public VersionConverter {
-        typedef bool (Converter::*updateType)(TxElement*);
+        using updateType = bool (Converter::*)(TxElement*);
 
     public:
         explicit Converter(int version);

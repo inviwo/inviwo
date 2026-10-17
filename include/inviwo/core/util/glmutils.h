@@ -151,7 +151,7 @@ struct glmtype {
 
 template <typename T, glm::qualifier P>
 struct glmtype<T, 1, 1, P> {
-    typedef T type;
+    using type = T;
 };
 
 template <typename T, glm::length_t L, glm::qualifier P>
