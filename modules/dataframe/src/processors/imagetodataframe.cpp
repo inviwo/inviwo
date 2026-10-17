@@ -116,7 +116,7 @@ ImageToDataFrame::ImageToDataFrame()
     addProperty(layerIndex_);
     addProperty(range_);
 
-    const auto updateRange = [this]() {
+    const auto updateRange = [this] {
         if (inport_.hasData()) {
             if (mode_ == Mode::Rows) {
                 range_.setRangeMax(inport_.getData()->getDimensions().y);

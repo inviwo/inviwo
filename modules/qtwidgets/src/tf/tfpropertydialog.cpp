@@ -180,7 +180,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
 
             if (const auto* qtModule = util::getModuleByType<QtWidgetsModule>()) {
                 QObject::connect(helpBtn, &QToolButton::clicked, this,
-                                 [qtModule]() { qtModule->showTFHelpWindow(); });
+                                 [qtModule] { qtModule->showTFHelpWindow(); });
             }
         }
     }
@@ -203,9 +203,9 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
     }
 
     connect(editor_.get(), &TFEditor::selectionChanged, this,
-            [this]() { tfSelectionWatcher_->updateSelection(editor_->getSelectedPrimitives()); });
-    connect(editor_.get(), &TFEditor::updateBegin, this, [&]() { ongoingUpdate_ = true; });
-    connect(editor_.get(), &TFEditor::updateEnd, this, [&]() {
+            [this] { tfSelectionWatcher_->updateSelection(editor_->getSelectedPrimitives()); });
+    connect(editor_.get(), &TFEditor::updateBegin, this, [&] { ongoingUpdate_ = true; });
+    connect(editor_.get(), &TFEditor::updateEnd, this, [&] {
         ongoingUpdate_ = false;
         updateTFPreview();
     });
@@ -274,7 +274,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                 view_->fitViewToScene();
             });
 
-    const auto dataChange = [this]() {
+    const auto dataChange = [this] {
         if (const auto* dataMap = concept_->getDataMap()) {
             scalar_->setText(utilqt::toQString(
                 fmt::format("{}{: [}", dataMap->valueAxis.name, dataMap->valueAxis.unit)));
@@ -387,7 +387,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                 .arg(utilqt::toQString(concept_->getProperty()->getDisplayName())));
 
         connect(editor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
-                [dialog = colorDialog_.get()]() {
+                [dialog = colorDialog_.get()] {
 #ifdef __APPLE__
                     // OSX Bug workaround: hide the dialog, due to some Mac issues
                     dialog->hide();

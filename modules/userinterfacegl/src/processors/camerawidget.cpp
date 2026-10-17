@@ -285,7 +285,7 @@ CameraWidget::CameraWidget()
     addPort(outport_);
 
     // interaction settings
-    enabled_.onChange([this]() { picking_.setEnabled(enabled_); });
+    enabled_.onChange([this] { picking_.setEnabled(enabled_); });
     settings_.addProperties(enabled_, invertDirections_, useWorldAxis_, showRotWidget_,
                             showRollWidget_, showDollyWidget_, showCube_, speed_, angleIncrement_,
                             minTouchMovement_);
@@ -305,9 +305,9 @@ CameraWidget::CameraWidget()
     addProperties(cameraActions_, visible_, settings_, appearance_, animate_.props, outputProps_,
                   internalProps_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    cubeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    overlayShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    cubeShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    overlayShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     camera_.setHelp("Camera affected by the widget interaction"_help);
 }
@@ -475,7 +475,7 @@ dvec3 findANiceNewLookUpForAxisAndCurrentUp(ivec3 newDir, dvec3 currentUp) {
                                                   ivec3{0, 0, 1},  ivec3{-1, 0, 0},
                                                   ivec3{0, -1, 0}, ivec3{0, 0, -1}};
 
-    static constexpr auto diagonalCandidates = []() {
+    static constexpr auto diagonalCandidates = [] {
         std::array<ivec3, 4 * 4 * 4> candidates{};
 
         size_t count = 0;
@@ -671,7 +671,7 @@ void CameraWidget::loadMesh() {
     // camera zoom buttons
     meshes_[2] = cache(meshes[2], load, "camera-zoom.fbx");
     // cube mesh for orientation
-    meshes_[3] = cache(meshes[3], []() {
+    meshes_[3] = cache(meshes[3], [] {
         const vec3 cubeScale(8.0f);
         mat4 transform(glm::scale(vec3(cubeScale)));
         transform[3] -= vec4(0.5f * cubeScale, 0.0f);
@@ -713,7 +713,7 @@ void CameraWidget::stepInteraction(Interaction dir, bool clockwise) {
 
 void CameraWidget::axisRotation(RotationAxis dir, dvec2 mouseDelta) {
     const auto rotAxis = rotationAxis(dir, useWorldAxis_, initialState_);
-    const auto distance = static_cast<float>([&]() {
+    const auto distance = static_cast<float>([&] {
         switch (dir) {
             case RotationAxis::Yaw:   return mouseDelta.x;
             case RotationAxis::Pitch: return -mouseDelta.y;
@@ -816,7 +816,7 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
 }
 
 dvec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const CameraState& cam) {
-    const auto camAxis = [&]() {
+    const auto camAxis = [&] {
         switch (rot) {
             case RotationAxis::Yaw:   return cam.up;
             case RotationAxis::Pitch: return glm::cross(cam.dir, cam.up);
@@ -839,7 +839,7 @@ dvec3 CameraWidget::rotationAxis(RotationAxis rot, bool alignToObject, const Cam
 }
 
 CameraWidget::Animator::Animator(Camera& camera)
-    : animation{}, camera{&camera}, timer{ms{0}, [this]() { animate(); }} {}
+    : animation{}, camera{&camera}, timer{ms{0}, [this] { animate(); }} {}
 
 void CameraWidget::Animator::animate() {
     std::visit(
@@ -943,9 +943,9 @@ CameraWidget::Animate::Animate(CameraWidget& aWidget)
     props.addProperties(fps, type, mode, easing, increment, amplitude, playPause);
 
     props.getBoolProperty()->onChange(
-        [this]() { startStopAnimation(props.getBoolProperty()->get()); });
-    fps.onChange([this]() { widget->animator_.timer.setInterval(ms{fps.get()}); });
-    type.onChange([this]() { startStopAnimation(props.getBoolProperty()->get()); });
+        [this] { startStopAnimation(props.getBoolProperty()->get()); });
+    fps.onChange([this] { widget->animator_.timer.setInterval(ms{fps.get()}); });
+    type.onChange([this] { startStopAnimation(props.getBoolProperty()->get()); });
 }
 
 // NOLINTNEXTLINE(readability-make-member-function-const)

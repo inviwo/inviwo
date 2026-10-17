@@ -103,12 +103,12 @@ MovieExport::MovieExport()
     activeCodec_.setSerializationMode(PropertySerializationMode::None);
     activeCodec_.setReadOnly(true);
 
-    const auto updateCodecs = [this]() {
+    const auto updateCodecs = [this] {
         const auto outputFormat = getOutputFormat();
         codec_.replaceOptions(ffmpeg::codecsOptionsFor(outputFormat));
     };
 
-    const auto updateActive = [this]() {
+    const auto updateActive = [this] {
         const auto outputFormat = getOutputFormat();
         activeFormat_.set(fmt::format("{} ({})", outputFormat.name(), outputFormat.longName()));
 
@@ -116,19 +116,19 @@ MovieExport::MovieExport()
         activeCodec_.set(fmt::format("{} ({})", codec.name(), codec.longName().value_or("-")));
     };
 
-    file_.onChange([updateCodecs, updateActive, this]() {
+    file_.onChange([updateCodecs, updateActive, this] {
         if (ffmpeg::OutputFormat::guess(file_.get())) {
             updateCodecs();
             updateActive();
         }
     });
 
-    format_.onChange([updateCodecs, updateActive]() {
+    format_.onChange([updateCodecs, updateActive] {
         updateCodecs();
         updateActive();
     });
 
-    codec_.onChange([updateActive]() { updateActive(); });
+    codec_.onChange([updateActive] { updateActive(); });
 }
 
 MovieExport::~MovieExport() = default;

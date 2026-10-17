@@ -72,25 +72,25 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
 
     , output_{"output", "Output"}
     , worldPos_{"worldPosition", "World Position",
-                [&]() -> vec3 { return get(CoordinateSpace::World); }, [&](const vec3&) {},
+                [&] -> vec3 { return get(CoordinateSpace::World); }, [&](const vec3&) {},
                 util::ordinalRefSymmetricVector<vec3>(100.0f)
                     .set("Position in world space coordinates"_help)
                     .set(PropertySemantics::Text)
                     .set(ReadOnly::Yes)}
-    , viewPos_{"viewPosition", "View Position",
-               [&]() -> vec3 { return get(CoordinateSpace::View); }, [&](const vec3&) {},
+    , viewPos_{"viewPosition", "View Position", [&] -> vec3 { return get(CoordinateSpace::View); },
+               [&](const vec3&) {},
                util::ordinalRefSymmetricVector<vec3>(100.0f)
                    .set("Position in view space coordinates of the camera"_help)
                    .set(PropertySemantics::Text)
                    .set(ReadOnly::Yes)}
-    , clipPos_{"clipPosition", "Clip Position",
-               [&]() -> vec3 { return get(CoordinateSpace::Clip); }, [&](const vec3&) {},
+    , clipPos_{"clipPosition", "Clip Position", [&] -> vec3 { return get(CoordinateSpace::Clip); },
+               [&](const vec3&) {},
                util::ordinalRefSymmetricVector<vec3>(1.0f)
                    .set("Position in clip space coordinates [-1,1]"_help)
                    .set(PropertySemantics::Text)
                    .set(ReadOnly::Yes)}
     , screenPos_{"screenPosition", "Screen Position (normalized)",
-                 [&]() -> vec3 { return get(CoordinateSpace::Clip) * 0.5f + 0.5f; },
+                 [&] -> vec3 { return get(CoordinateSpace::Clip) * 0.5f + 0.5f; },
                  [&](const vec3&) {},
                  OrdinalRefPropertyState<vec3>{.min = vec3{0.0f},
                                                .minConstraint = ConstraintBehavior::Ignore,
@@ -105,14 +105,14 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
     output_.setCurrentStateAsDefault();
     addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
 
-    referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
-    position_.onChange([this]() { invalidateOutputProperties(); });
-    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
-    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    referenceSpace_.onChange([this] { referenceSpaceChanged(); });
+    position_.onChange([this] { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this] { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this] { invalidateOutputProperties(); });
     coordinateOffset_.readonlyDependsOn(
         coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
-        camera_->onChange([this]() { invalidateOutputProperties(); });
+        camera_->onChange([this] { invalidateOutputProperties(); });
     }
 }
 
@@ -141,15 +141,15 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     output_.addProperties(worldPos_, viewPos_, clipPos_, screenPos_);
     addProperties(referenceSpace_, position_, coordinateOffsetMode_, coordinateOffset_, output_);
 
-    referenceSpace_.onChange([this]() { referenceSpaceChanged(); });
-    position_.onChange([this]() { invalidateOutputProperties(); });
-    coordinateOffsetMode_.onChange([this]() { invalidateOutputProperties(); });
-    coordinateOffset_.onChange([this]() { invalidateOutputProperties(); });
+    referenceSpace_.onChange([this] { referenceSpaceChanged(); });
+    position_.onChange([this] { invalidateOutputProperties(); });
+    coordinateOffsetMode_.onChange([this] { invalidateOutputProperties(); });
+    coordinateOffset_.onChange([this] { invalidateOutputProperties(); });
     coordinateOffset_.setReadOnly(coordinateOffsetMode_.get() != CoordinateOffset::Custom);
     coordinateOffset_.readonlyDependsOn(
         coordinateOffsetMode_, [](auto& prop) { return prop.get() != CoordinateOffset::Custom; });
     if (camera_) {
-        camera_->onChange([this]() { invalidateOutputProperties(); });
+        camera_->onChange([this] { invalidateOutputProperties(); });
     }
 }
 

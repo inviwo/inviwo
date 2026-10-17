@@ -137,9 +137,9 @@ ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     addProperty(basis_);
     addProperty(information_);
 
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return !filePattern_.getFileList().empty(); });
-    filePattern_.onChange([&]() { isReady_.update(); });
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] { return !filePattern_.getFileList().empty(); });
+    filePattern_.onChange([&] { isReady_.update(); });
 
     addFileNameFilters();
 }
@@ -151,7 +151,7 @@ void ImageStackVolumeSource::addFileNameFilters() {
 }
 
 void ImageStackVolumeSource::process() {
-    util::OnScopeExit guard{[&]() { outport_.setData(nullptr); }};
+    util::OnScopeExit guard{[&] { outport_.setData(nullptr); }};
 
     if (filePattern_.isModified() || reload_.isModified() || skipUnsupportedFiles_.isModified()) {
         volume_ = load();

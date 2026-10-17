@@ -527,7 +527,7 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                 .attributeKey = "identifier",
                 .idTransform = [](std::string_view id) { return util::stripIdentifier(id); },
                 .makeNew =
-                    []() {
+                    [] {
                         rendercontext::activateLocal();
                         return std::shared_ptr<Processor>{};
                     },

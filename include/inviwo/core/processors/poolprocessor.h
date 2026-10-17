@@ -412,7 +412,7 @@ inline void PoolProcessor::callDone(
     };
 
     if (state->count.fetch_sub(1) == 1) {
-        util::dispatchFrontAndForget(app, [state = std::move(state)]() {
+        util::dispatchFrontAndForget(app, [state = std::move(state)] {
             // This code will run in the main thread, make sure the default context is active
             // Always activate the context since it might be needed to delete the state.
             rendercontext::activateDefault();
@@ -455,7 +455,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     if (!keepOldJobs()) stopJobs();
 
     const auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
-    Submission sub{state, {}, [this]() { setupProgress<Job>(); }};
+    Submission sub{state, {}, [this] { setupProgress<Job>(); }};
 
     auto* app = getInviwoApplication();
     size_t i = 0;
@@ -463,7 +463,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         const auto task =
             makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
-        sub.tasks.emplace_back([state, task, app]() {
+        sub.tasks.emplace_back([state, task, app] {
             if (!state->stopped()) {
                 // This code will run in a background thread, make sure the local context is active
                 rendercontext::activateLocal();
@@ -480,7 +480,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
         if (!delayBackgroundJobReset_) {
             notifyObserversStartBackgroundWork(this, 1);
             delayBackgroundJobReset_.setAction(
-                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+                [this] { notifyObserversFinishBackgroundWork(this, 1); });
         }
         getDelay().start();
 
@@ -513,7 +513,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     auto* app = getInviwoApplication();
 
     Submission sub{state,
-                   {[state, task, app]() {
+                   {[state, task, app] {
                        if (!state->stopped()) {
                            // This code will run in a background thread, make sure the local context
                            // is active
@@ -522,7 +522,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
                        }
                        callDone(app, std::move(state));
                    }},
-                   [this]() { setupProgress<Job>(); }};
+                   [this] { setupProgress<Job>(); }};
 
     if (delayDispatch()) {
         queue_.clear();
@@ -530,7 +530,7 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
         if (!delayBackgroundJobReset_) {
             notifyObserversStartBackgroundWork(this, 1);
             delayBackgroundJobReset_.setAction(
-                [this]() { notifyObserversFinishBackgroundWork(this, 1); });
+                [this] { notifyObserversFinishBackgroundWork(this, 1); });
         }
         getDelay().start();
 
@@ -565,16 +565,16 @@ inline std::shared_ptr<std::packaged_task<Result()>> PoolProcessor::makeTask(
     Job&& job, [[maybe_unused]] std::stop_token stop, [[maybe_unused]] pool::Progress progress) {
     if constexpr (std::is_invocable_v<Job, std::stop_token, pool::Progress>) {
         return std::make_shared<std::packaged_task<Result()>>(
-            [job = std::forward<Job>(job), stop, progress]() { return job(stop, progress); });
+            [job = std::forward<Job>(job), stop, progress] { return job(stop, progress); });
     } else if constexpr (std::is_invocable_v<Job, pool::Progress, std::stop_token>) {
         return std::make_shared<std::packaged_task<Result()>>(
-            [job = std::forward<Job>(job), stop, progress]() { return job(progress, stop); });
+            [job = std::forward<Job>(job), stop, progress] { return job(progress, stop); });
     } else if constexpr (std::is_invocable_v<Job, std::stop_token>) {
         return std::make_shared<std::packaged_task<Result()>>(
-            [job = std::forward<Job>(job), stop]() { return job(stop); });
+            [job = std::forward<Job>(job), stop] { return job(stop); });
     } else if constexpr (std::is_invocable_v<Job, pool::Progress>) {
         return std::make_shared<std::packaged_task<Result()>>(
-            [job = std::forward<Job>(job), progress]() { return job(progress); });
+            [job = std::forward<Job>(job), progress] { return job(progress); });
     } else {
         return std::make_shared<std::packaged_task<Result()>>(std::forward<Job>(job));
     }

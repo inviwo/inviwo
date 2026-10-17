@@ -88,7 +88,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     connect(completer, QOverload<const QString&>::of(&QCompleter::highlighted), this,
             [this](const QString& str) { updateIcon(utilqt::toPath(str)); });
 
-    connect(this, &QLineEdit::editingFinished, [this]() {
+    connect(this, &QLineEdit::editingFinished, [this] {
         setCursorToEnd();
         const auto path = utilqt::toPath(text().trimmed());
         updateIcon(path);
@@ -98,7 +98,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
         }
     });
 
-    connect(this, &LineEditQt::editingCanceled, [this]() {
+    connect(this, &LineEditQt::editingCanceled, [this] {
         setText(utilqt::toQString(path_));
         setCursorToEnd();
         updateIcon(path_);

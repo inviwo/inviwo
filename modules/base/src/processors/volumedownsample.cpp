@@ -77,7 +77,7 @@ VolumeDownsample::VolumeDownsample()
 }
 
 void VolumeDownsample::process() {
-    const size3_t strides = [&]() {
+    const size3_t strides = [&] {
         const size3_t s =
             uniform_ ? size3_t{static_cast<size_t>(strides_.get().x)} : size3_t{strides_.get()};
         return glm::clamp(s, size3_t{1}, inport_.getData()->getDimensions());
@@ -87,14 +87,12 @@ void VolumeDownsample::process() {
         outport_.setData(inport_.getData());
     } else {
         outport_.clear();
-        dispatchOne(
-            [volume = inport_.getData(), strides, mode = mode_.getSelectedValue()]() {
-                return downsample(volume, strides, mode);
-            },
-            [this](std::shared_ptr<Volume> result) {
-                outport_.setData(result);
-                newResults();
-            });
+        dispatchOne([volume = inport_.getData(), strides,
+                     mode = mode_.getSelectedValue()] { return downsample(volume, strides, mode); },
+                    [this](std::shared_ptr<Volume> result) {
+                        outport_.setData(result);
+                        newResults();
+                    });
     }
 }
 

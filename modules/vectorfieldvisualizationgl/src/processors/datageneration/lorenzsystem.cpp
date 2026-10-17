@@ -117,7 +117,7 @@ LorenzSystem::LorenzSystem()
 
     addProperties(size_, xRange_, yRange_, zRange_, rho_, sigma_, beta_);
 
-    shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
+    shader_.onReload([&] { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
 LorenzSystem::~LorenzSystem() = default;

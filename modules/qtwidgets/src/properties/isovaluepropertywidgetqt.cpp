@@ -67,7 +67,7 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     setLayout(hLayout);
     IsoValuePropertyWidgetQt::updateFromProperty();
 
-    connect(btnOpenTF_, &IvwPushButton::clicked, [this]() {
+    connect(btnOpenTF_, &IvwPushButton::clicked, [this] {
         if (!tfDialog_) {
             initEditor();
             tfDialog_->setVisible(true);
@@ -115,7 +115,7 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     auto* clearTF = menu->addAction("&Clear Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 
-    connect(clearTF, &QAction::triggered, this, [this]() {
+    connect(clearTF, &QAction::triggered, this, [this] {
         const NetworkLock lock(property_);
         isoProperty()->get().clear();
     });
@@ -125,14 +125,14 @@ std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
     auto* importIso = menu->addAction("&Import Isovalues...");
     const auto* exportIso = menu->addAction("&Export Isovalues...");
     importIso->setEnabled(!property_->getReadOnly());
-    connect(importIso, &QAction::triggered, this, [this]() {
+    connect(importIso, &QAction::triggered, this, [this] {
         if (const auto iso = util::importIsoValueCollectionDialog()) {
             const NetworkLock lock{property_};
             isoProperty()->get() = *iso;
         }
     });
     connect(exportIso, &QAction::triggered, this,
-            [this]() { util::exportIsoValueCollectionDialog(isoProperty()->get()); });
+            [this] { util::exportIsoValueCollectionDialog(isoProperty()->get()); });
 
     return menu;
 }

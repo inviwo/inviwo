@@ -167,7 +167,7 @@ template <typename Clock = Clock>
 [[nodiscard]] auto makeScopedClock(Literal message, typename Clock::duration logIfAtLeast = {},
                                    LogLevel logLevel = LogLevel::Info,
                                    SourceContext context = std::source_location::current()) {
-    const auto callback = [message]() { return message; };
+    const auto callback = [message] { return message; };
     return ScopedClock<Clock, decltype(callback)>{callback, logIfAtLeast, logLevel, context};
 }
 

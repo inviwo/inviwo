@@ -42,7 +42,7 @@ namespace inviwo {
 LineEditQt::LineEditQt(QWidget* parent) : QLineEdit(parent) {
     setMaxLength(std::numeric_limits<int>::max());  // default is 32767, which is easy to exceed
                                                     // with source files
-    connect(this, &QLineEdit::returnPressed, [this]() {
+    connect(this, &QLineEdit::returnPressed, [this] {
         // loose focus when return is pressed
         this->clearFocus();
     });

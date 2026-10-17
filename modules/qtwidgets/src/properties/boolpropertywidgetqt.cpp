@@ -74,9 +74,9 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(lineEdit_->focusPolicy());
         setFocusProxy(lineEdit_);
 
-        connect(lineEdit_, &QLineEdit::editingFinished, this, [this]() {
+        connect(lineEdit_, &QLineEdit::editingFinished, this, [this] {
             QString str(lineEdit_->text());
-            util::exceptionGuard([&]() { property_->set(str == "true" || str == "1"); });
+            util::exceptionGuard([&] { property_->set(str == "true" || str == "1"); });
         });
         hLayout->addWidget(lineEdit_);
     } else {
@@ -88,7 +88,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusProxy(checkBox_);
 
         connect(checkBox_, &QCheckBox::toggled, this,
-                [this](bool checked) { util::exceptionGuard([&]() { property_->set(checked); }); });
+                [this](bool checked) { util::exceptionGuard([&] { property_->set(checked); }); });
         hLayout->addWidget(checkBox_);
     }
     setDisabled(property_->getReadOnly());

@@ -78,14 +78,14 @@ auto HistogramCache::calculateHistograms(const std::function<std::vector<Histogr
         result.progress = Progress::Calculating;
 
         util::dispatchPool([calculate, promise = std::move(promise),
-                            weakState = std::weak_ptr<State>(state_)]() mutable {
+                            weakState = std::weak_ptr<State>(state_)] mutable {
             if (const auto state = weakState.lock()) {
                 const auto newHistograms =
                     std::make_shared<const std::vector<Histogram1D>>(calculate());
                 promise.set_value(newHistograms);
 
                 util::dispatchFrontAndForget(
-                    [weakState = std::weak_ptr<State>(state), newHistograms]() mutable {
+                    [weakState = std::weak_ptr<State>(state), newHistograms] mutable {
                         if (const auto state = weakState.lock()) {
                             const std::scoped_lock lock{state->mutex};
                             state->callbacks.invoke(newHistograms);
@@ -118,13 +118,12 @@ std::shared_ptr<const std::vector<Histogram1D>> HistogramCache::calculateHistogr
     const auto newHistograms = std::make_shared<const std::vector<Histogram1D>>(calculate());
     promise.set_value(newHistograms);
 
-    util::dispatchFrontAndForget(
-        [weakState = std::weak_ptr<State>(state_), newHistograms]() mutable {
-            if (const auto state = weakState.lock()) {
-                const std::scoped_lock lock{state->mutex};
-                state->callbacks.invoke(newHistograms);
-            }
-        });
+    util::dispatchFrontAndForget([weakState = std::weak_ptr<State>(state_), newHistograms] mutable {
+        if (const auto state = weakState.lock()) {
+            const std::scoped_lock lock{state->mutex};
+            state->callbacks.invoke(newHistograms);
+        }
+    });
 
     return newHistograms;
 }

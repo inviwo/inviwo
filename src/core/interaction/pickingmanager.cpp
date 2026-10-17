@@ -143,7 +143,7 @@ bool PickingManager::pickingEnabled() {
                              ->getSettingsByType<SystemSettings>()
                              ->enablePickingProperty_;
 
-        enableCallback_ = picking->onChange([this, picking]() { enabled_ = picking->get(); });
+        enableCallback_ = picking->onChange([this, picking] { enabled_ = picking->get(); });
         enabled_ = picking->get();
     }
 

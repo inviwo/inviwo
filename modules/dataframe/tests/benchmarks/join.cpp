@@ -53,7 +53,7 @@ constexpr int maxValue = 32;
 constexpr int lenLeft = 32;
 constexpr int lenRight = 4096 << 1;
 
-const std::vector<int> left_ = []() {
+const std::vector<int> left_ = [] {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, maxValue);
@@ -66,13 +66,13 @@ const std::vector<int> left_ = []() {
     return left;
 }();
 
-const std::vector<int> right_ = []() {
+const std::vector<int> right_ = [] {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> right;
     right.resize(lenRight);
-    std::ranges::generate(right, [&]() { return distrib(gen); });
+    std::ranges::generate(right, [&] { return distrib(gen); });
     return right;
 }();
 
@@ -230,9 +230,9 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, max);
 
-    const auto columnData = [&]() {
+    const auto columnData = [&] {
         std::vector<int> data(size);
-        std::ranges::generate(data, [&]() { return distrib(gen); });
+        std::ranges::generate(data, [&] { return distrib(gen); });
         return data;
     };
 

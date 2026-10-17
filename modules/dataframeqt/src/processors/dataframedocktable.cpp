@@ -172,35 +172,35 @@ DataFrameDockTable::DataFrameDockTable()
     position_.setSerializationMode(PropertySerializationMode::None);
     visible_.setSerializationMode(PropertySerializationMode::None);
 
-    dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
-    position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
-    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
+    dimensions_.onChange([this] { widgetMetaData_->setDimensions(dimensions_.get()); });
+    position_.onChange([this] { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this] { widgetMetaData_->setVisible(visible_.get()); });
 
-    showIndexColumn_.onChange([this]() {
+    showIndexColumn_.onChange([this] {
         if (auto* w = getWidget()) {
             w->setIndexColumnVisible(showIndexColumn_);
         }
     });
-    showFilteredRowCols_.onChange([this]() {
+    showFilteredRowCols_.onChange([this] {
         if (auto* w = getWidget()) {
             w->setFilteredRowsVisible(showFilteredRowCols_);
         }
     });
 
-    parent_.onChange([this]() {
+    parent_.onChange([this] {
         if (auto* widget = getWidget()) {
             setWidgetParent(widget, parent_.get());
         }
     });
 
-    dockArea_.onChange([this]() {
+    dockArea_.onChange([this] {
         if (auto* widget = getWidget()) {
             setDockArea(widget, dockArea_.get());
         }
     });
 
-    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
-    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+    isSink_.setUpdate([this] { return processorWidget_ && processorWidget_->isVisible(); });
+    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)] -> ProcessorStatus {
         if (!processorWidget_ || !processorWidget_->isVisible()) {
             static constexpr std::string_view reason{"Table is not visible"};
             return {ProcessorStatus::NotReady, reason};

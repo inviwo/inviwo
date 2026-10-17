@@ -117,7 +117,7 @@ RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 
     addProperty(debugMesh_);
     debugMesh_.addProperty(sphereRadius_);
@@ -142,7 +142,7 @@ void RBFVectorFieldGenerator3D::process() {
     const vec3 offset = vec3(-1);
 
     std::vector<std::pair<dvec3, dvec3>> samples(seeds_.get());
-    std::ranges::generate(samples, [&]() {
+    std::ranges::generate(samples, [&] {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         const auto z = x_(mt_);

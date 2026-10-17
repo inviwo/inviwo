@@ -196,7 +196,7 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
                            FileMode fileMode, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
-    , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
+    , FileBase([this] { propertyModified(); }, acceptMode, fileMode, contentType)
     , file_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
     set(value);

@@ -64,7 +64,7 @@ ShaderComponentProcessorBase::ShaderComponentProcessorBase(
     , shader_{shaderResources, Shader::Build::No}
     , components_{} {
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(outport_, "images");
 }

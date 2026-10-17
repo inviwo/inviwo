@@ -68,7 +68,7 @@ void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
 
     if (message.empty()) return;
 
-    const auto logLevel = [&]() {
+    const auto logLevel = [&] {
         if (level >= 32) {
             return LogLevel::Info;
         } else if (level >= 24) {

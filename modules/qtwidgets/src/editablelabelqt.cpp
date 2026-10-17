@@ -98,7 +98,7 @@ QLineEdit* EditableLabelQt::getLineEdit() {
         lineEdit_->setSizePolicy(sizePolicy());
         layout()->addWidget(lineEdit_);
 
-        connect(lineEdit_, &QLineEdit::editingFinished, this, [&]() {
+        connect(lineEdit_, &QLineEdit::editingFinished, this, [&] {
             text_ = lineEdit_->text().toStdString();
             updateLabel(text_);
 

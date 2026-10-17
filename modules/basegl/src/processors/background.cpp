@@ -135,12 +135,12 @@ Background::Background()
     addProperties(backgroundStyle_, bgColor1_, bgColor2_, checkerBoardSize_, switchColors_,
                   blendMode_);
 
-    switchColors_.onChange([&]() {
+    switchColors_.onChange([&] {
         const vec4 tmp = bgColor1_.get();
         bgColor1_.set(bgColor2_.get());
         bgColor2_.set(tmp);
     });
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 Background::~Background() = default;
@@ -191,7 +191,7 @@ void Background::initializeResources() {
         hadData_ = false;
     }
 
-    const std::string_view blendfunc = [&]() {
+    const std::string_view blendfunc = [&] {
         switch (blendMode_.get()) {
             case BlendMode::BackToFront: return "blendBackToFront";
             case BlendMode::AlphaMixing: [[fallthrough]];

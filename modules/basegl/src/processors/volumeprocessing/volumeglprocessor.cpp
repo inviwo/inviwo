@@ -114,7 +114,7 @@ VolumeGLProcessor::VolumeGLProcessor(std::shared_ptr<const ShaderResource> fragm
     }
 
     addPorts(outport_);
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 VolumeGLProcessor::VolumeGLProcessor(std::string_view fragmentShader, VolumeConfig config,
@@ -133,7 +133,7 @@ void VolumeGLProcessor::process() {
 
     TextureUnitContainer cont;
 
-    auto config = [&]() {
+    auto config = [&] {
         if (inport_) {
             const auto srcVolume = inport_->getData();
             utilgl::bindAndSetUniforms(shader_, cont, *srcVolume, "volume");
@@ -180,7 +180,7 @@ void VolumeGLProcessor::process() {
             dataMinMaxGL_.emplace();
         }
         const auto [min, max] = dataMinMaxGL_->minMax(*dstVolume);
-        auto dataRange = [&]() -> glm::dvec2 {
+        auto dataRange = [&] -> glm::dvec2 {
             switch (dstVolume->getDataFormat()->getComponents()) {
                 case 1:  return {min.x, max.x};
                 case 2:  return {glm::compMin(dvec2{min}), glm::compMax(dvec2{max})};

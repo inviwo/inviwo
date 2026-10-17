@@ -111,10 +111,10 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     addProperty(persistence_);
     addProperty(colorCol_);
 
-    birth_.onChange([this]() { onXAxisChange(); });
-    death_.onChange([this]() { onYAxisChange(); });
-    persistence_.onChange([this]() { onYAxisChange(); });
-    colorCol_.onChange([this]() { onColorChange(); });
+    birth_.onChange([this] { onXAxisChange(); });
+    death_.onChange([this] { onYAxisChange(); });
+    persistence_.onChange([this] { onYAxisChange(); });
+    colorCol_.onChange([this] { onColorChange(); });
 }
 
 void PersistenceDiagramPlotProcessor::process() {

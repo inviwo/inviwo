@@ -450,7 +450,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                     const auto file = utilqt::toPath(filename);
 
                     loadConnection_ = QObject::connect(
-                        loadWorkspaceBtn_, &QToolButton::clicked, this, [this, file, isExample]() {
+                        loadWorkspaceBtn_, &QToolButton::clicked, this, [this, file, isExample] {
                             if (util::getModifierAction(QApplication::keyboardModifiers()) ==
                                 ModifierAction::OpenWithPath) {
                                 emit loadWorkspace(file, false);
@@ -460,7 +460,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                         });
                     appendConnection_ =
                         QObject::connect(appendWorkspaceBtn_, &QToolButton::clicked, this,
-                                         [this, file]() { emit appendWorkspace(file); });
+                                         [this, file] { emit appendWorkspace(file); });
                 }
             };
 
@@ -589,17 +589,17 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 });
             expandCollapseBtn->setCheckable(true);
             auto* gridListBtn =
-                createToolButton("Workspace Grid View", QIcon(":/svgicons/gridlist.svg"), [this]() {
+                createToolButton("Workspace Grid View", QIcon(":/svgicons/gridlist.svg"), [this] {
                     setSetting("showWorkSpaceGridView", true);
                     workspaceGridView_->setVisible(true);
                     workspaceTreeView_->setVisible(false);
                 });
-            auto* treeViewBtn = createToolButton("Workspace Tree View",
-                                                 QIcon(":svgicons/detaillist.svg"), [this]() {
-                                                     setSetting("showWorkSpaceGridView", false);
-                                                     workspaceGridView_->setVisible(false);
-                                                     workspaceTreeView_->setVisible(true);
-                                                 });
+            auto* treeViewBtn =
+                createToolButton("Workspace Tree View", QIcon(":svgicons/detaillist.svg"), [this] {
+                    setSetting("showWorkSpaceGridView", false);
+                    workspaceGridView_->setVisible(false);
+                    workspaceTreeView_->setVisible(true);
+                });
             toolbarLayout->addWidget(expandCollapseBtn);
             toolbarLayout->addWidget(gridListBtn);
             toolbarLayout->addWidget(treeViewBtn);
@@ -683,16 +683,15 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                                                   QSizePolicy::Minimum));
 
             newButton_ = createButton("New", ":/svgicons/newfile.svg", "Create an empty workspace",
-                                      "NewWorkspaceToolButton", [this]() { emit newWorkspace(); });
+                                      "NewWorkspaceToolButton", [this] { emit newWorkspace(); });
 
-            openButton_ =
-                createButton("Open...", ":/svgicons/open.svg", "Open workspace from disk",
-                             "OpenWorkspaceToolButton", [this]() { emit openWorkspace(); });
+            openButton_ = createButton("Open...", ":/svgicons/open.svg", "Open workspace from disk",
+                                       "OpenWorkspaceToolButton", [this] { emit openWorkspace(); });
 
             restoreButton_ =
                 createButton("Restore", ":/svgicons/revert.svg",
                              "Restore last automatically saved workspace if available",
-                             "OpenWorkspaceToolButton", [this]() { emit restoreWorkspace(); });
+                             "OpenWorkspaceToolButton", [this] { emit restoreWorkspace(); });
 
             auto* centerWidget = new QWidget();
             auto* centerLayout = new QVBoxLayout();
@@ -758,7 +757,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     handle(1)->setAttribute(Qt::WA_Hover);
 
     // hide changelog on screens with less width than 1400
-    const auto getScreen = []() { return utilqt::getApplicationMainWindow()->screen(); };
+    const auto getScreen = [] { return utilqt::getApplicationMainWindow()->screen(); };
 
     if (getScreen()->size().width() < 1400) {
         setSizes(QList<int>({1, 0}));
@@ -929,7 +928,7 @@ void WelcomeWidget::hideEvent(QHideEvent* event) {
 void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
     if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9) &&
         event->modifiers().testFlag(Qt::ControlModifier)) {
-        const int number = [key = event->key()]() {
+        const int number = [key = event->key()] {
             if (key == Qt::Key_0) return 9;
             return key - Qt::Key_1;
         }();
@@ -1063,7 +1062,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
         img.append("tr").append("td").append("h3", item.name, {{"style", "font-weight:600;"}});
         img.append("tr").append("td").append(
             "img", "",
-            {[&]() -> std::pair<const std::string, std::string> {
+            {[&] -> std::pair<const std::string, std::string> {
                  if (item.size.x > item.size.y) {
                      return {"width", std::to_string(std::min(maxImageSize, item.size.x))};
                  } else {
@@ -1184,7 +1183,7 @@ ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QS
         }
     });
 
-    connect(collapseButton_, &QToolButton::clicked, this, [this]() {
+    connect(collapseButton_, &QToolButton::clicked, this, [this] {
         auto* s = splitter();
         const int index = s->indexOf(this);
 

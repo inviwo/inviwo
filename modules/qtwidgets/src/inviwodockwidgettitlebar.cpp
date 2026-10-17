@@ -115,7 +115,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
     QObject::connect(stickyBtn_, &QToolButton::toggled, this,
                      &InviwoDockWidgetTitleBar::stickyBtnToggled);
     QObject::connect(floatBtn_, &QToolButton::clicked, this,
-                     [&]() { parent_->setFloating(!parent_->isFloating()); });
+                     [&] { parent_->setFloating(!parent_->isFloating()); });
     QObject::connect(closeBtn_, &QToolButton::clicked, parent_, &QDockWidget::close);
 
     parent_->installEventFilter(this);

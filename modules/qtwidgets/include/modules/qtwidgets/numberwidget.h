@@ -477,7 +477,7 @@ QString NumberWidget<T>::getTextFromValue(bool precise) const {
 template <typename T>
 std::tuple<std::optional<double>, BaseNumberWidget::PercentageBar>
 NumberWidget<T>::getPercentageBar() const {
-    const auto state = [&]() {
+    const auto state = [&] {
         if ((std::is_signed_v<T> && minValue_ == std::numeric_limits<T>::lowest()) ||
             maxValue_ == std::numeric_limits<T>::max()) {
             return PercentageBar::Invalid;

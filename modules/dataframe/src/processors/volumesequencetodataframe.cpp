@@ -109,17 +109,17 @@ VolumeSequenceToDataFrame::VolumeSequenceToDataFrame()
     addProperty(omitOutliers_);
     addProperty(threshold_);
 
-    reduce_.onChange([this]() { probability_.setVisible(reduce_.get()); });
+    reduce_.onChange([this] { probability_.setVisible(reduce_.get()); });
 
-    probability_.onChange([this]() {
+    probability_.onChange([this] {
         if (reduce_.get()) {
             invalidate(InvalidationLevel::InvalidResources);
         }
     });
 
-    omitOutliers_.onChange([this]() { threshold_.setVisible(omitOutliers_.get()); });
+    omitOutliers_.onChange([this] { threshold_.setVisible(omitOutliers_.get()); });
 
-    threshold_.onChange([this]() {
+    threshold_.onChange([this] {
         if (omitOutliers_.get()) {
             invalidate(InvalidationLevel::InvalidResources);
         }

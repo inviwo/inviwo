@@ -66,7 +66,7 @@ public:
         getBoolProperty()->setDisplayName("Sync");
 
         const auto sync = [&](Prop* current) {
-            return [this, current]() {
+            return [this, current] {
                 if (!getBoolProperty()->get()) return;
                 for (auto& prop : props) {
                     if (&prop != current) {

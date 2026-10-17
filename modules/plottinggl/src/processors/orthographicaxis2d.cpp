@@ -151,7 +151,7 @@ void OrthographicAxis2D::process() {
     const auto padding = axisMargin_.get();
 
     const auto scissorState =
-        [&]() -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
+        [&] -> std::optional<std::pair<utilgl::ScissorState, utilgl::GlBoolState>> {
         if (clipContent_) {
             return std::pair{
                 utilgl::ScissorState{

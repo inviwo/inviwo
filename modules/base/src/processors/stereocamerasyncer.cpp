@@ -73,7 +73,7 @@ StereoCameraSyncer::StereoCameraSyncer()
     addProperty(left_);
     addProperty(right_);
 
-    separation_.onChange([&]() {
+    separation_.onChange([&] {
         if (isChanging) return;
         const util::KeepTrueWhileInScope guard(&isChanging);
         left_.setLookFrom(master_.getLookFrom() - 0.5 * master_.getLookRight() * separation_.get());
@@ -81,7 +81,7 @@ StereoCameraSyncer::StereoCameraSyncer()
                            0.5 * master_.getLookRight() * separation_.get());
     });
 
-    master_.onChange([&]() {
+    master_.onChange([&] {
         if (isChanging) return;
         const util::KeepTrueWhileInScope guard(&isChanging);
         left_.set(&master_);
@@ -91,7 +91,7 @@ StereoCameraSyncer::StereoCameraSyncer()
                            0.5 * master_.getLookRight() * separation_.get());
     });
 
-    left_.onChange([&]() {
+    left_.onChange([&] {
         if (isChanging) return;
         const util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&left_);
@@ -100,7 +100,7 @@ StereoCameraSyncer::StereoCameraSyncer()
         right_.setLookFrom(left_.getLookFrom() + 1.0 * left_.getLookRight() * separation_.get());
     });
 
-    right_.onChange([&]() {
+    right_.onChange([&] {
         if (isChanging) return;
         const util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&right_);

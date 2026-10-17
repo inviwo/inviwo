@@ -111,7 +111,7 @@ OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
 
     supportedShaderVersions_.clear();
 
-    settings->btnOpenGLInfo_.onChange([this]() { printDetailedInfo(); });
+    settings->btnOpenGLInfo_.onChange([this] { printDetailedInfo(); });
 }
 
 OpenGLCapabilities::~OpenGLCapabilities() {

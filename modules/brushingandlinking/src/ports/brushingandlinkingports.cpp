@@ -274,7 +274,7 @@ void BrushingAndLinkingInport::invalidate(InvalidationLevel) {
 
 BrushingAndLinkingOutport::BrushingAndLinkingOutport(std::string_view identifier, Document help)
     : Outport(identifier, std::move(help)), manager_(this) {
-    isReady_.setUpdate([this]() { return invalidationLevel_ == InvalidationLevel::Valid; });
+    isReady_.setUpdate([this] { return invalidationLevel_ == InvalidationLevel::Valid; });
 }
 
 BrushingAndLinkingManager& BrushingAndLinkingOutport::getManager() { return manager_; }

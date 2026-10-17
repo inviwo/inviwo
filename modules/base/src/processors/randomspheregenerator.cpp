@@ -125,7 +125,7 @@ RandomSphereGenerator::RandomSphereGenerator()
 
     seed_.setSemantics(PropertySemantics::Text);
 
-    reseed_.onChange([&]() {
+    reseed_.onChange([&] {
         seed_.set(static_cast<glm::i64>(rand(0.0f, static_cast<float>(seed_.getMaxValue()))));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
     });
@@ -138,9 +138,9 @@ void RandomSphereGenerator::process() {
     const vec3 extent(scale_.get() * 2.0f);
     const vec3 delta(extent / vec3(gridDim_.get()));
 
-    const auto randPos = [&]() { return randVec3(-0.5f, 0.5f); };
-    const auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
-    const auto randRadius = [&]() { return size_.get() * rand(0.1f, 1.0f); };
+    const auto randPos = [&] { return randVec3(-0.5f, 0.5f); };
+    const auto randColor = [&] { return vec4(randVec3(0.5, 1.0), 1); };
+    const auto randRadius = [&] { return size_.get() * rand(0.1f, 1.0f); };
 
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified() ||
                        enablePicking_.isModified();

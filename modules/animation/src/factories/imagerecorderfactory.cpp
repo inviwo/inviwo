@@ -126,7 +126,7 @@ void ImageRecorder::record(const Layer& layer) {
     layer.getRepresentation<LayerRAM>();
     util::dispatchPool(
         app_, [writer = writer_, file = dir_ / fmt::format(fmt::runtime(format_), count_),
-               copy = std::shared_ptr<Layer>(layer.clone()), exception = exceptionProp_.get()]() {
+               copy = std::shared_ptr<Layer>(layer.clone()), exception = exceptionProp_.get()] {
             try {
                 writer->writeData(copy.get(), file);
             } catch (...) {

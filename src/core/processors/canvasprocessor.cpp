@@ -107,7 +107,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                   {0, ConstraintBehavior::Immutable},
                   {0, ConstraintBehavior::Mutable}}
     , imageTypeExt_{"fileExt", "Image Type",
-                    [app]() {
+                    [app] {
                         OptionPropertyState<FileExtension> opts{};
                         const auto exts =
                             app->getDataWriterFactory()->getExtensionsForType<Layer>();
@@ -130,11 +130,11 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     , saveLayerButton_{"saveLayer", "Save Image Layer",
                        "Save an image snapshot to the specified 'Output Directory' using the "
                        "image format specified by 'Image Type' and the current time as name"_help,
-                       [this]() { saveImageLayer(); }, InvalidationLevel::Valid}
+                       [this] { saveImageLayer(); }, InvalidationLevel::Valid}
     , saveLayerToFileButton_{"saveLayerToFile", "Save Image Layer to File...",
                              "Save the current layer to a file. This will open a save dialog to "
                              "specify the output file"_help,
-                             [this]() {
+                             [this] {
                                  if (const auto* layer = getVisibleLayer()) {
                                      util::saveLayer(*layer);
                                  } else {
@@ -185,15 +185,15 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     visible_.setSerializationMode(PropertySerializationMode::None);
     fullScreen_.setSerializationMode(PropertySerializationMode::None);
 
-    dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
-    position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
-    visible_.onChange([this]() { widgetMetaData_->setVisible(visible_.get()); });
-    fullScreen_.onChange([this]() { widgetMetaData_->setFullScreen(fullScreen_.get()); });
+    dimensions_.onChange([this] { widgetMetaData_->setDimensions(dimensions_.get()); });
+    position_.onChange([this] { widgetMetaData_->setPosition(position_.get()); });
+    visible_.onChange([this] { widgetMetaData_->setVisible(visible_.get()); });
+    fullScreen_.onChange([this] { widgetMetaData_->setFullScreen(fullScreen_.get()); });
 
-    enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
-    customInputDimensions_.onChange([this]() { sizeChanged(); });
-    keepAspectRatio_.onChange([this]() { sizeChanged(); });
-    aspectRatioScaling_.onChange([this]() { sizeChanged(); });
+    enableCustomInputDimensions_.onChange([this] { sizeChanged(); });
+    customInputDimensions_.onChange([this] { sizeChanged(); });
+    keepAspectRatio_.onChange([this] { sizeChanged(); });
+    aspectRatioScaling_.onChange([this] { sizeChanged(); });
 
     keepAspectRatio_.setVisible(false);
     customInputDimensions_.setVisible(false);
@@ -205,14 +205,14 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     colorLayer_.setVisible(false);
     colorLayer_.setSerializationMode(PropertySerializationMode::All);
 
-    visibleLayer_.onChange([&]() {
+    visibleLayer_.onChange([&] {
         if (inport_.hasData()) {
             const auto layers = inport_.getData()->getNumberOfColorLayers();
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         }
     });
 
-    evaluateWhenHidden_.onChange([this]() { setEvaluateWhenHidden(evaluateWhenHidden_.get()); });
+    evaluateWhenHidden_.onChange([this] { setEvaluateWhenHidden(evaluateWhenHidden_.get()); });
 
     imageTypeExt_.setSerializationMode(PropertySerializationMode::None);
 
@@ -220,7 +220,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                   imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
                   fullScreenEvent_, saveLayerEvent_, allowContextMenu_, evaluateWhenHidden_);
 
-    inport_.onConnect([&]() { sizeChanged(); });
+    inport_.onConnect([&] { sizeChanged(); });
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -410,12 +410,12 @@ bool CanvasProcessor::isContextMenuAllowed() const { return allowContextMenu_; }
 
 void CanvasProcessor::setEvaluateWhenHidden(bool value) {
     if (value) {
-        isSink_.setUpdate([]() { return true; });
+        isSink_.setUpdate([] { return true; });
         isReady_.setUpdate(getDefaultIsReadyUpdater(this));
     } else {
-        isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
+        isSink_.setUpdate([this] { return processorWidget_ && processorWidget_->isVisible(); });
         isReady_.setUpdate(
-            [this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+            [this, defaultCheck = getDefaultIsReadyUpdater(this)] -> ProcessorStatus {
                 if (!processorWidget_ || !processorWidget_->isVisible()) {
                     static constexpr std::string_view reason{"Canvas is not visible"};
                     return {ProcessorStatus::NotReady, reason};

@@ -306,7 +306,7 @@ bool RangeSliderQt::handleGrooveEvent(Groove groove, QEvent* event) {
     if (event->type() == QEvent::MouseButtonRelease) {
         if (const auto* me = static_cast<QMouseEvent*>(event); me->button() == Qt::LeftButton) {
 
-            const auto newSizes = [&]() -> QList<int> {
+            const auto newSizes = [&] -> QList<int> {
                 const auto sizes = QSplitter::sizes();
                 if (groove == Groove::Left) {
                     return {me->pos().x(), sizes[1] + (sizes[0] - me->pos().x()), sizes[2]};

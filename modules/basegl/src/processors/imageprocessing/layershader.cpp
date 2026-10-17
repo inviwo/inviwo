@@ -106,20 +106,20 @@ LayerShader::LayerShader()
               "Determines the data format of the output in combination with the number of "
               "channels. If set to `Same as Input`, the data format of the input layer is used "
               "instead with the exception of the number of channels."_help,
-              [&]() {
+              [&] {
                   std::vector<OptionPropertyOption<DataFormatId>> formats;
                   formats.emplace_back("asinput", "Same as Input", DataFormatId::NotSpecialized);
                   util::for_each_type<
                       std::tuple<DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32,
                                  DataInt64, DataUInt8, DataUInt16, DataUInt32, DataUInt64>>{}(
-                      [&]<typename Format>() {
+                      [&]<typename Format> {
                           formats.emplace_back(Format::str(), Format::str(), Format::id());
                       });
                   return formats;
               }(),
               0}
     , channels_{"outputChannels", "Output Channels",
-                []() {
+                [] {
                     OptionPropertyState<int> state{
                         .options = util::enumeratedOptions("Channels", 4, 1),
                         .selectedIndex = 0,
@@ -166,7 +166,7 @@ LayerShader::LayerShader()
 {
 
     fragmentShaderSource_.onChange(
-        [this]() { fragmentShader_->setSource(fragmentShaderSource_.get()); });
+        [this] { fragmentShader_->setSource(fragmentShaderSource_.get()); });
 
     dataRange_.comp.addProperties(dataRange_.input, dataRange_.mode, dataRange_.output);
     valueRange_.comp.addProperties(valueRange_.input, valueRange_.mode, valueRange_.output);
@@ -216,7 +216,7 @@ void LayerShader::postProcess(const Layer& input, [[maybe_unused]] Layer& output
 
 LayerConfig LayerShader::outputConfig(const Layer& input) const {
     const auto* inputFormat = inport_.getData()->getDataFormat();
-    const auto* format = [&]() {
+    const auto* format = [&] {
         const auto numericType = format_.get() == DataFormatId::NotSpecialized
                                      ? inputFormat->getNumericType()
                                      : DataFormatBase::get(format_)->getNumericType();
@@ -228,7 +228,7 @@ LayerConfig LayerShader::outputConfig(const Layer& input) const {
         return DataFormatBase::get(numericType, channels, precision);
     }();
 
-    const auto dataRange = [&]() {
+    const auto dataRange = [&] {
         if (dataRange_.mode.get() == 0) {
             return input.dataMap.dataRange;
         } else if (dataRange_.mode.get() == 1) {
@@ -238,7 +238,7 @@ LayerConfig LayerShader::outputConfig(const Layer& input) const {
         }
     };
 
-    const auto valueRange = [&]() {
+    const auto valueRange = [&] {
         if (valueRange_.mode.get() == 0) {
             return input.dataMap.valueRange;
         } else if (valueRange_.mode.get() == 1) {
@@ -248,7 +248,7 @@ LayerConfig LayerShader::outputConfig(const Layer& input) const {
         }
     };
 
-    const auto valueAxis = [&]() {
+    const auto valueAxis = [&] {
         if (valueAxis_.mode.get() == 0) {
             return input.dataMap.valueAxis;
         } else {

@@ -288,9 +288,9 @@ void WorkspaceManager::load(const std::filesystem::path& path,
     if (!file) {
         throw AbortException(SourceContext{}, "Could not open workspace file: {}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+    const util::OnScopeExit closeFile{[file] { std::fclose(file); }};
 
-    const long length = [&]() {
+    const long length = [&] {
         std::fseek(file, 0, SEEK_END);
         const auto len = std::ftell(file);
         std::fseek(file, 0, SEEK_SET);

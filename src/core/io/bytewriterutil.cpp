@@ -50,7 +50,7 @@ void writeUncompressedBytes(const std::filesystem::path& path, const void* sourc
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+    const util::OnScopeExit closeFile{[file] { std::fclose(file); }};
 
     if (std::fwrite(source, bytes, 1, file) != 1) {
         throw DataReaderException(SourceContext{}, "Could not write to file: {:?g}", path);

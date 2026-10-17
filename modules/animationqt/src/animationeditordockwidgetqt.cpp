@@ -145,7 +145,7 @@ QAction* createPlayPause(AnimationController& controller) {
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     action->setToolTip("Play/Pause");
 
-    QObject::connect(action, &QAction::triggered, [ctrl = &controller]() {
+    QObject::connect(action, &QAction::triggered, [ctrl = &controller] {
         if (ctrl->getState() == AnimationState::Playing) {
             ctrl->pause();
         } else if (ctrl->getState() == AnimationState::Paused) {
@@ -274,7 +274,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         auto* newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Animation"), this);
         newAction->setToolTip("New Animation");
         addAction(newAction);
-        connect(newAction, &QAction::triggered, this, [this]() {
+        connect(newAction, &QAction::triggered, this, [this] {
             animationsList_->addItem(
                 utilqt::toQString(fmt::format("Animation {}", animations_.size() + 1)));
             animationsList_->setCurrentIndex(animationsList_->count() - 1);
@@ -286,7 +286,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         auto* importAction =
             new QAction(QIcon(":/svgicons/open.svg"), tr("&Import Animation"), this);
         addAction(importAction);
-        connect(importAction, &QAction::triggered, this, [this]() { importAnimation(); });
+        connect(importAction, &QAction::triggered, this, [this] { importAnimation(); });
         toolBar->addAction(importAction);
     }
 
@@ -296,7 +296,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         deleteAction->setToolTip("Remove Animation");
         addAction(deleteAction);
         connect(deleteAction, &QAction::triggered, this,
-                [this]() { animationsList_->removeItem(animationsList_->currentIndex()); });
+                [this] { animationsList_->removeItem(animationsList_->currentIndex()); });
         toolBar->addAction(deleteAction);
     }
 
@@ -311,7 +311,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
 
     // Double click if less than 0.5 seconds since last press
     auto isKeyDoublePressed = [lastKeyEventTimestamp =
-                                   std::chrono::system_clock::now()]() mutable -> bool {
+                                   std::chrono::system_clock::now()] mutable -> bool {
         const auto timestamp = std::chrono::system_clock::now();
         const std::chrono::duration<double> doublePressThreshold(0.500);
         const bool isDoublePress = (timestamp - lastKeyEventTimestamp) < doublePressThreshold;
@@ -327,7 +327,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         begin->setToolTip("To Beginning");
         mainWindow_->addAction(begin);
         connect(begin, &QAction::triggered,
-                [&]() { controller_.eval(controller_.getCurrentTime(), Seconds(0.0)); });
+                [&] { controller_.eval(controller_.getCurrentTime(), Seconds(0.0)); });
     }
 
     {
@@ -336,7 +336,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         prevControlKeyframe->setShortcut(Qt::Key_PageUp);
         prevControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prevControlKeyframe->setToolTip("Previous Control Keyframe");
-        connect(prevControlKeyframe, &QAction::triggered, [&]() {
+        connect(prevControlKeyframe, &QAction::triggered, [&] {
             if (isKeyDoublePressed()) {
                 if (controller_.getAnimation().hasTrackType<ControlTrack>()) {
                     controller_.jumpToPrevKeyframe();
@@ -364,7 +364,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         prev->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         prev->setToolTip("Prev Key");
         mainWindow_->addAction(prev);
-        connect(prev, &QAction::triggered, [&]() { controller_.jumpToPrevKeyframe(); });
+        connect(prev, &QAction::triggered, [&] { controller_.jumpToPrevKeyframe(); });
     }
 
     toolBar->addAction(playPause_);
@@ -377,7 +377,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         next->setToolTip("Next Key");
         mainWindow_->addAction(next);
-        connect(next, &QAction::triggered, [&]() { controller_.jumpToNextKeyframe(); });
+        connect(next, &QAction::triggered, [&] { controller_.jumpToNextKeyframe(); });
     }
 
     {
@@ -386,7 +386,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         nextControlKeyframe->setShortcut(Qt::Key_PageDown);
         nextControlKeyframe->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         nextControlKeyframe->setToolTip("Next Control Keyframe");
-        connect(nextControlKeyframe, &QAction::triggered, [&]() {
+        connect(nextControlKeyframe, &QAction::triggered, [&] {
             if (isKeyDoublePressed()) {
                 // Jump to next keyframe
                 if (controller_.getAnimation().getTracksOfType<ControlTrack>().empty()) {
@@ -415,7 +415,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
         end->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         end->setToolTip("To End");
         mainWindow_->addAction(end);
-        connect(end, &QAction::triggered, [&]() {
+        connect(end, &QAction::triggered, [&] {
             const auto endTime = controller_.getAnimation().getLastTime();
             controller_.eval(controller_.getCurrentTime(), endTime);
         });

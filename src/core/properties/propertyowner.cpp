@@ -384,7 +384,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
         "Properties", properties_, "Property",
         deserializer::IdentifierFunctions{
             .getID = [](Property* const& p) -> std::string_view { return p->getIdentifier(); },
-            .makeNew = []() -> Property* { return nullptr; },
+            .makeNew = [] -> Property* { return nullptr; },
             .shouldMakeNew = [&](std::string_view id, size_t) -> bool {
                 return util::contains(ownedIdentifiers, id);
             },

@@ -56,9 +56,9 @@ DemoController::DemoController(InviwoApplication* app)
     demoFolder_.setFileMode(FileMode::Directory);
     addProperty(demoFolder_);
     addProperty(demoFile_);
-    demoFolder_.onChange([this]() { setFileOptions(); });
+    demoFolder_.onChange([this] { setFileOptions(); });
 
-    demoFile_.onChange([this]() {
+    demoFile_.onChange([this] {
         if (updateWorkspace_) onChangeSelection(Offset::Reload);
     });
 }

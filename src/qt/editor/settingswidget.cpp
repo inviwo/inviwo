@@ -76,9 +76,9 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
     onModulesDidRegister_ =
         mainwindow->getInviwoApplication()->getModuleManager().onModulesDidRegister(
-            [&]() { updateSettingsWidget(); });
+            [&] { updateSettingsWidget(); });
     onModulesWillUnregister_ =
-        mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&]() {
+        mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&] {
             while (auto* item = layout_->takeAt(0)) {
                 delete item;
             }

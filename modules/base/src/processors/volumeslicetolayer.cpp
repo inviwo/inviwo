@@ -128,7 +128,7 @@ dvec3 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis,
     const auto dims = v->getDimensions();
     const auto offset = v->getOwner()->getOffset();
     const auto basis = v->getOwner()->getBasis();
-    const auto t = [&]() {
+    const auto t = [&] {
         using enum VolumeSliceToLayer::SlicePosition;
         switch (position) {
             case Minimum:  return dvec3{0.0f};

@@ -74,8 +74,8 @@ ImageResample::ImageResample()
     , targetResolution_("targetResolution", "Target Resolution", ivec2(256, 256), ivec2(32, 32),
                         ivec2(4096, 4096), ivec2(1, 1)) {
 
-    outputSizeMode_.onChange([this]() { dimensionSourceChanged(); });
-    targetResolution_.onChange([this]() { dimensionChanged(); });
+    outputSizeMode_.onChange([this] { dimensionSourceChanged(); });
+    targetResolution_.onChange([this] { dimensionChanged(); });
 
     addProperties(interpolationType_, outputSizeMode_, targetResolution_);
 }

@@ -152,9 +152,9 @@ HeightFieldProcessor::HeightFieldProcessor()
     addProperties(heightScale_, terrainShadingMode_, vertexShaderSource_, camera_,
                   lightingProperty_, trackball_);
 
-    vertexShaderSource_.onChange([this]() { vertexShader_->setSource(vertexShaderSource_.get()); });
+    vertexShaderSource_.onChange([this] { vertexShader_->setSource(vertexShaderSource_.get()); });
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 HeightFieldProcessor::~HeightFieldProcessor() = default;

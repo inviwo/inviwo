@@ -65,17 +65,17 @@ LayerSeriesSource::LayerSeriesSource(InviwoApplication* app)
     addPorts(outport_);
     addProperties(filePattern_, findFilesButton_, currentIndex_, fileName_);
 
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return !fileList_.empty(); });
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] { return !fileList_.empty(); });
 
     validExtensions_ = util::getDataReaderFactory(app)->getExtensionsForType<Layer>();
     filePattern_.addNameFilters(validExtensions_);
 
-    filePattern_.onChange([&]() {
+    filePattern_.onChange([&] {
         onFindFiles();
         isReady_.update();
     });
-    findFilesButton_.onChange([&]() {
+    findFilesButton_.onChange([&] {
         onFindFiles();
         isReady_.update();
     });

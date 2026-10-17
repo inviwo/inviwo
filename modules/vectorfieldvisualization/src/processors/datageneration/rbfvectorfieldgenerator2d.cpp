@@ -111,11 +111,11 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() {
+    useSameSeed_.onChange([&] {
         seed_.setVisible(useSameSeed_.get());
         samples_.clear();
     });
-    seed_.onChange([&]() { samples_.clear(); });
+    seed_.onChange([&] { samples_.clear(); });
 }
 
 RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() = default;
@@ -194,7 +194,7 @@ void RBFVectorFieldGenerator2D::createSamples() {
 
     samples_.resize(seeds_.get());
 
-    std::ranges::generate(samples_, [&]() {
+    std::ranges::generate(samples_, [&] {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         return std::make_pair(dvec2(x, y), randomVector());

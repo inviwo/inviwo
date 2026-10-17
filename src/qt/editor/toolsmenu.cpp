@@ -94,7 +94,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
         auto* modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
         for (const auto& pfo : processors) {
             auto* action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
-            QMenu::connect(action, &QAction::triggered, [pfo, factory]() {
+            QMenu::connect(action, &QAction::triggered, [pfo, factory] {
                 const auto processor = factory->createShared(pfo->getClassIdentifier());
                 const auto& inports = processor->getInports();
                 const auto& outports = processor->getOutports();
@@ -155,7 +155,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
         auto* action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
         QObject::connect(
-            action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app]() {
+            action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app] {
                 bool ok = false;
                 const auto name = QInputDialog::getText(
                     parent, "Create Regression Test", "Regression test name", QLineEdit::Normal, "",
@@ -199,13 +199,13 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
 
 ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     auto* docsMenu = addMenu("Create &Processors Docs");
-    connect(docsMenu, &QMenu::aboutToShow, [docsMenu, win]() {
+    connect(docsMenu, &QMenu::aboutToShow, [docsMenu, win] {
         docsMenu->clear();
         createProcessorDocMenu(win->getInviwoApplication(), docsMenu);
     });
 
     auto* regressionMenu = addMenu("Create &Regression Test");
-    connect(regressionMenu, &QMenu::aboutToShow, [regressionMenu, win]() {
+    connect(regressionMenu, &QMenu::aboutToShow, [regressionMenu, win] {
         regressionMenu->clear();
         createRegressionActions(win, win->getInviwoApplication(), regressionMenu);
     });
@@ -222,9 +222,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     loadExampleWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces");
-    connect(loadExampleWorkspaces, &QAction::triggered, [win]() {
+    connect(loadExampleWorkspaces, &QAction::triggered, [win] {
         try {
-            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, []() {
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, [] {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
@@ -235,9 +235,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     auto* updateExampleWorkspaces = workspaceMenu->addAction("Update Example Workspaces");
     updateExampleWorkspaces->setToolTip(
         "Load and save each workspace after each other, useful to update workspace versions");
-    connect(updateExampleWorkspaces, &QAction::triggered, [win]() {
+    connect(updateExampleWorkspaces, &QAction::triggered, [win] {
         try {
-            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No, []() {
+            util::updateExampleWorkspaces(win->getInviwoApplication(), util::DryRun::No, [] {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
@@ -249,9 +249,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     loadRegressionWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces");
-    connect(loadRegressionWorkspaces, &QAction::triggered, [win]() {
+    connect(loadRegressionWorkspaces, &QAction::triggered, [win] {
         try {
-            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, []() {
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::Yes, [] {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
@@ -263,9 +263,9 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     updateRegressionWorkspaces->setToolTip(
         "Load and save each workspace after each other, useful to update workspace versions");
 
-    connect(updateRegressionWorkspaces, &QAction::triggered, [win]() {
+    connect(updateRegressionWorkspaces, &QAction::triggered, [win] {
         try {
-            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No, []() {
+            util::updateRegressionWorkspaces(win->getInviwoApplication(), util::DryRun::No, [] {
                 qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
             });
         } catch (const Exception& e) {
@@ -277,7 +277,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     loadWorkspaces->setToolTip(
         "Load each workspace after each other, useful to see if there are any problems when load "
         "the workspaces. Loads all workspace found in the folder recursively.");
-    connect(loadWorkspaces, &QAction::triggered, [win]() {
+    connect(loadWorkspaces, &QAction::triggered, [win] {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
         dialog.setFileMode(FileMode::Directory);
         dialog.setAcceptMode(AcceptMode::Open);
@@ -286,7 +286,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
             const QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
-                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes, []() {
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::Yes, [] {
                     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
                 });
             } catch (const Exception& e) {
@@ -300,7 +300,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
         "Load and save each workspace after each other, useful to update workspace versions. Loads "
         "all workspace found in the folder recursively.");
 
-    connect(updateWorkspaces, &QAction::triggered, [win]() {
+    connect(updateWorkspaces, &QAction::triggered, [win] {
         InviwoFileDialog dialog(nullptr, "workspace", "Workspace Directory");
         dialog.setFileMode(FileMode::Directory);
         dialog.setAcceptMode(AcceptMode::Open);
@@ -309,7 +309,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
             const QString qpath = dialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
             try {
-                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No, []() {
+                util::updateWorkspaces(win->getInviwoApplication(), path, util::DryRun::No, [] {
                     qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
                 });
             } catch (const Exception& e) {
@@ -319,7 +319,7 @@ ToolsMenu::ToolsMenu(InviwoMainWindow* win) : QMenu(tr("&Tools"), win) {
     });
 
     auto* propertyPaths = workspaceMenu->addAction("Load and log all properties");
-    connect(propertyPaths, &QAction::triggered, [win]() {
+    connect(propertyPaths, &QAction::triggered, [win] {
         auto* app = win->getInviwoApplication();
         auto* factory = app->getProcessorFactory();
 

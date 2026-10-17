@@ -89,8 +89,7 @@ DrawLines::DrawLines()
                 util::ordinalScale(1.f, 10.f).set("Defines size of all lines."_help))
     , lineColor_("lineColor", "Line Color",
                  util::ordinalColor(vec4(1.f)).set("Defines color of all lines."_help))
-    , clearButton_("clearButton", "Clear Lines", "Clear all lines."_help,
-                   [this]() { clearLines(); })
+    , clearButton_("clearButton", "Clear Lines", "Clear all lines."_help, [this] { clearLines(); })
     , mouseDraw_(
           "mouseDraw", "Draw Line", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
           MouseStates(flags::any), KeyModifier::Control)
@@ -107,7 +106,7 @@ DrawLines::DrawLines()
 
     addProperties(lineSize_, lineColor_, clearButton_, mouseDraw_, keyEnableDraw_);
 
-    lineShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    lineShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     lines_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 

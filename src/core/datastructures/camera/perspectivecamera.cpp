@@ -87,7 +87,7 @@ void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
         util::updateOrCreateCameraFovProperty(
-            cp, [this]() { return getFovy(); },
+            cp, [this] { return getFovy(); },
             [this](const double& val) {
                 if (fovy_ != val) {
                     fovy_ = val;

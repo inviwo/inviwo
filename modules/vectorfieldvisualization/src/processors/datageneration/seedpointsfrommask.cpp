@@ -101,11 +101,11 @@ SeedPointsFromMask::SeedPointsFromMask()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 
     superSample_.setVisible(false);
     randomness_.setVisible(false);
-    enableSuperSample_.onChange([&]() {
+    enableSuperSample_.onChange([&] {
         superSample_.setVisible(enableSuperSample_.get());
         randomness_.setVisible(enableSuperSample_.get());
     });

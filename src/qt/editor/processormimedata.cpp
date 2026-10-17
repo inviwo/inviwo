@@ -43,7 +43,7 @@ namespace inviwo {
 ProcessorMimeData::ProcessorMimeData(std::shared_ptr<Processor> processor)
     : QMimeData{}
     , processor_{std::move(processor)}
-    , activateContext_{[]() { rendercontext::activateDefault(); }} {
+    , activateContext_{[] { rendercontext::activateDefault(); }} {
 
     const auto cid = utilqt::toQString(processor_->getClassIdentifier());
 

@@ -102,7 +102,7 @@ DataExport<DataType, PortType>::DataExport(DataWriterFactory* wf, const std::fil
     addPort(port_);
     addProperty(file_);
     file_.setAcceptMode(AcceptMode::Save);
-    export_.onChange([&]() {
+    export_.onChange([&] {
         if (port_.hasData()) {
             if (file_.get().empty()) {
                 file_.requestFile();

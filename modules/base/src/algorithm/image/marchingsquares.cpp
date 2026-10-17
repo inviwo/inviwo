@@ -82,7 +82,7 @@ constexpr std::array<std::pair<size_t, std::array<std::pair<int, int>, 2>>, 16> 
 
 }  // namespace detail
 
-constexpr std::array<std::span<const std::pair<int, int>>, 16> marchingSquareCases = []() {
+constexpr std::array<std::span<const std::pair<int, int>>, 16> marchingSquareCases = [] {
     std::array<std::span<const std::pair<int, int>>, detail::msCases.size()> result;
     std::ranges::transform(detail::msCases, result.begin(),
                            [](auto& item) -> std::span<const std::pair<int, int>> {

@@ -114,7 +114,7 @@ static void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr w
         throw DataWriterException(SourceContext{},
                                   "Internal PNG Error: Failed to create write struct");
     }
-    util::OnScopeExit cleanup([&]() { png_destroy_write_struct(&png_ptr, nullptr); });
+    util::OnScopeExit cleanup([&] { png_destroy_write_struct(&png_ptr, nullptr); });
 
     png_set_error_fn(
         png_ptr, nullptr,
@@ -129,12 +129,12 @@ static void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr w
                                   "Internal PNG Error: Failed to create info struct");
     }
     util::OnScopeExit cleanup2 = std::move(cleanup);
-    cleanup2.setAction([&]() { png_destroy_write_struct(&png_ptr, &info_ptr); });
+    cleanup2.setAction([&] { png_destroy_write_struct(&png_ptr, &info_ptr); });
 
     png_set_write_fn(png_ptr, ioPtr, writeFunc, flushFunc);
 
     const auto df = ram->getDataFormat();
-    const auto color_type = [&]() {
+    const auto color_type = [&] {
         switch (df->getComponents()) {
             case 1: return PNG_COLOR_TYPE_GRAY;
             case 2: return PNG_COLOR_TYPE_GRAY_ALPHA;
@@ -213,7 +213,7 @@ void PNGLayerWriter::writeData(const Layer* data, const std::filesystem::path& f
     if (!fp) {
         throw DataWriterException(SourceContext{}, "Failed to open file for writing, {}", filePath);
     }
-    const util::OnScopeExit closeFile([&fp]() { fclose(fp); });
+    const util::OnScopeExit closeFile([&fp] { fclose(fp); });
 
     writeData(data, fp);
 }

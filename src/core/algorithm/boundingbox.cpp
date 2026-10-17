@@ -187,7 +187,7 @@ std::optional<dmat4> calcBoundingBox(const std::vector<std::shared_ptr<Volume>>&
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer) {
-    return [port = &layer]() -> std::optional<dmat4> {
+    return [port = &layer] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -196,7 +196,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer>& layer
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0>& layers) {
-    return [port = &layers]() -> std::optional<dmat4> {
+    return [port = &layers] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -205,7 +205,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0>& la
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0, true>& layers) {
-    return [port = &layers]() -> std::optional<dmat4> {
+    return [port = &layers] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -214,7 +214,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Layer, 0, tru
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Layer>& layer) {
-    return [port = &layer]() -> std::optional<dmat4> {
+    return [port = &layer] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -224,7 +224,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Layer>& laye
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh>& mesh) {
-    return [port = &mesh]() -> std::optional<dmat4> {
+    return [port = &mesh] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -233,7 +233,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh>& mesh) 
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0>& meshes) {
-    return [port = &meshes]() -> std::optional<dmat4> {
+    return [port = &meshes] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(port->getVectorData());
         } else {
@@ -242,7 +242,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0>& mes
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0, true>& meshes) {
-    return [port = &meshes]() -> std::optional<dmat4> {
+    return [port = &meshes] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(port->getVectorData());
         } else {
@@ -251,7 +251,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Mesh, 0, true
     };
 }
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Mesh>& mesh) {
-    return [port = &mesh]() -> std::optional<dmat4> {
+    return [port = &mesh] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -261,7 +261,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Mesh>& mesh)
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const DataInport<Volume>& volume) {
-    return [port = &volume]() -> std::optional<dmat4> {
+    return [port = &volume] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -271,7 +271,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataInport<Volume>& volu
 }
 std::function<std::optional<dmat4>()> boundingBox(
     const DataInport<std::vector<std::shared_ptr<Volume>>>& volumes) {
-    return [port = &volumes]() -> std::optional<dmat4> {
+    return [port = &volumes] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -281,7 +281,7 @@ std::function<std::optional<dmat4>()> boundingBox(
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Volume>& volume) {
-    return [port = &volume]() -> std::optional<dmat4> {
+    return [port = &volume] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {
@@ -292,7 +292,7 @@ std::function<std::optional<dmat4>()> boundingBox(const DataOutport<Volume>& vol
 std::function<std::optional<dmat4>()> boundingBox(
     const DataOutport<std::vector<std::shared_ptr<Volume>>>& volumes) {
 
-    return [port = &volumes]() -> std::optional<dmat4> {
+    return [port = &volumes] -> std::optional<dmat4> {
         if (port->hasData()) {
             return calcBoundingBox(*port->getData());
         } else {

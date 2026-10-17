@@ -97,7 +97,7 @@ void exposeLogging(pybind11::module& m) {
              py::arg("function") = "", py::arg("line") = 0, py::arg("msg") = "");
 
     py::classh<LogCentral, Logger>(m, "LogCentral")
-        .def(py::init([]() {
+        .def(py::init([] {
             auto lc = std::make_unique<LogCentral>();
             if (!LogCentral::isInitialized()) {
                 LogCentral::init(lc.get());
@@ -163,7 +163,7 @@ void exposeLogging(pybind11::module& m) {
 
     m.def(
         "logCentral",
-        []() {
+        [] {
             if (LogCentral::isInitialized()) {
                 return LogCentral::getPtr();
             } else {

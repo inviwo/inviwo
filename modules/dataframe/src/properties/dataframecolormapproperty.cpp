@@ -67,7 +67,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
     , tf{"tf", "Colormap"}
     , dataframe_(port.getData()) {
 
-    overrideColormap.onChange([&]() {
+    overrideColormap.onChange([&] {
         if (*overrideColormap) {
             colormapChanged_.reset();
             for (auto p : colormaps_) {
@@ -79,7 +79,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
         tf.setReadOnly(!*overrideColormap);
     });
 
-    selectedColorAxis.onChange([&]() {
+    selectedColorAxis.onChange([&] {
         if (selectedColorAxis.empty() || colormaps_.size() != selectedColorAxis.size() ||
             overrideColormap) {
             return;
@@ -89,7 +89,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
             colormaps_[i]->setVisible(std::cmp_equal(i, *selectedColorAxis));
         }
 
-        const auto updateColormap = [&]() {
+        const auto updateColormap = [&] {
             if (colormaps_.size() <= static_cast<size_t>(*selectedColorAxis)) return;
             auto cm = dynamic_cast<const ColormapProperty*>(colormaps_[selectedColorAxis]);
             if (cm) *tf = cm->getTransferFunction();
@@ -101,7 +101,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
 
     addProperties(selectedColorAxis, overrideColormap, tf);
 
-    port.onChange([this, portPtr = &port]() {
+    port.onChange([this, portPtr = &port] {
         if (portPtr->hasData()) {
             createOrUpdateProperties(portPtr->getData());
         }
@@ -119,7 +119,7 @@ void DataFrameColormapProperty::createOrUpdateProperties(
         std::string displayName = "Settings";
         std::string identifier = util::stripIdentifier(c->getHeader());
 
-        auto colormapProp = [&]() -> ColormapProperty* {
+        auto colormapProp = [&] -> ColormapProperty* {
             if (auto p = getPropertyByIdentifier(identifier)) {
                 if (auto prop = dynamic_cast<ColormapProperty*>(p)) {
                     return prop;

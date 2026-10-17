@@ -81,7 +81,7 @@ void MeshTexturing::setUniforms(Shader& shader) const {
 }
 
 void MeshTexturing::addDefines(Shader& shader) const {
-    const auto func = [&]() -> std::string_view {
+    const auto func = [&] -> std::string_view {
         switch (blendMode.get()) {
             case BlendMode::Source:        return "sourceBlend";
             case BlendMode::Destination:   return "destinationBlend";

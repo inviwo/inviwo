@@ -109,7 +109,7 @@ Point3DGenerationProcessor::Point3DGenerationProcessor()
     addPort(outport_);
 
     const auto center = [](auto& item) {
-        const auto callback = [&item]() {
+        const auto callback = [&item] {
             if (item.autoCenter) {
                 item.offset.set(-0.5 * (item.a1.get() + item.a2.get() + item.a3.get()));
             }
@@ -117,7 +117,7 @@ Point3DGenerationProcessor::Point3DGenerationProcessor()
         item.a1.onChange(callback);
         item.a2.onChange(callback);
         item.a3.onChange(callback);
-        item.autoCenter.onChange([&item, callback]() {
+        item.autoCenter.onChange([&item, callback] {
             item.offset.setReadOnly(item.autoCenter);
             if (item.autoCenter) callback();
         });

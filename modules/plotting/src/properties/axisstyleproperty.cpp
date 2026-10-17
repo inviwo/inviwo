@@ -61,7 +61,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                {{.name = "A+",
                  .tooltip = "Increase font size (Ctrl+Plus)",
                  .action =
-                     [this]() {
+                     [this] {
                          const NetworkLock lock(this);
                          for (auto* a : axes_) {
                              a->captionSettings_.font_.fontSize_.set(
@@ -73,7 +73,7 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
                 {.name = "A-",
                  .tooltip = "Decrease font size (Ctrl+Minus)",
                  .action =
-                     [this]() {
+                     [this] {
                          const NetworkLock lock(this);
                          for (auto* a : axes_) {
                              a->captionSettings_.font_.fontSize_.set(
@@ -110,44 +110,44 @@ AxisStyleProperty::AxisStyleProperty(std::string_view identifier, std::string_vi
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
-    fontFace_.onChange([this]() {
+    fontFace_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setFontFace(fontFace_);
         }
     });
-    color_.onChange([this]() {
+    color_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setColor(color_);
         }
     });
-    lineWidth_.onChange([this]() {
+    lineWidth_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setLineWidth(lineWidth_);
         }
     });
-    tickLength_.onChange([this]() {
+    tickLength_.onChange([this] {
         const NetworkLock lock(this);
         const auto len = tickLength_.get();
         for (auto* a : axes_) {
             a->setTickLength(len, 0.75f * len);
         }
     });
-    labelingAlgorithm_.onChange([this]() {
+    labelingAlgorithm_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setLabelingAlgorithm(labelingAlgorithm_);
         }
     });
-    numberOfTicks_.onChange([this]() {
+    numberOfTicks_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setNumberOfTicks(numberOfTicks_);
         }
     });
-    labelFormat_.onChange([this]() {
+    labelFormat_.onChange([this] {
         const NetworkLock lock(this);
         for (auto* a : axes_) {
             a->setLabelFormat(labelFormat_);

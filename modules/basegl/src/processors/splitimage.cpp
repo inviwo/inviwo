@@ -99,7 +99,7 @@ SplitImage::SplitImage()
 
     addProperties(splitDirection_, splitPosition_, splitterSettings_);
 
-    renderer_.setInvalidateAction([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    renderer_.setInvalidateAction([this] { invalidate(InvalidationLevel::InvalidOutput); });
     renderer_.setDragAction([this](float pos, int) { splitPosition_.set(pos); });
 }
 

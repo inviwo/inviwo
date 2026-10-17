@@ -62,7 +62,7 @@ static inline void checkContext(std::string_view error, Canvas::ContextID org,
 }
 
 size_t BufferObjectArray::maxSize() {
-    static const size_t size = []() {
+    static const size_t size = [] {
         GLint glsize = 0;
         // usually about 16 should be more than BufferType::NumberOfBufferTypes.
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &glsize);

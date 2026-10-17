@@ -98,11 +98,11 @@ PCPAxisSettings::PCPAxisSettings(std::string_view identifier, std::string_view d
     range.setSerializationMode(PropertySerializationMode::All);
     invertRange.setSerializationMode(PropertySerializationMode::All);
 
-    range.onRangeChange([this]() {
+    range.onRangeChange([this] {
         if (pcp_) pcp_->updateAxisRange(*this);
     });
 
-    range.onChange([this]() {
+    range.onChange([this] {
         updateBrushing();
         if (pcp_) pcp_->updateBrushing(*this);
     });
@@ -116,11 +116,11 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
 
     addProperties(range, invertRange);
 
-    range.onRangeChange([this]() {
+    range.onRangeChange([this] {
         if (pcp_) pcp_->updateAxisRange(*this);
     });
 
-    range.onChange([this]() {
+    range.onChange([this] {
         updateBrushing();
         if (pcp_) pcp_->updateBrushing(*this);
     });

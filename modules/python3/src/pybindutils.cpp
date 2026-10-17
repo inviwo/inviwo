@@ -66,7 +66,7 @@ pybind11::dtype toNumPyFormat(const DataFormatBase* df) {
 }
 
 const DataFormatBase* getDataFormat(pybind11::ssize_t components, pybind11::array& arr) {
-    const auto numType = [&]() {
+    const auto numType = [&] {
         const auto k = arr.dtype().kind();
         if (k == 'f') {
             return NumericType::Float;
@@ -100,7 +100,7 @@ std::unique_ptr<BufferBase> createBuffer(pybind11::array& arr) {
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<BufferBase>, dispatching::filter::All>(
-            df->getId(), [&]<typename Type>() {
+            df->getId(), [&]<typename Type> {
                 auto buf = std::make_unique<Buffer<Type>>(arr.shape(0));
                 memcpy(buf->getEditableRAMRepresentation()->getData(), arr.data(0), arr.nbytes());
                 return buf;
@@ -122,7 +122,7 @@ std::unique_ptr<Layer> createLayer(pybind11::array& arr) {
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<Layer>, dispatching::filter::All>(
-            df->getId(), [&]<typename Type>() {
+            df->getId(), [&]<typename Type> {
                 const size2_t dims(arr.shape(1), arr.shape(0));
                 const auto layerRAM = std::make_shared<LayerRAMPrecision<Type>>(dims);
                 memcpy(layerRAM->getData(), arr.data(0), arr.nbytes());
@@ -145,7 +145,7 @@ std::unique_ptr<Volume> createVolume(pybind11::array& arr) {
 
     if (pybind11::array::c_style == (arr.flags() & pybind11::array::c_style)) {
         return dispatching::singleDispatch<std::unique_ptr<Volume>, dispatching::filter::All>(
-            df->getId(), [&]<typename Type>() {
+            df->getId(), [&]<typename Type> {
                 const size3_t dims(arr.shape(2), arr.shape(1), arr.shape(0));
                 const auto volumeRAM = std::make_shared<VolumeRAMPrecision<Type>>(dims);
                 memcpy(volumeRAM->getData(), arr.data(0), arr.nbytes());

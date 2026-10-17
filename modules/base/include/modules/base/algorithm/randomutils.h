@@ -178,7 +178,7 @@ template <typename T, typename Rand = std::mt19937,
 void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
     std::generate(data, data + numberOfElements,
-                  [&]() { return distribution(randomNumberGenerator); });
+                  [&] { return distribution(randomNumberGenerator); });
 }
 
 /**
@@ -191,7 +191,7 @@ template <typename T, typename Rand = std::mt19937,
                                                     std::uniform_real_distribution<T>>::type>
 void randomSequence(std::span<T> data, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
-    std::generate(data.begin(), data.end(), [&]() { return distribution(randomNumberGenerator); });
+    std::generate(data.begin(), data.end(), [&] { return distribution(randomNumberGenerator); });
 }
 
 /**

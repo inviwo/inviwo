@@ -72,7 +72,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     , create_("add", "Add", "Add property."_help)
     , delay_("delay", "Delay (ms)", 16, 10, 10000, 1)
     , play_("play", "Play", "Activate animation"_help)
-    , timer_(std::chrono::milliseconds{delay_}, [this]() {
+    , timer_(std::chrono::milliseconds{delay_}, [this] {
         const NetworkLock lock(this);
         for (auto p : props_) {
             p->update();
@@ -88,7 +88,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     addProperty(delay_);
     addProperty(play_);
 
-    create_.onChange([&]() {
+    create_.onChange([&] {
         auto p = factory_[type_.getSelectedIndex()]();
 
         // make the id unique
@@ -109,9 +109,9 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
         addProperty(p.release(), true);
     });
 
-    delay_.onChange([&]() { timer_.setInterval(std::chrono::milliseconds{delay_}); });
+    delay_.onChange([&] { timer_.setInterval(std::chrono::milliseconds{delay_}); });
 
-    play_.onChange([&]() {
+    play_.onChange([&] {
         if (timer_.isRunning()) {
             timer_.stop();
             play_.setDisplayName("Play");

@@ -85,7 +85,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 {
     using PortChannel = std::pair<const DataInport<T>*, int>;
 
-    const auto activePorts = [&]() {
+    const auto activePorts = [&] {
         std::vector<PortChannel> res;
         for (auto&& [port, channel] : util::zip(sources, selectedPortChannels)) {
             if (port.hasData()) {
@@ -105,7 +105,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
                         std::next(it)->first->getData()->getDimensions());
     }
 
-    auto&& [type, precision] = [&]() {
+    auto&& [type, precision] = [&] {
         std::vector<const DataFormatBase*> formats;
         formats.reserve(activePorts.size());
         for (const auto p : activePorts) {

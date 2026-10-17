@@ -72,7 +72,7 @@ public:
             } else {
                 callScheduled_ = true;
                 QTimer::singleShot(minIntervalMs - timer_.elapsed(), owner,
-                                   [this, ... a = std::forward<Args>(args)]() { invoke(a...); });
+                                   [this, ... a = std::forward<Args>(args)] { invoke(a...); });
             }
         }
     }

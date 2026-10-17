@@ -56,7 +56,7 @@ const ProcessorInfo& TemporalVolumeRaycaster::getProcessorInfo() const { return 
 namespace {
 
 std::function<std::optional<dmat4>()> temporalBoundingBox(const TemporalVolumeInport& port) {
-    return [&port]() -> std::optional<dmat4> {
+    return [&port] -> std::optional<dmat4> {
         if (const auto data = port.getData(); data && !data->empty()) {
             const VolumeConfig& config = data->prototype();
             const dmat4 model = config.model.value_or(VolumeConfig::defaultModel);

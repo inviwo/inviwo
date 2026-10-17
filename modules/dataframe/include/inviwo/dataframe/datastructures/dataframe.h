@@ -338,7 +338,7 @@ struct DataTraits<DataFrame> {
             } else {
                 auto col_q = data.getColumn(i);
 
-                auto [minString, maxString] = [&]() -> std::pair<std::string, std::string> {
+                auto [minString, maxString] = [&] -> std::pair<std::string, std::string> {
                     if (col_q->getSize() == 0) return {"-", "-"};
 
                     const auto minmax = col_q->getDataRange();

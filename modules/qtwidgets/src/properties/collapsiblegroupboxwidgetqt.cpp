@@ -124,7 +124,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     , defaultLabel_{new QLabel("No properties available")}
     , propertyWidgetGroup_{createPropertyLayoutWidget(defaultLabel_).release()}
     , propertyWidgetGroupLayout_{static_cast<QGridLayout*>(propertyWidgetGroup_->layout())}
-    , btnCollapse_{[this]() {
+    , btnCollapse_{[this] {
         auto button = new QToolButton(this);
         button->setCheckable(true);
         button->setChecked(false);
@@ -133,7 +133,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         button->setFocusPolicy(Qt::StrongFocus);
         return button;
     }()}
-    , label_{[this]() {
+    , label_{[this] {
         auto label = property_ ? new EditableLabelQt(this, property_, false)
                                : new EditableLabelQt(this, displayName_, false);
         label->setObjectName("compositeLabel");
@@ -141,17 +141,17 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         pol.setHorizontalStretch(3);
         label->setSizePolicy(pol);
         connect(label, &EditableLabelQt::textChanged, this,
-                [this, label]() { setDisplayName(label->getText()); });
+                [this, label] { setDisplayName(label->getText()); });
         return label;
     }()}
-    , resetButton_{[this]() {
+    , resetButton_{[this] {
         auto button = new QToolButton(this);
         button->setIconSize(utilqt::emToPx(this, QSizeF(2, 2)));
         button->setMinimumSize(utilqt::emToPx(this, QSizeF(2, 2)));
         button->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
         button->setObjectName("resetButton");
-        connect(button, &QToolButton::clicked, this, [this]() {
-            util::exceptionGuard([&]() {
+        connect(button, &QToolButton::clicked, this, [this] {
+            util::exceptionGuard([&] {
                 if (property_) {
                     property_->resetToDefaultState();
                 } else if (propertyOwner_) {
@@ -164,7 +164,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         button->setToolTip(tr("Reset the group of properties to its default state"));
         return button;
     }()}
-    , checkBox_{[this]() {
+    , checkBox_{[this] {
         auto checkBox = new QCheckBox(this);
         checkBox->setMinimumSize(utilqt::emToPx(this, QSizeF(2, 2)));
         auto pol = checkBox->sizePolicy();
@@ -173,7 +173,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
         checkBox->setChecked(checked_);
         checkBox->setVisible(checkable_);
         QObject::connect(checkBox, &QCheckBox::clicked, this,
-                         [this, checkBox]() { setChecked(checkBox->isChecked()); });
+                         [this, checkBox] { setChecked(checkBox->isChecked()); });
         checkBox->setLayoutDirection(Qt::RightToLeft);
         checkBox->setFocusPolicy(Qt::StrongFocus);
         return checkBox;
@@ -223,16 +223,16 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
             auto children = menu->addAction("C&hildren");
             auto siblings = menu->addAction("&Siblings");
 
-            connect(current, &QAction::triggered, this, [compProperty, action]() {
+            connect(current, &QAction::triggered, this, [compProperty, action] {
                 compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Current);
             });
-            connect(recursive, &QAction::triggered, this, [compProperty, action]() {
+            connect(recursive, &QAction::triggered, this, [compProperty, action] {
                 compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Recursive);
             });
-            connect(children, &QAction::triggered, this, [compProperty, action]() {
+            connect(children, &QAction::triggered, this, [compProperty, action] {
                 compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Children);
             });
-            connect(siblings, &QAction::triggered, this, [compProperty, action]() {
+            connect(siblings, &QAction::triggered, this, [compProperty, action] {
                 compProperty->setCollapsed(action, CompositeProperty::CollapseTarget::Siblings);
             });
         };
@@ -249,7 +249,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         menu->addSeparator();
 
         auto copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
-        connect(copyAction, &QAction::triggered, this, [this]() {
+        connect(copyAction, &QAction::triggered, this, [this] {
             if (!propertyOwner_) return;
             QApplication::clipboard()->setMimeData(getPropertyOwnerMimeData().release());
         });
@@ -258,7 +258,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         pasteAction->setEnabled(QApplication::clipboard()->mimeData()->formats().contains(
             QString("application/x.vnd.inviwo.propertyowner+xml")));
 
-        connect(pasteAction, &QAction::triggered, this, [this]() {
+        connect(pasteAction, &QAction::triggered, this, [this] {
             if (!propertyOwner_) return;
 
             auto clipboard = QApplication::clipboard();
@@ -296,7 +296,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         auto resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the group of properties to its default state"));
         connect(resetAction, &QAction::triggered, this,
-                [&]() { propertyOwner_->resetAllProperties(); });
+                [&] { propertyOwner_->resetAllProperties(); });
     }
     return menu;
 }
@@ -457,7 +457,7 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
 void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_t index) {
     setUpdatesEnabled(false);
     propertyWidgetGroupLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         propertyWidgetGroupLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -506,7 +506,7 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
 
     setUpdatesEnabled(false);
     propertyWidgetGroupLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         propertyWidgetGroupLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -553,7 +553,7 @@ void CollapsibleGroupBoxWidgetQt::onSetReadOnly(Property* property, bool readonl
 void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible) {
     setUpdatesEnabled(false);
     propertyWidgetGroupLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         propertyWidgetGroupLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -636,7 +636,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto removePropertyBtn = createButton(
         "removeListItemButton", fmt::format("Remove property '{}'", prop->getDisplayName()));
 
-    connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
+    connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget] {
         // need to activate the default render context in case the property contains member
         // depending on OpenGL
         RenderContext::getPtr()->activateDefaultRenderContext();
@@ -650,7 +650,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
 
     auto moveUpBtn = createButton("moveListItemUpButton", "Move up");
     auto moveDownBtn = createButton("moveListItemDownButton", "Move down");
-    connect(moveUpBtn, &QToolButton::clicked, this, [prop]() {
+    connect(moveUpBtn, &QToolButton::clicked, this, [prop] {
         if (auto owner = prop->getOwner()) {
             if (const auto it = owner->find(prop);
                 (it != owner->cend()) && (it != owner->cbegin())) {
@@ -659,7 +659,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
             }
         }
     });
-    connect(moveDownBtn, &QToolButton::clicked, this, [prop]() {
+    connect(moveDownBtn, &QToolButton::clicked, this, [prop] {
         if (auto owner = prop->getOwner()) {
             if (const auto it = owner->find(prop);
                 (it != owner->cend()) && (it + 1 != owner->cend())) {
@@ -684,7 +684,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
 void CollapsibleGroupBoxWidgetQt::insertProperty(Property* prop, size_t index) {
     setUpdatesEnabled(false);
     propertyWidgetGroupLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         propertyWidgetGroupLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -752,9 +752,9 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
         auto layoutWidget = createPropertyLayoutWidget(defaultLabel_);
         auto layout = static_cast<QGridLayout*>(layoutWidget->layout());
 
-        const util::OnScopeExit freeOldLayout([&]() {
+        const util::OnScopeExit freeOldLayout([&] {
             // get rid of previous property widget and layout
-            auto parentLayout = [&]() -> QLayout* {
+            auto parentLayout = [&] -> QLayout* {
                 if (propertyWidgetGroup_->parentWidget()) {
                     return propertyWidgetGroup_->parentWidget()->layout();
                 } else {

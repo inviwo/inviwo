@@ -99,11 +99,11 @@ DataFrameExporter::DataFrameExporter()
     addProperty(delimiter_);
 
     exportFile_.setAcceptMode(AcceptMode::Save);
-    exportFile_.onChange([this]() {
+    exportFile_.onChange([this] {
         separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension().extension ==
                                                     xmlExtension_.extension);
     });
-    exportButton_.onChange([&]() {
+    exportButton_.onChange([&] {
         if (dataFrame_.hasData()) {
             if (exportFile_.get().empty()) {
                 exportFile_.requestFile();

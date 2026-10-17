@@ -295,7 +295,7 @@ AmiraMeshHeader parseAmiraMeshHeader(std::filesystem::path& path) {
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+    const util::OnScopeExit closeFile{[file] { std::fclose(file); }};
 
     // Get the file size, so we can pre-allocate the string. HUGE speed impact.
     fseek(file, 0, SEEK_END);

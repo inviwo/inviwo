@@ -98,7 +98,7 @@ InviwoApplication* InviwoApplication::instance_ = nullptr;
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view displayName)
     : displayName_(displayName)
     , commandLineParser_(std::make_unique<CommandLineParser>(argc, argv))
-    , consoleLogger_{[&]() {
+    , consoleLogger_{[&] {
         if (commandLineParser_->getLogToConsole()) {
             auto clog = std::make_shared<ConsoleLogger>();
             LogCentral::getPtr()->registerLogger(clog);
@@ -107,7 +107,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
             return std::shared_ptr<ConsoleLogger>{};
         }
     }()}
-    , filelogger_{[&]() {
+    , filelogger_{[&] {
         if (commandLineParser_->getLogToFile()) {
             auto filename = commandLineParser_->getLogToFileFileName();
             if (!filename.is_absolute()) {
@@ -127,18 +127,18 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     }()}
     , pool_(
           0,
-          []() {
+          [] {
               if (RenderContext::isInitialized()) {
                   RenderContext::getPtr()->activateLocalRenderContext();
               }
           },
-          []() {
+          [] {
               if (RenderContext::isInitialized()) {
                   RenderContext::getPtr()->clearContext();
               }
           })
     , queue_()
-    , clearAllSingeltons_{[]() {
+    , clearAllSingeltons_{[] {
         PickingManager::deleteInstance();
         RenderContext::deleteInstance();
     }}
@@ -182,7 +182,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     PickingManager::init();
 
     resizePool(systemSettings_->poolSize_);
-    systemSettings_->poolSize_.onChange([this]() { resizePool(systemSettings_->poolSize_); });
+    systemSettings_->poolSize_.onChange([this] { resizePool(systemSettings_->poolSize_); });
 
     workspaceManager_->registerFactory(getProcessorFactory());
     workspaceManager_->registerFactory(getMetaDataFactory());
@@ -193,7 +193,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
 
     processorNetwork_->addObserver(&networkAnnotations_);
 
-    callbacks_->networkClear = workspaceManager_->onClear([&]() {
+    callbacks_->networkClear = workspaceManager_->onClear([&] {
         portInspectorManager_->clear();
         processorNetwork_->clear();
         networkAnnotations_.clear();
@@ -210,7 +210,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     });
 
     callbacks_->presetsClear =
-        workspaceManager_->onClear([&]() { propertyPresetManager_->clearWorkspacePresets(); });
+        workspaceManager_->onClear([&] { propertyPresetManager_->clearWorkspacePresets(); });
     callbacks_->presetsSerialization = workspaceManager_->onSave(
         [&](Serializer& s) { propertyPresetManager_->saveWorkspacePresets(s); });
     callbacks_->presetsDeserialization = workspaceManager_->onLoad(
@@ -358,7 +358,7 @@ void InviwoApplication::resizePool(size_t newSize) {
 
     auto start = std::chrono::system_clock::now();
     std::chrono::milliseconds timeLimit(250);
-    const auto timeout = [&timeLimit, &start]() {
+    const auto timeout = [&timeLimit, &start] {
         return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() -
                                                                 start) > timeLimit;
     };
@@ -368,7 +368,7 @@ void InviwoApplication::resizePool(size_t newSize) {
         processFront();
         size = pool_.trySetSize(newSize);
     }
-    const util::OnScopeExit cleanup{[this]() {
+    const util::OnScopeExit cleanup{[this] {
         if (poolResizeCallback_) {
             poolResizeCallback_(LongWait::End);
         }
@@ -412,7 +412,7 @@ void InviwoApplication::setUILocale(const std::locale& locale) { uiLocale_ = loc
 void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
     {
         const std::unique_lock<std::mutex> lock(queue_.mutex);
-        queue_.tasks.emplace([f = std::move(fun)]() {
+        queue_.tasks.emplace([f = std::move(fun)] {
             try {
                 f();
             } catch (const Exception& e) {

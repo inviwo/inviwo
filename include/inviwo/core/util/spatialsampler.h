@@ -80,11 +80,11 @@ protected:
 
 template <typename ReturnType>
 struct DataTraits<SpatialSampler<ReturnType>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto tName = DataFormat<ReturnType>::str();
         return "org.inviwo.SpatialSampler.3D." + StaticString<tName.size()>(tName);
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataFormat<ReturnType>::str();
         return "SpatialSampler<" + StaticString<tName.size()>(tName) + ">";
     }();

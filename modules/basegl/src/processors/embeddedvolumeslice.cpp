@@ -124,9 +124,9 @@ EmbeddedVolumeSlice::EmbeddedVolumeSlice()
 
     addProperties(planeNormal_, planePosition_, transferFunction_, camera_, trackball_);
 
-    planePosition_.onChange([this]() { planeSettingsChanged(); });
-    planeNormal_.onChange([this]() { planeSettingsChanged(); });
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    planePosition_.onChange([this] { planeSettingsChanged(); });
+    planeNormal_.onChange([this] { planeSettingsChanged(); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void EmbeddedVolumeSlice::initializeResources() {

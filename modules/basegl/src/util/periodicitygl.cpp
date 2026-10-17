@@ -62,7 +62,7 @@ void PeriodicityGL::setUniforms(Shader& shader) const {
 size_t PeriodicityGL::instances() const { return static_cast<size_t>(glm::compMul(repeat.get())); }
 
 std::function<std::optional<dmat4>()> PeriodicityGL::boundingBox(MeshFlatMultiInport& port) const {
-    return [this, port = &port]() -> std::optional<dmat4> {
+    return [this, port = &port] -> std::optional<dmat4> {
         if (port->hasData()) {
             if (periodicity) {
                 const auto d2w = port->getData()->getCoordinateTransformer().getDataToWorldMatrix();

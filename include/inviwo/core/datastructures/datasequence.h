@@ -191,7 +191,7 @@ public:
 };
 template <typename Data>
 struct DataTraits<DataSequence<Data>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<Data>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".sequence";
@@ -199,7 +199,7 @@ struct DataTraits<DataSequence<Data>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<Data>::dataName();
         if constexpr (!tName.empty()) {
             return "DataSequence<" + StaticString<tName.size()>(tName) + ">";

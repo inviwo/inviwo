@@ -158,7 +158,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     registerJSONConverter<DataFrameInport>();
 
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
-    util::for_each_type<OptionTypes>{}([&]<typename T>() {
+    util::for_each_type<OptionTypes>{}([&]<typename T> {
         registerPropertyConverter(
             std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
         registerPropertyConverter(
@@ -166,7 +166,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app)
     });
 
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
-    util::for_each_type<OptionEnumTypes>{}([&]<typename T>() {
+    util::for_each_type<OptionEnumTypes>{}([&]<typename T> {
         registerPropertyConverter(
             std::make_unique<ColumnOptionToOptionConverter<OptionProperty<T>>>());
         registerPropertyConverter(

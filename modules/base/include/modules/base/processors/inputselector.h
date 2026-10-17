@@ -94,7 +94,7 @@ InputSelector<Inport, Outport>::InputSelector()
 
     constexpr size_t emptyInportIndex = std::numeric_limits<size_t>::max();
 
-    const auto updateOptions = [this, emptyInportIndex]() {
+    const auto updateOptions = [this, emptyInportIndex] {
         if (const auto* network = getNetwork(); network && network->isDeserializing()) {
             return;
         }
@@ -112,11 +112,11 @@ InputSelector<Inport, Outport>::InputSelector()
         selectedPort_.setCurrentStateAsDefault();
     };
 
-    inport_.onConnect([updateOptions]() { updateOptions(); });
-    inport_.onDisconnect([updateOptions]() { updateOptions(); });
-    includeEmptyInport_.onChange([updateOptions]() { updateOptions(); });
+    inport_.onConnect([updateOptions] { updateOptions(); });
+    inport_.onDisconnect([updateOptions] { updateOptions(); });
+    includeEmptyInport_.onChange([updateOptions] { updateOptions(); });
 
-    inport_.setIsReadyUpdater([this]() {
+    inport_.setIsReadyUpdater([this] {
         if (!selectedPort_.empty() && *selectedPort_ == emptyInportIndex) {
             return true;
         }
@@ -129,7 +129,7 @@ InputSelector<Inport, Outport>::InputSelector()
     selectedPort_.setSerializationMode(PropertySerializationMode::All);
     setAllPropertiesCurrentStateAsDefault();
 
-    selectedPort_.onChange([this]() {
+    selectedPort_.onChange([this] {
         inport_.readyUpdate();
         this->notifyObserversActiveConnectionsChange(this);
     });

@@ -64,7 +64,7 @@ constexpr double borderMargin = 16.0;
 constexpr double penWidth = 2.0;
 
 QFont getFont() {
-    static const QFont name = []() {
+    static const QFont name = [] {
         QFont f{QFontDatabase::systemFont(QFontDatabase::TitleFont)};
         f.setWeight(QFont::ExtraBold);
         f.setPixelSize(pointSizeToPixelSize(8));
@@ -258,7 +258,7 @@ void NetworkAnnotationGraphicsItem::updateAnnotation(const NetworkAnnotation& an
         annotation.description.transform([](auto& desc) { return desc.alignment; })
             .value_or(Description::Alignment::Left);
 
-    titleFunc_ = [this, title = annotation.title.value_or("")]() {
+    titleFunc_ = [this, title = annotation.title.value_or("")] {
         return elide(title, textWidth_());
     };
     titlePos_ = [this, descriptionWidth, alignment](const QRectF& rect) {
@@ -284,7 +284,7 @@ void NetworkAnnotationGraphicsItem::updateAnnotation(const NetworkAnnotation& an
         }
         return QPointF{};
     };
-    textWidth_ = [this, alignment, descriptionWidth]() {
+    textWidth_ = [this, alignment, descriptionWidth] {
         if (description_->isVisible() && (alignment == Description::Alignment::Left ||
                                           alignment == Description::Alignment::Right)) {
             return static_cast<double>(descriptionWidth);
@@ -292,7 +292,7 @@ void NetworkAnnotationGraphicsItem::updateAnnotation(const NetworkAnnotation& an
             return rect().width() - 2 * borderMargin;
         }
     };
-    color_ = [color = annotation.color]() { return utilqt::toQColor(color); };
+    color_ = [color = annotation.color] { return utilqt::toQColor(color); };
 
     if (annotation.description.has_value()) {
         textDocument_->setHtml(

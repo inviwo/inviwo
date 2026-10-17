@@ -189,7 +189,7 @@ detail::DynPort createDynPortManager(std::string_view identifier, StringProperty
 
     auto port = std::make_unique<DataInport<std::vector<T>>>(identifier);
     port->setOptional(true);
-    auto size = [p = port.get()]() -> std::optional<size_t> {
+    auto size = [p = port.get()] -> std::optional<size_t> {
         if (p->hasData()) {
             return p->getData()->size();
         } else {
@@ -241,7 +241,7 @@ InstanceRenderer::InstanceRenderer()
              portPrefabs()}
     , vecPorts_{}
     , camera_("camera", "Camera",
-              [this]() -> std::optional<dmat4> {
+              [this] -> std::optional<dmat4> {
                   if (!isReady()) return std::nullopt;
                   if (boundingBox_) return boundingBox_;
                   rendercontext::activateDefault();
@@ -302,7 +302,7 @@ InstanceRenderer::InstanceRenderer()
         addProperty(transform);
     }
     addProperties(camera_, light_, trackball_);
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     uniforms_.PropertyOwnerObservable::addObserver(this);
     ports_.PropertyOwnerObservable::addObserver(this);
@@ -408,7 +408,7 @@ void InstanceRenderer::onDidAddUniform(Property* property) {
         std::tuple<BoolProperty, IntProperty, IntVec2Property, IntVec3Property, IntVec4Property,
                    FloatProperty, FloatVec2Property, FloatVec3Property, FloatVec4Property,
                    FloatMat2Property, FloatMat3Property, FloatMat4Property>;
-    util::for_each_type<types>{}([this, property]<typename T>() {
+    util::for_each_type<types>{}([this, property]<typename T> {
         if (const auto* prop = dynamic_cast<T*>(property)) {
             dynUniforms_.emplace_back(
                 [prop](Shader& shader, TextureUnitContainer&) {
@@ -463,7 +463,7 @@ void InstanceRenderer::onDidAddPort(Property* property) {
         const auto* p = port.get();
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
-            .size = []() { return std::nullopt; },
+            .size = [] { return std::nullopt; },
             .set = [](Shader&, size_t) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
@@ -488,7 +488,7 @@ void InstanceRenderer::onDidAddPort(Property* property) {
         const auto* p = port.get();
         vecPorts_.emplace_back(detail::DynPort{
             .port = std::move(port),
-            .size = []() { return std::nullopt; },
+            .size = [] { return std::nullopt; },
             .set = [](Shader&, size_t) {},
             .addUniform =
                 [s = sampler](ShaderObject& so) {
@@ -665,7 +665,7 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
             if (indexBuffer.getSize() == 0) continue;
             const auto meshInfo = meshGL.getMeshInfoForIndexBuffer(ib);
             indexBuffer.bind();
-            callback(indexBuffer.getSize(), meshInfo, [&indexBuffer, &meshInfo]() {
+            callback(indexBuffer.getSize(), meshInfo, [&indexBuffer, &meshInfo] {
                 glDrawElements(MeshDrawerGL::getGLDrawMode(meshInfo),
                                static_cast<GLsizei>(indexBuffer.getSize()),
                                indexBuffer.getFormatType(), nullptr);
@@ -674,7 +674,7 @@ void forEach(const MeshGL& meshGL, Shader& shader, auto& ports, size_t nInstance
         if (numIndexBuffers == 0) {
             const auto size = meshGL.getBufferGL(0)->getSize();
             const auto meshInfo = meshGL.getDefaultMeshInfo();
-            callback(size, meshInfo, [&meshInfo, size]() {
+            callback(size, meshInfo, [&meshInfo, size] {
                 glDrawArrays(MeshDrawerGL::getGLDrawMode(meshInfo), 0, static_cast<GLsizei>(size));
             });
         }

@@ -128,17 +128,17 @@ void exposeJSON(py::module& m) {
 
     m.def(
         "getJSONPropertyConverter",
-        []() -> const JSONPropertyConverter& { return getJSONModule().getJSONPropertyConverter(); },
+        [] -> const JSONPropertyConverter& { return getJSONModule().getJSONPropertyConverter(); },
         py::return_value_policy::reference,
         "Get the global JSONPropertyConverter from the JSON module.");
     m.def(
         "getJSONInportConverter",
-        []() -> const JSONInportConverter& { return getJSONModule().getJSONInportConverter(); },
+        [] -> const JSONInportConverter& { return getJSONModule().getJSONInportConverter(); },
         py::return_value_policy::reference,
         "Get the global JSONInportConverter from the JSON module.");
     m.def(
         "getJSONOutportConverter",
-        []() -> const JSONOutportConverter& { return getJSONModule().getJSONOutportConverter(); },
+        [] -> const JSONOutportConverter& { return getJSONModule().getJSONOutportConverter(); },
         py::return_value_policy::reference,
         "Get the global JSONOutportConverter from the JSON module.");
 

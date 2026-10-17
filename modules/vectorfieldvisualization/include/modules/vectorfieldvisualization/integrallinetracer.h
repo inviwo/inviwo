@@ -136,7 +136,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
     IntegralLine& line = res.line;
 
     const auto [stepsBWD, stepsFWD] = [dir = dir_, steps = steps_,
-                                       &line]() -> std::pair<size_t, size_t> {
+                                       &line] -> std::pair<size_t, size_t> {
         switch (dir) {
             case inviwo::IntegralLineProperties::Direction::Forward:
                 line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
@@ -253,7 +253,7 @@ auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector
             }
             const DataVector k4 = sampler_->sample(pos);
 
-            const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
+            const auto&& K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4] {
                 if (n) {
                     return normalize(k1 + k2 + k2 + k3 + k3 + k4);
                 } else {

@@ -42,7 +42,7 @@ namespace inviwo {
 TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
     setRepresentation(ColorRepresentation::Hexadecimal);
 
-    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
+    connect(this, &ColorLineEdit::colorChanged, this, [this] {
         // QColor(QString) should only be used for 6-digit hex codes, since
         // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
         emit colorChanged(utilqt::toQColor(getColor<vec3>()));

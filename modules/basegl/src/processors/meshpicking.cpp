@@ -125,7 +125,7 @@ MeshPicking::MeshPicking()
     addProperty(camera_);
     addProperty(trackball_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 MeshPicking::~MeshPicking() = default;

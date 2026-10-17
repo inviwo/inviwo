@@ -93,7 +93,7 @@ void RenderContext::clearContext() {
             lock.unlock();
 
             canvas->releaseContext();
-            dispatchFront([canvas]() { delete canvas; });
+            dispatchFront([canvas] { delete canvas; });
         }
     }
 }

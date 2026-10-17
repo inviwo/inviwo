@@ -150,7 +150,7 @@ VolumeCombiner::VolumeCombiner()
     description_.setReadOnly(true);
     description_.setCurrentStateAsDefault();
 
-    isReady_.setUpdate([this]() { return allInportsAreReady() && (valid_ || dirty_); });
+    isReady_.setUpdate([this] { return allInportsAreReady() && (valid_ || dirty_); });
 
     addPorts(inport_, outport_);
     addProperties(description_, eqn_, normalizationMode_, addScale_, removeScale_, scales_,
@@ -163,16 +163,16 @@ VolumeCombiner::VolumeCombiner()
     outputDataRange_.setReadOnly(true);
     outputValueRange_.setReadOnly(true);
 
-    customRange_.onChange([this]() {
+    customRange_.onChange([this] {
         customDataRange_.setReadOnly(!customRange_.get());
         customValueRange_.setReadOnly(!customRange_.get());
     });
     customDataRange_.setReadOnly(!customRange_.get());
     customValueRange_.setReadOnly(!customRange_.get());
 
-    normalizationMode_.onChange([this]() { dirty_ = true; });
+    normalizationMode_.onChange([this] { dirty_ = true; });
 
-    addScale_.onChange([this]() {
+    addScale_.onChange([this] {
         const size_t i = scales_.size();
         auto p = std::make_unique<FloatProperty>(fmt::format("scale{}", i),
                                                  fmt::format("s{}", i + 1), 1.0f, -2.f, 2.f, 0.01f);
@@ -180,7 +180,7 @@ VolumeCombiner::VolumeCombiner()
         scales_.addProperty(p.release());
     });
 
-    removeScale_.onChange([this]() {
+    removeScale_.onChange([this] {
         if (!scales_.empty()) {
             dirty_ = true;
             delete scales_.removeProperty(scales_.getProperties().back());
@@ -188,23 +188,23 @@ VolumeCombiner::VolumeCombiner()
         }
     });
 
-    eqn_.onChange([&]() {
+    eqn_.onChange([&] {
         dirty_ = true;
         isReady_.update();
     });
 
-    inport_.onConnect([&]() {
+    inport_.onConnect([&] {
         dirty_ = true;
         updateProperties();
         isReady_.update();
     });
-    inport_.onDisconnect([&]() {
+    inport_.onDisconnect([&] {
         dirty_ = true;
         updateProperties();
         isReady_.update();
     });
 
-    useWorldSpace_.onChange([this]() {
+    useWorldSpace_.onChange([this] {
         dirty_ = true;
         isReady_.update();
     });

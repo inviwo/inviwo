@@ -180,7 +180,7 @@ std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath) {
     const auto scalarFormatId = findScalarFormat(filePath);
 
     return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::Scalars>(
-        scalarFormatId, [&]<typename Scalar>() -> std::shared_ptr<LayerRAM> {
+        scalarFormatId, [&]<typename Scalar> -> std::shared_ptr<LayerRAM> {
             cimg_library::CImg<Scalar> img(filePath.string().c_str());
             const auto components = static_cast<size_t>(img.spectrum());
             const auto dimensions = size2_t{img.width(), img.height()};
@@ -200,7 +200,7 @@ std::shared_ptr<LayerRAM> loadLayer(const std::filesystem::path& filePath) {
             }
 
             return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-                imageFormat->getId(), [&]<typename T>() -> std::shared_ptr<LayerRAM> {
+                imageFormat->getId(), [&]<typename T> -> std::shared_ptr<LayerRAM> {
                     constexpr auto swizzleMask = swizzlemasks::defaultColor(util::extent_v<T>);
                     img._is_shared = true;  // Steal the buffer from img
                     return std::make_shared<LayerRAMPrecision<T>>(
@@ -214,7 +214,7 @@ std::shared_ptr<LayerRAM> loadLayerTiff(const std::filesystem::path& filePath) {
     const auto header = cimgutil::getTIFFHeader(filePath);
 
     return dispatching::singleDispatch<std::shared_ptr<LayerRAM>, dispatching::filter::All>(
-        header.format->getId(), [&]<typename T>() -> std::shared_ptr<LayerRAM> {
+        header.format->getId(), [&]<typename T> -> std::shared_ptr<LayerRAM> {
             using Scalar = util::value_type_t<T>;
 
             cimg_library::CImg<Scalar> img(filePath.string().c_str());
@@ -246,7 +246,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
     const auto scalarFormatId = findScalarFormat(filePath);
 
     return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars>(
-        scalarFormatId, [&]<typename Scalar>() -> std::shared_ptr<VolumeRAM> {
+        scalarFormatId, [&]<typename Scalar> -> std::shared_ptr<VolumeRAM> {
             cimg_library::CImg<Scalar> img(filePath.string().c_str());
             const auto components = static_cast<size_t>(img.spectrum());
             const auto dimensions = size3_t{img.width(), img.height(), img.depth()};
@@ -262,7 +262,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
 
             return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>,
                                                dispatching::filter::All>(
-                imageFormat->getId(), [&]<typename T>() -> std::shared_ptr<VolumeRAM> {
+                imageFormat->getId(), [&]<typename T> -> std::shared_ptr<VolumeRAM> {
                     img._is_shared = true;  // Steal the buffer from img
                     return std::make_shared<VolumeRAMPrecision<T>>(
                         static_cast<T*>(static_cast<void*>(img._data)), dimensions);
@@ -273,7 +273,7 @@ std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath) {
 std::shared_ptr<VolumeRAM> loadVolume(const std::filesystem::path& filePath,
                                       const DataFormatBase* format, size3_t dims) {
     return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), [&]<typename T>() -> std::shared_ptr<VolumeRAM> {
+        format->getId(), [&]<typename T> -> std::shared_ptr<VolumeRAM> {
             using Scalar = util::value_type_t<T>;
             cimg_library::CImg<Scalar> img(filePath.string().c_str());
             const auto components = static_cast<size_t>(img.spectrum());
@@ -417,7 +417,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target,
             const double targetAspect =
                 static_cast<double>(targetDim.x) / static_cast<double>(targetDim.y);
 
-            const uvec2 resizeDim = [&]() {
+            const uvec2 resizeDim = [&] {
                 if (aspectRatio == cimgutil::ConsiderAspectRatio::Yes) {
                     return uvec2{
                         sourceAspect > targetAspect ? targetDim.x : targetDim.y * sourceAspect,
@@ -488,7 +488,7 @@ std::string getOpenEXRVersion() {
 TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 #ifdef cimg_use_tiff
     TIFF* tif = TIFFOpen(filename.string().c_str(), "r");
-    const util::OnScopeExit closeFile([tif]() {
+    const util::OnScopeExit closeFile([tif] {
         if (tif) TIFFClose(tif);
     });
 

@@ -84,18 +84,18 @@ PythonMenu::PythonMenu(const std::filesystem::path& modulePath, InviwoApplicatio
     toolbar_->setFloatable(false);
 
     auto newEditorOpen = toolbar_->addAction(QIcon(":/svgicons/python-mono.svg"), "Python Editor");
-    QObject::connect(newEditorOpen, &QAction::triggered, [this]() { newEditor(); });
+    QObject::connect(newEditorOpen, &QAction::triggered, [this] { newEditor(); });
 
     menu_->setObjectName("PythonMenu");
 
     auto pythonEditorOpen = menu_->addAction(QIcon(":/svgicons/python.svg"), "&Open Python Editor");
-    QObject::connect(pythonEditorOpen, &QAction::triggered, [this]() { newEditor(); });
+    QObject::connect(pythonEditorOpen, &QAction::triggered, [this] { newEditor(); });
 
     auto newPythonProcessor =
         menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
     toolbar_->addAction(newPythonProcessor);
 
-    QObject::connect(newPythonProcessor, &QAction::triggered, [modulePath]() {
+    QObject::connect(newPythonProcessor, &QAction::triggered, [modulePath] {
         try {
             InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
             saveFileDialog.setFileMode(FileMode::AnyFile);

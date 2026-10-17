@@ -143,7 +143,7 @@ const std::filesystem::path& InviwoModule::getPath() const { return moduleRoot_;
 std::filesystem::path InviwoModule::getPath(ModulePath type) const {
     const auto& basePath = getPath();
     // clang-format off
-    auto const path = [&](){
+    auto const path = [&]{
         switch (type) {
             case ModulePath::Data:               return basePath / "data";
             case ModulePath::Images:             return basePath / "data/images";

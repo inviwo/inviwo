@@ -34,14 +34,14 @@
 namespace inviwo::linkdialog {
 
 const QFont& getFont(FontType type) {
-    static const QFont identifier = []() {
+    static const QFont identifier = [] {
         QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
         f.setWeight(QFont::Bold);
         f.setPixelSize(processorLabelHeight);
         return f;
     }();
 
-    static const QFont classFont = [&]() {
+    static const QFont classFont = [&] {
         QFont f{identifier};
         f.setWeight(QFont::Normal);
         f.setItalic(true);

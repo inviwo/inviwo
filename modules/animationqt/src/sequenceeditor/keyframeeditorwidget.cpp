@@ -70,7 +70,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
                 &DoubleValueDragSpinBox::valueChanged),
             this, [this](double t) { keyframe_.setTime(Seconds(t)); });
     connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
-            [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
+            [this] { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
     layout_->addWidget(timeSpinner_);
 
@@ -78,7 +78,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
         auto* baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setPropertyFromKeyframe(property_.get(), &keyframe);
-        property_->onChange([p = property_.get(), t = propTrack, k = &keyframe_]() {
+        property_->onChange([p = property_.get(), t = propTrack, k = &keyframe_] {
             t->setKeyframeFromProperty(p, k);
         });
         property_->setOwner(nullptr);
@@ -116,7 +116,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
                     &DoubleValueDragSpinBox::valueChanged),
                 this, [ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
         connect(jumpToWidget_, &DoubleValueDragSpinBox::editingFinished, this,
-                [&]() { ctrlKey->setJumpTime(Seconds{jumpToWidget_->value()}); });
+                [&] { ctrlKey->setJumpTime(Seconds{jumpToWidget_->value()}); });
 
         layout_->addWidget(actionWidget_);
         layout_->addWidget(jumpToWidget_);

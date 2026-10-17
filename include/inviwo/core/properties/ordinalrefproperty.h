@@ -254,7 +254,7 @@ public:
     }
     void disconnectSetAndGet() {
         const auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", get_());
-        get_ = [val]() { return *val; };
+        get_ = [val] { return *val; };
         set_ = [val](const T& newVal) { *val = newVal; };
         fallbackValue_ = val;
     }
@@ -382,7 +382,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
         // Both default we assign a dummy
         const auto val =
             std::make_shared<ValueWrapper<T>>("fallbackValue", Defaultvalues<T>::getVal());
-        get_ = [val]() { return *val; };
+        get_ = [val] { return *val; };
         set_ = [val](const T& newVal) { *val = newVal; };
         fallbackValue_ = val;
     } else {
@@ -443,7 +443,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs)
     , maxConstraint_{rhs.maxConstraint_} {
 
     const auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", rhs.get());
-    get_ = [val]() { return *val; };
+    get_ = [val] { return *val; };
     set_ = [val](const T& newVal) { *val = newVal; };
     fallbackValue_ = val;
 }

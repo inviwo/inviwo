@@ -128,7 +128,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
     hLayout->addWidget(label_);
 
     connect(colorLineEdit_, &ColorLineEdit::colorChanged, this,
-            [&]() { ordinalProperty_->set(colorLineEdit_->getColor<T>()); });
+            [&] { ordinalProperty_->set(colorLineEdit_->getColor<T>()); });
 
     {
         auto* widget = new QWidget(this);
@@ -304,7 +304,7 @@ std::unique_ptr<QMenu> ColorPropertyWidgetQt<T>::getContextMenu() {
         auto action = representationMenu->addAction(title);
         action->setCheckable(true);
         action->setChecked(colorRep == rep);
-        connect(action, &QAction::triggered, this, [this, colorRep]() {
+        connect(action, &QAction::triggered, this, [this, colorRep] {
             ordinalProperty_->template setMetaData<IntMetaData>("representation",
                                                                 static_cast<int>(colorRep));
             colorLineEdit_->setRepresentation(colorRep);
@@ -325,7 +325,7 @@ void ColorPropertyWidgetQt<T>::setPropertyValue() {
 
     currentColor_ = colorDialog_->currentColor();
     util::exceptionGuard(
-        [&]() { ordinalProperty_->set(detail::ColorConverter<T>::toGLM(currentColor_)); });
+        [&] { ordinalProperty_->set(detail::ColorConverter<T>::toGLM(currentColor_)); });
     updateButton();
 }
 

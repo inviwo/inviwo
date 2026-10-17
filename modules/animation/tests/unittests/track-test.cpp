@@ -328,8 +328,8 @@ TEST(AnimationTests, CallbackTrackTest) {
         auto track = std::make_unique<CallbackTrack>();
         std::vector<std::unique_ptr<CallbackKeyframe>> keys;
         keys.push_back(std::make_unique<CallbackKeyframe>(
-            Seconds(0), [&calledForward]() { calledForward = true; },
-            [&calledBackward]() { calledBackward = true; }));
+            Seconds(0), [&calledForward] { calledForward = true; },
+            [&calledBackward] { calledBackward = true; }));
         auto seq = std::make_unique<CallbackKeyframeSequence>(std::move(keys));
         track->add(std::move(seq));
         animation.add(std::move(track));

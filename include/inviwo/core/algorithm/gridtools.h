@@ -160,7 +160,7 @@ void centralDifferences(size3_t dims, const std::array<Wrapping, 3>& w, Func fun
         if (progress) progress(static_cast<double>(z) / static_cast<double>(dims.z));
         loop(dims.y, [&]<Part Py>(size_t y) {
             loop(dims.x, [&]<Part Px>(size_t x) {
-                wrapper(w, [&]<Wrapping Wx, Wrapping Wy, Wrapping Wz>() {
+                wrapper(w, [&]<Wrapping Wx, Wrapping Wy, Wrapping Wz> {
                     positions = std::array<size3_t, 6>{{{next<Px, Wx>(x, dims.x), y, z},
                                                         {prev<Px, Wx>(x, dims.x), y, z},
                                                         {x, next<Py, Wy>(y, dims.y), z},

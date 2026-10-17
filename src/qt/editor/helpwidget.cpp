@@ -121,7 +121,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Back");
         centralWidget->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->backward(); });
+        connect(action, &QAction::triggered, this, [this] { helpBrowser_->backward(); });
 
         connect(helpBrowser_, &QTextBrowser::backwardAvailable, action, &QAction::setEnabled);
     }
@@ -131,7 +131,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Forward");
         centralWidget->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->forward(); });
+        connect(action, &QAction::triggered, this, [this] { helpBrowser_->forward(); });
 
         connect(helpBrowser_, &QTextBrowser::forwardAvailable, action, &QAction::setEnabled);
     }
@@ -141,14 +141,14 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Reload");
         centralWidget->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() { helpBrowser_->reload(); });
+        connect(action, &QAction::triggered, this, [this] { helpBrowser_->reload(); });
     }
 
     {
         auto* action = toolBar->addAction(QIcon(":/svgicons/network.svg"), tr("&Find networks"));
         action->setToolTip("Find networks with processor");
         centralWidget->addAction(action);
-        connect(action, &QAction::triggered, this, [this]() {
+        connect(action, &QAction::triggered, this, [this] {
             if (auto* ww = mainWindow_->getWelcomeWidget()) {
                 ww->setFilterString(fmt::format("p: {}", helpBrowser_->currentProcessorCId()));
                 mainWindow_->showWelcomeScreen();
@@ -165,7 +165,7 @@ void HelpWidget::showDocForClassName(std::string_view classIdentifier) {
 
 void HelpWidget::resizeEvent(QResizeEvent* event) {
     InviwoDockWidget::resizeEvent(event);
-    QTimer::singleShot(200, this, [this]() {
+    QTimer::singleShot(200, this, [this] {
         if (isVisible()) {
             helpBrowser_->reload();
         }
@@ -323,11 +323,11 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& resourceUrl) {
                 log::exception(e, "Unable to append network {} due to {}", filePath,
                                e.getMessage());
             }
-            QTimer::singleShot(0, this, [this]() { backward(); });
+            QTimer::singleShot(0, this, [this] { backward(); });
             return {"Workspace loaded"};
         } else {
             QDesktopServices::openUrl(url);
-            QTimer::singleShot(0, this, [this]() { backward(); });
+            QTimer::singleShot(0, this, [this] { backward(); });
             return {"File opened"};
         }
     }

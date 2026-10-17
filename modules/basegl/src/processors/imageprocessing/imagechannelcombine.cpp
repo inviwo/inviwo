@@ -102,7 +102,7 @@ ImageChannelCombine::ImageChannelCombine()
     }
     addProperty(alpha_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ImageChannelCombine::process() {
@@ -116,7 +116,7 @@ void ImageChannelCombine::process() {
         throw Exception("Image dimensions of all inports need to be identical");
     }
 
-    auto&& [type, precision] = [&]() {
+    auto&& [type, precision] = [&] {
         std::vector<const DataFormatBase*> formats;
         for (const auto& port : inport_) {
             if (port.hasData()) {

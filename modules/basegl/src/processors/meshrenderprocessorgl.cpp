@@ -117,7 +117,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 
     layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 MeshRenderProcessorGL::~MeshRenderProcessorGL() = default;

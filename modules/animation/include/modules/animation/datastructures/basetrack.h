@@ -565,7 +565,7 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
     d.deserialize(
         "sequences", sequences_, "sequence",
         deserializer::IndexFunctions{
-            .makeNew = []() { return std::unique_ptr<Seq>{}; },
+            .makeNew = [] { return std::unique_ptr<Seq>{}; },
             .onNew =
                 [&](std::unique_ptr<Seq>& seq, size_t) {
                     this->notifyKeyframeSequenceAdded(this, seq.get());

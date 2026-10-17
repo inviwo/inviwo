@@ -88,7 +88,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
 
         connect(lineEdit_, &LineEditQt::editingFinished, this,
                 &StringPropertyWidgetQt::setPropertyValue);
-        connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
+        connect(lineEdit_, &LineEditQt::editingCanceled, [this] {
             // undo textual changes by resetting the contents of the line edit
             const QSignalBlocker blocker(lineEdit_);
             updateFromProperty();
@@ -106,7 +106,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
 void StringPropertyWidgetQt::setPropertyValue() {
     std::string valueStr = utilqt::fromQString(lineEdit_->text());
     property_->setInitiatingWidget(this);
-    util::exceptionGuard([&]() { property_->set(valueStr); });
+    util::exceptionGuard([&] { property_->set(valueStr); });
     property_->clearInitiatingWidget();
 }
 
@@ -128,7 +128,7 @@ void StringPropertyWidgetQt::addEditor() {
     edit->setIcon(QIcon(":/svgicons/edit.svg"));
     edit->setToolTip("Edit text");
     hWidgetLayout_->addWidget(edit);
-    connect(edit, &QToolButton::clicked, this, [this]() {
+    connect(edit, &QToolButton::clicked, this, [this] {
         if (!editor_) initEditor();
         editor_->updateFromProperty();
         editor_->setVisible(true);

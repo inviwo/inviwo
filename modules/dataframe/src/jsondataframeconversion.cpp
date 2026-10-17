@@ -242,7 +242,7 @@ auto generateColumnPrinters(const DataFrame& df) {
 std::shared_ptr<Column> createColumn(std::string_view type, std::string_view header) {
     return dispatching::singleDispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>(
         DataFormatBase::get(type)->getId(),
-        [header]<typename T>() { return std::make_shared<TemplateColumn<T>>(header, 0u); });
+        [header]<typename T> { return std::make_shared<TemplateColumn<T>>(header, 0u); });
 }
 
 void createColumnsFromTypes(const json& j, DataFrame& df) {

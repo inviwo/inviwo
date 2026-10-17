@@ -70,7 +70,7 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
     setLayout(hLayout);
     IsoTFPropertyWidgetQt::updateFromProperty();
 
-    connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
+    connect(btnOpenTF_, &TFPushButton::clicked, [this] {
         if (!tfDialog_) {
             initEditor();
             tfDialog_->setVisible(true);
@@ -122,7 +122,7 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto clearTF = menu->addAction("&Clear TF && Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 
-    connect(clearTF, &QAction::triggered, this, [this]() {
+    connect(clearTF, &QAction::triggered, this, [this] {
         const NetworkLock lock(property_);
         auto* p = isoTfProperty();
         p->tf_.get().clear();
@@ -143,13 +143,13 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
 
     auto importTF = importMenu->addAction("&TF...");
     auto importIso = importMenu->addAction("&Isovalues...");
-    connect(importTF, &QAction::triggered, this, [this]() {
+    connect(importTF, &QAction::triggered, this, [this] {
         if (const auto tf = util::importTransferFunctionDialog()) {
             const NetworkLock lock{property_};
             isoTfProperty()->tf_.get() = *tf;
         }
     });
-    connect(importIso, &QAction::triggered, this, [this]() {
+    connect(importIso, &QAction::triggered, this, [this] {
         if (const auto iso = util::importIsoValueCollectionDialog()) {
             const NetworkLock lock{property_};
             isoTfProperty()->isovalues_.get() = *iso;
@@ -159,9 +159,9 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto exportTF = exportMenu->addAction("&TF...");
     auto exportIso = exportMenu->addAction("&Isovalues...");
     connect(exportTF, &QAction::triggered, this,
-            [this]() { util::exportTransferFunctionDialog(isoTfProperty()->tf_.get()); });
+            [this] { util::exportTransferFunctionDialog(isoTfProperty()->tf_.get()); });
     connect(exportIso, &QAction::triggered, this,
-            [this]() { util::exportIsoValueCollectionDialog(isoTfProperty()->isovalues_.get()); });
+            [this] { util::exportIsoValueCollectionDialog(isoTfProperty()->isovalues_.get()); });
 
     return menu;
 }

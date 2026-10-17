@@ -145,7 +145,7 @@ struct RAMCache {
                        .set("Max number of items to cache, "
                             "0 means that no ram caching will be used"_help)} {
 
-        capacity.onChange([this]() { trim(capacity); });
+        capacity.onChange([this] { trim(capacity); });
     }
 
     struct Item {

@@ -550,15 +550,14 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     using return_type = std::invoke_result_t<F, Args...>;
 
     const auto task = std::make_shared<std::packaged_task<return_type()>>(
-        [f = std::forward<F>(f),
-         ... args = std::forward<Args>(args)]() mutable -> return_type {
+        [f = std::forward<F>(f), ... args = std::forward<Args>(args)] mutable -> return_type {
             return std::invoke(f, args...);
         });
 
     std::future<return_type> res = task->get_future();
     {
         const std::unique_lock<std::mutex> lock(queue_.mutex);
-        queue_.tasks.emplace([task]() { (*task)(); });
+        queue_.tasks.emplace([task] { (*task)(); });
     }
 
     if (queue_.postEnqueue) queue_.postEnqueue();

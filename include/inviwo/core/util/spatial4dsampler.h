@@ -83,11 +83,11 @@ extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<vec4>;
 
 template <typename ReturnType>
 struct DataTraits<Spatial4DSampler<ReturnType>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto tName = DataFormat<ReturnType>::str();
         return "org.inviwo.Spatial4DSampler." + StaticString<tName.size()>(tName);
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataFormat<ReturnType>::str();
         return "Spatial4DSampler<" + StaticString<tName.size()>(tName) + ">";
     }();

@@ -175,12 +175,10 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor* processor)
     , processor_(processor) {
 
     if (processor_) {
-        pointShader_.onReload(
-            [this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
-        lineShader_.onReload(
-            [this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        pointShader_.onReload([this] { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        lineShader_.onReload([this] { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
-    properties_.hovering_.onChange([this]() {
+    properties_.hovering_.onChange([this] {
         if (!properties_.hovering_.get()) {
             hoveredIndices_.clear();
         }

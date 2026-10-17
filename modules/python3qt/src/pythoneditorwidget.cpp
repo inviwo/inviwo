@@ -153,7 +153,7 @@ PythonEditorWidget::PythonEditorWidget(
 
     if (!onTextChange_) {
         pythonCode_->installEventFilter(&fileObserver_);
-        fileObserver_.setReloadFileCallback([this]() { readFile(); });
+        fileObserver_.setReloadFileCallback([this] { readFile(); });
         fileObserver_.setModifiedCallback(
             [this](bool m) { pythonCode_->document()->setModified(m); });
     }
@@ -181,7 +181,7 @@ PythonEditorWidget::PythonEditorWidget(
             action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             action->setToolTip("New Script");
             mainWindow_->addAction(action);
-            connect(action, &QAction::triggered, this, [this]() { setDefaultText(); });
+            connect(action, &QAction::triggered, this, [this] { setDefaultText(); });
         }
         {
             auto action = toolBar->addAction(QIcon(":/svgicons/open.svg"), tr("&Open Script"));
@@ -189,7 +189,7 @@ PythonEditorWidget::PythonEditorWidget(
             action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             action->setToolTip("Open Script");
             mainWindow_->addAction(action);
-            connect(action, &QAction::triggered, this, [this]() { open(); });
+            connect(action, &QAction::triggered, this, [this] { open(); });
         }
 
         {
@@ -198,7 +198,7 @@ PythonEditorWidget::PythonEditorWidget(
             action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             action->setToolTip("Save Script");
             mainWindow_->addAction(action);
-            connect(action, &QAction::triggered, this, [this]() { save(); });
+            connect(action, &QAction::triggered, this, [this] { save(); });
         }
         {
             auto action =
@@ -207,7 +207,7 @@ PythonEditorWidget::PythonEditorWidget(
             action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             action->setToolTip("Save Script As...");
             mainWindow_->addAction(action);
-            connect(action, &QAction::triggered, this, [this]() { saveAs(); });
+            connect(action, &QAction::triggered, this, [this] { saveAs(); });
         }
 
         {
@@ -215,7 +215,7 @@ PythonEditorWidget::PythonEditorWidget(
                 toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
             action->setToolTip("Save Script In Workspace");
             mainWindow_->addAction(action);
-            connect(action, &QAction::triggered, this, [this]() { saveAs(); });
+            connect(action, &QAction::triggered, this, [this] { saveAs(); });
         }
 
         {
@@ -223,14 +223,14 @@ PythonEditorWidget::PythonEditorWidget(
             auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
             undo->setShortcut(QKeySequence::Undo);
             undo->setEnabled(false);
-            QObject::connect(undo, &QAction::triggered, this, [this]() { pythonCode_->undo(); });
+            QObject::connect(undo, &QAction::triggered, this, [this] { pythonCode_->undo(); });
             QObject::connect(pythonCode_, &QPlainTextEdit::undoAvailable, undo,
                              &QAction::setEnabled);
 
             auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
             redo->setShortcut(QKeySequence::Redo);
             redo->setEnabled(false);
-            QObject::connect(redo, &QAction::triggered, this, [this]() { pythonCode_->redo(); });
+            QObject::connect(redo, &QAction::triggered, this, [this] { pythonCode_->redo(); });
             QObject::connect(pythonCode_, &QPlainTextEdit::redoAvailable, redo,
                              &QAction::setEnabled);
         }
@@ -261,7 +261,7 @@ PythonEditorWidget::PythonEditorWidget(
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Clear Log Output");
         mainWindow_->addAction(action);
-        connect(action, &QAction::triggered, [this]() { clearOutput(); });
+        connect(action, &QAction::triggered, [this] { clearOutput(); });
     }
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -391,7 +391,7 @@ void PythonEditorWidget::runOrStop(bool runScript) {
 void PythonEditorWidget::run() {
     util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->addObserver(this);
 
-    const util::OnScopeExit reenable([&]() {
+    const util::OnScopeExit reenable([&] {
         runAction_->setChecked(false);
         util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->removeObserver(
             this);

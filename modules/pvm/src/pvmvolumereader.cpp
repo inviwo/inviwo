@@ -108,7 +108,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
                       &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
     setlocale(LC_ALL, locale);
 
-    const util::OnScopeExit release([&]() { free(pvmdata); });
+    const util::OnScopeExit release([&] { free(pvmdata); });
 
     if (!pvmdata) {
         throw DataReaderException(SourceContext{}, "Error: Could not read data in PVM file: {:?g}",
@@ -128,7 +128,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     auto data = std::make_unique<unsigned char[]>(volsize);
     std::copy(pvmdata, pvmdata + volsize, data.get());
 
-    const DataFormatBase* format = [&]() -> const DataFormatBase* {
+    const DataFormatBase* format = [&] -> const DataFormatBase* {
         switch (bytesPerVoxel) {
             case 1: return DataUInt8::get();
             case 2: return DataUInt16::get();

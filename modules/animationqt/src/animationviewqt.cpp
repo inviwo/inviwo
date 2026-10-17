@@ -191,10 +191,10 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
     verticalScrollBar()->setTracking(true);
 
     connect(horizontalScrollBar(), &QScrollBar::rangeChanged, this,
-            [this]() { timeline_->update(); });
+            [this] { timeline_->update(); });
 
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this,
-            [this]() { timeline_->update(); });
+            [this] { timeline_->update(); });
 
     auto* gridLayout = new QGridLayout();
     gridLayout->setSpacing(0);

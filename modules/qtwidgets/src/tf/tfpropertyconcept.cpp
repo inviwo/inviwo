@@ -38,7 +38,7 @@ util::OnScopeExit TFPropertyConcept::scopedBulkUpdate() {
     if (auto* iso = getIsovalues()) {
         iso->beginBulkUpdate();
     }
-    return util::OnScopeExit{[this]() {
+    return util::OnScopeExit{[this] {
         if (auto* iso = getIsovalues()) {
             iso->endBulkUpdate();
         }

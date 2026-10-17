@@ -118,7 +118,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     const ivec3 dim = parseLatticeDefinition(header.defines, path);
     auto [bboxMin, bboxMax] = amira::getBoundingBox(header.parameters);
 
-    const auto& dataSpec = [&]() {
+    const auto& dataSpec = [&] {
         if (const auto it = header.dataSpecs.find("Data"); it == header.dataSpecs.end()) {
             throw DataReaderException(SourceContext{}, "Missing data specifier for Lattice: {}",
                                       path);

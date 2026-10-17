@@ -46,7 +46,7 @@ AlternativeShaderComponent::AlternativeShaderComponent(std::string_view aName,
 
     const auto makeAltCallback = [&, updating = std::make_shared<bool>(false)](
                                      BoolCompositeProperty* cp, size_t index) {
-        return [updating, cp, index, this]() {
+        return [updating, cp, index, this] {
             if (*updating) return;
             const util::KeepTrueWhileInScope guard{updating.get()};
 

@@ -111,7 +111,7 @@ void ImageInformationProperty::updateForNewImage(const Image& image) {
 
     const bool hasDepth = image.getDepthLayer() != nullptr;
     const bool hasPicking = image.getPickingLayer() != nullptr;
-    const ImageType type = [hasDepth, hasPicking]() {
+    const ImageType type = [hasDepth, hasPicking] {
         if (hasDepth && hasPicking) {
             return ImageType::ColorDepthPicking;
         } else if (hasDepth) {

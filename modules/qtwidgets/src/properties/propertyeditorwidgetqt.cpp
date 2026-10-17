@@ -131,7 +131,7 @@ void PropertyEditorWidgetQt::setState(const UnorderedStringMap<QVariant>& state)
     InviwoDockWidget::setState(state);
 
     if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
-        const auto dockArea = [&]() {
+        const auto dockArea = [&] {
             if (state.contains("dockarea")) {
                 return static_cast<Qt::DockWidgetArea>(state.at("dockarea").toInt());
             } else {

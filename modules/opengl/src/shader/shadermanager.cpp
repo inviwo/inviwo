@@ -66,7 +66,7 @@ void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     for (auto shader : shaders_) {
         shader->setUniformWarningLevel(uniformWarnings_->get());
     }
-    uniformWarnings_->onChange([this]() {
+    uniformWarnings_->onChange([this] {
         for (auto shader : shaders_) {
             shader->setUniformWarningLevel(uniformWarnings_->get());
         }

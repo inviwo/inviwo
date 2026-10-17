@@ -118,7 +118,7 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
     constexpr std::string_view shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
         "materialSpecularColor, position, normal, toCameraDir)";
-    const std::string_view shadingValue = [&]() {
+    const std::string_view shadingValue = [&] {
         switch (mode) {
             case ShadingMode::Ambient: return "shadeAmbient(lighting, materialAmbientColor)";
             case ShadingMode::Diffuse:
@@ -141,7 +141,7 @@ void addShaderDefines(Shader& shader, const ShadingMode& mode) {
         }
     }();
 
-    const int shadingNormalValue = [&]() -> int {
+    const int shadingNormalValue = [&] -> int {
         switch (mode) {
             case ShadingMode::Ambient:
             case ShadingMode::Diffuse:

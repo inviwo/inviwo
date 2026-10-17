@@ -76,7 +76,7 @@ ImageFilter::ImageFilter()
                {"log", "Laplacian of Gaussian", 9}},
               0)
     , passes_("passes", "Passes", 1, 0, 5, 1)
-    , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+    , convolution_([&] { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPort(inport_);
     addPort(outport_);

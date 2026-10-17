@@ -150,7 +150,7 @@ void LIC3D::initializeShader(Shader& shader) {
 }
 
 void LIC3D::preProcess(TextureUnitContainer& cont, Shader& shader, VolumeConfig& config) {
-    const size3_t dims = [&]() {
+    const size3_t dims = [&] {
         using enum OutputDimensions;
         switch (outputDimensions_.getSelectedValue()) {
             case NoiseVolume: return inport_->getData()->getDimensions();

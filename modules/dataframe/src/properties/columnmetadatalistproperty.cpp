@@ -77,7 +77,7 @@ ColumnMetaDataListProperty* ColumnMetaDataListProperty::clone() const {
 void ColumnMetaDataListProperty::setPort(DataFrameInport& inport) {
     inport_ = &inport;
 
-    onChangeCallback_ = inport_->onChangeScoped([&]() {
+    onChangeCallback_ = inport_->onChangeScoped([&] {
         if (inport_->hasData()) {
             updateForNewDataFrame(*inport_->getData(), util::OverwriteState::Yes);
         }

@@ -51,7 +51,7 @@ BoolPropertyWidget::BoolPropertyWidget(BoolProperty& property, Processor& proces
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);
-    action_ = [&]() {
+    action_ = [&] {
         if (!property_->getReadOnly()) {
             property_->set(getValue());
         }

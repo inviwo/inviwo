@@ -124,7 +124,7 @@ CubeRenderer::CubeRenderer()
                 {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
 
                [&](Shader& shader) -> void {
-                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
                }} {
 

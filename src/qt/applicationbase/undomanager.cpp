@@ -61,17 +61,17 @@ public:
     using clock_t = std::chrono::system_clock;
 
     explicit AutoSaver(
-        std::function<int()> numRestoreFiles = []() -> int { return 100000; },
-        std::function<int()> restoreFrequency = []() -> int { return 1440; })
+        std::function<int()> numRestoreFiles = [] -> int { return 100000; },
+        std::function<int()> restoreFrequency = [] -> int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}
         , sessionStart_{clock_t::now()}
-        , restored_{[this]() -> std::optional<std::pmr::string> {
+        , restored_{[this] -> std::optional<std::pmr::string> {
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
                 FILE* file = filesystem::fopen(path_ / "autosave.inv", "rb");
                 if (!file) return std::nullopt;
-                const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+                const util::OnScopeExit closeFile{[file] { std::fclose(file); }};
 
-                const long length = [&]() {
+                const long length = [&] {
                     std::fseek(file, 0, SEEK_END);
                     const auto len = std::ftell(file);
                     std::fseek(file, 0, SEEK_SET);
@@ -88,7 +88,7 @@ public:
             return std::nullopt;
         }()}
         , quit_{false}
-        , saver_{[this, numRestoreFiles, restoreFrequency]() {
+        , saver_{[this, numRestoreFiles, restoreFrequency] {
             util::setThreadDescription("Inviwo AutoSave");
             for (;;) {
 
@@ -194,13 +194,13 @@ UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), this);
     undoAction_->setShortcut(QKeySequence::Undo);
-    QAction::connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
+    QAction::connect(undoAction_, &QAction::triggered, [this] { undoState(); });
 
     redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), this);
     redoAction_->setShortcut(QKeySequence::Redo);
-    QAction::connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
+    QAction::connect(redoAction_, &QAction::triggered, [this] { redoState(); });
 
-    clearHandle_ = manager_->onClear([&]() {
+    clearHandle_ = manager_->onClear([&] {
         clear();
         pushState();
     });
@@ -312,7 +312,7 @@ void UndoManager::updateActions() {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 bool UndoManager::eventFilter(QObject*, QEvent* e) {
-    const bool triggerPush = [&]() {
+    const bool triggerPush = [&] {
         switch (e->type()) {
             case QEvent::MouseButtonRelease: {
                 return true;
@@ -338,7 +338,7 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
 
     if (triggerPush) {
         ++triggerId_;
-        QTimer::singleShot(100, this, [this, id = triggerId_]() {
+        QTimer::singleShot(100, this, [this, id = triggerId_] {
             if (id == triggerId_) {
                 pushStateIfDirty();
             }

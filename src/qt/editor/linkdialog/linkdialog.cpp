@@ -139,7 +139,7 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     };
 
     connect(smartLink, &QToolButton::clicked, this,
-            [scene, srcProcessor, dstProcessor, shouldLink, leftLink, rightLink]() {
+            [scene, srcProcessor, dstProcessor, shouldLink, leftLink, rightLink] {
                 std::function<void(Property * src, Property * dst)> link = [&](Property* src,
                                                                                Property* dst) {
                     if (scene->isPropertyExpanded(src) || scene->isPropertyExpanded(dst)) {
@@ -175,14 +175,14 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     // delete button
     auto* deleteAllLinkPushButton = new QPushButton("Delete All", this);
     connect(deleteAllLinkPushButton, &QPushButton::clicked, this,
-            [scene]() { scene->removeAllPropertyLinks(); });
+            [scene] { scene->removeAllPropertyLinks(); });
     smartLinkPushButtonLayout->addWidget(deleteAllLinkPushButton, 10);
 
     // expand composite
     auto* expandCompositeButton = new QPushButton("Expand/Collapse", this);
     expandCompositeButton->setChecked(false);
     smartLinkPushButtonLayout->addWidget(expandCompositeButton, 10);
-    connect(expandCompositeButton, &QPushButton::clicked, [scene]() { scene->toggleExpand(); });
+    connect(expandCompositeButton, &QPushButton::clicked, [scene] { scene->toggleExpand(); });
 
     mainLayout->addLayout(smartLinkPushButtonLayout);
 

@@ -118,7 +118,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
 
     if (attach) {
         util::updateOrCreateCameraFovProperty(
-            cp, [this]() { return getFovy(); },
+            cp, [this] { return getFovy(); },
             [this](const double& val) {
                 if (fovy_ != val) {
                     fovy_ = val;
@@ -127,7 +127,7 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
             });
 
         util::updateOrCreateCameraEyeOffsetProperty(
-            cp, [this]() { return getOffset(); },
+            cp, [this] { return getOffset(); },
             [this](const dvec2& val) {
                 if (offset_ != val) {
                     offset_ = val;

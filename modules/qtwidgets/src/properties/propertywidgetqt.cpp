@@ -166,14 +166,14 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
         {
             auto* copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
-            connect(copyAction, &QAction::triggered, this, [this]() {
+            connect(copyAction, &QAction::triggered, this, [this] {
                 if (!property_) return;
                 QApplication::clipboard()->setMimeData(getPropertyMimeData().release());
             });
 
             auto* pasteAction = menu->addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
             if (property_->getReadOnly()) pasteAction->setEnabled(false);
-            connect(pasteAction, &QAction::triggered, this, [this, app]() {
+            connect(pasteAction, &QAction::triggered, this, [this, app] {
                 if (!property_) return;
 
                 auto* clipboard = QApplication::clipboard();
@@ -209,7 +209,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
             });
 
             auto* copyPathAction = menu->addAction("Copy Path");
-            connect(copyPathAction, &QAction::triggered, this, [this]() {
+            connect(copyPathAction, &QAction::triggered, this, [this] {
                 if (!property_) return;
                 QApplication::clipboard()->setText(utilqt::toQString(property_->getPath()));
             });
@@ -246,7 +246,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         auto* resetAction = menu->addAction(tr("&Reset to default"));
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         connect(resetAction, &QAction::triggered, this,
-                [this]() { property_->resetToDefaultState(); });
+                [this] { property_->resetToDefaultState(); });
 
         // Module actions.
         addModuleMenuActions(menu.get(), app);
@@ -356,10 +356,9 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             auto* action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
             action->setToolTip(utilqt::toQString(fmt::format("{} Preset", type)));
-            this->connect(action, &QAction::triggered, menu,
-                          [presetManager, name, property, type]() {
-                              presetManager->loadPreset(name, property, type);
-                          });
+            this->connect(action, &QAction::triggered, menu, [presetManager, name, property, type] {
+                presetManager->loadPreset(name, property, type);
+            });
         };
         const auto savePreset = [presetManager, property = property_](QWidget* parent,
                                                                       PropertyPresetType type) {
@@ -409,7 +408,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
         for (auto& type : types) {
             const auto* saveAction =
                 saveMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
-            connect(saveAction, &QAction::triggered, [=]() {
+            connect(saveAction, &QAction::triggered, [=] {
                 while (!savePreset(saveMenu, type)) {
                     ;
                 }
@@ -420,7 +419,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
         for (const auto& type : {PropertyPresetType::Property, PropertyPresetType::Workspace}) {
             const auto* clearAction =
                 clearMenu->addAction(utilqt::toQString(fmt::format("{} Preset...", type)));
-            connect(clearAction, &QAction::triggered, [=]() { clearPresets(type); });
+            connect(clearAction, &QAction::triggered, [=] { clearPresets(type); });
         }
 
         presetMenu->addSeparator();

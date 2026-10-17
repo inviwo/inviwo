@@ -102,7 +102,7 @@ MultichannelRaycaster::MultichannelRaycaster()
         tf.setCurrentStateAsDefault();
     }
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -114,8 +114,8 @@ MultichannelRaycaster::MultichannelRaycaster()
 
     addProperties(raycasting_, camera_, lighting_, positionIndicator_, transferFunctions_);
 
-    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onConnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void MultichannelRaycaster::initializeResources() {

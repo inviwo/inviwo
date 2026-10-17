@@ -107,8 +107,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
     util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
 
     // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] -> ProcessorStatus {
         if (!error_.empty()) {
             return {ProcessorStatus::Error, error_};
         } else if (file_.get().empty()) {
@@ -124,13 +124,13 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::filesystem::path& 
             return ProcessorStatus::Ready;
         }
     });
-    file_.onChange([this]() {
+    file_.onChange([this] {
         const auto* rf = util::getDataReaderFactory(app_);
         util::updateReaderFromFileAndType<VolumeSequence, Volume>(file_, reader_, *rf);
         error_.clear();
         isReady_.update();
     });
-    reader_.onChange([this]() {
+    reader_.onChange([this] {
         error_.clear();
         isReady_.update();
     });

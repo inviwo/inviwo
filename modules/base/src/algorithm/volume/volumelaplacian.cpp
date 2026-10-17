@@ -72,7 +72,7 @@ std::shared_ptr<Volume> util::volumeLaplacian(std::shared_ptr<const Volume> volu
                                               double scale) {
 
     return dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-        volume->getDataFormat()->getId(), [&]<typename DataType>() -> std::shared_ptr<Volume> {
+        volume->getDataFormat()->getId(), [&]<typename DataType> -> std::shared_ptr<Volume> {
             using SampleType = typename util::same_extent_t<DataType, double>;
             using DstType = typename util::same_extent_t<DataType, float>;
 

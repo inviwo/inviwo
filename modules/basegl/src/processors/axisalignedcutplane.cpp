@@ -102,7 +102,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     }
     addProperties(channel_, axes_[0], axes_[1], axes_[2], applyTF_, tf_, camera_, trackball_);
 
-    sliceShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    sliceShader_.onReload([&] { this->invalidate(InvalidationLevel::InvalidResources); });
 
     const auto verticesBuffer =
         util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
@@ -139,7 +139,7 @@ void AxisAlignedCutPlane::process() {
     const vec3 volDimsInv{1.0f / vec3{volDims}};
     const vec3 halfVoxel = vec3{0.5f} * volDimsInv;
 
-    auto sliceTrafos = [&]() -> std::array<mat4, 3> {
+    auto sliceTrafos = [&] -> std::array<mat4, 3> {
         const vec3 offset =
             (vec3{slices_[0], slices_[1], slices_[2]} - 1.0f) * volDimsInv + halfVoxel;
 

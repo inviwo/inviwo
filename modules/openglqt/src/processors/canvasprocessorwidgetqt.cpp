@@ -202,21 +202,21 @@ bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories act
             menu.addSeparator();
         }
         connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
-                &QAction::triggered, this, [this]() {
+                &QAction::triggered, this, [this] {
                     getProcessor()
                         ->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)
                         ->setSelected(true);
                 });
         connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"),
-                &QAction::triggered, this, [&]() { setVisible(false); });
+                &QAction::triggered, this, [&] { setVisible(false); });
 
         connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
-                &QAction::triggered, this, [&]() { setFullScreen(!Super::isFullScreen()); });
+                &QAction::triggered, this, [&] { setFullScreen(!Super::isFullScreen()); });
 
         auto* ontop = menu.addAction("On Top");
         ontop->setCheckable(true);
         ontop->setChecked(isOnTop());
-        connect(ontop, &QAction::triggered, this, [&]() { setOnTop(!isOnTop()); });
+        connect(ontop, &QAction::triggered, this, [&] { setOnTop(!isOnTop()); });
     }
 
     if (actions.contains(ContextMenuCategory::View)) {

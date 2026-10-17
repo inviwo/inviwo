@@ -51,7 +51,7 @@ void parseColorMapNode(TransferFunction& tf, TxElement* node) {
     const std::string colorspace = node->GetAttribute("space");
     const std::string colormapName = node->GetAttribute("name");
 
-    const auto convert = [&, cs = toLower(colorspace)]() -> std::function<vec3(dvec3)> {
+    const auto convert = [&, cs = toLower(colorspace)] -> std::function<vec3(dvec3)> {
         if ((cs == "lab") || (cs == "cielab")) {
             return [](dvec3 c) { return color::lab2rgb(vec3(c)); };
         } else if ((cs == "luv") || (cs == "cieluv")) {

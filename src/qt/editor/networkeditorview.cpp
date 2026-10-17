@@ -71,7 +71,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     , loadHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onLoad(
           [this](Deserializer&) { fitNetwork(); }, ~WorkspaceSaveModes{WorkspaceSaveMode::Undo})}
     , clearHandle_{mainwindow_->getInviwoApplication()->getWorkspaceManager()->onClear(
-          [this]() { fitNetwork(); })} {
+          [this] { fitNetwork(); })} {
 
     NetworkEditorObserver::addObservation(editor_);
     QGraphicsView::setScene(editor_);

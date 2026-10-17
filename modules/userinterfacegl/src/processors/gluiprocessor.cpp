@@ -124,7 +124,7 @@ GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     // list of dynamic properties
     , dynamicProperties_(
           "dynamicProperties", "Properties",
-          [app]() {
+          [app] {
               std::vector<std::unique_ptr<Property>> v;
               const auto& factory =
                   util::getModuleByTypeOrThrow<UserInterfaceGLModule>(app).getGLUIWidgetFactory();

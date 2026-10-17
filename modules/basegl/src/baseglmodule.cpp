@@ -248,7 +248,7 @@ namespace {
 bool updateV0(TxElement* root) {
     bool res = false;
 
-    const auto makerulesV1 = []() {
+    const auto makerulesV1 = [] {
         std::vector<xml::IdentifierReplacement> repl = {
             // MeshRenderProcessorGL
             {{xml::Kind::processor("org.inviwo.GeometryRenderGL"),

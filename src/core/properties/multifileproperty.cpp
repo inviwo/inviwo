@@ -49,7 +49,7 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
-    , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
+    , FileBase([this] { propertyModified(); }, acceptMode, fileMode, contentType)
     , files_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
     set(value);

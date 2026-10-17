@@ -55,9 +55,9 @@ ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     hLayout->setSpacing(0);
 
     button_->setText(utilqt::toQString(property_->getDisplayName()));
-    connect(button_, &QPushButton::released, this, [&]() {
+    connect(button_, &QPushButton::released, this, [&] {
         if (!property_->getReadOnly()) {
-            util::exceptionGuard([&]() { property_->pressButton(); });
+            util::exceptionGuard([&] { property_->pressButton(); });
         }
     });
     button_->setFocusPolicy(Qt::StrongFocus);
@@ -83,7 +83,7 @@ std::unique_ptr<QMenu> ButtonPropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     auto renameAction = menu->addAction(tr("&Rename"));
-    connect(renameAction, &QAction::triggered, this, [this]() {
+    connect(renameAction, &QAction::triggered, this, [this] {
         bool ok = false;
         const auto displayname = utilqt::toQString(property_->getDisplayName());
         const auto name = utilqt::fromQString(QInputDialog::getText(

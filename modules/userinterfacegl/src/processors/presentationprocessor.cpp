@@ -131,14 +131,14 @@ PresentationProcessor::PresentationProcessor()
           "mousePrevSlide", "Previous Slide (Mouse)", [this](Event* e) { previousSlide(e); },
           MouseButton::Right, MouseState::Press) {
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         if (!presentationMode_) {
             return allInportsAreReady();
         } else {
             return !fileList_.empty();
         }
     });
-    presentationMode_.onChange([this]() { isReady_.update(); });
+    presentationMode_.onChange([this] { isReady_.update(); });
 
     outport_.setHandleResizeEvents(false);
 
@@ -167,8 +167,8 @@ PresentationProcessor::PresentationProcessor()
         InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
     imageFilePattern_.addNameFilters(validExtensions_);
 
-    imageFilePattern_.onChange([&]() { onFindFiles(); });
-    findFilesButton_.onChange([&]() { onFindFiles(); });
+    imageFilePattern_.onChange([&] { onFindFiles(); });
+    findFilesButton_.onChange([&] { onFindFiles(); });
 
     imageFileName_.setReadOnly(true);
 }

@@ -174,7 +174,7 @@ void SurfaceExtraction::process() {
 
     std::vector<std::function<std::shared_ptr<Mesh>(pool::Progress progress)>> jobs;
 
-    const float mix = [mode = coloring_.get(), blend = blendFactor_.get()]() {
+    const float mix = [mode = coloring_.get(), blend = blendFactor_.get()] {
         switch (mode) {
             using enum ColoringMode;
             default:

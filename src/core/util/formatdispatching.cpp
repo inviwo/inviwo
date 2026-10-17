@@ -60,9 +60,8 @@ namespace {
 //! [Format singleDispatch example]
 std::shared_ptr<VolumeRAM> create(DataFormatId dataFormatId) {
     return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        dataFormatId, []<typename T>() {
-            return std::make_shared<VolumeRAMPrecision<T>>(size3_t{128, 128, 128});
-        });
+        dataFormatId,
+        []<typename T> { return std::make_shared<VolumeRAMPrecision<T>>(size3_t{128, 128, 128}); });
 }
 //! [Format singleDispatch example]
 
@@ -71,7 +70,7 @@ std::shared_ptr<VolumeRAMPrecision<double>> sum(const VolumeRAM& v1, const Volum
     auto sum = std::make_shared<VolumeRAMPrecision<double>>(v1.getDimensions());
 
     dispatching::doubleDispatch<void, dispatching::filter::Scalars, dispatching::filter::Scalars>(
-        v1.getDataFormat()->getId(), v2.getDataFormat()->getId(), [&]<typename T1, typename T2>() {
+        v1.getDataFormat()->getId(), v2.getDataFormat()->getId(), [&]<typename T1, typename T2> {
             const auto& ram1 = static_cast<const VolumeRAMPrecision<T1>&>(v1);
             const auto& ram2 = static_cast<const VolumeRAMPrecision<T2>&>(v2);
 
@@ -92,7 +91,7 @@ std::shared_ptr<VolumeRAM> sum(const VolumeRAM& v1, const VolumeRAM& v2, DataFor
     return dispatching::tripleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars,
                                        dispatching::filter::Scalars, dispatching::filter::Scalars>(
         v1.getDataFormat()->getId(), v2.getDataFormat()->getId(), sumType,
-        [&]<typename T1, typename T2, typename T3>() {
+        [&]<typename T1, typename T2, typename T3> {
             auto sum = std::make_shared<VolumeRAMPrecision<T3>>(v1.getDimensions());
             const auto& ram1 = static_cast<const VolumeRAMPrecision<T1>&>(v1);
             const auto& ram2 = static_cast<const VolumeRAMPrecision<T2>&>(v2);

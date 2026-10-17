@@ -76,7 +76,7 @@ FirstIvwProcessor::FirstIvwProcessor()
     , outport_("outport")
     , shader_("minimal.vert", "img_color.frag") {
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addProperty(color_);
     addPort(outport_);

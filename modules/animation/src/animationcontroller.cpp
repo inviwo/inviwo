@@ -128,7 +128,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                       " For example: 'frame0001.png'"_help,
                       "frame"}
     , exportWriter_{"writer", "Type",
-                    [&]() {
+                    [&] {
                         OptionPropertyState<FileExtension> state;
                         const auto exts = util::getDataWriterFactory(app)->getKeyView();
                         std::ranges::transform(exts, std::back_inserter(state.options),
@@ -145,10 +145,10 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
     , exportOverwrite_{"overwrite", "Overwrite", false}
     , controlOptions("controlOptions", "Special Tracks")
     , insertControlTrack("insertControlTrack", "Add Control Track",
-                         [this]() { animation_->add(std::make_unique<ControlTrack>()); })
+                         [this] { animation_->add(std::make_unique<ControlTrack>()); })
     , insertInvalidationTrack(
           "insertInvalidationTrack", "Add Invalidation Track",
-          [this]() {
+          [this] {
               animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
           })
     , animation_(&animation)
@@ -169,7 +169,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
     playOptions.addProperties(playWindowMode, playWindow, framesPerSecond, playMode);
     playOptions.setCollapsed(true);
 
-    framesPerSecond.onChange([this]() {
+    framesPerSecond.onChange([this] {
         timer_.setInterval(
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::abs(deltaTime())));
     });
@@ -177,8 +177,8 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
     // Rendering Settings
     renderWindow.readonlyDependsOn(renderWindowMode, [](auto& prop) { return prop.get() == 0; });
 
-    renderAction.onChange([&]() { render(); });
-    renderActionStop.onChange([&]() { pause(); });
+    renderAction.onChange([&] { render(); });
+    renderActionStop.onChange([&] { pause(); });
     renderAction.setReadOnly(state_ == AnimationState::Rendering);
     renderActionStop.setReadOnly(state_ != AnimationState::Rendering);
 
@@ -380,7 +380,7 @@ void AnimationController::render() {
     renderAction.setReadOnly(true);
     renderActionStop.setReadOnly(false);
 
-    const util::OnScopeExit reset{[&]() {
+    const util::OnScopeExit reset{[&] {
         setState(AnimationState::Paused);
         renderAction.setReadOnly(false);
         renderActionStop.setReadOnly(true);
@@ -412,7 +412,7 @@ void AnimationController::render() {
                                  .sourceName = std::string{p->getIdentifier()}});
 
                             recordingFunctors.emplace_back(
-                                [recorder = std::move(recorder), imageExporter]() {
+                                [recorder = std::move(recorder), imageExporter] {
                                     if (const auto image = imageExporter->getImage()) {
                                         if (const auto* layer = image->getColorLayer()) {
                                             recorder->record(*layer);
@@ -432,7 +432,7 @@ void AnimationController::render() {
                     recordingFunctors.emplace_back(
                         [exporter, writer = exportWriter_.get(), dir = exportOutputDirectory_.get(),
                          base, overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
-                         counter = size_t{0}, digits]() mutable {
+                         counter = size_t{0}, digits] mutable {
                             const auto name = fmt::format("{}{:0{}}", base, counter, digits);
                             exporter->exportFile(dir, name, {writer}, overwrite);
                             ++counter;

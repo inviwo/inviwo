@@ -94,7 +94,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                         0.0,
                         InvalidationLevel::InvalidOutput,
                         PropertySemantics::Text}
-    , copyFromInput_{"copyFromInput", "Copy Range from Input", [&]() {
+    , copyFromInput_{"copyFromInput", "Copy Range from Input", [&] {
                          customDataRange_.set(dataRange_);
                          customValueRange_.set(valueRange_);
                      }} {
@@ -116,7 +116,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : DataRangeProperty{identifier, displayName, customRanges, invalidationLevel, semantics} {
 
-    port.onChange([&]() {
+    port.onChange([&] {
         if (port.hasData()) {
             const auto data = port.getData();
             dataRange_.set(data->dataMap.dataRange);
@@ -131,7 +131,7 @@ DataRangeProperty::DataRangeProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : DataRangeProperty{identifier, displayName, customRanges, invalidationLevel, semantics} {
 
-    port.onChange([&]() {
+    port.onChange([&] {
         if (port.hasData()) {
             const auto data = port.getData();
             dataRange_.set(data->dataMap.dataRange);

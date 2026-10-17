@@ -60,8 +60,7 @@ public:
     std::vector<Histogram1D> createHistogram(double minValue, double maxValue, size_t numValues,
                                              size_t binCount) {
         std::vector<double> data(numValues);
-        std::ranges::generate(data,
-                              [&]() { return dis_(rand_) * (maxValue - minValue) + minValue; });
+        std::ranges::generate(data, [&] { return dis_(rand_) * (maxValue - minValue) + minValue; });
         const DataMapper dataMap{dvec2{minValue, maxValue}};
         return util::calculateHistograms<double>(data, dataMap, binCount);
     }

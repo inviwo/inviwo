@@ -95,7 +95,7 @@ FileList::FileList()
     , cycleFiles_{"cycleFiles", "Cycle through all files",
                   "When enabled, the processor will iterate over the list of files where the "
                   "network is evaluated once for each file before continuing."_help,
-                  [this]() { cycleFiles(); }}
+                  [this] { cycleFiles(); }}
     , running_{false} {
 
     addPorts(outport_, bnlInport_, bnlOutport_);
@@ -128,11 +128,11 @@ FileList::FileList()
         }
     });
 
-    selectedIndex_.onChange([this]() {
+    selectedIndex_.onChange([this] {
         bnlOutport_.getManager().brush(BrushingAction::Select, BrushingTarget::Row,
                                        {selectedIndex_.get()});
     });
-    highlightIndex_.onChange([this]() {
+    highlightIndex_.onChange([this] {
         bnlOutport_.getManager().brush(BrushingAction::Highlight, BrushingTarget::Row,
                                        {highlightIndex_.get()});
     });
@@ -155,8 +155,8 @@ void FileList::cycleFiles() {
     bool expected = false;
     const bool desired = true;
     if (running_.compare_exchange_strong(expected, desired)) {
-        app->dispatchFrontAndForget([pw = weak_from_this(), app, net]() {
-            const util::OnScopeExit stopRunning{[&]() {
+        app->dispatchFrontAndForget([pw = weak_from_this(), app, net] {
+            const util::OnScopeExit stopRunning{[&] {
                 if (const auto self = getSelf(pw)) self->running_ = false;
             }};
 

@@ -66,7 +66,7 @@ void exposeFlags(pybind11::module& m, std::string_view name) {
         });
 
     py::classh<flags::flags<E>> flags(m, SafeCStr{name}.c_str());
-    flags.def(py::init([]() { return flags::flags<E>{flags::empty}; }))
+    flags.def(py::init([] { return flags::flags<E>{flags::empty}; }))
         .def(py::init<E>())
         .def(py::init<flags::flags<E>>())
         .def(py::init([](py::args args) {

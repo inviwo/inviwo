@@ -99,7 +99,7 @@ std::shared_ptr<TransferFunction> importTransferFunctionDialog() {
     importFileDialog.addExtension(FileExtension::all());
 
     if (importFileDialog.exec()) {
-        return util::exceptionGuard([&]() {
+        return util::exceptionGuard([&] {
             const auto filename = utilqt::fromQString(importFileDialog.selectedFiles().at(0));
             if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(
                     importFileDialog.getSelectedFileExtension(), filename)) {
@@ -125,7 +125,7 @@ std::shared_ptr<IsoValueCollection> importIsoValueCollectionDialog() {
     importFileDialog.addExtension(FileExtension::all());
 
     if (importFileDialog.exec()) {
-        return util::exceptionGuard([&]() {
+        return util::exceptionGuard([&] {
             const auto filename = utilqt::fromQString(importFileDialog.selectedFiles().at(0));
             if (auto reader = factory->getReaderForTypeAndExtension<IsoValueCollection>(
                     importFileDialog.getSelectedFileExtension(), filename)) {
@@ -152,7 +152,7 @@ void exportTransferFunctionDialog(const TransferFunction& tf) {
     exportFileDialog.addExtension(FileExtension::all());
 
     if (exportFileDialog.exec()) {
-        util::exceptionGuard([&]() {
+        util::exceptionGuard([&] {
             const auto filename = utilqt::fromQString(exportFileDialog.selectedFiles().at(0));
             const auto fileExt = exportFileDialog.getSelectedFileExtension();
 
@@ -180,7 +180,7 @@ void exportIsoValueCollectionDialog(const IsoValueCollection& iso) {
     exportFileDialog.addExtension(FileExtension::all());
 
     if (exportFileDialog.exec()) {
-        util::exceptionGuard([&]() {
+        util::exceptionGuard([&] {
             const auto filename = utilqt::fromQString(exportFileDialog.selectedFiles().at(0));
             const auto fileExt = exportFileDialog.getSelectedFileExtension();
 
@@ -208,27 +208,27 @@ QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
     action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
     action->setIconVisibleInMenu(true);
     QObject::connect(action, &QAction::triggered, parent,
-                     util::exceptionGuarded([property, tf2 = std::move(tf),
-                                             selection = std::move(selection)]() mutable {
-                         const NetworkLock lock(property);
+                     util::exceptionGuarded(
+                         [property, tf2 = std::move(tf), selection = std::move(selection)] mutable {
+                             const NetworkLock lock(property);
 
-                         if (const auto* dm = property->data().getDataMap()) {
-                             tf2.setMode(property->get().getMode(), *dm);
-                         } else {
-                             const DataMapper dm2{property->get().getRange()};
-                             tf2.setMode(property->get().getMode(), dm2);
-                         }
-
-                         if (selection.empty()) {
-                             property->set(tf2);
-                         } else {
-                             property->get().beginBulkUpdate();
-                             for (auto* point : selection) {
-                                 point->setColor(vec3{tf2.sample(point->getPosition())});
+                             if (const auto* dm = property->data().getDataMap()) {
+                                 tf2.setMode(property->get().getMode(), *dm);
+                             } else {
+                                 const DataMapper dm2{property->get().getRange()};
+                                 tf2.setMode(property->get().getMode(), dm2);
                              }
-                             property->get().endBulkUpdate();
-                         }
-                     }));
+
+                             if (selection.empty()) {
+                                 property->set(tf2);
+                             } else {
+                                 property->get().beginBulkUpdate();
+                                 for (auto* point : selection) {
+                                     point->setColor(vec3{tf2.sample(point->getPosition())});
+                                 }
+                                 property->get().endBulkUpdate();
+                             }
+                         }));
     return action;
 }
 
@@ -261,7 +261,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
         const auto files = filesystem::getDirectoryContentsRecursively(basePath);
         for (const auto& file : files) {
             if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(file)) {
-                util::exceptionGuard([&]() {
+                util::exceptionGuard([&] {
                     const auto tf = reader->readData(basePath / file);
                     tfAction(file.string(), std::move(*tf), presets, property, selection, parent);
                 });
@@ -271,7 +271,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
 
     QObject::connect(
         presets, &QMenu::aboutToShow, presets,
-        [presets, addPresetActions]() {
+        [presets, addPresetActions] {
             for (const auto& im :
                  InviwoApplication::getPtr()->getModuleManager().getInviwoModules()) {
                 const auto moduleTFPath = im.getPath(ModulePath::TransferFunctions);
@@ -364,7 +364,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
 
     const auto generateN = [property](colorbrewer::Category category, colorbrewer::Family family,
                                       bool discrete) {
-        return [category, family, discrete, property]() {
+        return [category, family, discrete, property] {
             GenerateNDialog dialog;
             if (category != colorbrewer::Category::Diverging) {
                 dialog.middle->setDisabled(true);
@@ -375,7 +375,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
             }
 
             if (dialog.exec()) {
-                util::exceptionGuard([&]() {
+                util::exceptionGuard([&] {
                     auto start = dialog.start->value();
                     auto middle = dialog.middle->value();
                     auto stop = dialog.stop->value();
@@ -397,7 +397,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
 
     QObject::connect(
         presets, &QMenu::aboutToShow, presets,
-        [presets, property, parent, generateN, selection = std::move(selection)]() {
+        [presets, property, parent, generateN, selection = std::move(selection)] {
             using enum colorbrewer::Category;
             for (auto category : {Diverging, Qualitative, Sequential}) {
                 for (const auto discrete : {true, false}) {
@@ -483,14 +483,14 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
 
     QObject::connect(
         presets, &QMenu::aboutToShow, presets,
-        [presets, addAction]() {
+        [presets, addAction] {
             {
                 auto* category =
                     addCategory("Continuous", presets,
                                 colorListToTF(scm::get(scm::allContinuous().front()), false));
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
-                    [category, addAction]() {
+                    [category, addAction] {
                         for (const auto cm : scm::allContinuous()) {
                             addAction(category, scm::get(cm), format_as(cm), false);
                         }
@@ -502,7 +502,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                     "Cyclic", presets, colorListToTF(scm::get(scm::allCyclic().front()), false));
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
-                    [category, addAction]() {
+                    [category, addAction] {
                         for (const auto cm : scm::allCyclic()) {
                             addAction(category, scm::get(cm), format_as(cm), false);
                         }
@@ -515,7 +515,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                                 colorListToTF(scm::get(scm::allCategorical().front()), true));
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
-                    [category, addAction]() {
+                    [category, addAction] {
                         for (const auto cm : scm::allCategorical()) {
                             addAction(category, scm::get(cm), format_as(cm), true);
                         }
@@ -529,7 +529,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                                 colorListToTF(scm::get(scm::allDiscrete().front(), size), true));
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
-                    [category, addAction, size]() {
+                    [category, addAction, size] {
                         for (const auto cm : scm::allDiscrete()) {
                             addAction(category, scm::get(cm, size), format_as(cm), true);
                         }

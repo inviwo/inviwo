@@ -184,15 +184,15 @@ SSAO::SSAO()
     initHbao();
 
     initializeResources();
-    directions_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    steps_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    useNormal_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    depthLinearize_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    hbaoCalc_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    hbaoCalcBlur_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    hbaoBlurHoriz_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    hbaoBlurVert_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    inport_.onChange([this]() {
+    directions_.onChange([this] { invalidate(InvalidationLevel::InvalidResources); });
+    steps_.onChange([this] { invalidate(InvalidationLevel::InvalidResources); });
+    useNormal_.onChange([this] { invalidate(InvalidationLevel::InvalidResources); });
+    depthLinearize_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    hbaoCalc_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    hbaoCalcBlur_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    hbaoBlurHoriz_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    hbaoBlurVert_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    inport_.onChange([this] {
         const DataFormatBase* format = inport_.getData()->getDataFormat();
         const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
@@ -308,7 +308,7 @@ void SSAO::initHbao() {
     std::mt19937 gen;
     std::uniform_real_distribution<float> uni_float(0.f, 1.f);
 
-    const auto random = [&gen, &uni_float]() -> float { return uni_float(gen); };
+    const auto random = [&gen, &uni_float] -> float { return uni_float(gen); };
 
     signed short hbaoRandomShort[HBAO_RANDOM_ELEMENTS * MAX_SAMPLES * 4];
 

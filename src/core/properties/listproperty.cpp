@@ -68,7 +68,7 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
                            PropertySemantics semantics)
     : ListProperty(
           identifier, displayName, Document{},
-          [&]() {
+          [&] {
               std::vector<std::unique_ptr<Property>> tmp;
               tmp.push_back(std::move(prefab));
               return tmp;
@@ -111,7 +111,7 @@ void ListProperty::set(const ListProperty* src) {
 
         const auto count = std::min(srcItems.size(), dstItems.size());
 
-        const auto linkSameId = [&]() {
+        const auto linkSameId = [&] {
             for (size_t i = 0; i < count; ++i) {
                 if (srcItems[i]->getClassIdentifier() == dstItems[i]->getClassIdentifier()) {
                     dstItems[i]->set(srcItems[i]);

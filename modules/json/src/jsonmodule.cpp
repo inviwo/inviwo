@@ -127,18 +127,18 @@ JSONModule::JSONModule(InviwoApplication* app)
 
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<OrdinalTypes>{}(
-        [&]<typename T>() { registerJSONConverter<OrdinalProperty<T>>(); });
+        [&]<typename T> { registerJSONConverter<OrdinalProperty<T>>(); });
     util::for_each_type<OrdinalTypes>{}(
-        [&]<typename T>() { registerJSONConverter<OrdinalRefProperty<T>>(); });
+        [&]<typename T> { registerJSONConverter<OrdinalRefProperty<T>>(); });
 
     util::for_each_type<ScalarTypes>{}(
-        [&]<typename T>() { registerJSONConverter<MinMaxProperty<T>>(); });
+        [&]<typename T> { registerJSONConverter<MinMaxProperty<T>>(); });
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(
-        [&]<typename T>() { registerJSONConverter<OptionProperty<T>>(); });
+        [&]<typename T> { registerJSONConverter<OptionProperty<T>>(); });
 
     using OptionEnumTypes = std::tuple<char, int>;
-    util::for_each_type<OptionEnumTypes>{}([&]<typename T>() {
+    util::for_each_type<OptionEnumTypes>{}([&]<typename T> {
         enum class e : T;
         registerJSONConverter<OptionProperty<e>>();
 

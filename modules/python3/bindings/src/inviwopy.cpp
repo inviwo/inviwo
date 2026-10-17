@@ -191,14 +191,13 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
         .def("load", &Settings::load)
         .def("save", &Settings::save);
 
-    m.def("debugBreak", []() { util::debugBreak(); });
+    m.def("debugBreak", [] { util::debugBreak(); });
 
     if (InviwoApplication::isInitialized()) {
         m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
 
-    m.def(
-        "getApp", []() { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
+    m.def("getApp", [] { return InviwoApplication::getPtr(); }, py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
         if (auto* pythonModule = util::getModuleByType<Python3Module>()) {

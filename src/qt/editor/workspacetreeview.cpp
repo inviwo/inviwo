@@ -89,7 +89,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto name = utilqt::getData(index, Role::Name).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
-        const auto& image = [&]() {
+        const auto& image = [&] {
             const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
                 const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);

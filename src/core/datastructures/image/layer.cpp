@@ -218,7 +218,7 @@ LayerConfig Layer::config() const {
 namespace {
 
 auto histCalc(const Layer& v) {
-    return [dataMap = v.dataMap, repr = v.getRepresentationShared<LayerRAM>()]() {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<LayerRAM>()] {
         return repr->dispatch<std::vector<Histogram1D>>(
             [&]<typename T>(const LayerRAMPrecision<T>* rp) {
                 return util::calculateHistograms(rp->getView(), dataMap, 2048);

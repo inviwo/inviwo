@@ -137,8 +137,7 @@ int main(int argc, char** argv) {
     clp.processCallbacks();  // run any command line callbacks from modules.
     QApplication::processEvents();
 
-    const inviwo::util::OnScopeExit clearNetwork(
-        [&]() { inviwoApp.getProcessorNetwork()->clear(); });
+    const inviwo::util::OnScopeExit clearNetwork([&] { inviwoApp.getProcessorNetwork()->clear(); });
 
     if (auto numErrors = logCounter->getWarnCount()) {
         inviwo::log::warn("{} warnings generated during startup", numErrors);

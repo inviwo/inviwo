@@ -113,7 +113,7 @@ TextOverlayGL::TextOverlayGL()
     , texts_{"texts",
              "Texts",
              "List of text items to overlay"_help,
-             []() {
+             [] {
                  std::vector<std::unique_ptr<Property>> res;
                  res.emplace_back(std::make_unique<TextOverlayProperty>("text0", "Text 0"));
                  return res;
@@ -125,7 +125,7 @@ TextOverlayGL::TextOverlayGL()
           util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Foreground color of the text"_help))
     , font_("font", "Font Settings")
     , args_{"args", "Arguments",
-            []() {
+            [] {
                 std::vector<std::unique_ptr<Property>> props;
                 props.emplace_back(std::make_unique<StringProperty>("arg0", "String Arg 0"));
                 props.emplace_back(std::make_unique<IntProperty>("arg0", "Int Arg 0"));
@@ -133,7 +133,7 @@ TextOverlayGL::TextOverlayGL()
                 return props;
             }(),
             0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove}
-    , textRenderer_{[]() {
+    , textRenderer_{[] {
         // ensure the default context is active when creating the TextRenderer
         rendercontext::activateLocal();
         return TextRenderer{};

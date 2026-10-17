@@ -195,7 +195,7 @@ using bigger_t = decltype(bigger<T>());
  * or equal to the number digits in "From".
  */
 template <typename To, typename From>
-constexpr auto rangeRatio = []() {
+constexpr auto rangeRatio = [] {
     using uTo = std::make_unsigned_t<To>;
     using uFrom = std::make_unsigned_t<From>;
     static_assert(std::numeric_limits<To>::digits >= std::numeric_limits<From>::digits,

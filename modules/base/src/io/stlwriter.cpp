@@ -127,7 +127,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) {
     auto nit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::NormalAttrib;
     });
-    auto normalprinter = [&]() {
+    auto normalprinter = [&] {
         if (nit != data->getBuffers().end()) {
             if (const auto* const normRam = nit->second->getRepresentation<BufferRAM>();
                 normRam && (normRam->getDataFormat()->getComponents() == 3)) {

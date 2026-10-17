@@ -232,7 +232,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
 
     if (modified) {
         minMaxProperty_->setInitiatingWidget(this);
-        util::exceptionGuard([&]() { minMaxProperty_->set(range); });
+        util::exceptionGuard([&] { minMaxProperty_->set(range); });
         minMaxProperty_->clearInitiatingWidget();
     }
 }
@@ -258,7 +258,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMin() {
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        util::exceptionGuard([&]() { minMaxProperty_->set(range); });
+        util::exceptionGuard([&] { minMaxProperty_->set(range); });
         minMaxProperty_->clearInitiatingWidget();
     }
 }
@@ -284,7 +284,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromMax() {
         }
 
         minMaxProperty_->setInitiatingWidget(this);
-        util::exceptionGuard([&]() { minMaxProperty_->set(range); });
+        util::exceptionGuard([&] { minMaxProperty_->set(range); });
         minMaxProperty_->clearInitiatingWidget();
     }
 }

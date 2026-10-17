@@ -121,9 +121,9 @@ FXAA::FXAA()
     initFramebuffer(width, height);
 
     initializeResources();
-    fxaa_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    fxaa_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    dither_.onChange([this] { invalidate(InvalidationLevel::InvalidResources); });
+    quality_.onChange([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 FXAA::~FXAA() {

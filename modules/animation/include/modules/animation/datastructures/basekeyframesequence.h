@@ -328,7 +328,7 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 
     d.deserialize("keyframes", keyframes_, "keyframe",
                   deserializer::IndexFunctions{
-                      .makeNew = []() { return std::unique_ptr<Key>{}; },
+                      .makeNew = [] { return std::unique_ptr<Key>{}; },
                       .onNew =
                           [&](std::unique_ptr<Key>& key, size_t) {
                               notifyKeyframeAdded(key.get(), this);

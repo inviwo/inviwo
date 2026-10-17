@@ -170,10 +170,10 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         const auto addWidgetLazy = [&](const QString& name, Qt::DockWidgetArea area, auto factory) {
             auto* action = menu->addAction(name);
             action->setCheckable(true);
-            QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory]() {
+            QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory] {
                 // The first time the callback is called we will create the widget. And then replace
                 // this action with the toggleViewAction from the new widget.
-                const util::OnScopeExit onExit([action]() { delete action; });
+                const util::OnScopeExit onExit([action] { delete action; });
                 auto widget = factory();
                 win->addDockWidget(area, widget);
                 widget->hide();
@@ -185,7 +185,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             });
         };
 
-        addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, win]() {
+        addWidgetLazy("Animation Editor", Qt::BottomDockWidgetArea, [this, win] {
             auto* animationModule = util::getModuleByType<AnimationModule>();
             editor_ = std::make_unique<AnimationEditorDockWidgetQt>(
                 animationModule->getWorkspaceAnimations(), animationModule->getAnimationManager(),
@@ -197,7 +197,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             return editor_.get();
         });
 
-        addWidgetLazy("Demo Navigator", Qt::RightDockWidgetArea, [this, win]() {
+        addWidgetLazy("Demo Navigator", Qt::RightDockWidgetArea, [this, win] {
             auto* animationModule = util::getModuleByType<AnimationModule>();
             auto& demoController = animationModule->getDemoController();
             navigator_ =
@@ -232,7 +232,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty,
                                    TransferFunctionProperty, IsoValueProperty>>{}(
-        [&]<typename Prop>() {
+        [&]<typename Prop> {
             registerPropertyTrackHelper<Prop, ValueKeyframe<typename Prop::value_type>>(*this);
         });
 

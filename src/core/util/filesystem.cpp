@@ -601,7 +601,7 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
 }
 
 const fs::path& findBasePath() {
-    static const fs::path basePath = []() {
+    static const fs::path basePath = [] {
 
 #ifdef __APPLE__
         // We might be in a bundle

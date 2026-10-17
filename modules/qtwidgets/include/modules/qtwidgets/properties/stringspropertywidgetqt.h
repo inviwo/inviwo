@@ -96,7 +96,7 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     , lineEdits_{util::make_array<N>([]([[maybe_unused]] auto i) { return new LineEditQt(); })}
     , delegates_{util::make_array<N>([&](auto i) {
         auto p = &property_->strings[i];
-        return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
+        return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]] {
             const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));
             l->setCursorPosition(0);
@@ -132,14 +132,14 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
         hWidgetLayout_->addWidget(lineEdit);
         lineEdit->setPlaceholderText(utilqt::toQString(fmt::format("<{}>", prop.getDisplayName())));
 
-        connect(lineEdit, &LineEditQt::editingFinished, this, [this, p = &prop, l = lineEdit]() {
+        connect(lineEdit, &LineEditQt::editingFinished, this, [this, p = &prop, l = lineEdit] {
             std::string valueStr = utilqt::fromQString(l->text());
             p->setInitiatingWidget(this);
-            util::exceptionGuard([&]() { p->set(valueStr); });
+            util::exceptionGuard([&] { p->set(valueStr); });
             p->clearInitiatingWidget();
         });
 
-        connect(lineEdit, &LineEditQt::editingCanceled, this, [p = &prop, l = lineEdit]() {
+        connect(lineEdit, &LineEditQt::editingCanceled, this, [p = &prop, l = lineEdit] {
             // undo textual changes by resetting the contents of the line edit
             const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));

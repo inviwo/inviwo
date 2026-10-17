@@ -111,7 +111,7 @@ VectorFieldGenerator4D::VectorFieldGenerator4D()
     addProperty(zRange_);
     addProperty(tRange_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::Valid); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::Valid); });
 }
 
 void VectorFieldGenerator4D::initializeResources() {

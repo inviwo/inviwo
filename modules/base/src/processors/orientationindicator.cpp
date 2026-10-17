@@ -111,7 +111,7 @@ OrientationIndicator::OrientationIndicator()
 
     cam_.setCurrentStateAsDefault();
 
-    const auto setVisibility = [&]() {
+    const auto setVisibility = [&] {
         const bool twoD = locationType_.get() == Location::TwoD;
         const bool threeD = locationType_.get() == Location::ThreeD;
         viewCoords_.setVisible(twoD);

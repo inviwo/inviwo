@@ -353,7 +353,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlig
     std::vector<std::shared_ptr<std::function<void()>>> callbacks;
     for (auto p : settings) {
         callbacks.emplace_back(p->onChangeScoped(
-            [psh = &sh, psettings = &settings]() { setGLSLSyntaxHighlight(*psh, *psettings); }));
+            [psh = &sh, psettings = &settings] { setGLSLSyntaxHighlight(*psh, *psettings); }));
     }
     return callbacks;
 }

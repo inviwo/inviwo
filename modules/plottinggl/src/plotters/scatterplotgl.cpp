@@ -190,9 +190,9 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , selectionRectRenderer_() {
 
     if (processor_) {
-        shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
+        shader_.onReload([this] { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
-    properties_.showHighlighted_.onChange([this]() {
+    properties_.showHighlighted_.onChange([this] {
         if (!properties_.showHighlighted_) {
             highlighted_.clear();
             highlightChangedCallback_.invoke(highlighted_);

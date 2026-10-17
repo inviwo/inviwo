@@ -89,7 +89,7 @@ ImageLayer::ImageLayer()
     addPorts(inport_, outport_);
     addProperty(outputLayer_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ImageLayer::process() {

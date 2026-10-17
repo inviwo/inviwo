@@ -172,7 +172,7 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
             updateState();
         });
 
-    QObject::connect(replaceWithPreprocess, &QAction::triggered, this, [this]() {
+    QObject::connect(replaceWithPreprocess, &QAction::triggered, this, [this] {
         shaderCode_->setPlainText(utilqt::toQString(obj_->getPreprocessed()));
     });
 
@@ -180,13 +180,13 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
     undo->setShortcut(QKeySequence::Undo);
     undo->setEnabled(false);
-    QObject::connect(undo, &QAction::triggered, this, [this]() { shaderCode_->undo(); });
+    QObject::connect(undo, &QAction::triggered, this, [this] { shaderCode_->undo(); });
     QObject::connect(shaderCode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
 
     auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
     redo->setShortcut(QKeySequence::Redo);
     redo->setEnabled(false);
-    QObject::connect(redo, &QAction::triggered, this, [this]() { shaderCode_->redo(); });
+    QObject::connect(redo, &QAction::triggered, this, [this] { shaderCode_->redo(); });
     QObject::connect(shaderCode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
 
     QObject::connect(shaderCode_, &QPlainTextEdit::modificationChanged, this,

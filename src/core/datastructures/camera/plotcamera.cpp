@@ -105,7 +105,7 @@ void PlotCamera::updateFrom(const Camera& source) {
 void PlotCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
 
-    const auto get = [this]() { return getSize(); };
+    const auto get = [this] { return getSize(); };
     const auto set = [this](const dvec2& val) {
         if (size_ != val) {
             size_ = val;

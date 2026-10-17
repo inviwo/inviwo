@@ -39,7 +39,7 @@ namespace inviwo::util {
  * some integer property
  */
 void handleTFSelections(auto& tf, auto& channel) {
-    const auto update = [&]() {
+    const auto update = [&] {
         HistogramSelection selection{};
         selection[channel.get()] = true;
         tf.setHistogramSelection(selection);

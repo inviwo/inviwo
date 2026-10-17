@@ -45,7 +45,7 @@ TEST(OrdinalRefProperty, Test1) {
 
     FloatRefProperty prop{"test",
                           "test",
-                          [&]() { return value; },
+                          [&] { return value; },
                           [&](const float& val) { value = val; },
                           {-10.f, ConstraintBehavior::Ignore},
                           {10.f, ConstraintBehavior::Ignore}};

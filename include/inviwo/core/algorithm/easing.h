@@ -113,7 +113,7 @@ constexpr std::string_view format_as(Easing easing) {
         return static_cast<char>(c - ('a' - 'A'));
     };
 
-    static constexpr auto storage = []() {
+    static constexpr auto storage = [] {
         std::array<std::array<std::pair<std::array<char, 20>, size_t>, Easing::modeCount>,
                    Easing::typeCount>
             tmp{};

@@ -109,7 +109,7 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
     , maxVorticity_("maxVorticity", "Max Vorticity", "0", InvalidationLevel::Valid)
     , mesh_("mesh") {
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         if (allInportsAreReady()) {
             return true;
         }
@@ -156,7 +156,7 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
 }
 
 void StreamRibbonsDeprecated::process() {
-    const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
+    const auto sampler = [&] -> std::shared_ptr<const SpatialSampler<dvec3>> {
         if (sampler_.isConnected()) {
             return sampler_.getData();
         } else {
@@ -164,7 +164,7 @@ void StreamRibbonsDeprecated::process() {
         }
     }();
 
-    const auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
+    const auto vorticitySampler = [&] -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
         if (vorticitySampler_.isConnected()) {
             return vorticitySampler_.getData();
         } else {

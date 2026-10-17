@@ -90,7 +90,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     {
         connect(lineEdit_, &FilePathLineEditQt::pathChanged, this,
                 [this](const std::filesystem::path& path) {
-                    util::exceptionGuard([&]() { property_->set(path); });
+                    util::exceptionGuard([&] { property_->set(path); });
                 });
         auto sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
@@ -102,7 +102,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
         auto revealButton = new QToolButton(this);
         revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
         hWidgetLayout_->addWidget(revealButton);
-        connect(revealButton, &QToolButton::pressed, this, [&]() {
+        connect(revealButton, &QToolButton::pressed, this, [&] {
             const auto dir = std::filesystem::is_directory(property_->get())
                                  ? property_->get()
                                  : property_->get().parent_path();
@@ -135,7 +135,7 @@ void FilePropertyWidgetQt::addEditor() {
     edit->setIcon(QIcon(":/svgicons/edit.svg"));
     edit->setToolTip("Edit String");
     hWidgetLayout_->addWidget(edit);
-    connect(edit, &QToolButton::clicked, this, [this]() {
+    connect(edit, &QToolButton::clicked, this, [this] {
         if (!editor_) initEditor();
         editor_->updateFromProperty();
         editor_->setVisible(true);
@@ -152,7 +152,7 @@ void FilePropertyWidgetQt::setPropertyValue() {
     fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
     if (fileDialog.exec()) {
-        util::exceptionGuard([&]() {
+        util::exceptionGuard([&] {
             property_->set(fileDialog.getSelectedFile(), fileDialog.getSelectedFileExtension());
         });
     }
@@ -162,7 +162,7 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
     auto mimeData = drop->mimeData();
     if (!mimeData->urls().empty()) {
         auto url = mimeData->urls().front();
-        util::exceptionGuard([&]() { property_->set(utilqt::toPath(url.toLocalFile())); });
+        util::exceptionGuard([&] { property_->set(utilqt::toPath(url.toLocalFile())); });
         drop->accept();
     } else {
         drop->ignore();

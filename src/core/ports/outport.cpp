@@ -46,7 +46,7 @@ Outport::Outport(std::string_view identifier, Document help)
                    }
                },
                // The 'isReady' function that updates the state
-               []() {
+               [] {
                    IVW_ASSERT(false, "Must be set by derived class, see for example DataOutPort");
                    return false;
                }}

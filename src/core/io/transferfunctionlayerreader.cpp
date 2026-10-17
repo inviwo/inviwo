@@ -71,7 +71,7 @@ std::shared_ptr<TransferFunction> TransferFunctionLayerReader::readData(
         auto data = lrprecision->getDataTyped();
         const auto size = lrprecision->getDimensions().x;
 
-        const auto points = [&]() {
+        const auto points = [&] {
             std::vector<TFPrimitiveData> tmp;
             tmp.reserve(size);
             for (size_t i = 0; i < size; ++i) {

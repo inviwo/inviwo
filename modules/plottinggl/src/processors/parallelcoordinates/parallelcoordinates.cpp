@@ -226,7 +226,7 @@ ParallelCoordinates::ParallelCoordinates()
     addProperty(captionSettings_);
     captionSettings_.insertProperty(0, captionPosition_);
     captionSettings_.addProperties(captionOffset_, captionRotation_, captionColor_);
-    captionPosition_.onChange([&]() {
+    captionPosition_.onChange([&] {
         auto pos = captionSettings_.anchorPos_.get();
         auto offset = captionOffset_.get();
         if (captionPosition_ == ParallelCoordinates::LabelPosition::Above) {
@@ -271,11 +271,11 @@ ParallelCoordinates::ParallelCoordinates()
                              "float");
         vs->addShaderDefine("NUMBER_OF_AXIS", fmt::to_string(1));
 
-        lineShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
+        lineShader_.onReload([&] { this->invalidate(InvalidationLevel::InvalidOutput); });
         lineShader_.build();
     }
 
-    resetHandlePositions_.onChange([&]() {
+    resetHandlePositions_.onChange([&] {
         for (const auto& axis : axes_) {
             axis.pcp->moveHandle(true, std::numeric_limits<double>::max());
             axis.pcp->moveHandle(false, std::numeric_limits<double>::lowest());
@@ -345,7 +345,7 @@ void ParallelCoordinates::process() {
     }
     const auto dims = outport_.getDimensions();
 
-    enabledAxesModified_ |= [&]() {
+    enabledAxesModified_ |= [&] {
         std::vector<size_t> enabledAxes{enabledAxes_};
         std::erase_if(enabledAxes,
                       [&](auto id) { return id >= axes_.size() || !axes_[id].pcp->isChecked(); });
@@ -422,7 +422,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         const auto identifier = util::stripIdentifier(displayName);
 
         // Create axis for filtering
-        auto* prop = [&, id = columnIndex]() -> PCPAxisSettings* {
+        auto* prop = [&, id = columnIndex] -> PCPAxisSettings* {
             if (auto* p = axisProperties_.getPropertyByIdentifier(identifier)) {
                 if (auto* pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
                     return pcasp;
@@ -456,7 +456,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
                 axisPicked(e, columnId, static_cast<PickType>(e->getPickedId() + 1));
             });
 
-        prop->invertRange.onChange([this, id = columnIndex, s = slider.get(), prop]() {
+        prop->invertRange.onChange([this, id = columnIndex, s = slider.get(), prop] {
             s->setFlipped(prop->invertRange);
             lines_.axisFlipped[id] = static_cast<int>(prop->invertRange);
         });
@@ -615,7 +615,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
 void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.activate();
 
-    const auto state = [&]() {
+    const auto state = [&] {
         switch (blendMode_.get()) {
             case BlendMode::Additive:
                 return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),

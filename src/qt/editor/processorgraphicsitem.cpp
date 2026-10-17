@@ -102,20 +102,20 @@ public:
 enum class FontType : std::uint8_t { Name, Identifier, Tag, Count };
 
 const QFont& getFont(FontType type) {
-    static const QFont name = []() {
+    static const QFont name = [] {
         QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
         f.setWeight(QFont::ExtraBold);
         f.setPixelSize(pointSizeToPixelSize(8));
         return f;
     }();
 
-    static const QFont identifier = [&]() {
+    static const QFont identifier = [&] {
         QFont f{name};
         f.setWeight(QFont::Normal);
         return f;
     }();
 
-    static const QFont tag = []() {
+    static const QFont tag = [] {
         QFont f{name};
         f.setWeight(QFont::Bold);
         return f;
@@ -146,7 +146,7 @@ void drawStatus(ProcessorGraphicsItem::State state, QPointF position, QPainter& 
     static constexpr QColor runningColor{253, 211, 37};
     static constexpr QColor borderColor{124, 124, 124};
 
-    const auto ledColor = [&]() {
+    const auto ledColor = [&] {
         switch (state) {
             using enum ProcessorGraphicsItem::State;
             case Ready:   return readyColor;
@@ -233,13 +233,13 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
     setRect(itemRect);
 
-    const auto setLabels = [&]() {
+    const auto setLabels = [&] {
         nameText_.setTextFormat(Qt::PlainText);
         identifierText_.setTextFormat(Qt::PlainText);
         tagText_.setTextFormat(Qt::PlainText);
 
         const auto tag = utilqt::toQString(util::getPlatformTag(processor_->getTags()).getString());
-        tagSize_ = [&]() {
+        tagSize_ = [&] {
             const QFontMetricsF fm{getFont(FontType::Tag)};
             return fm.tightBoundingRect(tag).width();
         }();
@@ -250,7 +250,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
         identifierText_.setText(elide(processor_->getIdentifier(),
                                       size.width() - (2.0 * labelMargin) - tagSize_ - tagMargin,
                                       FontType::Identifier));
-        identifierSize_ = [&]() {
+        identifierSize_ = [&] {
             const QFontMetricsF fm{getFont(FontType::Identifier)};
             return fm.tightBoundingRect(identifierText_.text()).width();
         }();
@@ -459,7 +459,7 @@ void ProcessorGraphicsItem::snapToGrid() {
 QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
-    const auto isAnimating = [this]() {
+    const auto isAnimating = [this] {
         return animation_ != nullptr && animation_->state() == QAbstractAnimation::Running;
     };
 

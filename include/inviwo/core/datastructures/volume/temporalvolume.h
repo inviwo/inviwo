@@ -321,7 +321,7 @@ struct TFDataTraits<TemporalVolume> {
         auto first = data.get(0);
         auto last = data.get(data.size() - 1);
 
-        const auto calc = [first, last]() {
+        const auto calc = [first, last] {
             const auto* firstRAM = first->getRepresentation<VolumeRAM>();
             const auto* lastRAM = last->getRepresentation<VolumeRAM>();
 

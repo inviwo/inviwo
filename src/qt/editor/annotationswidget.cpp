@@ -88,8 +88,8 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
     setWidget(scrollArea_);
 
     // Need to delay this until the qtwidgets module is loaded to get access to the qt widgets
-    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&]() { updateWidget(); });
-    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&]() {
+    onModulesDidRegister_ = app->getModuleManager().onModulesDidRegister([&] { updateWidget(); });
+    onModulesWillUnregister_ = app->getModuleManager().onModulesWillUnregister([&] {
         while (const auto* item = layout_->takeAt(0)) {
             delete item;
         }
@@ -124,20 +124,20 @@ AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* 
             d.deserialize("WorkspaceAnnotations", annotations_);
 
             annotationModifiedHandle_ =
-                annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+                annotations_.onModified([app] { app->getWorkspaceManager()->setModified(); });
         });
 
-    annotationClearHandle_ = app->getWorkspaceManager()->onClear([this, app]() {
+    annotationClearHandle_ = app->getWorkspaceManager()->onClear([this, app] {
         annotationModifiedHandle_.reset();
 
         annotations_.resetAllProperties();
         annotations_.setAuthor(app->getSettingsByType<EditorSettings>()->workspaceAuthor);
 
         annotationModifiedHandle_ =
-            annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+            annotations_.onModified([app] { app->getWorkspaceManager()->setModified(); });
     });
     annotationModifiedHandle_ =
-        annotations_.onModified([app]() { app->getWorkspaceManager()->setModified(); });
+        annotations_.onModified([app] { app->getWorkspaceManager()->setModified(); });
 }
 
 AnnotationsWidget::~AnnotationsWidget() {

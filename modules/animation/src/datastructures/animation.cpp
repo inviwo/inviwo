@@ -332,7 +332,7 @@ void Animation::deserialize(Deserializer& d) {
     d.deserialize("name", name_);
     d.deserialize("tracks", tracks_, "track",
                   deserializer::IndexFunctions{
-                      .makeNew = []() { return std::unique_ptr<Track>{}; },
+                      .makeNew = [] { return std::unique_ptr<Track>{}; },
                       .onNew = [&](std::unique_ptr<Track>& track,
                                    size_t) { trackAddedInternal(track.get()); },
                       .onRemove = [&](std::unique_ptr<Track>& track,

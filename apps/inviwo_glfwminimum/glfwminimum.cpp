@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 
     InviwoApplication inviwoApp(argc, argv, "Inviwo-GLFW");
     inviwoApp.printApplicationInfo();
-    inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
+    inviwoApp.setPostEnqueueFront([] { glfwPostEmptyEvent(); });
 
     inviwoApp.setFileSystemObserver(std::make_unique<inviwo::FileWatcher>(&inviwoApp));
 
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
     cmdParser.add(
         &snapshotArg,
-        [&]() {
+        [&] {
             auto path = cmdParser.getOutputPath();
             if (path.empty()) path = inviwo::filesystem::getPath(PathType::Images);
             util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
     NetworkDebugObserver obs;
     cmdParser.add(
         &debugProcess,
-        [&]() {
+        [&] {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
             inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
             inviwoApp.getProcessorNetwork()->forEachProcessor(
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
-    cmdParser.add(&fullscreenArg, [&]() {
+    cmdParser.add(&fullscreenArg, [&] {
         auto* network = inviwoApp.getProcessorNetwork();
 
         std::vector<ProcessorWidget*> widgets;

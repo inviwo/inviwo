@@ -106,11 +106,11 @@ class TFPropertyModel : public TFPropertyConcept {
 public:
     explicit TFPropertyModel(U* data)
         : tfLike_{data}
-        , dataOnChangeHandle_(tfLike_->data().onChange([this]() {
+        , dataOnChangeHandle_(tfLike_->data().onChange([this] {
             onDataChangeDispatcher_.invoke();
             setUpHistogramCallback();
         }))
-        , sets_{[&]() {
+        , sets_{[&] {
             if constexpr (std::is_same_v<TransferFunctionProperty, U>) {
                 return std::array<TFPrimitiveSet*, 2>{&tfLike_->get(), nullptr};
             } else if constexpr (std::is_same_v<IsoValueProperty, U>) {

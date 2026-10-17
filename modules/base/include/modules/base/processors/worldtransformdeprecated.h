@@ -142,12 +142,12 @@ WorldTransformDeprecated<T>::WorldTransformDeprecated()
 
     addProperty(matrix_);
 
-    type_.onChange([this]() { changeVisibility(); });
-    translate_.onChange([this]() { updateValues(); });
-    scale_.onChange([this]() { updateValues(); });
-    rotationAxis_.onChange([this]() { updateValues(); });
-    rotationAngle_.onChange([this]() { updateValues(); });
-    matrix_.onChange([this]() { onMatrixChange(); });
+    type_.onChange([this] { changeVisibility(); });
+    translate_.onChange([this] { updateValues(); });
+    scale_.onChange([this] { updateValues(); });
+    rotationAxis_.onChange([this] { updateValues(); });
+    rotationAngle_.onChange([this] { updateValues(); });
+    matrix_.onChange([this] { onMatrixChange(); });
     changeVisibility();
 }
 

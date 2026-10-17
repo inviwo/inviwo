@@ -50,7 +50,7 @@ TFLineEdit::TFLineEdit(QWidget* parent) : QWidget(parent) {
     numberWidget_.initValueOptional(std::nullopt);
     numberWidget_.setEnabled(false);
 
-    connect(&numberWidget_, &BaseNumberWidget::valueChanged, this, [this]() {
+    connect(&numberWidget_, &BaseNumberWidget::valueChanged, this, [this] {
         if (auto v = value()) {
             emit valueChanged(*v);
         }

@@ -98,7 +98,7 @@ SeedPointGenerator::SeedPointGenerator()
     generator_.addOption("plane", "Plane", PLANE);
     generator_.addOption("sphere", "Sphere", SPHERE);
     generator_.setCurrentStateAsDefault();
-    generator_.onChange([this]() { onGeneratorChange(); });
+    generator_.onChange([this] { onGeneratorChange(); });
     addProperty(generator_);
 
     lineGroup_.addProperty(lineStart_);
@@ -122,7 +122,7 @@ SeedPointGenerator::SeedPointGenerator()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 
     onGeneratorChange();
 }

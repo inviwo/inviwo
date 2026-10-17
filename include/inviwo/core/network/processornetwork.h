@@ -121,7 +121,7 @@ public:
     template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>,
               typename... Args>
     std::shared_ptr<T> emplaceProcessor(Args&&... args) {
-        auto processor = [&]() {
+        auto processor = [&] {
             if constexpr (std::is_constructible_v<T, Args...>) {
                 return std::make_shared<T>(std::forward<Args>(args)...);
             } else {

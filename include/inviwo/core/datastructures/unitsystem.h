@@ -336,7 +336,7 @@ struct fmt::formatter<::inviwo::Unit> {
 
         if (unit == ::inviwo::Unit{}) return ctx.out();
 
-        const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&]() {
+        const ::inviwo::unitgroups::EnabledGroups enabledGroups = [&] {
             if (unitsystem == UnitSystem::SI) {
                 return ::inviwo::unitgroups::siGroups;
             } else if (unitsystem == UnitSystem::Ext) {

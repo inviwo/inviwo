@@ -199,7 +199,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
     clearAction_ = new QAction(QIcon(":/svgicons/log-clear.svg"), tr("&Clear Log"), this);
     clearAction_->setShortcut(Qt::CTRL | Qt::Key_E);
-    connect(clearAction_, &QAction::triggered, [&]() { clear(); });
+    connect(clearAction_, &QAction::triggered, [&] { clear(); });
 
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Date));
     tableView_->hideColumn(static_cast<int>(LogTableModelEntry::ColumnID::Level));
@@ -300,7 +300,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     threadPoolInfo_ = new QLabel("Pool: 0 Queued Jobs / 0 Threads", this);
     statusBar->addWidget(threadPoolInfo_);
     auto* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, threadPoolInfo_, [this]() {
+    connect(timer, &QTimer::timeout, threadPoolInfo_, [this] {
         const auto threads = mainWindow_->getInviwoApplication()->getThreadPool().getSize();
         const auto queueSize = mainWindow_->getInviwoApplication()->getThreadPool().getQueueSize();
         threadPoolInfo_->setText(
@@ -327,21 +327,21 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         applyRowHeights(0, tableView_->verticalHeader()->count());
     });
 
-    connect(clearFilter, &QAction::triggered, [this]() {
+    connect(clearFilter, &QAction::triggered, [this] {
         filterPattern_->setText("");
         applyRowHeights(0, tableView_->verticalHeader()->count());
     });
 
     auto* filterAction = new QAction(makeIcon("find"), "&Filter", this);
     filterAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_F);
-    connect(filterAction, &QAction::triggered, [this]() {
+    connect(filterAction, &QAction::triggered, [this] {
         raise();
         filterPattern_->setFocus();
         filterPattern_->selectAll();
     });
 
     // add actions for context menu
-    const auto createSeparator = [this]() {
+    const auto createSeparator = [this] {
         auto* separator = new QAction(this);
         separator->setSeparator(true);
         return separator;
@@ -349,8 +349,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     auto* copyAction = new QAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"), this);
     copyAction->setEnabled(true);
-    connect(copyAction, &QAction::triggered, this,
-            [this]() { copy(tableView_->selectionModel()); });
+    connect(copyAction, &QAction::triggered, this, [this] { copy(tableView_->selectionModel()); });
 
     tableView_->addAction(copyAction);
     tableView_->addAction(createSeparator());

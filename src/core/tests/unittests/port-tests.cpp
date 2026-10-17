@@ -174,7 +174,7 @@ TEST(PortTests, SingleInportOutport) {
     auto& source1 = *network.emplaceProcessor<OutportTestProcessor>("source1", 1);
     auto& sink = *network.emplaceProcessor<InportTestProcessor>("sink");
 
-    EXPECT_CALL(sink, process).WillOnce([&]() {
+    EXPECT_CALL(sink, process).WillOnce([&] {
         EXPECT_TRUE(sink.inport.isConnected());
         EXPECT_TRUE(sink.inport.isConnectedTo(&source1.outport));
         EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), 1);
@@ -211,7 +211,7 @@ TEST(PortTests, MultiInportOutport) {
     auto& sink = *network.emplaceProcessor<MultiInportTestProcessor>("sink");
 
     EXPECT_CALL(sink, process)
-        .WillOnce([&]() {
+        .WillOnce([&] {
             EXPECT_TRUE(sink.inport.isConnected());
             EXPECT_TRUE(sink.inport.isConnectedTo(&source1.outport));
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
@@ -231,7 +231,7 @@ TEST(PortTests, MultiInportOutport) {
             EXPECT_THAT(sink.inport.getSourceVectorData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
         })
-        .WillOnce([&]() {
+        .WillOnce([&] {
             EXPECT_TRUE(sink.inport.isConnected());
             EXPECT_TRUE(sink.inport.isConnectedTo(&source1.outport));
             EXPECT_TRUE(sink.inport.isConnectedTo(&source2.outport));
@@ -275,7 +275,7 @@ TEST(PortTests, FlatMultiInportOutport) {
     auto& sink = *network.emplaceProcessor<FlatMultiInportTestProcessor>("sink");
 
     EXPECT_CALL(sink, process)
-        .WillOnce([&]() {
+        .WillOnce([&] {
             EXPECT_TRUE(sink.inport.isConnected());
             EXPECT_TRUE(sink.inport.isConnectedTo(&source1.outport));
             EXPECT_EQ(sink.inport.getMaxNumberOfConnections(), std::numeric_limits<size_t>::max());
@@ -295,7 +295,7 @@ TEST(PortTests, FlatMultiInportOutport) {
             EXPECT_THAT(sink.inport.getSourceVectorData(),
                         ElementsAre(Pair(&source1.outport, Pointee(1))));
         })
-        .WillOnce([&]() {
+        .WillOnce([&] {
             EXPECT_TRUE(sink.inport.isConnected());
             EXPECT_TRUE(sink.inport.isConnectedTo(&source1.outport));
             EXPECT_TRUE(sink.inport.isConnectedTo(&source2.outport));

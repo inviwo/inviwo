@@ -91,7 +91,7 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
     std::visit(
         util::overloaded{
             [&](const Grid3DPointGeneration& opts) {
-                const auto basis = opts.basis * [&]() {
+                const auto basis = opts.basis * [&] {
                     if (opts.mode == Grid3DPointGeneration::Mode::HalfOpen) {
                         return glm::scale(dvec3{1.0} / dvec3{opts.nPoints});
                     } else if (opts.mode == Grid3DPointGeneration::Mode::Closed) {
@@ -136,11 +136,11 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
             [&](const RandomSphericalPointGeneration& opts) {
                 auto mt = makeMT(opts);
 
-                const auto thetaGen = [&]() {
+                const auto thetaGen = [&] {
                     return util::randomNumber<T>(mt, 0, glm::two_pi<T>());
                 };
-                const auto cosPhiGen = [&]() { return util::randomNumber<T>(mt, T{-1.0}, T{1.0}); };
-                const auto rGen = [&]() { return util::randomNumber<T>(mt, T{0.0}, T{1.0}); };
+                const auto cosPhiGen = [&] { return util::randomNumber<T>(mt, T{-1.0}, T{1.0}); };
+                const auto rGen = [&] { return util::randomNumber<T>(mt, T{0.0}, T{1.0}); };
 
                 for (size_t i = 0; i < opts.nPoints; i++) {
                     const auto theta = thetaGen();

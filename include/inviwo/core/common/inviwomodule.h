@@ -479,7 +479,7 @@ void InviwoModule::registerRepresentationConverter(
         if (auto factory = metaFactory->getConverterFactory<BaseRepr>()) {
             if (factory->registerObject(converter.get())) {
                 representationConvertersUnRegFunctors_.push_back(
-                    [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
+                    [factory, conv = converter.get()] { factory->unRegisterObject(conv); });
                 representationConverters_.push_back(std::move(converter));
             }
         }
@@ -494,7 +494,7 @@ void InviwoModule::registerRepresentationFactoryObject(
         if (auto factory = metaFactory->getRepresentationFactory<BaseRepr>()) {
             if (factory->registerObject(representation.get())) {
                 representationUnRegFunctors_.push_back(
-                    [factory, repr = representation.get()]() { factory->unRegisterObject(repr); });
+                    [factory, repr = representation.get()] { factory->unRegisterObject(repr); });
                 representationFactoryObjects_.push_back(std::move(representation));
             }
         }

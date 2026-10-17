@@ -112,7 +112,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size, IgnoreVal
             });
     };
 
-    const auto minmax = [&]() {
+    const auto minmax = [&] {
         if constexpr (std::is_floating_point_v<util::value_type_t<ValueType>>) {
             if (ignore.special == IgnoreSpecialValues::Yes && ignore.floatingPoint) {
                 const auto skip =

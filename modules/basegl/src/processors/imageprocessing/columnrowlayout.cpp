@@ -92,7 +92,7 @@ MultiInput::MultiInput(std::function<void(bool)> aUpdate,
     , outports{}
     , data{}
     , callbacks{} {
-    inport.setIsReadyUpdater([this]() {
+    inport.setIsReadyUpdater([this] {
         return inport.isConnected() &&
                std::ranges::any_of(std::views::zip(outports, views()), [](auto item) {
                    auto [port, view] = item;
@@ -100,11 +100,11 @@ MultiInput::MultiInput(std::function<void(bool)> aUpdate,
                });
     });
 
-    inport.onConnect([this]() {
+    inport.onConnect([this] {
         sort();
         update(true);
     });
-    inport.onDisconnect([this]() {
+    inport.onDisconnect([this] {
         sort();
         update(false);
     });
@@ -257,14 +257,14 @@ bool MultiInput::updateLabels(std::vector<std::string>& labels, std::string_view
 SequenceInput::SequenceInput(std::function<void(bool)> aUpdate,
                              std::function<const std::vector<View>&()> aViews)
     : update{std::move(aUpdate)}, views{std::move(aViews)}, inport("inport") {
-    inport.setIsReadyUpdater([this]() {
+    inport.setIsReadyUpdater([this] {
         return (inport.isConnected() && util::all_of(inport.getConnectedOutports(),
                                                      [](Outport* p) { return p->isReady(); }));
     });
 
-    inport.onChange([this]() { update(true); });
-    inport.onConnect([this]() { update(true); });
-    inport.onDisconnect([this]() { update(false); });
+    inport.onChange([this] { update(true); });
+    inport.onConnect([this] { update(true); });
+    inport.onDisconnect([this] { update(false); });
 }
 
 void SequenceInput::addPorts(Processor* p) { p->addPort(inport); }
@@ -458,7 +458,7 @@ bool SplitterPositions::updateSize(size_t newSize) {
                     .maxConstraint = ConstraintBehavior::Immutable,
                     .increment = 0.001,
                     .invalidationLevel = InvalidationLevel::InvalidOutput});
-            prop->onChange([i, this]() { enforceOrder(i); });
+            prop->onChange([i, this] { enforceOrder(i); });
             splitters_.addProperty(std::move(prop));
         }
         get(i)->setVisible(true);
@@ -484,7 +484,7 @@ void SplitterPositions::spaceEvenly() {
 void SplitterPositions::deserialized() {
     for (size_t i = 0; i < splitters_.size(); i++) {
         if (splitters_[i]->getVisible()) ++nSplitters_;
-        splitters_[i]->onChange([i, this]() { enforceOrder(i); });
+        splitters_[i]->onChange([i, this] { enforceOrder(i); });
     }
 }
 
@@ -507,7 +507,7 @@ glm::dmat4 scale(const auto& srcDims, const auto& dstDims) {
 Layout::Layout()
     : Processor()
     , input_([this](bool connect) { updateSplitters(connect); },
-             [this]() -> const std::vector<layout::View>& { return views_; })
+             [this] -> const std::vector<layout::View>& { return views_; })
     , outport_("outport")
     , inputMode_("inputMode", "Input Mode",
                  "Select the input Mode, either a multi inport or a sequence inport"_help,
@@ -530,19 +530,19 @@ Layout::Layout()
     , minWidth_("minWidth", "Minimum Width (px)", 10, 0, 4096, 1, InvalidationLevel::InvalidOutput,
                 PropertySemantics::SpinBox)
     , horizontalSplitters_(
-          "horizontalSplitters", "Horizontal Splits", [this]() { splittersChanged(); },
-          [this]() {
+          "horizontalSplitters", "Horizontal Splits", [this] { splittersChanged(); },
+          [this] {
               return static_cast<double>(minWidth_.get()) / static_cast<double>(currentDim_.x);
           })
     , verticalSplitters_(
-          "verticalSplitters", "Vertical Splits", [this]() { splittersChanged(); },
-          [this]() {
+          "verticalSplitters", "Vertical Splits", [this] { splittersChanged(); },
+          [this] {
               return static_cast<double>(minWidth_.get()) / static_cast<double>(currentDim_.y);
           })
     , horizontalRenderer_(this)
     , verticalRenderer_(this)
     , splitEvenly_{"splitEvenly", "Split Evenly",
-                   [this]() {
+                   [this] {
                        const NetworkLock lock(this);
                        horizontalSplitters_.spaceEvenly();
                        verticalSplitters_.spaceEvenly();
@@ -562,7 +562,7 @@ Layout::Layout()
     , shader_("standard.vert", "img_copy.frag")
     , deserialized_(false)
     , splits_{}
-    , textRenderer_{[]() {
+    , textRenderer_{[] {
         // ensure the default context is active when creating the TextRenderer
         rendercontext::activateLocal();
         return TextRenderer{};
@@ -591,19 +591,18 @@ Layout::Layout()
                   labels_);
 
     horizontalRenderer_.setInvalidateAction(
-        [this]() { invalidate(InvalidationLevel::InvalidOutput); });
+        [this] { invalidate(InvalidationLevel::InvalidOutput); });
     horizontalRenderer_.setDragAction(
         [this](float pos, int index) { horizontalSplitters_.set(index, pos); });
 
-    verticalRenderer_.setInvalidateAction(
-        [this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    verticalRenderer_.setInvalidateAction([this] { invalidate(InvalidationLevel::InvalidOutput); });
     verticalRenderer_.setDragAction(
         [this](float pos, int index) { verticalSplitters_.set(index, pos); });
 
-    inputMode_.onChange([this]() {
+    inputMode_.onChange([this] {
         input_.setMode(
             this, inputMode_.get(), [this](bool connect) { updateSplitters(connect); },
-            [this]() -> const std::vector<layout::View>& { return views_; });
+            [this] -> const std::vector<layout::View>& { return views_; });
     });
 }
 
@@ -800,7 +799,7 @@ void Layout::calculateViews(ivec2 imgSize) {
                                      globalNdc.z};
                     },
                 .propagateEvent = [this, i](Event* e, Outport*) { input_.propagateEvent(e, i); },
-                .size = [size]() { return size2_t{glm::round(size)}; }});
+                .size = [size] { return size2_t{glm::round(size)}; }});
             ++i;
         }
     }

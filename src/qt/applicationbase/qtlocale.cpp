@@ -38,7 +38,7 @@
 namespace inviwo {
 
 std::locale utilqt::getCurrentStdLocale() {
-    static const std::locale loc = []() -> std::locale {
+    static const std::locale loc = [] -> std::locale {
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"

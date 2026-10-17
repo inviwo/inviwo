@@ -89,7 +89,7 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
     using ColumnVector = typename Mat::col_type;
     using RowVector = typename Mat::row_type;
 
-    const auto classname = [&]() {
+    const auto classname = [&] {
         if constexpr (Cols != Rows) {
             return fmt::format("{}{}{}x{}{}", prefix, name, Cols, Rows, postfix);
         } else {
@@ -249,7 +249,7 @@ struct ExposePortsFunctor {
         constexpr auto rank = util::rank_v<T>;
 
         if constexpr (rank == 0) {
-            constexpr auto name = []() {
+            constexpr auto name = [] {
                 if constexpr (std::is_same_v<T, float>) {
                     return "float";
                 } else if constexpr (std::is_same_v<T, double>) {

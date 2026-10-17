@@ -108,20 +108,20 @@ using FlatMultiDataInport = DataInport<T, 0, true>;
 
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
-    static constexpr auto cld = []() {
+    static constexpr auto cld = [] {
         constexpr auto tCid = DataTraits<T>::classIdentifier();
         if constexpr (tCid.empty()) {
             return StaticString{};
         }
 
-        constexpr auto flat = []() {
+        constexpr auto flat = [] {
             if constexpr (Flat) {
                 return StaticString{".flat"};
             } else {
                 return StaticString{};
             }
         }();
-        constexpr auto multi = []() {
+        constexpr auto multi = [] {
             if constexpr (N == 0) {
                 return StaticString{".multi"};
             } else if constexpr (N != 1) {

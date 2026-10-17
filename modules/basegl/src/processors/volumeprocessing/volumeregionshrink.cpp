@@ -169,7 +169,7 @@ VolumeRegionShrink::VolumeRegionShrink()
 
     addProperties(iterations_, dataRange_, valueRange_, fillValue_);
 
-    shader_.onReload([this]() {
+    shader_.onReload([this] {
         if (blockShaderReload_) return;
         invalidate(InvalidationLevel::InvalidResources);
     });

@@ -145,7 +145,7 @@ std::function<QVariant(int)> getToolTipFunc(const Column* col, bool categoryIndi
 
 void DataFrameModel::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                   bool categoryIndices) {
-    const util::OnScopeExit onscopeexit([&]() { endResetModel(); });
+    const util::OnScopeExit onscopeexit([&] { endResetModel(); });
 
     beginResetModel();
     data_ = std::move(dataframe);
@@ -249,7 +249,7 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
         }
     } else if ((role == Qt::ToolTipRole) && (orientation == Qt::Horizontal)) {
         const Column* col = data_->getColumn(section).get();
-        auto tooltip = [col, section]() {
+        auto tooltip = [col, section] {
             if (col->getColumnType() == ColumnType::Categorical) {
                 return QString("<b>%0</b> (Column %1)\nCategorical (%2 categories)")
                     .arg(utilqt::toQString(col->getHeader()))

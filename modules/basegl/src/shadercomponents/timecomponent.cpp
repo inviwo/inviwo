@@ -66,12 +66,12 @@ TimeComponent::TimeComponent(std::string_view name,
                   1,
                   InvalidationLevel::Valid,
                   PropertySemantics::Text}
-    , timer_{std::chrono::milliseconds{intervalMs_.get()}, [invalidate = std::move(invalidate)]() {
+    , timer_{std::chrono::milliseconds{intervalMs_.get()}, [invalidate = std::move(invalidate)] {
                  invalidate(InvalidationLevel::InvalidOutput);
              }} {
 
     running_.readonlyDependsOn(*enabled_.getBoolProperty(), [](const auto& p) { return !p.get(); });
-    running_.onChange([this]() {
+    running_.onChange([this] {
         if (running_ && enabled_.isChecked()) {
             if (!timer_.isRunning()) {
                 timer_.start();
@@ -80,11 +80,11 @@ TimeComponent::TimeComponent(std::string_view name,
             timer_.stop();
         }
     });
-    enabled_.getBoolProperty()->onChange([this]() {
+    enabled_.getBoolProperty()->onChange([this] {
         if (!enabled_.isChecked()) timer_.stop();
     });
     intervalMs_.onChange(
-        [this]() { timer_.setInterval(std::chrono::milliseconds{intervalMs_.get()}); });
+        [this] { timer_.setInterval(std::chrono::milliseconds{intervalMs_.get()}); });
 
     enabled_.addProperties(running_, intervalMs_);
     enabled_.setCollapsed(true);

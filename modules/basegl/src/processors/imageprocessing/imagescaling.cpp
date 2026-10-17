@@ -107,10 +107,10 @@ ImageScaling::ImageScaling()
     customFactor_.visibilityDependsOn(scalingFactor_, [](auto& p) { return p == -1.0; });
     absoluteSize_.visibilityDependsOn(scalingFactor_, [](auto& p) { return p == -2.0; });
 
-    scalingFactor_.onChange([this]() { resizeInports(); });
-    enabled_.onChange([this]() { resizeInports(); });
-    customFactor_.onChange([this]() { resizeInports(); });
-    absoluteSize_.onChange([this]() { resizeInports(); });
+    scalingFactor_.onChange([this] { resizeInports(); });
+    enabled_.onChange([this] { resizeInports(); });
+    customFactor_.onChange([this] { resizeInports(); });
+    absoluteSize_.onChange([this] { resizeInports(); });
 }
 
 void ImageScaling::process() {

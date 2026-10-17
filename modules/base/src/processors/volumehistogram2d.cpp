@@ -192,7 +192,7 @@ void VolumeHistogram2D::process() {
 
     auto hist = dispatching::doubleDispatch<Histogram2D, dispatching::filter::All,
                                             dispatching::filter::All>(
-        vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2>() {
+        vrep1->getDataFormatId(), vrep2->getDataFormatId(), [&]<typename T1, typename T2> {
             const auto src1 = static_cast<const VolumeRAMPrecision<T1>*>(vrep1)->getView();
             const auto src2 = static_cast<const VolumeRAMPrecision<T2>*>(vrep2)->getView();
 

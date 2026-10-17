@@ -90,7 +90,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
                      [this](bool b) { setWindowModified(b); });
     editor_->installEventFilter(&fileObserver_);
 
-    fileObserver_.setReloadFileCallback([this]() { updateFromProperty(); });
+    fileObserver_.setReloadFileCallback([this] { updateFromProperty(); });
     fileObserver_.setModifiedCallback([this](bool m) { editor_->document()->setModified(m); });
 
     {
@@ -102,7 +102,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     if (fileProperty_) {
-        propertyCallback_ = fileProperty_->onChangeScoped([this]() { propertyModified(); });
+        propertyCallback_ = fileProperty_->onChangeScoped([this] { propertyModified(); });
 
         auto* saveas =
             toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
@@ -110,7 +110,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         saveas->setToolTip("Save Script As...");
         mainWindow->addAction(saveas);
-        connect(saveas, &QAction::triggered, this, [this]() {
+        connect(saveas, &QAction::triggered, this, [this] {
             InviwoFileDialog saveFileDialog(nullptr, "Save File ...",
                                             fileProperty_->getContentType());
 
@@ -128,11 +128,11 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
                 fileObserver_.ignoreNextUpdate();
                 fileObserver_.setFileName(path);
                 editor_->document()->setModified(false);
-                util::exceptionGuard([&]() { fileProperty_->set(path); });
+                util::exceptionGuard([&] { fileProperty_->set(path); });
             }
         });
     } else if (stringProperty_) {
-        propertyCallback_ = stringProperty_->onChangeScoped([this]() { propertyModified(); });
+        propertyCallback_ = stringProperty_->onChangeScoped([this] { propertyModified(); });
     }
 
     {
@@ -141,7 +141,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         revert->setEnabled(false);
         mainWindow->addAction(revert);
-        QObject::connect(revert, &QAction::triggered, [this]() { updateFromProperty(); });
+        QObject::connect(revert, &QAction::triggered, [this] { updateFromProperty(); });
         QObject::connect(editor_, &QPlainTextEdit::modificationChanged, revert,
                          &QAction::setEnabled);
     }
@@ -231,7 +231,7 @@ void TextEditorDockWidget::setReadOnly(bool readonly) {
 }
 
 void TextEditorDockWidget::updateWindowTitle() {
-    const auto str = [&]() -> std::string {
+    const auto str = [&] -> std::string {
         if (fileProperty_) {
             return fmt::format("Text Editor - {}", fileProperty_->get());
         } else if (stringProperty_) {
@@ -267,7 +267,7 @@ void TextEditorDockWidget::save() {
         saveToFile(fileProperty_->get());
     } else if (stringProperty_) {
         util::exceptionGuard(
-            [&]() { stringProperty_->set(utilqt::fromQString(editor_->toPlainText())); });
+            [&] { stringProperty_->set(utilqt::fromQString(editor_->toPlainText())); });
     }
     editor_->document()->setModified(false);
 }

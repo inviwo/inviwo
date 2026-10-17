@@ -78,7 +78,7 @@ VolumeConverter::VolumeConverter()
     , dstFormat_{"outputFormat", "Output Format", R"(Data format of the output volume.
         The number of channels remains the same.
         If identical to input data, no conversion will be performed.)"_unindentHelp,
-                 [&]() {
+                 [&] {
                      std::vector<OptionPropertyOption<DataFormatId>> formats;
                      util::for_each_type<
                          std::tuple<DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32,
@@ -118,7 +118,7 @@ VolumeConverter::VolumeConverter()
     dataRange_.insertProperty(2, outputDataRange_);
     addProperties(srcFormat_, dstFormat_, enableDataMapping_, dataRange_, valueAxis_);
 
-    const auto updateOutputRange = [this]() {
+    const auto updateOutputRange = [this] {
         const auto* format = DataFormatBase::get(dstFormat_);
         if (enableDataMapping_ && (format->getNumericType() != NumericType::Float)) {
             outputDataRange_.set(DataMapper{format}.dataRange);
@@ -129,7 +129,7 @@ VolumeConverter::VolumeConverter()
     enableDataMapping_.onChange(updateOutputRange);
     dstFormat_.onChange(updateOutputRange);
 
-    inport_.onChange([this, updateOutputRange]() {
+    inport_.onChange([this, updateOutputRange] {
         if (inport_.hasData()) {
             srcFormat_.set(inport_.getData()->getDataFormat()->getString());
             updateOutputRange();
@@ -150,7 +150,7 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
     const auto result = dispatching::doubleDispatch<
         std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars, dispatching::filter::All>(
         dstScalarFormatId, ramSrc->getDataFormatId(),
-        [&]<typename DstScalarFormat, typename SrcFormat>() {
+        [&]<typename DstScalarFormat, typename SrcFormat> {
             const auto* ramSrcTyped = static_cast<const VolumeRAMPrecision<SrcFormat>*>(ramSrc);
             const std::span<const SrcFormat> srcData = ramSrcTyped->getView();
 
@@ -204,7 +204,7 @@ void VolumeConverter::process() {
         return;
     }
 
-    const auto [dstDataRange, dstValueRange] = [&]() -> std::pair<dvec2, dvec2> {
+    const auto [dstDataRange, dstValueRange] = [&] -> std::pair<dvec2, dvec2> {
         if (dataRange_.getCustomRangeEnabled()) {
             return {dataRange_.getCustomDataRange(), dataRange_.getCustomValueRange()};
         } else {
@@ -223,7 +223,7 @@ void VolumeConverter::process() {
         }
     }();
 
-    const auto dstVolume = [&]() {
+    const auto dstVolume = [&] {
         const auto srcVolume = inport_.getData();
         if (srcVolume->getDataFormat()->getId() == dstFormat_.get()) {
             return std::shared_ptr<Volume>(srcVolume->clone());

@@ -112,7 +112,7 @@ NoiseGenerator3D::NoiseGenerator3D()
     addProperty(haltonYBase_);
     addProperty(haltonZBase_);
 
-    const auto typeOnChange = [&]() {
+    const auto typeOnChange = [&] {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
         haltonNumPoints_.setVisible(type_.getSelectedValue() == NoiseType::HaltonSequence);
         haltonXBase_.setVisible(type_.getSelectedValue() == NoiseType::HaltonSequence);
@@ -124,7 +124,7 @@ NoiseGenerator3D::NoiseGenerator3D()
     addProperty(randomness_);
     randomness_.addProperty(useSameSeed_);
     randomness_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 
     typeOnChange();
 }

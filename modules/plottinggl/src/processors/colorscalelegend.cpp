@@ -247,20 +247,20 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.majorTicks_.style.set(plot::TickData::Style::Outside);
     axis_.setCurrentStateAsDefault();
 
-    const auto updateFunc = [this]() { updateTitle(volumeInport_.getData()); };
+    const auto updateFunc = [this] { updateTitle(volumeInport_.getData()); };
 
     labelType_.onChange(updateFunc);
     title_.onChange(updateFunc);
 
-    isoValueShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    isoValueShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dimensions) const {
     const float ticsWidth = ceil(axis_.majorTicks_.width.get());
     const auto borderWidth = borderWidth_.get();
 
-    const auto [position, legendSize] = [&]() {
+    const auto [position, legendSize] = [&] {
         const auto initialPos = position_.get();
         const auto size = (orientation_.get() == AxisProperty::Orientation::Horizontal)
                               ? legendSize_.get()

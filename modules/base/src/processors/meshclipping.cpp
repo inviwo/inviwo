@@ -126,12 +126,11 @@ MeshClipping::MeshClipping()
                   pointPlaneMove_, capClippedHoles_, planePoint_, planeNormal_);
 
     addProperty(alignPlaneNormalToCameraNormal_);
-    alignPlaneNormalToCameraNormal_.onChange(
-        [this]() { onAlignPlaneNormalToCameraNormalPressed(); });
+    alignPlaneNormalToCameraNormal_.onChange([this] { onAlignPlaneNormalToCameraNormalPressed(); });
 
     addProperty(camera_);
 
-    const auto onMovePointAlongNormalToggled = [this]() {
+    const auto onMovePointAlongNormalToggled = [this] {
         planePoint_.setReadOnly(movePointAlongNormal_.get());
         pointPlaneMove_.set(0.f);
         previousPointPlaneMove_ = 0.f;

@@ -93,7 +93,7 @@ LayerDistanceTransform::LayerDistanceTransform()
 }
 
 void LayerDistanceTransform::process() {
-    const size2_t upsample = [&]() -> size2_t {
+    const size2_t upsample = [&] -> size2_t {
         switch (upsampling_) {
             case Upsampling::Uniform:
                 return size2_t{static_cast<size_t>(upsampleFactorUniform_.get())};

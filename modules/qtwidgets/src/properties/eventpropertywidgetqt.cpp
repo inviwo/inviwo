@@ -240,7 +240,7 @@ std::unique_ptr<QMenu> EventPropertyWidgetQt::getContextMenu() {
     auto* unsetAction = menu->addAction(tr("&Unset shortcut"));
     unsetAction->setToolTip(tr("Remove the currently set shortcut."));
 
-    QObject::connect(unsetAction, &QAction::triggered, this, [this]() {
+    QObject::connect(unsetAction, &QAction::triggered, this, [this] {
         auto* em = eventProperty_->getEventMatcher();
 
         if (auto* keyMatcher = dynamic_cast<KeyboardEventMatcher*>(em)) {

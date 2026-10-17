@@ -85,7 +85,7 @@ VolumeNormalizationProcessor::VolumeNormalizationProcessor()
                           {"normalizeChannel1", "Channel 2", true},
                           {"normalizeChannel2", "Channel 3", true},
                           {"normalizeChannel3", "Channel 4", true}}}
-    , volumeNormalization_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+    , volumeNormalization_([&] { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPorts(volumeInport_, volumeOutport_);
 

@@ -80,7 +80,7 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
     };
 
     // Find the point which will result in the smallest error when removed.
-    const auto nextToRemove = [&]() {
+    const auto nextToRemove = [&] {
         const auto index = util::make_sequence<std::ptrdiff_t>(1, std::ssize(simple) - 1, 1);
         return *std::ranges::min_element(
             index, [&](std::ptrdiff_t a, std::ptrdiff_t b) { return error(a) < error(b); });

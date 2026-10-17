@@ -97,7 +97,7 @@ ColumnOptionProperty* ColumnOptionProperty::clone() const {
 void ColumnOptionProperty::setPort(DataFrameInport& inport) {
     inport_ = &inport;
 
-    onChangeCallback_ = inport_->onChangeScoped([&]() {
+    onChangeCallback_ = inport_->onChangeScoped([&] {
         if (inport_->hasData()) {
             setOptions(*inport_->getData());
         }

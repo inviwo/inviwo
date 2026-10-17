@@ -92,8 +92,8 @@ AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
     // Do not allow the user to change the radius
     angleWidget_->setMinRadius(1.);
     connect(angleWidget_, &AngleRadiusWidget::angleChanged, this,
-            [&]() { getProperty()->set(static_cast<T>(angleWidget_->getAngle())); });
-    connect(angleWidget_, &AngleRadiusWidget::angleMinMaxChanged, this, [&]() {
+            [&] { getProperty()->set(static_cast<T>(angleWidget_->getAngle())); });
+    connect(angleWidget_, &AngleRadiusWidget::angleMinMaxChanged, this, [&] {
         getProperty()->setMinValue(static_cast<T>(angleWidget_->getMinAngle()));
         getProperty()->setMaxValue(static_cast<T>(angleWidget_->getMaxAngle()));
     });

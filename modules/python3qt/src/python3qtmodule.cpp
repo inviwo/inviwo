@@ -110,9 +110,9 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
         .def("configurePoolResizeWait", &utilqt::configurePoolResizeWait)
         .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
         .def("execWithTimer",
-             []() {
+             [] {
                  auto* timer = new QTimer(qApp);
-                 QObject::connect(timer, &QTimer::timeout, []() {
+                 QObject::connect(timer, &QTimer::timeout, [] {
                      try {
                          py::exec("lambda x: 1");
                      } catch (...) {
@@ -217,7 +217,7 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
     , abortPythonEvaluation_{false}
-    , menu_([&]() -> std::unique_ptr<PythonMenu> {
+    , menu_([&] -> std::unique_ptr<PythonMenu> {
         if (auto* win = utilqt::getApplicationMainWindow()) {
             return std::make_unique<PythonMenu>(getPath(), app, win);
         } else {
@@ -231,7 +231,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
         const auto inviwopy = py::module::import("inviwopy");
         auto m = createPythonQtModule(inviwopy);
 
-        m.def("update", [this]() {
+        m.def("update", [this] {
             qApp->processEvents();
             qApp->sendPostedEvents();
             if (abortPythonEvaluation_) {

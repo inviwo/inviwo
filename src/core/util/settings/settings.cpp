@@ -48,7 +48,7 @@ Settings::~Settings() = default;
 
 void Settings::insertProperty(size_t index, Property* property, bool owner) {
     PropertyOwner::insertProperty(index, property, owner);
-    property->onChange([this]() { save(); });
+    property->onChange([this] { save(); });
 }
 
 std::string_view Settings::getIdentifier() const { return identifier_; }

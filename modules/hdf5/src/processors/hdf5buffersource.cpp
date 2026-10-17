@@ -61,7 +61,7 @@ HDF5ToBuffer::HDF5ToBuffer()
     addPort(inport_);
     addPort(outport_);
 
-    bufferSelection_.onChange([this]() { onSelectionChange(); });
+    bufferSelection_.onChange([this] { onSelectionChange(); });
     bufferSelection_.setSerializationMode(PropertySerializationMode::All);
 
     outputGroup_.addProperties(datatype_, selection_);

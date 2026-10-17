@@ -92,7 +92,7 @@ void CompositeProcessor::process() {
             source->invalidate(InvalidationLevel::InvalidOutput);
         }
     }
-    const util::OnScopeExit lock{[this]() { subNetwork_->lock(); }};
+    const util::OnScopeExit lock{[this] { subNetwork_->lock(); }};
     subNetwork_->unlock();  // This will trigger an evaluation of the sub network.
 }
 
@@ -276,12 +276,12 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     : comp{composite}
     , subProperty{aSubProperty}
     , superProperty{subProperty->clone()}
-    , subCallback{subProperty->onChangeScoped([this]() {
+    , subCallback{subProperty->onChangeScoped([this] {
         if (onChangeActive) return;
         const util::KeepTrueWhileInScope active{&onChangeActive};
         superProperty->set(subProperty);
     })}
-    , superCallback{superProperty->onChangeScoped([this]() {
+    , superCallback{superProperty->onChangeScoped([this] {
         if (onChangeActive) return;
         const util::KeepTrueWhileInScope active{&onChangeActive};
         subProperty->set(superProperty.get());
@@ -289,7 +289,7 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
-    const auto index = [&]() {
+    const auto index = [&] {
         if (auto* meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
             return meta->get();
         } else {

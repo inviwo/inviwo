@@ -113,7 +113,7 @@ bool BoolCompositePropertyWidgetQt::isChecked() const { return boolCompProperty_
 
 void BoolCompositePropertyWidgetQt::setChecked(bool checked) {
     CollapsibleGroupBoxWidgetQt::setChecked(checked);
-    util::exceptionGuard([&]() { boolCompProperty_->setChecked(checked); });
+    util::exceptionGuard([&] { boolCompProperty_->setChecked(checked); });
 }
 
 bool BoolCompositePropertyWidgetQt::isCollapsed() const { return boolCompProperty_->isCollapsed(); }

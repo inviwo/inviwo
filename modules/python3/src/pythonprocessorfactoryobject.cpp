@@ -157,7 +157,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
 
     constexpr std::string_view nameLabel{"# Name: "};
 
-    const auto name = [&]() {
+    const auto name = [&] {
         if (script.starts_with(nameLabel)) {
             const auto endl = script.find_first_of('\n');
             return trim(script.substr(nameLabel.size(), endl - nameLabel.size()));

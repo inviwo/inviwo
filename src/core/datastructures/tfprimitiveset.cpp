@@ -415,7 +415,7 @@ void TFPrimitiveSet::deserialize(Deserializer& d) {
 
     d.deserialize(serializationKey(), values_, serializationItemKey(),
                   deserializer::IndexFunctions{
-                      .makeNew = []() { return std::unique_ptr<TFPrimitive>{}; },
+                      .makeNew = [] { return std::unique_ptr<TFPrimitive>{}; },
                       .onNew =
                           [&](std::unique_ptr<TFPrimitive>& p, size_t) {
                               p->addObserver(this);

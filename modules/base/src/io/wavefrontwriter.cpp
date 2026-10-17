@@ -113,15 +113,15 @@ void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& inf
     } else if (info.dt == DrawType::Lines) {
         if (hasNormals) {
             meshutil::forEachLine(
-                info, indices, [&]() { fmt::print(f, "l "); },
+                info, indices, [&] { fmt::print(f, "l "); },
                 [&](std::uint32_t i) { fmt::print(f, "{0}/{0} ", i + 1); },
-                [&]() { fmt::print(f, "\n"); });
+                [&] { fmt::print(f, "\n"); });
 
         } else {
             meshutil::forEachLine(
-                info, indices, [&]() { fmt::print(f, "l "); },
+                info, indices, [&] { fmt::print(f, "l "); },
                 [&](std::uint32_t i) { fmt::print(f, "{} ", i + 1); },
-                [&]() { fmt::print(f, "\n"); });
+                [&] { fmt::print(f, "\n"); });
         }
 
     } else if (info.dt == DrawType::Points) {

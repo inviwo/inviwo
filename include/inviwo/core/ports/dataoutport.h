@@ -104,7 +104,7 @@ protected:
 
 template <typename T>
 struct PortTraits<DataOutport<T>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto tCid = DataTraits<T>::classIdentifier();
         if constexpr (tCid.empty()) {
             return StaticString{};
@@ -118,7 +118,7 @@ template <typename T>
 DataOutport<T>::DataOutport(std::string_view identifier, Document help)
     : Outport(identifier, std::move(help)), detail::DataOutportImpl<DataOutport<T>>{}, data_() {
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
     });
 }

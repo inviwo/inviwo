@@ -106,7 +106,7 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
     , filePath{"filename", "File", aFilePath, content}
     , extensions{"reader", "Data Reader", util::optionsForTypes<ReaderType>(*rf)}
     , reload{"reload", "Reload data",
-             [this]() {
+             [this] {
                  error_.clear();
                  isReady_.update();
              }}
@@ -120,8 +120,8 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
     util::updateReaderFromFile(filePath, extensions);
 
     // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] -> ProcessorStatus {
         if (!error_.empty()) {
             return {ProcessorStatus::Error, error_};
         } else if (filePath.get().empty()) {
@@ -138,12 +138,12 @@ DataSource<DataType, PortType, ReaderType>::DataSource(DataReaderFactory* rf,
             return ProcessorStatus::Ready;
         }
     });
-    filePath.onChange([this]() {
+    filePath.onChange([this] {
         error_.clear();
         util::updateReaderFromFile(filePath, extensions);
         isReady_.update();
     });
-    extensions.onChange([this]() {
+    extensions.onChange([this] {
         error_.clear();
         isReady_.update();
     });

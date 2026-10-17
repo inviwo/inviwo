@@ -42,13 +42,13 @@ namespace inviwo {
 Inport::Inport(std::string_view identifier, Document help)
     : Port(identifier, std::move(help))
     , isReady_{false, [](const bool& /*isReady*/) {},
-               [this]() {
+               [this] {
                    return (isConnected() &&
                            std::ranges::all_of(getConnectedOutports(),
                                                [](Outport* p) { return p->isReady(); }));
                }}
     , isOptional_(
-          false, [](const bool& /*isOptional*/) {}, []() { return false; })
+          false, [](const bool& /*isOptional*/) {}, [] { return false; })
     , changed_(false) {}
 
 Inport::~Inport() = default;
@@ -64,7 +64,7 @@ void Inport::readyUpdate() { isReady_.update(); }
 bool Inport::isOptional() const { return isOptional_; }
 
 void Inport::setOptional(bool optional) {
-    isOptional_.setUpdate([optional]() { return optional; });
+    isOptional_.setUpdate([optional] { return optional; });
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {

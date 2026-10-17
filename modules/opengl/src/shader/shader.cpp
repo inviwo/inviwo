@@ -172,7 +172,7 @@ Shader::Shader(std::string_view fragmentFilename, Build buildShader)
 
 Shader::Shader(Shader&& rhs)
     : buildShader_{rhs.buildShader_}
-    , program_{[&]() {
+    , program_{[&] {
         ShaderManager::getPtr()->unregisterShader(&rhs);
         return std::move(rhs.program_);
     }()}

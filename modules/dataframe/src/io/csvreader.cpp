@@ -479,7 +479,7 @@ template <typename T, bool index = false>
 static std::function<void(std::string_view, size_t, size_t)> addColumn(
     DataFrame& df, std::string_view header, Unit unit, CSVReader::EmptyField emptyField,
     bool cLocale) {
-    auto& data = [&]() -> decltype(auto) {
+    auto& data = [&] -> decltype(auto) {
         if constexpr (index && std::is_same_v<T, std::uint32_t>) {
             df.getIndexColumn()->setHeader(header);
             df.getIndexColumn()->setUnit(unit);
@@ -648,7 +648,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         if (!std::setlocale(LC_ALL, locale_.c_str())) {
             log::warn("Failed to set locale {}", locale_);
         }
-        cleanup.setAction([prev]() { std::setlocale(LC_ALL, prev.c_str()); });
+        cleanup.setAction([prev] { std::setlocale(LC_ALL, prev.c_str()); });
     }
 
     const std::string content{std::istreambuf_iterator<char>(stream),

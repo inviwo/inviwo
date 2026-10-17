@@ -57,7 +57,7 @@ class AnimationManager;
 WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManager& animationManager,
                                          AnimationModule& module)
     : animationManager_{animationManager}
-    , animations_{[&]() {
+    , animations_{[&] {
         std::vector<std::unique_ptr<Animation>> res;
         res.push_back(std::make_unique<Animation>(&animationManager_, "Animation 1"));
         return res;
@@ -65,7 +65,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
     , mainAnimation_(app, *animations_.front(), module)
     , app_{app} {
 
-    animationClearHandle_ = app->getWorkspaceManager()->onClear([&]() { clear(); });
+    animationClearHandle_ = app->getWorkspaceManager()->onClear([&] { clear(); });
     animationSerializationHandle_ = app->getWorkspaceManager()->onSave([&](Serializer& s) {
         s.serialize("MainAnimationIndex", getMainAnimationIndex());
         s.serialize("Animations", animations_, "Animation");
@@ -77,7 +77,7 @@ WorkspaceAnimations::WorkspaceAnimations(InviwoApplication* app, AnimationManage
         d.deserialize("Animations", animations_, "Animation",
                       deserializer::IndexFunctions{
                           .makeNew =
-                              [&]() {
+                              [&] {
                                   // Must pass AnimationManager to Animation constructor
                                   return std::make_unique<Animation>(&animationManager_);
                               },

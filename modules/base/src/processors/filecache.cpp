@@ -164,7 +164,7 @@ CacheBase::CacheBase()
               "instead of the absolute path, if set"_help}
     , currentKey_{"key", "Hashed State", "", InvalidationLevel::Valid} {
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         if (getInports().empty()) return true;
 
         const auto* inport = getInports().front();

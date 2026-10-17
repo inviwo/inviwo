@@ -138,7 +138,7 @@ void TemporalVolume::prefetch(size_t index,
     const auto reuse = (item && item->reuse()) ? item->reuse()->volume : takeReuse();
     std::stop_source source;
     auto future = app->dispatchPool(
-        [loader = loader_, index, reuse = reuse, callback, stop = source.get_token()]() mutable {
+        [loader = loader_, index, reuse = reuse, callback, stop = source.get_token()] mutable {
             // Queued pool tasks cannot be discarded, so cancellation is only effective if we bail
             // out here before doing any work.
             if (stop.stop_requested()) return reuse;

@@ -42,7 +42,7 @@ namespace inviwo::glui {
 WidgetSupplier::WidgetSupplier(UserInterfaceGLModule& uiGLModule) : uiGLModule_(uiGLModule) {}
 
 WidgetSupplier::WidgetSupplier(InviwoApplication* app)
-    : uiGLModule_{[app]() -> UserInterfaceGLModule& {
+    : uiGLModule_{[app] -> UserInterfaceGLModule& {
         if (app) {
             if (auto* uiGLModule = util::getModuleByType<UserInterfaceGLModule>(app)) {
                 return *uiGLModule;

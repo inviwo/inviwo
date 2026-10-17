@@ -134,9 +134,9 @@ const DataFormatBase* DataFormatBase::get(DataFormatId id) {
     static DataFormatArray instances = {};
 
     static std::once_flag flag;
-    std::call_once(flag, [&]() {
+    std::call_once(flag, [&] {
         util::for_each_type<DefaultDataFormats>{}(
-            [&, i = static_cast<int>(DataFormatId::NotSpecialized)]<typename T>() mutable {
+            [&, i = static_cast<int>(DataFormatId::NotSpecialized)]<typename T> mutable {
                 static_assert(sizeof(T) == sizeof(DataFormatBase));
                 new (&instances[++i]) T();
             });
@@ -147,7 +147,7 @@ const DataFormatBase* DataFormatBase::get(DataFormatId id) {
 }
 
 const DataFormatBase* DataFormatBase::get(std::string_view name) {
-    static auto nameMap = []() {
+    static auto nameMap = [] {
         std::unordered_map<std::string_view, const DataFormatBase*, CaseInsensitiveStringHash,
                            CaseInsensitiveEqual>
             res;
@@ -161,7 +161,7 @@ const DataFormatBase* DataFormatBase::get(std::string_view name) {
         res["double"] = DataFormat<glm::f64>::get();
         res["notspecialized"] = DataFormatBase::get();
 
-        util::for_each_type<DefaultDataFormats>{}([&]<typename T>() { res[T::str()] = T::get(); });
+        util::for_each_type<DefaultDataFormats>{}([&]<typename T> { res[T::str()] = T::get(); });
 
         return res;
     }();
@@ -180,10 +180,10 @@ const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, s
 
 const DataFormatBase* DataFormatBase::get(NumericType type, size_t components, size_t precision,
                                           size_t rank) {
-    static const auto table = []() {
+    static const auto table = [] {
         std::array<std::array<std::array<std::array<const DataFormatBase*, 4>, 4>, 4>, 2> res = {
             nullptr};
-        util::for_each_type<DefaultDataFormats>{}([&]<typename F>() {
+        util::for_each_type<DefaultDataFormats>{}([&]<typename F> {
             const auto r = F::rank() == 2 ? 1 : 0;
             const auto n = static_cast<size_t>(F::numericType());
             const auto c = F::components() - 1;

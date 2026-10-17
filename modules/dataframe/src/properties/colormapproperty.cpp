@@ -78,10 +78,10 @@ ColormapProperty::ColormapProperty(std::string_view identifier, std::string_view
     using namespace colorbrewer;
 
     updateColormaps();
-    type.onChange([&]() { updateColormaps(); });
-    diverging.onChange([&]() { updateColormaps(); });
+    type.onChange([&] { updateColormaps(); });
+    diverging.onChange([&] { updateColormaps(); });
 
-    colormap.onChange([&]() {
+    colormap.onChange([&] {
         nColors.set(*nColors, getMinNumberOfColorsForFamily(colormap),
                     getMaxNumberOfColorsForFamily(colormap), 1);
     });
@@ -119,10 +119,10 @@ ColormapProperty::ColormapProperty(const ColormapProperty& rhs)
     , nColors(rhs.nColors) {
 
     updateColormaps();
-    type.onChange([&]() { updateColormaps(); });
-    diverging.onChange([&]() { updateColormaps(); });
+    type.onChange([&] { updateColormaps(); });
+    diverging.onChange([&] { updateColormaps(); });
 
-    colormap.onChange([&]() {
+    colormap.onChange([&] {
         nColors.set(*nColors, getMinNumberOfColorsForFamily(colormap),
                     getMaxNumberOfColorsForFamily(colormap), 1);
     });

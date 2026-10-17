@@ -109,7 +109,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     addPort(outport_);
     outport_.setHelp("The output image"_help);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 ImageGLProcessor::~ImageGLProcessor() = default;

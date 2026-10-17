@@ -110,7 +110,7 @@ StreamLinesDeprecated::StreamLinesDeprecated()
     addPort(lines_);
     addPort(linesStripsMesh_);
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         if (allInportsAreReady()) {
             return true;
         }
@@ -150,7 +150,7 @@ StreamLinesDeprecated::~StreamLinesDeprecated() = default;
 
 void StreamLinesDeprecated::process() {
 
-    const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
+    const auto sampler = [&] -> std::shared_ptr<const SpatialSampler<dvec3>> {
         if (sampler_.isConnected()) {
             return sampler_.getData();
         } else {

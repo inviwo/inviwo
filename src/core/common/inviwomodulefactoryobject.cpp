@@ -48,7 +48,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     , description(aDescription)
     , srcPath(std::move(aSrcPath))
     , inviwoCoreVersion(aInviwoCoreVersion)
-    , dependencies([&]() {
+    , dependencies([&] {
         if (someDependencies.size() != someDependenciesVersion.size()) {
             throw Exception(SourceContext{}, "Each module dependency must have a version");
         }

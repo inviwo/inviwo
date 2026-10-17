@@ -102,7 +102,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
     deserializer.deserialize("Vector", vector, "Item",
                              deserializer::IdentifierFunctions{
                                  .getID = [](Item* const& i) -> std::string_view { return i->id_; },
-                                 .makeNew = []() { return new Item(); },
+                                 .makeNew = [] { return new Item(); },
                                  .onNew = [&](Item*& i, size_t) { vector.push_back(i); },
                                  .onRemove =
                                      [&](std::string_view id) {
@@ -153,7 +153,7 @@ TEST(SerialitionContainerTest, IndexFunctions) {
     Deserializer deserializer{ss};
     deserializer.deserialize("Vector", vector, "Item",
                              deserializer::IndexFunctions{
-                                 .makeNew = []() { return 0; },
+                                 .makeNew = [] { return 0; },
                                  .onNew = [&](int&, size_t) {},
                                  .onRemove = [](int&, size_t) {},
                              });
@@ -186,7 +186,7 @@ TEST(SerialitionContainerTest, MapFunctions1) {
     deserializer.deserialize(
         "Map", map, "Item",
         deserializer::MapFunctions{.idTransform = [](std::string_view s) { return std::string{s}; },
-                                   .makeNew = []() { return 0; },
+                                   .makeNew = [] { return 0; },
                                    .onNew = [&](const std::string& k, int& v) { map[k] = v; },
                                    .onRemove = [&](const std::string& k) { map.erase(k); }
 
@@ -221,7 +221,7 @@ TEST(SerialitionContainerTest, MapFunctions2) {
                                        std::from_chars(s.data(), s.data() + s.size(), val);
                                        return val;
                                    },
-                                   .makeNew = []() { return std::string{}; },
+                                   .makeNew = [] { return std::string{}; },
                                    .onNew = [&](const int& k, std::string& v) { map[k] = v; },
                                    .onRemove = [&](const int& k) { map.erase(k); }
 

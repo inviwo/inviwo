@@ -145,7 +145,7 @@ void NetworkAnnotations::deserialize(Deserializer& d) {
     try {
         d.deserialize("Annotations", annotations_, "Annotation",
                       deserializer::IndexFunctions{
-                          .makeNew = []() { return NetworkAnnotation{}; },
+                          .makeNew = [] { return NetworkAnnotation{}; },
                           .onNew =
                               [this](auto& annotation, size_t index) {
                                   notifyObserversAnnotationAdded(annotation, index);

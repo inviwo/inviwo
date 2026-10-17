@@ -60,7 +60,7 @@ namespace inviwo::glui {
 
 Element::Element(std::string_view label, Processor& processor, Renderer& uiRenderer,
                  UIOrientation orientation)
-    : action_([]() {})
+    : action_([] {})
     , moveAction_([](const dvec2&) { return false; })
     , hovered_(false)
     , pushed_(false)

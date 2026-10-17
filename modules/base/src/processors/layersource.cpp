@@ -61,8 +61,8 @@ LayerSource::LayerSource(InviwoApplication* app, const std::filesystem::path& fi
     DataSource<Layer, LayerOutport>::filePath.setDisplayName("Image File");
     options_.addProperties(index_);
     addProperties(dimensions_, basis_, information_, options_);
-    basis_.onChange([this]() { reload.setModified(); });
-    options_.onChange([this]() { reload.setModified(); });
+    basis_.onChange([this] { reload.setModified(); });
+    options_.onChange([this] { reload.setModified(); });
 }
 
 void LayerSource::configureReader(DataReader& reader) {

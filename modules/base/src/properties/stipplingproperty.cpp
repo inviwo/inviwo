@@ -70,8 +70,7 @@ StipplingProperty::StipplingProperty(std::string_view identifier, std::string_vi
 
     addProperties(mode, length, spacing, offset, worldScale);
 
-    mode.onChange(
-        [this]() { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
+    mode.onChange([this] { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
     worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace);
 }
 
@@ -85,8 +84,7 @@ StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
 
     addProperties(mode, length, spacing, offset, worldScale);
 
-    mode.onChange(
-        [this]() { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
+    mode.onChange([this] { worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace); });
     worldScale.setVisible(mode.get() == StipplingData::Mode::WorldSpace);
 }
 

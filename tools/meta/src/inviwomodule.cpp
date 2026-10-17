@@ -44,7 +44,7 @@ namespace inviwo::meta {
 
 InviwoModule::InviwoModule(std::filesystem::path path, Config config,
                            std::optional<std::string_view> contents)
-    : config_{std::move(config)}, path_{std::move(path)}, cmf_{[&]() {
+    : config_{std::move(config)}, path_{std::move(path)}, cmf_{[&] {
         if (contents) {
             return cmake::CMakeFile(*contents);
         } else {

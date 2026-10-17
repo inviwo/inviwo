@@ -228,7 +228,7 @@ constexpr bool islower(char ch) { return 'a' <= ch && ch <= 'z'; }
 constexpr bool isupper(char ch) { return 'A' <= ch && ch <= 'Z'; }
 constexpr bool isalnum(char ch) { return islower(ch) || isupper(ch) || isdigit(ch); }
 
-constexpr std::array<bool, 256> urlEscapeMap = []() {
+constexpr std::array<bool, 256> urlEscapeMap = [] {
     std::array<bool, 256> map{};
     const std::string_view urlValid = "~-_.+!*(),%#@?=;:/,+$";
     for (int i = 0; i < 256; ++i) {

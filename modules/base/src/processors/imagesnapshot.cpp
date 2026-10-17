@@ -75,13 +75,13 @@ ImageSnapshot::ImageSnapshot()
     outport1_.setHandleResizeEvents(false);
     outport2_.setHandleResizeEvents(false);
 
-    snapshot_.onChange([&]() {
+    snapshot_.onChange([&] {
         outport1ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
         outport2ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
         snapshots_.emplace_back(inport_.getData()->clone());
     });
 
-    clear_.onChange([&]() {
+    clear_.onChange([&] {
         snapshots_.clear();
         outport1ImageIndex_.setMaxValue(-1);
         outport2ImageIndex_.setMaxValue(-1);

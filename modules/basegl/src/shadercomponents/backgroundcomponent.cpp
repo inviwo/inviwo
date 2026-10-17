@@ -52,8 +52,8 @@ BackgroundComponent::BackgroundComponent(Processor& processor)
                   "The depth channel is used to terminate the raycasting."_help) {
     background_.setOptional(true);
 
-    background_.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
-    background_.onDisconnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
+    background_.onConnect([&] { processor.invalidate(InvalidationLevel::InvalidResources); });
+    background_.onDisconnect([&] { processor.invalidate(InvalidationLevel::InvalidResources); });
 }
 
 std::string_view BackgroundComponent::getName() const { return background_.getIdentifier(); }

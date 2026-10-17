@@ -348,7 +348,7 @@ void exposeProcessors(pybind11::module& m) {
                  * the next evaluation.
                  */
                 dispatchPool(
-                    [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filePath]() {
+                    [layerClone = std::shared_ptr<Layer>{layer->clone()}, writer, filePath] {
                         rendercontext::activateLocal();
                         writer->writeData(layerClone.get(), filePath);
                     });

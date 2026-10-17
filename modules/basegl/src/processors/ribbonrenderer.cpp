@@ -86,14 +86,14 @@ RibbonRenderer::RibbonRenderer()
     , adjacencyShaders_{shaderItems_, shaderRequirements_,
                         [&](Shader& shader) {
                             shader.onReload(
-                                [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                                [this] { invalidate(InvalidationLevel::InvalidResources); });
                             for (auto& obj : shader.getShaderObjects()) {
                                 obj.addShaderDefine("HAS_ADJACENCY");
                             }
                             configureShader(shader);
                         }}
     , shaders_{shaderItems_, shaderRequirements_, [&](Shader& shader) {
-                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
                }} {
 

@@ -193,11 +193,11 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
 
     auto* wmd = createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::classIdentifier);
     wmd->addObserver(pwObserver_.get());
-    dimensions_.onChange([this, wmd]() { wmd->setDimensions(dimensions_.get()); });
-    position_.onChange([this, wmd]() { wmd->setPosition(position_.get()); });
-    visible_.onChange([this, wmd]() { wmd->setVisible(visible_.get()); });
-    fullScreen_.onChange([this, wmd]() { wmd->setFullScreen(fullScreen_.get()); });
-    onTop_.onChange([this, wmd]() { wmd->setOnTop(onTop_.get()); });
+    dimensions_.onChange([this, wmd] { wmd->setDimensions(dimensions_.get()); });
+    position_.onChange([this, wmd] { wmd->setPosition(position_.get()); });
+    visible_.onChange([this, wmd] { wmd->setVisible(visible_.get()); });
+    fullScreen_.onChange([this, wmd] { wmd->setFullScreen(fullScreen_.get()); });
+    onTop_.onChange([this, wmd] { wmd->setOnTop(onTop_.get()); });
 
     // this is serialized in the widget metadata
     dimensions_.setSerializationMode(PropertySerializationMode::None);
@@ -214,8 +214,8 @@ CanvasWithPropertiesProcessor::CanvasWithPropertiesProcessor()
     layerIndex_.setSerializationMode(PropertySerializationMode::All);
     layerIndex_.readonlyDependsOn(layerType_, [](const auto& p) { return p != LayerType::Color; });
 
-    isSink_.setUpdate([this]() { return processorWidget_ && processorWidget_->isVisible(); });
-    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)]() -> ProcessorStatus {
+    isSink_.setUpdate([this] { return processorWidget_ && processorWidget_->isVisible(); });
+    isReady_.setUpdate([this, defaultCheck = getDefaultIsReadyUpdater(this)] -> ProcessorStatus {
         if (!processorWidget_ || !processorWidget_->isVisible()) {
             static constexpr std::string_view reason{"Canvas is not visible"};
             return {ProcessorStatus::NotReady, reason};

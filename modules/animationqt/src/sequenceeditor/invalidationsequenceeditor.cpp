@@ -80,7 +80,7 @@ public:
                     &DoubleValueDragSpinBox::valueChanged),
                 this, [this](double t) { keyframe_.setTime(Seconds(t)); });
         connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
-                [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
+                [this] { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
         layout->addWidget(timeSpinner_);
 
@@ -143,7 +143,7 @@ InvalidationSequenceEditor::InvalidationSequenceEditor(KeyframeSequence& sequenc
     if (auto* seq = dynamic_cast<InvalidationKeyframeSequence*>(&sequence)) {
         path_->setText(utilqt::toQString(seq->path));
         connect(path_, &QLineEdit::editingFinished, this,
-                [this, seq]() { seq->path = utilqt::fromQString(path_->text()); });
+                [this, seq] { seq->path = utilqt::fromQString(path_->text()); });
     }
 
     keyframesLayout_ = new QVBoxLayout();

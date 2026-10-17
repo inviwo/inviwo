@@ -54,7 +54,7 @@ void exposeImageTypes(const pybind11::module& m) {
         .value("One", ImageChannel::One);
 
     py::classh<SwizzleMask>(m, "SwizzleMask")
-        .def(py::init<>([]() { return swizzlemasks::rgba; }))
+        .def(py::init<>([] { return swizzlemasks::rgba; }))
         .def(py::init<SwizzleMask>())
         .def(py::init<>([](ImageChannel r, ImageChannel g, ImageChannel b, ImageChannel a) {
                  return SwizzleMask{r, g, b, a};

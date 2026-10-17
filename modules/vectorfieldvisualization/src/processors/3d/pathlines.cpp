@@ -119,7 +119,7 @@ PathLinesDeprecated::PathLinesDeprecated()
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
     , allowLooping_("allowLooping", "Allow looping", true) {
 
-    isReady_.setUpdate([this]() {
+    isReady_.setUpdate([this] {
         if (allInportsAreReady()) {
             return true;
         }
@@ -161,7 +161,7 @@ PathLinesDeprecated::PathLinesDeprecated()
 }
 
 void PathLinesDeprecated::process() {
-    const auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<dvec3>> {
+    const auto sampler = [&] -> std::shared_ptr<const Spatial4DSampler<dvec3>> {
         if (sampler_.isConnected()) {
             if (allowLooping_.getVisible()) {
                 allowLooping_.setVisible(false);

@@ -57,7 +57,7 @@ inline void onMain(auto&& func, auto&&... args) {
         }
     } else {
         dispatchFrontAndForget([func = std::forward<decltype(func)>(func),
-                                ... args = std::forward<decltype(args)>(args)]() {
+                                ... args = std::forward<decltype(args)>(args)] {
             if (auto* rm = getResourceManager()) {
                 std::invoke(func, *rm, std::move(args)...);
             }

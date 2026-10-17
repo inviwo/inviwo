@@ -54,7 +54,7 @@ VolumeHistogram1D::VolumeHistogram1D()
 }
 
 void VolumeHistogram1D::process() {
-    const auto calc = [data = inport_.getData()]() { return data->calculateHistograms(); };
+    const auto calc = [data = inport_.getData()] { return data->calculateHistograms(); };
 
     dispatchOne(calc, [this](std::shared_ptr<const std::vector<Histogram1D>> histograms) {
         outport_.setData(std::move(histograms));

@@ -183,7 +183,7 @@ DepthOfField::DepthOfField()
 
     trackingInport_.setOptional(true);
 
-    approximate_.onChange([this]() {
+    approximate_.onChange([this] {
         if (approximate_ && !useComputeShaders_) {
             // Using CPU version of approximative algorithm.
             log::warn(
@@ -192,12 +192,12 @@ DepthOfField::DepthOfField()
         }
     });
 
-    addSampleShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-    averageLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    addSampleShader_.onReload([this] { invalidate(InvalidationLevel::InvalidOutput); });
+    averageLightFieldShader_.onReload([this] { invalidate(InvalidationLevel::InvalidOutput); });
 
     if (useComputeShaders_) {
         addToLightFieldShader_.build();
-        addToLightFieldShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+        addToLightFieldShader_.onReload([this] { invalidate(InvalidationLevel::InvalidOutput); });
     }
 }
 
@@ -248,7 +248,7 @@ void DepthOfField::process() {
             std::swap(nextOutImg_, prevOutImg_);
         }
         evalCount_++;
-        dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth]() {
+        dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth] {
             if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 if (auto* SkewedCamera =
                         dynamic_cast<SkewedPerspectiveCamera*>(&self->camera_.get())) {
@@ -268,7 +268,7 @@ void DepthOfField::process() {
 
         // Reset camera
         evalCount_ = maxEvalCount;
-        dispatchFront([weakSelf = weak_from_this()]() {
+        dispatchFront([weakSelf = weak_from_this()] {
             if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 self->camera_.setCamera(std::unique_ptr<Camera>(self->ogCamera_->clone()));
             }
@@ -300,7 +300,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
         if (haltonX_.size() != simViewCountApprox_.get()) {
             haltonX_.resize(simViewCountApprox_);
             std::generate_n(haltonX_.begin(), maxEvalCount,
-                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 2); });
+                            [i = 1] mutable { return util::haltonSequence<float>(i++, 2); });
         }
         if (!haltonImg_ || haltonImg_->getDimensions().x != simViewCountApprox_.get()) {
             haltonImg_ = std::make_shared<Image>(size2_t(simViewCountApprox_.get(), 1),
@@ -319,12 +319,12 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
         if (haltonX_.size() != maxEvalCount) {
             haltonX_.resize(maxEvalCount);
             std::generate_n(haltonX_.begin(), maxEvalCount,
-                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 2); });
+                            [i = 1] mutable { return util::haltonSequence<float>(i++, 2); });
         }
         if (haltonY_.size() != maxEvalCount) {
             haltonY_.resize(maxEvalCount);
             std::generate_n(haltonY_.begin(), maxEvalCount,
-                            [i = 1]() mutable { return util::haltonSequence<float>(i++, 3); });
+                            [i = 1] mutable { return util::haltonSequence<float>(i++, 3); });
         }
     }
 
@@ -340,7 +340,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
     const auto minDepthWorld = ndcToWorldDepth(minmax.first);
     const auto maxDepthWorld = ndcToWorldDepth(minmax.second);
 
-    dispatchFront([weakSelf = weak_from_this(), minDepthWorld, maxDepthWorld]() {
+    dispatchFront([weakSelf = weak_from_this(), minDepthWorld, maxDepthWorld] {
         if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
 
             const NetworkLock lock(self.get());

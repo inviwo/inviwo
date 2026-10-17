@@ -122,7 +122,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonSyntaxHighl
     std::vector<std::shared_ptr<std::function<void()>>> callbacks;
     for (auto p : settings) {
         callbacks.emplace_back(p->onChangeScoped(
-            [psh = &sh, psettings = &settings]() { setPythonSyntaxHighlight(*psh, *psettings); }));
+            [psh = &sh, psettings = &settings] { setPythonSyntaxHighlight(*psh, *psettings); }));
     }
     return callbacks;
 }
@@ -153,7 +153,7 @@ std::vector<std::shared_ptr<std::function<void()>>> utilqt::setPythonOutputSynta
 
     std::vector<std::shared_ptr<std::function<void()>>> callbacks;
     for (auto p : settings) {
-        callbacks.emplace_back(p->onChangeScoped([psh = &sh, psettings = &settings]() {
+        callbacks.emplace_back(p->onChangeScoped([psh = &sh, psettings = &settings] {
             setPythonOutputSyntaxHighlight(*psh, *psettings);
         }));
     }

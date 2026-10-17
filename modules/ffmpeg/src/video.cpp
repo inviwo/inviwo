@@ -259,7 +259,7 @@ std::shared_ptr<Layer> Video::toLayer(std::shared_ptr<Layer> reuse) {
         scalerSourceFormat_ = source;
     }
 
-    auto layer = [&]() {
+    auto layer = [&] {
         if (reuse && reuse->getDataFormat() == info_.format &&
             reuse->getDimensions() == info_.dimensions &&
             reuse->getLayerType() == LayerType::Color) {

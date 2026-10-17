@@ -88,7 +88,7 @@ MetaDataProcessor<T, TInport, TOutport>::MetaDataProcessor()
     addPorts(inport_, outport_);
     addProperties(metadata_);
 
-    const auto updateMeta = [this]() {
+    const auto updateMeta = [this] {
         if (const auto data = inport_.getData()) {
             detail::updateMetaData(metadata_, *data);
         } else {

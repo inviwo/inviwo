@@ -86,7 +86,7 @@ marching::Config::Config()
              {2, 7, 10, 6},
              {3, 4, 11, 7},
              {8, 9, 10, 11}}}
-    , triangulations{[]() {
+    , triangulations{[] {
         std::unordered_map<size_t, std::vector<Triangle>> tmp;
         tmp[3] = {{0, 1, 2}};
         tmp[4] = {{0, 1, 2}, {0, 2, 3}};
@@ -390,13 +390,13 @@ template <typename T, typename IsoTest>
 class Index {
 public:
     Index(const T* src, const util::IndexMapper3D& im, const IsoTest& test)
-        : offsets0_{[&]() {
+        : offsets0_{[&] {
             std::array<size_t, 4> tmp;
             std::transform(oim_.begin(), oim_.end(), tmp.begin(),
                            [&](const auto& item) { return im(item.offset); });
             return tmp;
         }()}
-        , offsets1_{[&]() {
+        , offsets1_{[&] {
             std::array<size_t, 4> tmp;
             std::transform(oim_.begin(), oim_.end(), tmp.begin(),
                            [&](const auto& item) { return im(item.offset + size3_t{1, 0, 0}); });
@@ -485,7 +485,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume,
         const util::IndexMapper3D im(dim);
 
         const auto dr = dvec3(1.0) / dvec3{glm::max(size3_t{1}, (dim - size3_t{1}))};
-        const auto doffs = [&]() {
+        const auto doffs = [&] {
             std::array<dvec3, 8> tmp{dvec3{0.0}};
             std::transform(cube.vertices.begin(), cube.vertices.end(), tmp.begin(),
                            [dr](auto& v) { return dr * dvec3{v}; });

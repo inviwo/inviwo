@@ -211,20 +211,20 @@ auto set(Obj* obj) {
 void Camera::configureProperties(CameraProperty& cp, bool attach) {
     if (attach) {
         camprop_ = &cp;
-        cp.lookFrom_.setGetAndSet([this]() { return getLookFrom(); },
+        cp.lookFrom_.setGetAndSet([this] { return getLookFrom(); },
                                   set<&Camera::lookFrom_, &Camera::invalidateViewMatrix>(this));
-        cp.lookTo_.setGetAndSet([this]() { return getLookTo(); },
+        cp.lookTo_.setGetAndSet([this] { return getLookTo(); },
                                 set<&Camera::lookTo_, &Camera::invalidateViewMatrix>(this));
-        cp.lookUp_.setGetAndSet([this]() { return getLookUp(); },
+        cp.lookUp_.setGetAndSet([this] { return getLookUp(); },
                                 set<&Camera::lookUp_, &Camera::invalidateViewMatrix>(this));
         cp.aspectRatio_.setGetAndSet(
-            [this]() { return getAspectRatio(); },
+            [this] { return getAspectRatio(); },
             set<&Camera::aspectRatio_, &Camera::invalidateProjectionMatrix>(this));
         cp.nearPlane_.setGetAndSet(
-            [this]() { return getNearPlaneDist(); },
+            [this] { return getNearPlaneDist(); },
             set<&Camera::nearPlaneDist_, &Camera::invalidateProjectionMatrix>(this));
         cp.farPlane_.setGetAndSet(
-            [this]() { return getFarPlaneDist(); },
+            [this] { return getFarPlaneDist(); },
             set<&Camera::farPlaneDist_, &Camera::invalidateProjectionMatrix>(this));
     } else {
         camprop_ = nullptr;

@@ -90,7 +90,7 @@ VolumeLowPass::VolumeLowPass()
     useGaussianWeights_.getBoolProperty()->setInvalidationLevel(
         InvalidationLevel::InvalidResources);
 
-    sigma_.onChange([&]() {
+    sigma_.onChange([&] {
         int kernelSize90 = static_cast<int>(sigma_.get() * 2 * 1.645f);
         int kernelSize95 = static_cast<int>(sigma_.get() * 2 * 1.960f);
         int kernelSize99 = static_cast<int>(sigma_.get() * 2 * 2.576f);

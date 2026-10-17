@@ -83,7 +83,7 @@ Fog::Fog()
 
     color_.setSemantics(PropertySemantics::Color);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
 void Fog::process() {

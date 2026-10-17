@@ -272,7 +272,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    const auto updateVisibility = [&]() {
+    const auto updateVisibility = [&] {
         for (auto& prop : getPropertiesByType<ColorByProperty>()) {
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
         }
@@ -280,7 +280,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
     colorBy_.onChange(updateVisibility);
     updateVisibility();
 
-    setFromData_.onChange([&]() {
+    setFromData_.onChange([&] {
         if (lines_.hasData()) {
             double minT = std::numeric_limits<double>::max();
             double maxT = std::numeric_limits<double>::lowest();
@@ -288,7 +288,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
             uint32_t idx = 0;
             const auto data = lines_.getData();
             for (const auto& line : *data) {
-                const util::OnScopeExit incIdx([&idx]() { idx++; });
+                const util::OnScopeExit incIdx([&idx] { idx++; });
                 const auto size = line.getPositions().size();
                 if (size == 0) continue;
 
@@ -314,10 +314,10 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
         }
     });
 
-    brushingList_.onConnect([this]() { updatePropertyVisibility(); });
-    brushingList_.onDisconnect([this]() { updatePropertyVisibility(); });
+    brushingList_.onConnect([this] { updatePropertyVisibility(); });
+    brushingList_.onDisconnect([this] { updatePropertyVisibility(); });
 
-    output_.onChange([this]() { updatePropertyVisibility(); });
+    output_.onChange([this] { updatePropertyVisibility(); });
 
     updatePropertyVisibility();
 }
@@ -377,12 +377,12 @@ void IntegralLineVectorToMesh::process() {
     uint32_t lineIdx = 0;
     const auto data = lines_.getData();
     for (const auto& line : *data) {
-        const util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
+        const util::OnScopeExit incIdx([&lineIdx] { lineIdx++; });
         auto size = line.getPositions().size();
 
         if (size == 0 || isFiltered(line, lineIdx)) continue;
 
-        auto indexBuffer = [&]() -> std::shared_ptr<IndexBufferRAM> {
+        auto indexBuffer = [&] -> std::shared_ptr<IndexBufferRAM> {
             if (output == Output::Lines) {
                 auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
                 ib->getDataContainer().reserve(size + 2);
@@ -438,7 +438,7 @@ void IntegralLineVectorToMesh::process() {
             size_t pointIdx = 0;
             for (auto&& sample : util::zip(line.getPositions(), line.getMetaData<dvec3>("velocity"),
                                            mdContainter)) {
-                const util::OnScopeExit incPointIdx([&pointIdx]() { pointIdx++; });
+                const util::OnScopeExit incPointIdx([&pointIdx] { pointIdx++; });
                 const bool first = pointIdx <= 1;
                 const bool last = pointIdx >= line.getPositions().size() - 2;
                 // need to keep the two first and two last when using adjendency information

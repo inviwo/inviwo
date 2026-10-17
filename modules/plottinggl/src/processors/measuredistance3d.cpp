@@ -172,7 +172,7 @@ MeasureDistance3D::MeasureDistance3D()
                     .set(InvalidationLevel::Valid)
                     .set(ReadOnly::Yes)}
     , clearMeasurement_{"clearMeasurement", "Clear Measurement",
-                        [this]() { sm->sm.process_event(Reset{}); }}
+                        [this] { sm->sm.process_event(Reset{}); }}
     , locatorColor_{"locatorColor", "Locator Color",
                     util::ordinalColor(vec4{0.114f, 0.99f, 0.57f, 1.0f})}
     , locatorSize_{"locatorSize", "Locator Size (pixel)", util::ordinalLength(30)}
@@ -219,7 +219,7 @@ MeasureDistance3D::MeasureDistance3D()
     layer_.setOptional(true);
     volume_.setOptional(true);
 
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isReady_.setUpdate([this] -> ProcessorStatus {
         if (const auto connectedPorts = std::ranges::fold_left(
                 std::to_array<const Inport*>({&mesh_, &layer_, &volume_}) |
                     std::views::transform([](auto* p) { return p->isConnected() ? 1 : 0; }),
@@ -233,7 +233,7 @@ MeasureDistance3D::MeasureDistance3D()
 
     addPorts(inport_, mesh_, layer_, volume_, outport_);
 
-    const auto updateDistance = [this]() {
+    const auto updateDistance = [this] {
         const auto dist{glm::distance(positions_[0].get(), positions_[1].get())};
         distance_.set(dist);
         measurementAxis_.setRange({0.0, dist});
@@ -297,7 +297,7 @@ void MeasureDistance3D::process() {
     axisData.captionSettings.offset.x = pixelDistToWorld(measurementAxis_.captionSettings_.offset_);
 
     // use unit of first data axis to annotate the distance label
-    auto [_, dataAxis] = [this]() -> std::pair<dmat4, const Axis*> {
+    auto [_, dataAxis] = [this] -> std::pair<dmat4, const Axis*> {
         if (mesh_.hasData()) {
             const auto data = mesh_.getData();
             return {data->getCoordinateTransformer().getWorldToModelMatrix(), data->getAxis(0)};
@@ -368,7 +368,7 @@ void MeasureDistance3D::serialize(Serializer& s) const {
     using states =
         std::tuple<Invalid, PlacingFirstLocator, PlacedFirst, PlacingSecondLocator, Valid>;
     size_t stateIndex = 0;
-    util::for_each_type<states>{}([&]<typename T>() {
+    util::for_each_type<states>{}([&]<typename T> {
         if (sm->sm.is(sml::state<T>)) {
             stateIndex = index_of<T, Invalid, PlacingFirstLocator, PlacedFirst,
                                   PlacingSecondLocator, Valid>();

@@ -217,7 +217,7 @@ OpacityOptimization::OpacityOptimization()
 
       }
     , gaussianSigma_{"gaussianKernelSigma", "Gaussian kernel sigma", 1.0f, 0.001f, 50.0f}
-    , legendreCoeffs_{[]() {
+    , legendreCoeffs_{[] {
                           const auto max = static_cast<size_t>(
                               approximations::get(approximations::Type::Legendre).max);
                           return max * (max + 1) / 2;
@@ -226,7 +226,7 @@ OpacityOptimization::OpacityOptimization()
     , momentSettings_{2, GLFormats::getGLFormat(GL_FLOAT, 4), GL_NEAREST} {
 
     if (!OpenGLCapabilities::isExtensionSupported("GL_EXT_shader_image_load_store")) {
-        isReady_.setUpdate([]() -> ProcessorStatus { return {ProcessorStatus::Error, errorMsg}; });
+        isReady_.setUpdate([] -> ProcessorStatus { return {ProcessorStatus::Error, errorMsg}; });
     }
 
     addPort(inport_);
@@ -234,11 +234,11 @@ OpacityOptimization::OpacityOptimization()
     addPort(importanceVolume_).setOptional(true);
     addPort(outport_);
 
-    backgroundPort_.onConnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
-    backgroundPort_.onDisconnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onConnect([&] { invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&] { invalidate(InvalidationLevel::InvalidResources); });
 
-    importanceVolume_.onConnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
-    importanceVolume_.onDisconnect([&]() { invalidate(InvalidationLevel::InvalidResources); });
+    importanceVolume_.onConnect([&] { invalidate(InvalidationLevel::InvalidResources); });
+    importanceVolume_.onDisconnect([&] { invalidate(InvalidationLevel::InvalidResources); });
 
     addProperties(camera_, occlusionReduction_, clutterReduction_, lambda_,
                   approximationProperties_, meshProperties_, lineSettings_, pointProperties_,
@@ -251,7 +251,7 @@ OpacityOptimization::OpacityOptimization()
     }
     approximationProperties_.addProperties(smoothing_);
 
-    approximationMethod_.onChange([this]() {
+    approximationMethod_.onChange([this] {
         const auto& ap = approximations::get(approximationMethod_);
         importanceSumCoefficients_.setMinValue(ap.min);
         importanceSumCoefficients_.setMaxValue(ap.max);
@@ -269,22 +269,22 @@ OpacityOptimization::OpacityOptimization()
         .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty& p) { return p.get(); });
 
     for (auto& shader : meshShaders_) {
-        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     }
     for (auto& shader : lineShaders_) {
-        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     }
     for (auto& shader : lineAdjacencyShaders_) {
-        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     }
     for (auto& shader : pointShaders_) {
-        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     }
     for (auto& shader : smooth_) {
-        shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     }
-    clear_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    normalize_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    clear_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    normalize_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 OpacityOptimization::~OpacityOptimization() = default;

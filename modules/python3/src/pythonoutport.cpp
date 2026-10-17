@@ -38,7 +38,7 @@ PythonOutport::PythonOutport(std::string_view identifier, Document help)
     : Outport{identifier, std::move(help)} {
 
     isReady_.setUpdate(
-        [this]() { return invalidationLevel_ == InvalidationLevel::Valid && !data_.is_none(); });
+        [this] { return invalidationLevel_ == InvalidationLevel::Valid && !data_.is_none(); });
 }
 
 Document PythonOutport::getInfo() const {

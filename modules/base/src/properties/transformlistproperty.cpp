@@ -60,7 +60,7 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
                                        PropertySemantics semantics)
     : ListProperty(
           identifier, displayName,
-          []() {
+          [] {
               std::vector<std::unique_ptr<Property>> v;
               v.emplace_back(
                   std::make_unique<transform::TranslateProperty>("translation", "Translation"));
@@ -105,7 +105,7 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
     result_.setCurrentStateAsDefault();
     addProperties(transforms_, result_);
 
-    transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
+    transforms_.onChange([this] { result_.set(transforms_.getMatrix()); });
 }
 TransformListProperty::TransformListProperty(std::string_view identifier,
                                              std::string_view displayName,
@@ -121,7 +121,7 @@ TransformListProperty::TransformListProperty(const TransformListProperty& other)
     result_.setCurrentStateAsDefault();
     addProperties(transforms_, result_);
 
-    transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
+    transforms_.onChange([this] { result_.set(transforms_.getMatrix()); });
 }
 
 std::string_view TransformListProperty::getClassIdentifier() const { return classIdentifier; }
@@ -179,7 +179,7 @@ RotateProperty::RotateProperty(std::string_view identifier, std::string_view dis
     axis.setSemantics(PropertySemantics::SpinBox);
     addProperties(mode, axis, angle);
 
-    mode.onChange([this]() {
+    mode.onChange([this] {
         if (mode == AngleMeasure::Radians) {
             angle.set(glm::radians(*angle), glm::radians(angle.getMinValue()),
                       glm::radians(angle.getMaxValue()), angle.getIncrement());
@@ -194,7 +194,7 @@ RotateProperty::RotateProperty(const RotateProperty& rhs)
     : TransformProperty(rhs), mode(rhs.mode), axis(rhs.axis), angle(rhs.angle) {
     addProperties(mode, axis, angle);
 
-    mode.onChange([this]() {
+    mode.onChange([this] {
         if (mode == AngleMeasure::Radians) {
             angle.set(glm::radians(*angle), glm::radians(angle.getMinValue()),
                       glm::radians(angle.getMaxValue()), angle.getIncrement());
@@ -286,7 +286,7 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
 
     addProperties(matrix);
 
-    port.onChange([this]() {
+    port.onChange([this] {
         if (const auto data = port.getData()) {
             matrix.set(*data);
         } else {
@@ -300,7 +300,7 @@ PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
 
     addProperties(matrix);
 
-    port.onChange([this]() {
+    port.onChange([this] {
         if (const auto data = port.getData()) {
             matrix.set(*data);
         } else {

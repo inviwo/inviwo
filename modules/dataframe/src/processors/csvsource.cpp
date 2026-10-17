@@ -125,7 +125,7 @@ CSVSource::CSVSource(const std::filesystem::path& file)
     includeFilters_.setCollapsed(true);
     excludeFilters_.setCollapsed(true);
 
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isReady_.setUpdate([this] -> ProcessorStatus {
         if (!error_.empty()) {
             return {ProcessorStatus::Error, error_};
         } else if (inputFile_.get().empty()) {
@@ -143,14 +143,14 @@ CSVSource::CSVSource(const std::filesystem::path& file)
          util::ref<Property>(inputFile_, reloadData_, delimiters_, stripQuotes_, firstRowIsHeaders_,
                              firstColumnIsIndices_, unitsInHeaders_, unitRegexp_, doublePrecision_,
                              exampleRows_, rowComment_, locale_, emptyField_)) {
-        std::invoke(&Property::onChange, item, [this]() {
+        std::invoke(&Property::onChange, item, [this] {
             error_.clear();
             isReady_.update();
         });
     }
 
     // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
+    isSink_.setUpdate([] { return true; });
 }
 
 void CSVSource::process() {

@@ -266,7 +266,7 @@ ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget* parent, ResourceMa
     setContents(layout);
     widget()->setContentsMargins(0, 0, 0, 0);
 
-    callback_ = settings.enableResourceTracking_.onChangeScoped([&settings, enable]() {
+    callback_ = settings.enableResourceTracking_.onChangeScoped([&settings, enable] {
         const QSignalBlocker block{enable};
         enable->setChecked(settings.enableResourceTracking_.get());
     });

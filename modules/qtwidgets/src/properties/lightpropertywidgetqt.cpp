@@ -81,7 +81,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    connect(halfSphere_, &LightPositionWidgetQt::positionChanged, this, [this]() {
+    connect(halfSphere_, &LightPositionWidgetQt::positionChanged, this, [this] {
         const auto pos = static_cast<vec3>(halfSphere_->getPosition());
         property_->setInitiatingWidget(this);
         property_->set(pos);
@@ -97,7 +97,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     });
 
     radius_->setIncrement(0.1f);
-    connect(radius_, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this]() {
+    connect(radius_, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this] {
         halfSphere_->setRadius((inFront_->isChecked() ? 1.0 : -1.0) * radius_->getValue());
     });
 
@@ -106,7 +106,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     });
 
     for (auto&& [i, coordinate] : util::enumerate(cartesian_)) {
-        connect(coordinate, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this, iLocal = i]() {
+        connect(coordinate, &OrdinalSpinBoxWidget<float>::valueChanged, this, [this, iLocal = i] {
             auto newPos = halfSphere_->getPosition();
             newPos[iLocal] = cartesian_[iLocal]->getValue();
 
@@ -124,7 +124,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
             }
 
             property_->setInitiatingWidget(this);
-            util::exceptionGuard([&]() { property_->set(static_cast<vec3>(newPos)); });
+            util::exceptionGuard([&] { property_->set(static_cast<vec3>(newPos)); });
             property_->clearInitiatingWidget();
         });
     }
@@ -207,7 +207,7 @@ std::unique_ptr<QMenu> LightPropertyWidgetQt::getContextMenu() {
         tr("&Open the property settings dialog to adjust min bound, start, end, max bound, "
            "minSepration and increment values"));
 
-    connect(settingsAction, &QAction::triggered, this, [this]() {
+    connect(settingsAction, &QAction::triggered, this, [this] {
         if (!settings_) {
             settings_ = new OrdinalLikePropertySettingsWidgetQt<FloatVec3Property>(property_, this);
         }

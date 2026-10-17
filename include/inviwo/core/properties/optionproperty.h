@@ -1160,7 +1160,7 @@ void OptionProperty<T>::deserialize(Deserializer& d) {
 
     const size_t newIndex = d.attribute("selectedIdentifier", SerializeConstants::ContentAttribute)
                                 .and_then(indexOf)
-                                .or_else([&]() -> std::optional<size_t> {
+                                .or_else([&] -> std::optional<size_t> {
                                     if (serializationMode_ == PropertySerializationMode::Default) {
                                         return defaultSelectedIndex_;
                                     } else if (selectedIndex_ < opts().size()) {

@@ -120,7 +120,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         begin->setToolTip("To Beginning");
         toolWidget->addAction(begin);
         connect(begin, &QAction::triggered,
-                [&]() { controller_.onChangeSelection(DemoController::Offset::First); });
+                [&] { controller_.onChangeSelection(DemoController::Offset::First); });
     }
 
     {
@@ -131,7 +131,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         prev->setToolTip("Previous Demo");
         toolWidget->addAction(prev);
         connect(prev, &QAction::triggered,
-                [&]() { controller_.onChangeSelection(DemoController::Offset::Previous); });
+                [&] { controller_.onChangeSelection(DemoController::Offset::Previous); });
     }
 
     {
@@ -142,7 +142,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         reset->setToolTip("Reset");
         toolWidget->addAction(reset);
         connect(reset, &QAction::triggered,
-                [&]() { controller_.onChangeSelection(DemoController::Offset::Reload); });
+                [&] { controller_.onChangeSelection(DemoController::Offset::Reload); });
     }
     {
         auto* next = toolBar->addAction(
@@ -151,7 +151,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         next->setToolTip("Next Demo");
         toolWidget->addAction(next);
         connect(next, &QAction::triggered,
-                [&]() { controller_.onChangeSelection(DemoController::Offset::Next); });
+                [&] { controller_.onChangeSelection(DemoController::Offset::Next); });
     }
 
     {
@@ -161,7 +161,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
         end->setToolTip("To End");
         toolWidget->addAction(end);
         connect(end, &QAction::triggered,
-                [&]() { controller_.onChangeSelection(DemoController::Offset::Last); });
+                [&] { controller_.onChangeSelection(DemoController::Offset::Last); });
     }
 
     toolBar->addSeparator();

@@ -77,7 +77,7 @@ LayerRenderer::LayerRenderer()
     mesh_.addIndices(Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::Strip},
                      indices_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void LayerRenderer::initializeResources() {

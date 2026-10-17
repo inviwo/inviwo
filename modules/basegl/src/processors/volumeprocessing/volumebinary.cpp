@@ -99,7 +99,7 @@ VolumeBinary::VolumeBinary()
 
 void VolumeBinary::preProcess([[maybe_unused]] TextureUnitContainer& cont, Shader& shader,
                               [[maybe_unused]] VolumeConfig& config) {
-    const auto threshold = [&]() {
+    const auto threshold = [&] {
         if (inport_.has_value() && inport_->hasData()) {
             const DataMapper& dm = inport_->getData()->dataMap;
             switch (dataSpace_.get()) {

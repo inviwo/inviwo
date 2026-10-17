@@ -69,7 +69,7 @@ constexpr auto build_array_t_nd(const Functor& func) {
             return std::array{func.template operator()<Is>()...};
         } else {  // Recursive case
             return std::array{build_array_t_nd<Ns...>(
-                [&]<auto... rest>() { return func.template operator()<Is, rest...>(); })...};
+                [&]<auto... rest> { return func.template operator()<Is, rest...>(); })...};
         }
     }(std::make_integer_sequence<decltype(N), N>{});
 }

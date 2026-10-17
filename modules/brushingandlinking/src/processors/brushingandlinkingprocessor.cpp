@@ -74,18 +74,18 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
     , inport_("inport", "brushing and linking port for hierarchical interactions"_help)
     , outport_("outport", R"(brushing and linking port for connecting "linked" processors)"_help)
     , clearSelection_(
-          "clearSelection", "Clear Selection", [&]() { outport_.getManager().clearSelected(); },
+          "clearSelection", "Clear Selection", [&] { outport_.getManager().clearSelected(); },
           InvalidationLevel::Valid)
     , clearHighlight_(
-          "clearHighlight", "Clear Highlighting",
-          [&]() { outport_.getManager().clearHighlighted(); }, InvalidationLevel::Valid)
+          "clearHighlight", "Clear Highlighting", [&] { outport_.getManager().clearHighlighted(); },
+          InvalidationLevel::Valid)
     , clearCols_(
           "clearCols", "Clear Columns",
-          [&]() { outport_.getManager().clearSelected(BrushingTarget::Column); },
+          [&] { outport_.getManager().clearSelected(BrushingTarget::Column); },
           InvalidationLevel::Valid)
     , clearAll_(
           "clearAll", "Clear Selections and Highlights",
-          [&]() {
+          [&] {
               outport_.getManager().clearSelected();
               outport_.getManager().clearHighlighted();
               outport_.getManager().clearSelected(BrushingTarget::Column);

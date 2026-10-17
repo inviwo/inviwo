@@ -121,7 +121,7 @@ HedgeHog2D::HedgeHog2D()
     arrowBaseWidth_.readonlyDependsOn(glyphType_,
                                       [](const auto& p) { return p.get() != GlyphType::Arrow; });
 
-    reseed_.onChange([this]() {
+    reseed_.onChange([this] {
         std::uniform_int_distribution<std::int64_t> dist{0, seed_.getMaxValue()};
         seed_.set(dist(rand_));
     });

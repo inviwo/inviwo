@@ -156,7 +156,7 @@ TEST(EventTransform, construct) {
 
     const EventTransformer::View view{.globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
                                       .propagateEvent = [](Event*, Outport*) {},
-                                      .size = []() { return size2_t(70, 25); }};
+                                      .size = [] { return size2_t(70, 25); }};
 
     const EventTransformer transformer{{view}};
 }
@@ -178,7 +178,7 @@ struct TwoViewFixture {
                 e1.reset(event->clone());
                 ++e1Count;
             },
-        .size = []() { return size2_t(35, 25); }};
+        .size = [] { return size2_t(35, 25); }};
 
     EventTransformer::View view2{
         .globalNdcToLocalNdc =
@@ -188,7 +188,7 @@ struct TwoViewFixture {
                 e2.reset(event->clone());
                 ++e2Count;
             },
-        .size = []() { return size2_t(35, 25); }};
+        .size = [] { return size2_t(35, 25); }};
 
     EventTransformer transformer{{view1, view2}};
 
@@ -416,7 +416,7 @@ TEST(EventTransform, EventUsedPropagation) {
                                               event->markAsUsed();
                                               received.reset(event->clone());
                                           },
-                                      .size = []() { return size2_t(70, 25); }};
+                                      .size = [] { return size2_t(70, 25); }};
 
     EventTransformer transformer{{view}};
 
@@ -439,7 +439,7 @@ TEST(EventTransform, EventNotUsedPropagation) {
     const EventTransformer::View view{
         .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
         .propagateEvent = [](Event*, Outport*) { /* don't mark as used */ },
-        .size = []() { return size2_t(70, 25); }};
+        .size = [] { return size2_t(70, 25); }};
 
     EventTransformer transformer{{view}};
 
@@ -460,7 +460,7 @@ TEST(EventTransform, WheelEventUsedPropagation) {
     const EventTransformer::View view{
         .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
         .propagateEvent = [](Event* event, Outport*) { event->markAsUsed(); },
-        .size = []() { return size2_t(70, 25); }};
+        .size = [] { return size2_t(70, 25); }};
 
     EventTransformer transformer{{view}};
 
@@ -479,7 +479,7 @@ TEST(EventTransform, CoordinateTransformEdgeCases) {
     const EventTransformer::View view{
         .globalNdcToLocalNdc = [](const dvec3& ndc) { return ndc; },
         .propagateEvent = [&](Event* event, Outport*) { received.reset(event->clone()); },
-        .size = []() { return size2_t(100, 100); }};
+        .size = [] { return size2_t(100, 100); }};
 
     EventTransformer transformer{{view}};
 

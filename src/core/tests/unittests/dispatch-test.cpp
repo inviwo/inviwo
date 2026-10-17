@@ -42,7 +42,7 @@ using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
 template <template <class> class Predicate>
 static res_t test(DataFormatId id) {
-    return dispatching::singleDispatch<res_t, Predicate>(id, []<typename T>() -> res_t {
+    return dispatching::singleDispatch<res_t, Predicate>(id, []<typename T> -> res_t {
         return res_t{DataFormat<T>::id(), DataFormat<T>::numericType(), DataFormat<T>::components(),
                      DataFormat<T>::precision()};
     });
@@ -82,7 +82,7 @@ TEST(DispatchTests, InstantiationTest1) {
                                      BufferUsage::Static, BufferTarget::Data);
 
     const auto res = dispatching::singleDispatch<float, dispatching::filter::Scalars>(
-        buf->getDataFormat()->getId(), [&]<typename T>() {
+        buf->getDataFormat()->getId(), [&]<typename T> {
             using D = util::value_type_t<T>;
             const D v1{0};
             const D v2{1};
@@ -97,7 +97,7 @@ TEST(DispatchTests, InstantiationTest2) {
                                      BufferUsage::Static, BufferTarget::Data);
 
     const auto res = dispatching::singleDispatch<float, dispatching::filter::Vecs>(
-        buf->getDataFormat()->getId(), [&]<typename T>() {
+        buf->getDataFormat()->getId(), [&]<typename T> {
             using D = util::value_type_t<T>;
             const D v1{0};
             const D v2{1};

@@ -69,7 +69,7 @@ TFPropertyWidgetQt::TFPropertyWidgetQt(TransferFunctionProperty* property)
 
     hLayout->addWidget(label_);
 
-    connect(btnOpenTF_, &TFPushButton::clicked, [this]() {
+    connect(btnOpenTF_, &TFPushButton::clicked, [this] {
         if (!tfDialog_) {
             initEditor();
             tfDialog_->setVisible(true);
@@ -139,7 +139,7 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     auto* clearTF = menu->addAction("&Clear TF");
     clearTF->setDisabled(property_->getReadOnly());
 
-    connect(clearTF, &QAction::triggered, this, [this]() {
+    connect(clearTF, &QAction::triggered, this, [this] {
         const NetworkLock lock(property_);
         tfProperty()->get().clear();
     });
@@ -155,14 +155,14 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     auto* importTF = menu->addAction("&Import TF...");
     const auto* exportTF = menu->addAction("&Export TF...");
     importTF->setDisabled(property_->getReadOnly());
-    connect(importTF, &QAction::triggered, this, [this]() {
+    connect(importTF, &QAction::triggered, this, [this] {
         if (const auto tf = util::importTransferFunctionDialog()) {
             const NetworkLock lock{property_};
             tfProperty()->get() = *tf;
         }
     });
     connect(exportTF, &QAction::triggered, this,
-            [this]() { util::exportTransferFunctionDialog(tfProperty()->get()); });
+            [this] { util::exportTransferFunctionDialog(tfProperty()->get()); });
 
     return menu;
 }

@@ -62,7 +62,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                         std::move(semantics)}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
     , cameraType_("cameraType", "Camera Type",
-                  [&]() {
+                  [&] {
                       auto opts = OptionPropertyState<std::string>{};
                       const auto keys = factory_->getKeyView();
                       for (const auto& key : keys) opts.options.emplace_back(key);
@@ -80,33 +80,33 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                      buttons(), InvalidationLevel::Valid)
     , lookFrom_(
           "lookFrom", "Look from", "Position in world space of the camera"_help,
-          []() { return dvec3{}; }, [](const dvec3&) {},
-          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
-          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics{"Spherical"})
+          [] { return dvec3{}; }, [](const dvec3&) {}, {-dvec3(100.0), ConstraintBehavior::Ignore},
+          {dvec3(100.0), ConstraintBehavior::Ignore}, dvec3(0.1), InvalidationLevel::InvalidOutput,
+          PropertySemantics{"Spherical"})
     , lookTo_(
           "lookTo", "Look to", "Focus point of the camera in world space"_help,
-          []() { return dvec3{}; }, [](const dvec3&) {},
-          {-dvec3(100.0), ConstraintBehavior::Ignore}, {dvec3(100.0), ConstraintBehavior::Ignore},
-          dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
+          [] { return dvec3{}; }, [](const dvec3&) {}, {-dvec3(100.0), ConstraintBehavior::Ignore},
+          {dvec3(100.0), ConstraintBehavior::Ignore}, dvec3(0.1), InvalidationLevel::InvalidOutput,
+          PropertySemantics::Default)
     , lookUp_(
           "lookUp", "Look up",
           "Up direction for the camera, should be orthogonal to lookTo - LookFrom"_help,
-          []() { return dvec3(1.0, 1.0, 1.0); }, [](const dvec3&) {},
+          [] { return dvec3(1.0, 1.0, 1.0); }, [](const dvec3&) {},
           {-dvec3(1.0), ConstraintBehavior::Immutable}, {dvec3(1.0), ConstraintBehavior::Immutable},
           dvec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Default)
     , aspectRatio_(
           "aspectRatio", "Aspect Ratio",
           "Aspect ratio (width / height) of the camera viewport. This is automatically set "
           "through resize events."_help,
-          []() { return 1.0; }, [](const double&) {}, {0.0, ConstraintBehavior::Immutable},
+          [] { return 1.0; }, [](const double&) {}, {0.0, ConstraintBehavior::Immutable},
           {std::numeric_limits<double>::max(), ConstraintBehavior::Immutable}, 0.01,
           InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , nearPlane_(
           "near", "Near Plane", "Near plane distance in world coordinates"_help,
-          []() { return 0.001; }, [](const double&) {}, {0.001, ConstraintBehavior::Ignore},
+          [] { return 0.001; }, [](const double&) {}, {0.001, ConstraintBehavior::Ignore},
           {10.0, ConstraintBehavior::Ignore}, 0.001)
     , farPlane_(
-          "far", "Far Plane", "Far plane distance in world coordinates"_help, []() { return 1.0; },
+          "far", "Far Plane", "Far plane distance in world coordinates"_help, [] { return 1.0; },
           [](const double&) {}, {1.0, ConstraintBehavior::Ignore},
           {1000.0, ConstraintBehavior::Ignore}, 1.0)
 
@@ -122,7 +122,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     cameraActions_.setSerializationMode(PropertySerializationMode::None);
 
     camera_->configureProperties(*this, true);
-    cameraType_.onChange([this]() {
+    cameraType_.onChange([this] {
         changeCamera(cameraType_);
         updateFittingVisibility();
     });
@@ -143,7 +143,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(
           identifier, displayName,
-          [&]() -> std::function<std::optional<dmat4>()> {
+          [&] -> std::function<std::optional<dmat4>()> {
               if (auto* vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
               } else if (auto* mp = dynamic_cast<MeshInport*>(inport)) {
@@ -176,7 +176,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
                             lookTo_, lookUp_, aspectRatio_, nearPlane_, farPlane_);
 
     camera_->configureProperties(*this, true);
-    cameraType_.onChange([this]() {
+    cameraType_.onChange([this] {
         changeCamera(cameraType_);
         updateFittingVisibility();
     });

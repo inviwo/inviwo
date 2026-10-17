@@ -260,7 +260,7 @@ struct DataTraits<std::string> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<T, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".vector";
@@ -268,7 +268,7 @@ struct DataTraits<std::vector<T, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<" + StaticString<tName.size()>(tName) + ">";
@@ -286,7 +286,7 @@ struct DataTraits<std::vector<T, A>> {
 };
 template <typename T, typename A>
 struct DataTraits<std::vector<const T, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".const_vector";
@@ -294,7 +294,7 @@ struct DataTraits<std::vector<const T, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<const " + StaticString<tName.size()>(tName) + ">";
@@ -313,7 +313,7 @@ struct DataTraits<std::vector<const T, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<T*, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".ptr.vector";
@@ -321,7 +321,7 @@ struct DataTraits<std::vector<T*, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<" + StaticString<tName.size()>(tName) + "*>";
@@ -342,7 +342,7 @@ struct DataTraits<std::vector<T*, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<const T*, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".const_ptr.vector";
@@ -350,7 +350,7 @@ struct DataTraits<std::vector<const T*, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<const " + StaticString<tName.size()>(tName) + "*>";
@@ -371,7 +371,7 @@ struct DataTraits<std::vector<const T*, A>> {
 
 template <typename T, typename D, typename A>
 struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".unique_ptr.vector";
@@ -379,7 +379,7 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<unique_ptr<" + StaticString<tName.size()>(tName) + ">>";
@@ -400,7 +400,7 @@ struct DataTraits<std::vector<std::unique_ptr<T, D>, A>> {
 
 template <typename T, typename D, typename A>
 struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".const_unique_ptr.vector";
@@ -408,7 +408,7 @@ struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<unique_ptr<const " + StaticString<tName.size()>(tName) + ">>";
@@ -429,7 +429,7 @@ struct DataTraits<std::vector<std::unique_ptr<const T, D>, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".shared_ptr.vector";
@@ -437,7 +437,7 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<shared_ptr<" + StaticString<tName.size()>(tName) + ">>";
@@ -458,7 +458,7 @@ struct DataTraits<std::vector<std::shared_ptr<T>, A>> {
 
 template <typename T, typename A>
 struct DataTraits<std::vector<std::shared_ptr<const T>, A>> {
-    static constexpr auto cid = []() {
+    static constexpr auto cid = [] {
         constexpr auto name = DataTraits<T>::classIdentifier();
         if constexpr (!name.empty()) {
             return StaticString<name.size()>(name) + ".const_shared_ptr.vector";
@@ -466,7 +466,7 @@ struct DataTraits<std::vector<std::shared_ptr<const T>, A>> {
             return StaticString<0>{};
         }
     }();
-    static constexpr auto name = []() {
+    static constexpr auto name = [] {
         constexpr auto tName = DataTraits<T>::dataName();
         if constexpr (!tName.empty()) {
             return "vector<shared_ptr<const " + StaticString<tName.size()>(tName) + ">>";

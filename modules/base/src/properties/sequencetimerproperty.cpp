@@ -59,12 +59,11 @@ SequenceTimerProperty::SequenceTimerProperty(std::string_view identifier,
     , playPause_(
           "playPause", "Play / Pause", [this](Event*) { play_.set(!play_.get()); }, IvwKey::P,
           KeyState::Press)
-    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
-             [this]() { onTimerEvent(); }) {
+    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()}, [this] { onTimerEvent(); }) {
 
-    play_.onChange([this]() { onPlaySequenceToggled(); });
+    play_.onChange([this] { onPlaySequenceToggled(); });
     framesPerSecond_.onChange(
-        [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
+        [this] { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);
@@ -78,12 +77,11 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     , play_(rhs.play_)
     , framesPerSecond_(rhs.framesPerSecond_)
     , playPause_(rhs.playPause_)
-    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()},
-             [this]() { onTimerEvent(); }) {
+    , timer_(std::chrono::milliseconds{1000 / framesPerSecond_.get()}, [this] { onTimerEvent(); }) {
 
-    play_.onChange([this]() { onPlaySequenceToggled(); });
+    play_.onChange([this] { onPlaySequenceToggled(); });
     framesPerSecond_.onChange(
-        [this]() { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
+        [this] { timer_.setInterval(std::chrono::milliseconds{1000 / framesPerSecond_.get()}); });
     index_.setSerializationMode(PropertySerializationMode::All);
     addProperty(index_);
     addProperty(play_);

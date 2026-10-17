@@ -93,7 +93,7 @@ void addMenuEntries(QMenu* menu, std::span<const ContextMenuEntry> menuEntries,
             action->setIcon(QIcon(utilqt::toQString(*menuAction.iconPath)));
         }
         action->setEnabled(menuAction.enabled);
-        QObject::connect(action, &QAction::triggered, [propagator, menuAction]() {
+        QObject::connect(action, &QAction::triggered, [propagator, menuAction] {
             try {
                 RenderContext::getPtr()->activateDefaultRenderContext();
                 ContextMenuEvent menuEvent{
@@ -129,8 +129,8 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     auto interactionEventMapper = new InteractionEventMapperQt(
-        this, this, [this]() { return utilqt::toGLM(size()); },
-        [this]() { return getImageDimensions(); },
+        this, this, [this] { return utilqt::toGLM(size()); },
+        [this] { return getImageDimensions(); },
         [this](dvec2 pos) { return getDepthValueAtNormalizedCoord(pos); },
         [this](std::span<ContextMenuEntry> entries, ContextMenuCategories actions) {
             if (!contextMenuCallback_) return;
@@ -156,7 +156,7 @@ CanvasQOpenGLWidget::CanvasQOpenGLWidget(QWidget* parent, std::string_view name)
         [this](Qt::CursorShape cursor) { setCursor(cursor); });
 
     auto& settings = InviwoApplication::getPtr()->getSystemSettings();
-    const auto setHandleTouch = [this, &settings, interactionEventMapper]() {
+    const auto setHandleTouch = [this, &settings, interactionEventMapper] {
         const auto& touch = settings.enableTouchProperty_;
         const auto& gestures = settings.enableGesturesProperty_;
 
@@ -259,7 +259,7 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     pickingController_.setPickingSource(nullptr);
 
     setUpdatesEnabled(false);
-    const util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
+    const util::OnScopeExit enable([&] { setUpdatesEnabled(true); });
     QOpenGLWidget::resizeEvent(event);
 
     // Propagated an event with the physical (pixel) dimensions of the canvas

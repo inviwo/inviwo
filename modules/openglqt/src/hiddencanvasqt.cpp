@@ -98,7 +98,7 @@ std::unique_ptr<Canvas> HiddenCanvasQt::createHiddenQtCanvas() {
 
     auto* thread = QThread::currentThread();
     // The context has to be created on the main thread.
-    auto res = dispatchFront([thread, name]() {
+    auto res = dispatchFront([thread, name] {
         auto canvas = std::make_unique<HiddenCanvasQt>(name);
 
         // Need to create the OpenGL context here on the main thread

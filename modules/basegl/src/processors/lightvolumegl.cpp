@@ -163,21 +163,21 @@ LightVolumeGL::LightVolumeGL()
     addPort(inport_);
     addPort(outport_);
     addPort(lightSource_);
-    supportColoredLight_.onChange([this]() { supportColoredLightChanged(); });
+    supportColoredLight_.onChange([this] { supportColoredLightChanged(); });
     addProperty(supportColoredLight_);
     volumeSizeOption_.addOption("1", "Full of incoming volume", 1);
     volumeSizeOption_.addOption("1/2", "Half of incoming volume", 2);
     volumeSizeOption_.addOption("1/4", "Quarter of incoming volume", 4);
     volumeSizeOption_.setSelectedIndex(1);
     volumeSizeOption_.setCurrentStateAsDefault();
-    volumeSizeOption_.onChange([this]() { volumeSizeOptionChanged(); });
+    volumeSizeOption_.onChange([this] { volumeSizeOptionChanged(); });
     addProperty(volumeSizeOption_);
     addProperty(transferFunction_);
-    floatPrecision_.onChange([this]() { floatPrecisionChanged(); });
+    floatPrecision_.onChange([this] { floatPrecisionChanged(); });
     addProperty(floatPrecision_);
 
-    propagationShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    mergeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    propagationShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    mergeShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     supportColoredLightChanged();
 }

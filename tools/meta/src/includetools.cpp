@@ -41,7 +41,7 @@ namespace inviwo::meta::util {
 bool replaceInclude(std::filesystem::path file, std::string_view oldInclude,
                     std::string_view newInclude) {
 
-    const auto data = [&file]() {
+    const auto data = [&file] {
         std::ifstream ifs{file};
         if (!ifs) throw util::makeError("Unable to open module file '{}'", file.generic_string());
         return std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());

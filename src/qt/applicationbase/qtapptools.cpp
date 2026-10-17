@@ -79,12 +79,12 @@ public:
 
         connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
                 [this](const QString& fileName) {
-                    QTimer::singleShot(200, this, [this, fileName]() { fileChanged(fileName); });
+                    QTimer::singleShot(200, this, [this, fileName] { fileChanged(fileName); });
                 });
 
         connect(fileWatcher_, &QFileSystemWatcher::directoryChanged, this,
                 [this](const QString& fileName) {
-                    QTimer::singleShot(200, this, [this, fileName]() { fileChanged(fileName); });
+                    QTimer::singleShot(200, this, [this, fileName] { fileChanged(fileName); });
                 });
     }
 
@@ -146,7 +146,7 @@ void FileSystemObserverQt::fileChanged(const QString& fileName) {
         if (fileObservers_[i]->isObserved(fileNameStd)) {
             auto* observer = fileObservers_[i];
             lock.unlock();
-            const util::OnScopeExit relock{[&]() { lock.lock(); }};
+            const util::OnScopeExit relock{[&] { lock.lock(); }};
             try {
                 observer->fileChanged(fileNameStd);
             } catch (const Exception& e) {
@@ -169,7 +169,7 @@ void showFatalMessage(const QString& msg) {
         // to show, since we will probably exit after we leave this function.
         QMetaObject::invokeMethod(
             QApplication::instance(),
-            [msg]() { QMessageBox::critical(nullptr, "Assertion Failed", msg); },
+            [msg] { QMessageBox::critical(nullptr, "Assertion Failed", msg); },
             Qt::BlockingQueuedConnection);
     }
 }
@@ -268,12 +268,12 @@ void utilqt::configurePalette() {
 void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
     auto qapp = QApplication::instance();
     const auto helper = std::make_shared<detail::QtProcessFrontHelper>();
-    app.setPostEnqueueFront([helper]() { emit helper->postEnqueue(); });
+    app.setPostEnqueueFront([helper] { emit helper->postEnqueue(); });
     QObject::connect(
         helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp,
-        [&app]() { app.processFront(); }, Qt::QueuedConnection);
+        [&app] { app.processFront(); }, Qt::QueuedConnection);
 
-    app.setProcessEventsCallback([]() { QCoreApplication::processEvents(); });
+    app.setProcessEventsCallback([] { QCoreApplication::processEvents(); });
 }
 
 void utilqt::configureAssertionHandler(InviwoApplication& app) {

@@ -450,7 +450,7 @@ MinMaxProperty<T>& MinMaxProperty<T>::set(const T& start, const T& end, const T&
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const value_type& newRange) {
 
-    const auto normalizedValue = [&]() {
+    const auto normalizedValue = [&] {
         const auto r = static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x);
         if (r == 0.0) return dvec2{0.0, 1.0};
         return (dvec2{value_.value} - static_cast<double>(range_.value.x)) / r;

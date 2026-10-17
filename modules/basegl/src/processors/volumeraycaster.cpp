@@ -103,7 +103,7 @@ VolumeRaycaster::VolumeRaycaster()
     , toggleShading_(
           "toggleShading", "Toggle Shading", "Shortcut for enabling/disabling shading"_help,
           [this](Event* e) { toggleShading(e); }, IvwKey::L) {
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -115,7 +115,7 @@ VolumeRaycaster::VolumeRaycaster()
 
     channel_.setSerializationMode(PropertySerializationMode::All);
 
-    const auto updateTFHistSel = [this]() {
+    const auto updateTFHistSel = [this] {
         HistogramSelection selection{};
         selection[channel_] = true;
         isotfComposite_.setHistogramSelection(selection);
@@ -123,11 +123,11 @@ VolumeRaycaster::VolumeRaycaster()
     updateTFHistSel();
     channel_.onChange(updateTFHistSel);
 
-    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onConnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
 
     // change the currently selected channel when a pre-computed gradient is selected
-    raycasting_.gradientComputation_.onChange([this]() {
+    raycasting_.gradientComputation_.onChange([this] {
         if (channel_.size() == 4) {
             if (raycasting_.gradientComputation_.get() ==
                 RaycastingProperty::GradientComputation::PrecomputedXYZ) {
@@ -170,7 +170,7 @@ void VolumeRaycaster::process() {
 
     if (volumePort_.isChanged()) {
         dispatchOne(
-            [volume = volumePort_.getData()]() {
+            [volume = volumePort_.getData()] {
                 volume->getRep<kind::GL>();
                 glFinish();
                 return volume;

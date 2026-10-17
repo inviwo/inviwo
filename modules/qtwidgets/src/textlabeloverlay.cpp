@@ -48,7 +48,7 @@ TextLabelOverlay::TextLabelOverlay(QWidget* parent)
     setWordWrap(true);
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
-    connect(timer_.get(), &QTimer::timeout, this, [&]() { clear(); });
+    connect(timer_.get(), &QTimer::timeout, this, [&] { clear(); });
 }
 
 TextLabelOverlay::~TextLabelOverlay() = default;

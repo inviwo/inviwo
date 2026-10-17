@@ -50,7 +50,7 @@ namespace {
 std::unique_ptr<Mesh> generateGridMesh(const std::vector<double>& horizontalPositions,
                                        const std::vector<double>& verticalPositions,
                                        PlotAxis plotAxis, dvec2 majorRange, dvec2 minorRange) {
-    const size_t numLines = [&]() {
+    const size_t numLines = [&] {
         switch (plotAxis) {
             case PlotAxis::Major: return horizontalPositions.size();
             case PlotAxis::Minor: return verticalPositions.size();

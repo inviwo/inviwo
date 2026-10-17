@@ -71,7 +71,7 @@ ImageToLayer::ImageToLayer()
 
 void ImageToLayer::process() {
     auto data = inport_.getData();
-    auto layer = [&]() {
+    auto layer = [&] {
         switch (outputLayer_.get()) {
             case static_cast<int>(LayerEnum::Depth):   return data->getDepthLayer()->clone();
             case static_cast<int>(LayerEnum::Picking): return data->getPickingLayer()->clone();

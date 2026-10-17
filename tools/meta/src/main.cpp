@@ -96,7 +96,7 @@ int main(int argc, char* const* argv) {
     cmd.add(updateModule);
     cmd.add(updatePathFilter);
 
-    auto getInviwoPath = [&]() -> std::filesystem::path {
+    auto getInviwoPath = [&] -> std::filesystem::path {
         if (inviwoDir.isSet()) {
             return std::filesystem::canonical(std::filesystem::path{inviwoDir.getValue()});
         }
@@ -108,7 +108,7 @@ int main(int argc, char* const* argv) {
         }
     };
 
-    const auto getTemplatesPath = [&]() -> std::filesystem::path {
+    const auto getTemplatesPath = [&] -> std::filesystem::path {
         if (templateDir.isSet()) {
             return std::filesystem::canonical(std::filesystem::path{templateDir.getValue()});
         }

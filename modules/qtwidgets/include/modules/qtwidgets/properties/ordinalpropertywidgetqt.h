@@ -154,7 +154,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     gridLayout->setSpacing(0);
 
     const auto factory = [this](size_t row, size_t col) {
-        auto editor = [&]() {
+        auto editor = [&] {
             if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SpinBox) {
                 return new OrdinalSpinBoxWidget<BT>();
             } else if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SphericalSpinBox) {
@@ -175,7 +175,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
         editors_.push_back(editor);
 
         connect(editor, &std::remove_reference_t<decltype(*editor)>::valueChanged, this,
-                [this, index = col + row * util::extent<T, 0>::value]() {
+                [this, index = col + row * util::extent<T, 0>::value] {
                     this->setPropertyValue(index);
                 });
 
@@ -306,7 +306,7 @@ void OrdinalLikePropertyWidgetQt<Prop, Sem>::setPropertyValue(size_t editorId) {
     }
 
     ordinal_->setInitiatingWidget(this);
-    util::exceptionGuard([&]() { ordinal_->set(val); });
+    util::exceptionGuard([&] { ordinal_->set(val); });
     ordinal_->clearInitiatingWidget();
 }
 
@@ -388,7 +388,7 @@ OrdinalOptPropertyWidgetQt<T, Sem>::OrdinalOptPropertyWidgetQt(OrdinalOptPropert
             editors_.push_back(editor);
 
             connect(editor, &BaseNumberWidget::valueChanged, this,
-                    [this, index = col + row * util::extent<T, 0>::value]() {
+                    [this, index = col + row * util::extent<T, 0>::value] {
                         this->setPropertyValue(index);
                     });
 
@@ -461,7 +461,7 @@ void OrdinalOptPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
     ordinal_->setInitiatingWidget(this);
     if (!editors_[editorId]->getValueOptional().has_value()) {
         // clearing any component empties the whole property
-        util::exceptionGuard([&]() { ordinal_->clear(); });
+        util::exceptionGuard([&] { ordinal_->clear(); });
     } else {
         // engage using the current fallback for components that are still empty
         T val = ordinal_->value();
@@ -470,7 +470,7 @@ void OrdinalOptPropertyWidgetQt<T, Sem>::setPropertyValue(size_t editorId) {
                 util::glmcomp(val, i) = *v;
             }
         }
-        util::exceptionGuard([&]() { ordinal_->set(val); });
+        util::exceptionGuard([&] { ordinal_->set(val); });
     }
     // in case of vectors and matrices, update other components of the editor widget
     if (util::extent_v<T, 0> > 0) {

@@ -122,7 +122,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
 
     lightScreenPos_.setVisible(false);
     lightScreenPosEnabled_.onChange(
-        [this]() { lightScreenPos_.setVisible(lightScreenPosEnabled_.get()); });
+        [this] { lightScreenPos_.setVisible(lightScreenPosEnabled_.get()); });
 
     camera_.setVisible(false);
 
@@ -130,7 +130,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     lightDiffuse_.setCurrentStateAsDefault();
 
     lightScreenPos_.onChange(
-        [this]() { lightInteractionHandler_.setLightPosFromScreenCoords(lightScreenPos_.get()); });
+        [this] { lightInteractionHandler_.setLightPosFromScreenCoords(lightScreenPos_.get()); });
 
     interactionEvents_.addOption("off", "Handle None", 0);
     interactionEvents_.addOption("on", "Handle All", 1);
@@ -139,7 +139,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     interactionEvents_.setSelectedValue(0);
     interactionEvents_.setCurrentStateAsDefault();
 
-    interactionEvents_.onChange([this]() {
+    interactionEvents_.onChange([this] {
         if (interactionEvents_.get() > 0) {
             addInteractionHandler(&lightInteractionHandler_);
         } else {
@@ -184,7 +184,7 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , trackball_(this)
     , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
-    camera_->onChange([this]() { onCameraChanged(); });
+    camera_->onChange([this] { onCameraChanged(); });
 }
 
 PointLightInteractionHandler::~PointLightInteractionHandler() = default;

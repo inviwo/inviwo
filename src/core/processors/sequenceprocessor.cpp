@@ -97,7 +97,7 @@ void SequenceProcessor::process() {
                 source->invalidate(InvalidationLevel::InvalidOutput);
             }
         });
-        const util::OnScopeExit lock{[&]() { net.net->lock(); }};
+        const util::OnScopeExit lock{[&] { net.net->lock(); }};
         net.net->unlock();  // This will trigger an evaluation of the sub network.
     };
 
@@ -432,12 +432,12 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
     : comp{composite}
     , subProperty{aSubProperty}
     , superProperty{subProperty->clone()}
-    , callbacks{subProperty->onChangeScoped([this]() {
+    , callbacks{subProperty->onChangeScoped([this] {
                     if (onChangeActive) return;
                     const util::KeepTrueWhileInScope active{&onChangeActive};
                     superProperty->set(subProperty);
                 }),
-                superProperty->onChangeScoped([this]() {
+                superProperty->onChangeScoped([this] {
                     if (onChangeActive) return;
                     const util::KeepTrueWhileInScope active{&onChangeActive};
                     subProperty->set(superProperty);
@@ -448,7 +448,7 @@ SequenceProcessor::PropertyHandler::PropertyHandler(SequenceProcessor& composite
 
     subProperty->setMetaData<BoolMetaData>(meta::exposed, true);
 
-    const auto index = [&]() {
+    const auto index = [&] {
         if (auto* meta = subProperty->getMetaData<IntMetaData>(meta::index)) {
             return meta->get();
         } else {

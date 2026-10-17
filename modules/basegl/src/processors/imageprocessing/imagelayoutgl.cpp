@@ -145,10 +145,10 @@ ImageLayoutGL::ImageLayoutGL()
     , currentLayout_(Layout::CrossSplit)
     , currentDim_(0u, 0u) {
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(multiInport_);
-    multiInport_.setIsReadyUpdater([this]() {
+    multiInport_.setIsReadyUpdater([this] {
         return multiInport_.isConnected() &&
                std::ranges::any_of(
                    std::views::zip(multiInport_.getConnectedOutports(), viewManager_.getViews()),
@@ -159,49 +159,49 @@ ImageLayoutGL::ImageLayoutGL()
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
-    multiInport_.onConnect([this]() { updateViewports(currentDim_, true); });
-    multiInport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
+    multiInport_.onConnect([this] { updateViewports(currentDim_, true); });
+    multiInport_.onDisconnect([this] { updateViewports(currentDim_, true); });
 
     addPort(outport_);
 
     addProperty(layout_);
 
     horizontalSplitter_.setVisible(false);
-    horizontalSplitter_.onChange([this]() { onStatusChange(); });
+    horizontalSplitter_.onChange([this] { onStatusChange(); });
     addProperty(horizontalSplitter_);
 
     verticalSplitter_.setVisible(false);
-    verticalSplitter_.onChange([this]() { onStatusChange(); });
+    verticalSplitter_.onChange([this] { onStatusChange(); });
     addProperty(verticalSplitter_);
 
     vertical3Left1RightSplitter_.setVisible(false);
-    vertical3Left1RightSplitter_.onChange([this]() { onStatusChange(); });
+    vertical3Left1RightSplitter_.onChange([this] { onStatusChange(); });
     addProperty(vertical3Left1RightSplitter_);
 
     vertical3Right1LeftSplitter_.setVisible(false);
-    vertical3Right1LeftSplitter_.onChange([this]() { onStatusChange(); });
+    vertical3Right1LeftSplitter_.onChange([this] { onStatusChange(); });
     addProperty(vertical3Right1LeftSplitter_);
 
-    leftMinMax_.onChange([this]() {
+    leftMinMax_.onChange([this] {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    rightMinMax_.onChange([this]() {
+    rightMinMax_.onChange([this] {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    topMinMax_.onChange([this]() {
+    topMinMax_.onChange([this] {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    bottomMinMax_.onChange([this]() {
+    bottomMinMax_.onChange([this] {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
     bounds_.addProperties(leftMinMax_, rightMinMax_, topMinMax_, bottomMinMax_);
     addProperties(bounds_);
 
-    layout_.onChange([this]() { onStatusChange(); });
+    layout_.onChange([this] { onStatusChange(); });
 
     onStatusChange(false);
 }

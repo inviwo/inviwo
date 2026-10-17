@@ -183,9 +183,8 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     centralWidget->setLayout(vLayout);
     setWidget(centralWidget);
 
-    onModulesDidRegister_ =
-        app_->getModuleManager().onModulesDidRegister([this]() { buildList(); });
-    onModulesWillUnregister_ = app_->getModuleManager().onModulesWillUnregister([this]() {
+    onModulesDidRegister_ = app_->getModuleManager().onModulesDidRegister([this] { buildList(); });
+    onModulesWillUnregister_ = app_->getModuleManager().onModulesWillUnregister([this] {
         model_->setItems({});
         app_->getProcessorFactory()->removeObserver(this);
     });
@@ -297,12 +296,12 @@ void ProcessorListWidget::buildList() {
                 .moduleId = inviwoModule.getIdentifier(),
                 .metaInfo = processor->getMetaInformation(),
                 .lastUsed =
-                    [&]() {
+                    [&] {
                         const auto it = useTimes_.find(processor->getClassIdentifier());
                         return it == useTimes_.end() ? 0 : it->second;
                     }(),
                 .useCount =
-                    [&]() {
+                    [&] {
                         const auto it = useCounts_.find(processor->getClassIdentifier());
                         return it == useCounts_.end() ? 0 : it->second;
                     }()});
@@ -324,12 +323,12 @@ void ProcessorListWidget::onRegister(ProcessorFactoryObject* pfo) {
                          .moduleId = std::string{moduleId},
                          .metaInfo = pfo->getMetaInformation(),
                          .lastUsed =
-                             [&]() {
+                             [&] {
                                  const auto it = useTimes_.find(pfo->getClassIdentifier());
                                  return it == useTimes_.end() ? 0 : it->second;
                              }(),
                          .useCount =
-                             [&]() {
+                             [&] {
                                  const auto it = useCounts_.find(pfo->getClassIdentifier());
                                  return it == useCounts_.end() ? 0 : it->second;
                              }()});

@@ -92,7 +92,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
                    std::move(semantics)) {
 
-    const auto onHeaderProp = [enable = supportsFilterOnHeader]() {
+    const auto onHeaderProp = [enable = supportsFilterOnHeader] {
         auto p = std::make_unique<BoolProperty>("filterOnHeader", "Filter on Header", enable);
         p->setVisible(enable);
         return p;

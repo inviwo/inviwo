@@ -84,7 +84,7 @@ VolumeShader::VolumeShader()
 
     setFragmentShaderResource(fragmentResource_);
 
-    fragmentSrc_.onChange([&]() { fragmentResource_->setSource(fragmentSrc_.get()); });
+    fragmentSrc_.onChange([&] { fragmentResource_->setSource(fragmentSrc_.get()); });
 }
 
 VolumeShader::~VolumeShader() = default;

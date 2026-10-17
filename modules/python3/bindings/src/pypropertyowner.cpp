@@ -68,7 +68,7 @@ void exposePropertyOwner(pybind11::module& m) {
         .def(
             "__setattr__",
             [](py::object po, py::object key, const py::object& value) {
-                const auto isProperty = [&]() {
+                const auto isProperty = [&] {
                     const auto pyProperty =
                         py::module_::import("inviwopy").attr("properties").attr("Property");
                     return py::isinstance(po.attr(key), pyProperty);

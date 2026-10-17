@@ -157,9 +157,9 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
                                         return std::optional{dvec2{std::min(custom.x, colRange.x),
                                                                    std::max(custom.y, colRange.y)}};
                                     })
-                                    .or_else([&colRange]() { return std::optional{colRange}; });
+                                    .or_else([&colRange] { return std::optional{colRange}; });
                             })
-                            .or_else([&]() { return customRange; });
+                            .or_else([&] { return customRange; });
 
                     col->getRAMRepresentation()
                         ->template dispatch<void, dispatching::filter::Scalars>(

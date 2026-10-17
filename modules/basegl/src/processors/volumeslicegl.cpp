@@ -268,17 +268,17 @@ VolumeSliceGL::VolumeSliceGL()
     tfGroup_.addProperties(channel_, transferFunction_, tfAlphaOffset_);
     sampleQuery_.addProperties(normalizedSample_, volumeSample_);
 
-    sliceAlongAxis_.onChange([this]() { modeChange(); });
+    sliceAlongAxis_.onChange([this] { modeChange(); });
 
     // Invalidate selected voxel cursor when current slice changes
-    sliceX_.onChange([this]() { sliceChange(); });
-    sliceY_.onChange([this]() { sliceChange(); });
-    sliceZ_.onChange([this]() { sliceChange(); });
+    sliceX_.onChange([this] { sliceChange(); });
+    sliceY_.onChange([this] { sliceChange(); });
+    sliceZ_.onChange([this] { sliceChange(); });
 
-    planePosition_.onChange([this]() { positionChange(); });
-    planeNormal_.onChange([this]() { planeSettingsChanged(); });
+    planePosition_.onChange([this] { positionChange(); });
+    planeNormal_.onChange([this] { planeSettingsChanged(); });
 
-    volumeWrapping_.onChange([&]() {
+    volumeWrapping_.onChange([&] {
         if (volumeWrapping_.getSelectedIdentifier() == "color") {
             shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
             fillColor_.setVisible(true);
@@ -291,19 +291,19 @@ VolumeSliceGL::VolumeSliceGL()
 
     imageRotation_.setVisible(false);
 
-    rotationAroundAxis_.onChange([this]() { rotationModeChange(); });
-    imageRotation_.onChange([this]() { planeSettingsChanged(); });
-    imageScale_.onChange([this]() { planeSettingsChanged(); });
-    flipHorizontal_.onChange([this]() { planeSettingsChanged(); });
-    flipVertical_.onChange([this]() { planeSettingsChanged(); });
+    rotationAroundAxis_.onChange([this] { rotationModeChange(); });
+    imageRotation_.onChange([this] { planeSettingsChanged(); });
+    imageScale_.onChange([this] { planeSettingsChanged(); });
+    flipHorizontal_.onChange([this] { planeSettingsChanged(); });
+    flipVertical_.onChange([this] { planeSettingsChanged(); });
 
-    posPicking_.onChange([this]() { modeChange(); });
-    indicatorColor_.onChange([this]() { invalidateMesh(); });
-    indicatorSize_.onChange([this]() { invalidateMesh(); });
+    posPicking_.onChange([this] { modeChange(); });
+    indicatorColor_.onChange([this] { invalidateMesh(); });
+    indicatorSize_.onChange([this] { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 
-    sampleQuery_.onChange([this]() {
+    sampleQuery_.onChange([this] {
         if (!sampleQuery_.isChecked()) {
             normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
             volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
@@ -318,7 +318,7 @@ VolumeSliceGL::VolumeSliceGL()
     volumeSample_.setCurrentStateAsDefault();
 
     worldPosition_.setReadOnly(true);
-    worldPosition_.onChange([this]() { updateFromWorldPosition(); });
+    worldPosition_.onChange([this] { updateFromWorldPosition(); });
 
     mouseShiftSlice_.setVisible(false);
     mouseShiftSlice_.setCurrentStateAsDefault();
@@ -328,8 +328,8 @@ VolumeSliceGL::VolumeSliceGL()
     gestureShiftSlice_.setCurrentStateAsDefault();
 
     shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    indicatorShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
+    indicatorShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 VolumeSliceGL::~VolumeSliceGL() = default;

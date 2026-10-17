@@ -188,7 +188,7 @@ struct PythonPaths {
 std::pair<PythonPaths, PythonPaths> getPythonPaths() {
 
     if constexpr (build::platform == build::Platform::Windows) {
-        const auto install = []() {
+        const auto install = [] {
             static constexpr std::array templates = {
                 "{root}/tools/python{major}"sv, "{root}/tools/python{major}/DLLs"sv,
                 "{root}/tools/python{major}/Lib"sv,
@@ -204,7 +204,7 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
             return PythonPaths{.paths = paths, .prefix = paths[0]};
         }();
 
-        const auto build = []() {
+        const auto build = [] {
             static constexpr std::array templates = {
                 "{vcpkg}/tools/python{major}"sv, "{vcpkg}/tools/python{major}/DLLs"sv,
                 "{vcpkg}/tools/python{major}/Lib"sv,
@@ -225,7 +225,7 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
         return {install, build};
 
     } else if constexpr (build::platform == build::Platform::MacOS) {
-        const auto install = []() {
+        const auto install = [] {
             static constexpr std::array templates = {
                 "{root}/lib/python{major}.{minor}"sv,
                 "{root}/lib/python{major}.{minor}/lib-dynload"sv,
@@ -241,7 +241,7 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
             return PythonPaths{.paths = paths, .prefix = paths[0]};
         }();
 
-        const auto build = []() {
+        const auto build = [] {
             static constexpr std::array templates = {
                 "{vcpkg}/lib/python{major}.{minor}"sv,
                 "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
@@ -270,7 +270,7 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
         return {install, build};
 
     } else {  // Linux
-        const auto install = []() {
+        const auto install = [] {
             static constexpr std::array templates = {
                 "{root}/lib/python{major}.{minor}"sv,
                 "{root}/lib/python{major}.{minor}/lib-dynload"sv,
@@ -287,7 +287,7 @@ std::pair<PythonPaths, PythonPaths> getPythonPaths() {
             return PythonPaths{.paths = paths, .prefix = paths[0]};
         }();
 
-        const auto build = []() {
+        const auto build = [] {
             static constexpr std::array templates = {
                 "{vcpkg}/lib/python{major}.{minor}"sv,
                 "{vcpkg}/lib/python{major}.{minor}/lib-dynload"sv,
@@ -316,7 +316,7 @@ void initializePythonInterpreter() {
 
     const auto [installPaths, buildPaths] = getPythonPaths();
 
-    const auto pythonPaths = [&]() -> std::optional<PythonPaths> {
+    const auto pythonPaths = [&] -> std::optional<PythonPaths> {
         // Try finding a python installation in the install tree
         if (std::ranges::all_of(installPaths.paths, [&](std::string_view path) {
                 return std::filesystem::is_directory(path);
@@ -378,7 +378,7 @@ void initializePythonInterpreter() {
         // https://stackoverflow.com/questions/77881387/
         // how-to-embed-python-3-8-in-a-c-application-while-using-a-virtual-environment
         // https://docs.python.org/3/library/site.html
-        const auto venvExecutable = [&]() {
+        const auto venvExecutable = [&] {
             if constexpr (build::platform == build::Platform::Windows) {
                 return fmt::format("{}/Scripts/python.exe", venvPath);
             } else {

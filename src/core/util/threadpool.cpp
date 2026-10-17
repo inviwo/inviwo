@@ -87,10 +87,10 @@ ThreadPool::~ThreadPool() {
 ThreadPool::Worker::~Worker() { thread.join(); }
 
 ThreadPool::Worker::Worker(ThreadPool& pool, size_t index)
-    : state{State::Free}, thread{[this, &pool, index]() {
+    : state{State::Free}, thread{[this, &pool, index] {
         util::setThreadDescription(fmt::format("Inviwo BG {}", index));
         pool.onThreadStart_();
-        const util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
+        const util::OnScopeExit cleanup{[&pool] { pool.onThreadStop_(); }};
 
         for (;;) {
             std::function<void()> task;

@@ -54,7 +54,7 @@ std::vector<ButtonGroupProperty::Button> buttons(AxisProperty& axisProperty) {
                            int axis) -> ButtonGroupProperty::Button {
         return {.icon = fmt::format(":svgicons/{}", icon),
                 .tooltip = std::string{text},
-                .action = [ap = &axisProperty, p, axis]() {
+                .action = [ap = &axisProperty, p, axis] {
                     ap->labelSettings_.font_.anchorPos_.set(p, axis);
                     ap->captionSettings_.font_.anchorPos_.set(p, axis);
                 }};
@@ -69,7 +69,7 @@ std::vector<ButtonGroupProperty::Button> buttons(AxisProperty& axisProperty) {
             {.name = "A+",
              .tooltip = "Increase font size (Ctrl+Plus)",
              .action =
-                 [ap = &axisProperty]() {
+                 [ap = &axisProperty] {
                      ap->captionSettings_.font_.fontSize_.set(
                          std::min(1000, ap->captionSettings_.font_.fontSize_.get() + 1));
                      ap->labelSettings_.font_.fontSize_.set(
@@ -77,7 +77,7 @@ std::vector<ButtonGroupProperty::Button> buttons(AxisProperty& axisProperty) {
                  }},
             {.name = "A-",
              .tooltip = "Decrease font size (Ctrl+Minus)",
-             .action = [ap = &axisProperty]() {
+             .action = [ap = &axisProperty] {
                  ap->captionSettings_.font_.fontSize_.set(
                      std::max(0, ap->captionSettings_.font_.fontSize_.get() - 1));
                  ap->labelSettings_.font_.fontSize_.set(

@@ -40,7 +40,7 @@ namespace inviwo {
 ProcessorFactory::ProcessorFactory(InviwoApplication* app) : app_{app} {}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
-    const auto moduleId = [&]() {
+    const auto moduleId = [&] {
         const auto optId =
             util::getProcessorModuleIdentifier(processor->getClassIdentifier(), *app_);
         return optId.value_or(std::string_view("Unknown"));

@@ -110,7 +110,7 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
 void PropertyListFrame::add(Processor* processor) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         listLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -138,7 +138,7 @@ void PropertyListFrame::remove(Processor* processor) {
 void PropertyListFrame::add(Property* property) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
-    const util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&] {
         listLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });

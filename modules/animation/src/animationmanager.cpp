@@ -73,7 +73,7 @@ std::vector<Animation> AnimationManager::import(Deserializer& d) {
     std::vector<Animation> animations;
     // Must pass AnimationManager to Animation constructor
     d.deserialize("Animations", animations, "Animation",
-                  deserializer::IndexFunctions{.makeNew = [&]() { return Animation(this); }});
+                  deserializer::IndexFunctions{.makeNew = [&] { return Animation(this); }});
 
     return animations;
 }

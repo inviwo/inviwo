@@ -96,17 +96,17 @@ BasisProperty::BasisProperty(std::string_view identifier, std::string_view displ
 
     size_.setVisible(false);
 
-    mode_.onChange([this]() { onModeChange(); });
-    reference_.onChange([this]() { load(); });
-    overRideDefaults_.onChange([this]() { onOverrideChange(); });
-    autoCenter_.onChange([this]() { onAutoCenterChange(); });
-    resetOverride_.onChange([this]() { onResetOverride(); });
+    mode_.onChange([this] { onModeChange(); });
+    reference_.onChange([this] { load(); });
+    overRideDefaults_.onChange([this] { onOverrideChange(); });
+    autoCenter_.onChange([this] { onAutoCenterChange(); });
+    resetOverride_.onChange([this] { onResetOverride(); });
 
     util::for_each_argument(
         [this](auto& elem) {
             elem.setReadOnly(true);
             elem.setSerializationMode(PropertySerializationMode::None);
-            elem.onChange([this]() { this->save(); });
+            elem.onChange([this] { this->save(); });
         },
         size_, a_, b_, c_, offset_);
 }
@@ -129,13 +129,13 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
 
     util::for_each_in_tuple([this](auto& e) { addProperty(e); }, props());
 
-    mode_.onChange([this]() { onModeChange(); });
-    reference_.onChange([this]() { load(); });
-    overRideDefaults_.onChange([this]() { onOverrideChange(); });
-    autoCenter_.onChange([this]() { onAutoCenterChange(); });
-    resetOverride_.onChange([this]() { onResetOverride(); });
-    util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); },
-                            size_, a_, b_, c_, offset_);
+    mode_.onChange([this] { onModeChange(); });
+    reference_.onChange([this] { load(); });
+    overRideDefaults_.onChange([this] { onOverrideChange(); });
+    autoCenter_.onChange([this] { onAutoCenterChange(); });
+    resetOverride_.onChange([this] { onResetOverride(); });
+    util::for_each_argument([this](auto& elem) { elem.onChange([this] { this->save(); }); }, size_,
+                            a_, b_, c_, offset_);
 }
 
 BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }

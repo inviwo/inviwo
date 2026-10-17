@@ -179,7 +179,7 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
                     const float w = (perPointWeight ? input.weights[p] : 1.0f) * weight;
                     if (s <= 0.0f || w <= 0.0f) continue;
 
-                    const float support = [&]() {
+                    const float support = [&] {
                         if constexpr (K == SplatKernel::Gaussian) {
                             return static_cast<float>(gaussian_support(s, error));
                         } else {
@@ -342,7 +342,7 @@ std::shared_ptr<Volume> splat(const SplatInput& input, const SplatSettings& sett
     if (util::getPoolSize() > 0) {
         std::vector<std::future<vec2>> futures;
         for (const auto& job : jobs) {
-            futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, {}); }));
+            futures.emplace_back(util::dispatchPool([job] { return job(nullptr, {}); }));
         }
         return collect(futures | std::views::transform([](auto& f) { return f.get(); }) |
                        std::ranges::to<std::vector>());

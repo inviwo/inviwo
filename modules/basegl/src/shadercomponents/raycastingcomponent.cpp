@@ -75,7 +75,7 @@ void RaycastingComponent::initializeResources(Shader& shader) {
 
     {  // classification
         const std::string key = "APPLY_CLASSIFICATION(transferFunction, voxel, channel)";
-        const std::string value = [&]() {
+        const std::string value = [&] {
             switch (raycasting_.classification_.get()) {
                 case RaycastingProperty::Classification::None: return "vec4(voxel[channel])";
                 case RaycastingProperty::Classification::TF:
@@ -265,7 +265,7 @@ void MultiRaycastingComponent::initializeResources(Shader& shader) {
 
     {  // classification
         const std::string key = "APPLY_CLASSIFICATION(transferFunction, voxel, channel)";
-        const std::string value = [&]() {
+        const std::string value = [&] {
             switch (raycasting_.classification_.get()) {
                 case RaycastingProperty::Classification::None: return "vec4(voxel[channel])";
                 case RaycastingProperty::Classification::TF:

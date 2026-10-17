@@ -83,7 +83,7 @@ public:
                     &DoubleValueDragSpinBox::valueChanged),
                 this, [this](double t) { keyframe_.setTime(Seconds(t)); });
         connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
-                [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
+                [this] { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
         layout->addWidget(timeSpinner_);
 
@@ -108,7 +108,7 @@ public:
                     &DoubleValueDragSpinBox::valueChanged),
                 this, [&ctrlKey](double t) { ctrlKey.setJumpTime(Seconds{t}); });
         connect(jumpToWidget_, &DoubleValueDragSpinBox::editingFinished, this,
-                [&]() { ctrlKey.setJumpTime(Seconds{jumpToWidget_->value()}); });
+                [&] { ctrlKey.setJumpTime(Seconds{jumpToWidget_->value()}); });
 
         layout->addWidget(actionWidget_);
         layout->addWidget(jumpToWidget_);

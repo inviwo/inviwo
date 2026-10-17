@@ -97,7 +97,7 @@ struct StaticString {
     constexpr StaticString(Ts&&... strs) {
         size_t offset = 0;
         (
-            [&]() {
+            [&] {
                 std::copy_n(std::begin(strs), detail::static_size<Ts>, str.data() + offset);
                 offset += detail::static_size<Ts>;
             }(),

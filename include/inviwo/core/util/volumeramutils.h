@@ -72,7 +72,7 @@ void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
         const size3_t start = size3_t(0, 0, job * dims.z / jobs);
         const size3_t stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
 
-        futures.push_back(util::dispatchPool([&callback, start, stop]() {
+        futures.push_back(util::dispatchPool([&callback, start, stop] {
             size3_t pos{0};
 
             for (pos.z = start.z; pos.z < stop.z; ++pos.z) {

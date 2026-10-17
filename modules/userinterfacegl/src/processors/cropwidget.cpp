@@ -219,7 +219,7 @@ CropWidget::CropWidget()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     static constexpr std::array<InteractionElement, 3> elem = {
         InteractionElement::LowerBound, InteractionElement::UpperBound, InteractionElement::Middle};

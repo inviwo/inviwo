@@ -75,7 +75,7 @@ void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
         const size2_t start = size2_t(0, job * dims.y / jobs);
         const size2_t stop = size2_t(dims.x, std::min(dims.y, (job + 1) * dims.y / jobs));
 
-        futures.push_back(dispatchPool([&callback, start, stop]() {
+        futures.push_back(dispatchPool([&callback, start, stop] {
             size2_t pos{0};
 
             for (pos.y = start.y; pos.y < stop.y; ++pos.y) {

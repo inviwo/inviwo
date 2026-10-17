@@ -310,7 +310,7 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
 
     auto buffer =
         dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars>(
-            format->getId(), [&]<typename T>() -> std::shared_ptr<BufferBase> {
+            format->getId(), [&]<typename T> -> std::shared_ptr<BufferBase> {
                 const auto repr = std::make_shared<BufferRAMPrecision<T>>(
                     static_cast<size_t>(config.selectedDimensions[0]));
                 try {

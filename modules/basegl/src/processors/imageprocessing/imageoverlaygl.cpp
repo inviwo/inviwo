@@ -109,16 +109,16 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
     , viewport_(0, 0, 1, 1)
     , isDeserializing_(false) {
 
-    const auto updateCallback = [&]() { updateViewport(); };
+    const auto updateCallback = [&] { updateViewport(); };
 
-    positioningMode_.onChange([&]() {
+    positioningMode_.onChange([&] {
         pos_.setVisible(positioningMode_.get() == Positioning::Relative);
         absolutePos_.setVisible(positioningMode_.get() == Positioning::Absolute);
         updateViewport();
     });
     pos_.onChange(updateCallback);
     absolutePos_.onChange(updateCallback);
-    sizeMode_.onChange([&]() {
+    sizeMode_.onChange([&] {
         size_.setVisible(sizeMode_.get() == Positioning::Relative);
         absoluteSize_.setVisible(sizeMode_.get() == Positioning::Absolute);
         updateViewport();
@@ -229,17 +229,17 @@ ImageOverlayGL::ImageOverlayGL()
     , shader_("img_identity.vert", "img_overlay.frag", Shader::Build::No)
     , viewManager_()
     , currentDim_(0u, 0u) {
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     overlayPort_.setOptional(true);
     addPort(inport_);
     addPort(overlayPort_);
 
-    overlayPort_.onConnect([this]() {
+    overlayPort_.onConnect([this] {
         viewManager_.push_back(overlayProperty_.getViewport());
         onStatusChange();
     });
 
-    overlayPort_.onDisconnect([this]() { viewManager_.clear(); });
+    overlayPort_.onDisconnect([this] { viewManager_.clear(); });
 
     addPort(outport_);
 
@@ -254,7 +254,7 @@ ImageOverlayGL::ImageOverlayGL()
     border_.addProperty(borderWidth_);
     addProperty(border_);
 
-    overlayProperty_.onChange([this]() { onStatusChange(); });
+    overlayProperty_.onChange([this] { onStatusChange(); });
 }
 
 ImageOverlayGL::~ImageOverlayGL() = default;

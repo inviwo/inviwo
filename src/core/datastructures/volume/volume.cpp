@@ -283,7 +283,7 @@ void Volume::setConfig(const VolumeConfig& config) {
 namespace {
 
 auto histCalc(const Volume& v) {
-    return [dataMap = v.dataMap, repr = v.getRepresentationShared<VolumeRAM>()]() {
+    return [dataMap = v.dataMap, repr = v.getRepresentationShared<VolumeRAM>()] {
         return repr->dispatch<std::vector<Histogram1D>>(
             [dataMap]<typename T>(const VolumeRAMPrecision<T>* rp) {
                 return util::calculateHistograms(rp->getView(), dataMap, 2048);

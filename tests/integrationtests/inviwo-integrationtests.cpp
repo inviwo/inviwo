@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 
         InviwoApplication inviwoApp(argc, argv, "Inviwo-IntegrationTests");
         inviwoApp.getSystemSettings().stackTraceInException_.set(true);
-        inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
+        inviwoApp.setPostEnqueueFront([] { glfwPostEmptyEvent(); });
 
         // Initialize all modules
         const auto progressCallback = [&](std::string_view s) { inviwo::log::info("{}", s); };

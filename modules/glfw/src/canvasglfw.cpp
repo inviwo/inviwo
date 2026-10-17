@@ -165,7 +165,7 @@ void CanvasGLFW::update() {
 void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
-    auto res = dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background"); });
+    auto res = dispatchFront([&] { return std::make_unique<CanvasGLFW>("Background"); });
     return res.get();
 }
 
@@ -269,7 +269,7 @@ CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
 }
 
 ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
-    const auto check_error = []() {
+    const auto check_error = [] {
         const char* description = nullptr;
         int code = glfwGetError(&description);
         if (description) {

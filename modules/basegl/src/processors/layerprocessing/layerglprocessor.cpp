@@ -51,7 +51,7 @@ LayerGLProcessor::LayerGLProcessor(Shader shader)
     , shader_{std::move(shader)} {
 
     addPorts(inport_, outport_);
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 LayerGLProcessor::LayerGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader)
@@ -75,7 +75,7 @@ void LayerGLProcessor::process() {
         config = newConfig;
     }
 
-    auto&& [fbo, layer] = [&]() -> decltype(auto) {
+    auto&& [fbo, layer] = [&] -> decltype(auto) {
         const auto unusedIt = std::ranges::find_if(
             cache_, [](const std::pair<FrameBufferObject, std::shared_ptr<Layer>>& item) {
                 return item.second.use_count() == 1;

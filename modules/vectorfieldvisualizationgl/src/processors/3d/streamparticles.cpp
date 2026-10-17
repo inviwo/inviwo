@@ -157,7 +157,7 @@ StreamParticles::StreamParticles()
                                "life is zero will get new position by selecting (randomly) "
                                "from the input seed vector"_help)}
     , shader_{{{ShaderType::Compute, std::string{"streamparticles.comp"}}}, Shader::Build::No}
-    , timer_{Timer::Milliseconds(17), [&]() { update(); }}
+    , timer_{Timer::Milliseconds(17), [&] { update(); }}
     , reseedtime_{0.0}
     , prevT_{0}
     , clock_{}
@@ -171,7 +171,7 @@ StreamParticles::StreamParticles()
     addProperties(seedingSpace_, advectionSpeed_, internalSteps_, particleSize_, minV_, maxV_, tf_,
                   reseedInterval_);
 
-    shader_.onReload([this]() {
+    shader_.onReload([this] {
         invalidate(InvalidationLevel::InvalidOutput);
         buffersDirty_ = true;
     });
@@ -181,7 +181,7 @@ StreamParticles::StreamParticles()
 
 void StreamParticles::initializeResources() {
     if (OpenGLCapabilities::getOpenGLVersion() < 430) {
-        isReady_.setUpdate([]() -> ProcessorStatus {
+        isReady_.setUpdate([] -> ProcessorStatus {
             static constexpr std::string_view error{
                 "The StreamParticles processor requires OpenGL 4.3"};
             return {ProcessorStatus::Error, error};

@@ -71,9 +71,9 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
             buttonWidget->setToolTip(utilqt::toQString(*button.tooltip));
         }
 
-        connect(buttonWidget, &QPushButton::released, this, [this, i]() {
+        connect(buttonWidget, &QPushButton::released, this, [this, i] {
             if (!property_->getReadOnly()) {
-                util::exceptionGuard([&]() { property_->pressButton(i); });
+                util::exceptionGuard([&] { property_->pressButton(i); });
             }
         });
         hLayout->addWidget(buttonWidget);

@@ -48,7 +48,7 @@ PythonWorkspaceScriptMenu::PythonWorkspaceScriptMenu(PythonWorkspaceScripts& scr
 
     const auto* newScript =
         menu_->addAction(QIcon(":/svgicons/newfile.svg"), "New &Workspace Script ...");
-    QObject::connect(newScript, &QAction::triggered, [this]() {
+    QObject::connect(newScript, &QAction::triggered, [this] {
         const auto keySuggestion = fmt::format("Script {}", scripts_.getKeys().size() + 1);
         if (auto key = getScriptName(keySuggestion)) {
             scripts_.addScript(*key, defaultSource);
@@ -88,7 +88,7 @@ void PythonWorkspaceScriptMenu::addScriptMenuItem(std::string_view key) {
     auto* openScript = menu_->addAction(qKey);
     menuItems_.emplace(key, openScript);
     QObject::connect(openScript, &QAction::triggered,
-                     [this, key = std::string{key}]() { openEditor(key); });
+                     [this, key = std::string{key}] { openEditor(key); });
 }
 PythonEditorWidget* PythonWorkspaceScriptMenu::newScriptEditor(const std::string& key) {
     auto editor = util::make_qptr<PythonEditorWidget>(

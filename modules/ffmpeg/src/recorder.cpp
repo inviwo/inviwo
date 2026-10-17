@@ -89,7 +89,7 @@ Recorder::Recorder(const std::filesystem::path& filename, OutputFormat format, M
         throw inviwo::Exception(SourceContext{}, "No video codec");
     }
 
-    worker = std::thread{[this]() {
+    worker = std::thread{[this] {
         util::setThreadDescription("Inviwo FFmpeg Thread");
         run();
     }};
@@ -189,7 +189,7 @@ void Recorder::run() {
 
         {
             std::unique_lock<std::mutex> lock(mutex_);
-            condition_.wait(lock, [&]() { return stop_ || !queue_.empty(); });
+            condition_.wait(lock, [&] { return stop_ || !queue_.empty(); });
         }
 
         int64_t frameCount = 0;
@@ -205,7 +205,7 @@ void Recorder::run() {
             while (!stop_) {
                 {
                     std::unique_lock<std::mutex> lock(mutex_);
-                    condition_.wait_until(lock, next, [&]() {
+                    condition_.wait_until(lock, next, [&] {
                         return stop_ || !queue_.empty() || clock::now() > next;
                     });
 
@@ -225,7 +225,7 @@ void Recorder::run() {
             while (!stop_) {
                 {
                     std::unique_lock<std::mutex> lock(mutex_);
-                    condition_.wait(lock, [&]() { return stop_ || !queue_.empty(); });
+                    condition_.wait(lock, [&] { return stop_ || !queue_.empty(); });
 
                     if (!queue_.empty()) {
                         if (frame) unused_.emplace_back(std::move(frame));

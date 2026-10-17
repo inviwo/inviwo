@@ -109,9 +109,9 @@ TemporalVolumeSource::TemporalVolumeSource(InviwoApplication* app)
     addPort(outport_);
     addProperties(folder_, filter_, reader_, timeMode_, cacheSize_, reload_);
 
-    isSink_.setUpdate([]() { return true; });
+    isSink_.setUpdate([] { return true; });
 
-    const auto markDirty = [this]() { dirty_ = true; };
+    const auto markDirty = [this] { dirty_ = true; };
     folder_.onChange(markDirty);
     filter_.onChange(markDirty);
     reader_.onChange(markDirty);

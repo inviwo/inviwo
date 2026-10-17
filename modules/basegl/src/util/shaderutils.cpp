@@ -40,7 +40,7 @@ void addShaderDefines(Shader& shader, const StipplingProperty& property) {
 }
 
 void addShaderDefines(Shader& shader, StipplingData::Mode mode) {
-    const auto value = [mode]() -> std::string_view {
+    const auto value = [mode] -> std::string_view {
         switch (mode) {
             using enum StipplingData::Mode;
             case ScreenSpace: return "1";

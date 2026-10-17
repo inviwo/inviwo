@@ -70,7 +70,7 @@ void updateReaderFromFileAndType(const FileProperty& filePath,
         // We look for matching FileExtensions for each type in order
         const auto& exts = extensions.getOptions();
 
-        const auto match = [&]<typename T>() {
+        const auto match = [&]<typename T> {
             return std::ranges::find_if(exts, [&](const OptionPropertyOption<FileExtension>& opt) {
                 return opt.value_.matches(filePath.get()) &&
                        rf.hasReaderForTypeAndExtension<T>(opt.value_);

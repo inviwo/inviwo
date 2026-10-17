@@ -341,7 +341,7 @@ void TFEditorView::drawGrid(QPainter* painter, const QRectF& updateRect,
         }
     }
 
-    static const QFont font = []() {
+    static const QFont font = [] {
         QFont f{QFontDatabase::systemFont(QFontDatabase::GeneralFont)};
         f.setWeight(QFont::Normal);
         f.setPointSize(12);
@@ -455,7 +455,7 @@ QPolygonF TFEditorView::HistogramState::createHistogramPolygon(const Histogram1D
                     << QPointF(static_cast<double>(i + 1) * stepSize, height);
         }
     } else {
-        const double scale = [&]() {
+        const double scale = [&] {
             switch (mode) {
                 case HistogramMode::All:  // show all
                     return histogram.histStats.percentiles[100];

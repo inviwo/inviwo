@@ -270,12 +270,12 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
         }
 
         connect(deleteAction, &QAction::triggered, this,
-                [&]() { removePropertyLink(linkGraphicsItem); });
-        connect(biDirectionAction, &QAction::triggered, this, [&]() {
+                [&] { removePropertyLink(linkGraphicsItem); });
+        connect(biDirectionAction, &QAction::triggered, this, [&] {
             makePropertyLinkBidirectional(linkGraphicsItem, biDirectionAction->isChecked());
         });
         connect(switchDirection, &QAction::triggered, this,
-                [&]() { switchPropertyLinkDirection(linkGraphicsItem); });
+                [&] { switchPropertyLinkDirection(linkGraphicsItem); });
 
         menu.exec(QCursor::pos());
         e->accept();

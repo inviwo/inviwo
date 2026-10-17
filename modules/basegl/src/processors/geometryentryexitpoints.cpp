@@ -81,7 +81,7 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addProperties(capNearClipping_, camera_, trackball_);
 
     onReloadCallback_ =
-        entryExitHelper_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        entryExitHelper_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void GeometryEntryExitPoints::process() {

@@ -43,7 +43,7 @@
 namespace inviwo {
 
 TimerThread::TimerThread()
-    : sort_(false), stop_(false), thread_{std::make_unique<std::thread>([this]() {
+    : sort_(false), stop_(false), thread_{std::make_unique<std::thread>([this] {
         util::setThreadDescription("Inviwo Timer Thread");
         TimerLoop();
     })} {}
@@ -144,7 +144,7 @@ void TimerThread::TimerLoop() {
                 if (!cb->finished_.valid() ||
                     cb->finished_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                         std::future_status::ready) {
-                    cb->finished_ = dispatchFront([ctrlblk = std::weak_ptr<ControlBlock>{cb}]() {
+                    cb->finished_ = dispatchFront([ctrlblk = std::weak_ptr<ControlBlock>{cb}] {
                         if (const auto cb2 = ctrlblk.lock()) {
                             cb2->callback_();
                         }

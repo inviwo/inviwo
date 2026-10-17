@@ -57,7 +57,7 @@ public:
         return dispatching::singleDispatch<std::unique_ptr<BufferRepresentation>,
                                            dispatching::filter::All>(
             buffer->getDataFormat()->getId(),
-            [&]<typename T>() -> std::unique_ptr<BufferRepresentation> {
+            [&]<typename T> -> std::unique_ptr<BufferRepresentation> {
                 switch (buffer->getBufferTarget()) {
                     case BufferTarget::Index:
                         return std::make_unique<BufferRAMPrecision<T, BufferTarget::Index>>(
@@ -80,7 +80,7 @@ public:
         return dispatching::singleDispatch<std::unique_ptr<LayerRepresentation>,
                                            dispatching::filter::All>(
             layer->getDataFormat()->getId(),
-            [&]<typename T>() -> std::unique_ptr<LayerRepresentation> {
+            [&]<typename T> -> std::unique_ptr<LayerRepresentation> {
                 return std::make_unique<LayerRAMPrecision<T>>(
                     layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask(),
                     layer->getInterpolation(), layer->getWrapping());
@@ -96,7 +96,7 @@ public:
         return dispatching::singleDispatch<std::unique_ptr<VolumeRepresentation>,
                                            dispatching::filter::All>(
             volume->getDataFormat()->getId(),
-            [&]<typename T>() -> std::unique_ptr<VolumeRepresentation> {
+            [&]<typename T> -> std::unique_ptr<VolumeRepresentation> {
                 return std::make_unique<VolumeRAMPrecision<T>>(
                     volume->getDimensions(), volume->getSwizzleMask(), volume->getInterpolation(),
                     volume->getWrapping());

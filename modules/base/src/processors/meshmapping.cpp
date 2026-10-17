@@ -129,7 +129,7 @@ MeshMapping::MeshMapping()
     addProperties(enabled_, tf_, buffer_, component_, useCustomDataRange_, customDataRange_,
                   dataRange_);
 
-    const auto getBuffer = [this]() -> const BufferBase* {
+    const auto getBuffer = [this] -> const BufferBase* {
         if (const auto mesh = meshInport_.getData()) {
             if (buffer_.getSelectedIndex() < mesh->getNumberOfBuffers()) {
                 if (auto buffer = mesh->getBuffer(buffer_.getSelectedIndex())) {
@@ -140,7 +140,7 @@ MeshMapping::MeshMapping()
         return nullptr;
     };
 
-    const auto updateDataRange = [this, getBuffer]() {
+    const auto updateDataRange = [this, getBuffer] {
         if (const auto buffer = getBuffer()) {
             // obtain range of selected component of chosen buffer
             auto range = util::bufferMinMax(buffer);
@@ -153,7 +153,7 @@ MeshMapping::MeshMapping()
     };
     component_.onChange(updateDataRange);
 
-    const auto updateComponents = [this, getBuffer]() {
+    const auto updateComponents = [this, getBuffer] {
         const std::array<OptionPropertyIntOption, 4> options = {{{"component1", "Component 1", 0},
                                                                  {"component2", "Component 2", 1},
                                                                  {"component3", "Component 3", 2},
@@ -166,12 +166,12 @@ MeshMapping::MeshMapping()
         component_.setCurrentStateAsDefault();
     };
 
-    buffer_.onChange([updateComponents, updateDataRange]() {
+    buffer_.onChange([updateComponents, updateDataRange] {
         updateComponents();
         updateDataRange();
     });
 
-    meshInport_.onChange([this, updateComponents, updateDataRange]() {
+    meshInport_.onChange([this, updateComponents, updateDataRange] {
         component_.setReadOnly(!meshInport_.hasData());
         if (meshInport_.hasData()) {
             const auto mesh = meshInport_.getData();

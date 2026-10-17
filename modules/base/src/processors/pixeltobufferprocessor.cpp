@@ -85,7 +85,7 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addProperty(fromPixel_);
     addProperty(channel_);
     addProperty(clearValues_);
-    clearValues_.onChange([this]() { clearOutput(); });
+    clearValues_.onChange([this] { clearOutput(); });
     addProperty(handleInteractionEvents_);
     pixelValues_.setData(values_);
 }

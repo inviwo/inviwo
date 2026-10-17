@@ -90,7 +90,7 @@ DrawPoints::DrawPoints()
     , pointColor_("pointColor", "Point Color",
                   util::ordinalColor(vec4(1.f)).set("Defines color of all points."_help))
     , clearButton_("clearButton", "Clear Drawing", "Clear all points."_help,
-                   [this]() { clearPoints(); })
+                   [this] { clearPoints(); })
     , mouseDraw_(
           "mouseDraw", "Draw Point", [this](Event* e) { eventDraw(e); }, MouseButton::Left,
           MouseStates(flags::any), KeyModifier::Control)
@@ -106,7 +106,7 @@ DrawPoints::DrawPoints()
 
     addProperties(pointSize_, pointColor_, clearButton_, mouseDraw_, keyEnableDraw_);
 
-    pointShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    pointShader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
     points_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 }
 

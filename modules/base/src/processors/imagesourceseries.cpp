@@ -88,8 +88,8 @@ ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     , imageFileName_("imageFileName", "Image File Name",
                      "Name of the selected file (read-only)"_help) {
 
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return !fileList_.empty(); });
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] { return !fileList_.empty(); });
 
     addPort(outport_);
     addProperty(imageFilePattern_);
@@ -100,11 +100,11 @@ ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     validExtensions_ = util::getDataReaderFactory(app)->getExtensionsForType<Layer>();
     imageFilePattern_.addNameFilters(validExtensions_);
 
-    imageFilePattern_.onChange([&]() {
+    imageFilePattern_.onChange([&] {
         onFindFiles();
         isReady_.update();
     });
-    findFilesButton_.onChange([&]() {
+    findFilesButton_.onChange([&] {
         onFindFiles();
         isReady_.update();
     });

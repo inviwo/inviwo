@@ -91,9 +91,9 @@ VolumeCreator::VolumeCreator()
     , format_{"format", "Format",
               OptionPropertyState<DataFormatId>{
                   .options =
-                      [&]() {
+                      [&] {
                           std::vector<OptionPropertyOption<DataFormatId>> formats;
-                          util::for_each_type<DefaultDataFormats>{}([&]<typename Format>() {
+                          util::for_each_type<DefaultDataFormats>{}([&]<typename Format> {
                               formats.emplace_back(Format::str(), Format::str(), Format::id());
                           });
                           return formats;
@@ -124,7 +124,7 @@ void VolumeCreator::process() {
                      &Property::isModified)) {
         loadedData_ =
             dispatching::singleDispatch<std::shared_ptr<Volume>, dispatching::filter::All>(
-                format_.get(), [&]<typename T>() {
+                format_.get(), [&]<typename T> {
                     using enum VolumeCreator::Type;
                     switch (type_.get()) {
                         case SingleVoxel:

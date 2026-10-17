@@ -58,7 +58,7 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     , lastNDC_{0.0}
     , pressNDC_{0.0, 0.0, -1.0}
     , evaluated_(true)
-    , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }}
+    , timer_{std::chrono::milliseconds{30LL}, [this] { animate(); }}
     , trackballMethod_("trackballMethod", "Trackball Method",
                        {{"tb_vt", "Virtual Trackball", 0},
                         {"tb_tav", "Two Axis Valuator Trackball", 1},
@@ -177,7 +177,7 @@ Trackball::Trackball(const Trackball& rhs)
     , lastNDC_{0.0}
     , pressNDC_{0.0, 0.0, -1.0}
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30LL}, [this]() { animate(); })
+    , timer_(std::chrono::milliseconds{30LL}, [this] { animate(); })
     , trackballMethod_(rhs.trackballMethod_)
     , sensitivity_(rhs.sensitivity_)
     , movementSpeed_(rhs.movementSpeed_)
@@ -1024,7 +1024,7 @@ void Trackball::recenterFocusPoint(Event* event) {
 void Trackball::animate() {
     if (this->evaluated_) {
         this->evaluated_ = false;
-        dispatchFront([this]() {
+        dispatchFront([this] {
             const glm::dquat identity(1.0, 0.0, 0.0, 0.0);
             const auto t = 0.1;
             const auto dot = glm::dot(lastRot_, identity);

@@ -70,7 +70,7 @@ ISORaycaster::ISORaycaster()
     , raycasting_("raycasting", "Raycasting")
     , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_) {
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -82,8 +82,8 @@ ISORaycaster::ISORaycaster()
 
     backgroundPort_.setOptional(true);
 
-    backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-    backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onConnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
+    backgroundPort_.onDisconnect([&] { this->invalidate(InvalidationLevel::InvalidResources); });
 
     addProperties(surfaceColor_, channel_, raycasting_, camera_, lighting_);
 

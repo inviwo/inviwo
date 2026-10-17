@@ -67,7 +67,7 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
     addPort(imageInport2_);
     addPort(outport_);
 
-    compositor_.shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    compositor_.shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ImageCompositeProcessorGL::process() {

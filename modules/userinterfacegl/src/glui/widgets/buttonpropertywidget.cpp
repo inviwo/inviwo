@@ -54,7 +54,7 @@ ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty& property, Processor& 
     , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
-    action_ = [&]() {
+    action_ = [&] {
         if (!property_->getReadOnly()) {
             property_->pressButton();
         }
@@ -84,7 +84,7 @@ ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string& imageFileN
     , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
-    action_ = [&]() {
+    action_ = [&] {
         if (!property_->getReadOnly()) {
             property_->pressButton();
         }
@@ -101,7 +101,7 @@ ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty& property,
     , property_(&property) {
     property_->addObserver(this);
     property_->registerWidget(this);
-    action_ = [&]() {
+    action_ = [&] {
         if (!property_->getReadOnly()) {
             property_->pressButton();
         }

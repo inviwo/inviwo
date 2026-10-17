@@ -94,7 +94,7 @@ SyntheticDataFrame::SyntheticDataFrame()
     addProperty(randomParams_);
     randomParams_.addProperty(useSameSeed_);
     randomParams_.addProperty(seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 }
 
 void SyntheticDataFrame::process() {

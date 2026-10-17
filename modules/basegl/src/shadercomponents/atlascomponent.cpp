@@ -175,15 +175,15 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view color, TimeCompone
                          {.name = "Set Color",
                           .icon = std::nullopt,
                           .tooltip = std::nullopt,
-                          .action = [&]() { coloringAction_ = ColoringAction::SetColor; }},
+                          .action = [&] { coloringAction_ = ColoringAction::SetColor; }},
                          {.name = "Set Alpha",
                           .icon = std::nullopt,
                           .tooltip = std::nullopt,
-                          .action = [&]() { coloringAction_ = ColoringAction::SetAlpha; }},
+                          .action = [&] { coloringAction_ = ColoringAction::SetAlpha; }},
                          {.name = "Set Scheme",
                           .icon = std::nullopt,
                           .tooltip = std::nullopt,
-                          .action = [&]() { coloringAction_ = ColoringAction::SetScheme; }},
+                          .action = [&] { coloringAction_ = ColoringAction::SetScheme; }},
                      }}
     , coloringAction_{ColoringAction::None}
     , colors_{size2_t{64, 2},     DataFormat<vec4>::get(),    LayerType::Color,
@@ -215,7 +215,7 @@ void AtlasComponent::process(Shader& shader, TextureUnitContainer& cont) {
     if (coloringAction_ != ColoringAction::None) {
         // The functor should be called with an index in the range [0,nSegments)
         const auto foreachInGroup =
-            [&]() -> std::function<void(const std::function<void(uint32_t)>&)> {
+            [&] -> std::function<void(const std::function<void(uint32_t)>&)> {
             switch (coloringGroup_.get()) {
                 default:
                 case ColoringGroup::All:

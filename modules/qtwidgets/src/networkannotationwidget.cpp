@@ -79,12 +79,12 @@ public:
             save->setShortcut(QKeySequence::Save);
             save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             mainWindow->addAction(save);
-            connect(save, &QAction::triggered, this, [this]() {
+            connect(save, &QAction::triggered, this, [this] {
                 if (!editor_->document()->isModified()) {
                     return;
                 }
                 if (saveFunc_) {
-                    util::exceptionGuard([this]() { saveFunc_(editor_->toPlainText()); });
+                    util::exceptionGuard([this] { saveFunc_(editor_->toPlainText()); });
                 }
                 editor_->document()->setModified(false);
             });
@@ -96,9 +96,9 @@ public:
             revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
             revert->setEnabled(false);
             mainWindow->addAction(revert);
-            QObject::connect(revert, &QAction::triggered, [this]() {
+            QObject::connect(revert, &QAction::triggered, [this] {
                 if (revertFunc_) {
-                    util::exceptionGuard([this]() { revertFunc_(); });
+                    util::exceptionGuard([this] { revertFunc_(); });
                 }
             });
             QObject::connect(editor_, &QPlainTextEdit::modificationChanged, revert,
@@ -155,7 +155,7 @@ public:
             return;
         }
         if (saveFunc_) {
-            util::exceptionGuard([this]() { saveFunc_(editor_->toPlainText()); });
+            util::exceptionGuard([this] { saveFunc_(editor_->toPlainText()); });
         }
         editor_->document()->setModified(false);
     }
@@ -198,7 +198,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
           new EditorDockWidget{"Annotation Description", utilqt::getApplicationMainWindow()}} {
 
     annotationClearHandle_ =
-        network_->getApplication()->getWorkspaceManager()->onClear([this]() { clear(); });
+        network_->getApplication()->getWorkspaceManager()->onClear([this] { clear(); });
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(45, 80)));  // default size
@@ -226,7 +226,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
     scrollArea_->setContentsMargins(0, space, 0, space);
 
     lineEditTitle_->setPlaceholderText("<empty>");
-    connect(lineEditTitle_, &LineEditQt::editingFinished, this, [this]() {
+    connect(lineEditTitle_, &LineEditQt::editingFinished, this, [this] {
         if (annotationIndex_.has_value()) {
             if (!lineEditTitle_->text().isEmpty()) {
                 annotation_.title = utilqt::fromQString(lineEditTitle_->text());
@@ -236,7 +236,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
             emit modifiedAnnotation(*annotationIndex_, annotation_);
         }
     });
-    connect(lineEditTitle_, &LineEditQt::editingCanceled, [this]() {
+    connect(lineEditTitle_, &LineEditQt::editingCanceled, [this] {
         // undo textual changes by resetting the contents of the line edit
         const QSignalBlocker blocker(lineEditTitle_);
         if (annotationIndex_.has_value()) {
@@ -256,7 +256,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
                     .value_or("")));
         }
     });
-    editorDockWidget_->setRevertCallback([this]() {
+    editorDockWidget_->setRevertCallback([this] {
         if (annotationIndex_.has_value()) {
             editorDockWidget_->setText(utilqt::toQString(
                 annotation_.description.transform([](auto& desc) { return desc.markdown; })
@@ -269,14 +269,14 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
         sp.setHorizontalStretch(3);
         lineEditDesc_->setSizePolicy(sp);
     }
-    connect(lineEditDesc_, &LineEditQt::editingFinished, this, [this]() {
+    connect(lineEditDesc_, &LineEditQt::editingFinished, this, [this] {
         if (setDescription(lineEditDesc_->text())) {
             editorDockWidget_->setText(utilqt::toQString(
                 annotation_.description.transform([](auto& desc) { return desc.markdown; })
                     .value_or("")));
         }
     });
-    connect(lineEditDesc_, &LineEditQt::editingCanceled, [this]() {
+    connect(lineEditDesc_, &LineEditQt::editingCanceled, [this] {
         // undo textual changes by resetting the contents of the line edit
         const QSignalBlocker blocker(lineEditDesc_);
         if (annotationIndex_.has_value()) {
@@ -294,7 +294,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
     editorBtn->setIcon(QIcon(":/svgicons/edit.svg"));
     editorBtn->setToolTip("Edit text");
     connect(editorBtn, &QToolButton::clicked, this,
-            [this]() { editorDockWidget_->setVisible(true); });
+            [this] { editorDockWidget_->setVisible(true); });
 
     auto* descriptionLayout = new QHBoxLayout();
     descriptionLayout->setContentsMargins(0, 0, 0, 0);
@@ -333,7 +333,7 @@ NetworkAnnotationWidget::NetworkAnnotationWidget(ProcessorNetwork* network, QWid
     numberTextWidth_->setMinValue(0, ConstraintBehavior::Immutable);
     numberTextWidth_->setMaxValue(250, ConstraintBehavior::Ignore);
     numberTextWidth_->initValue(100);
-    connect(numberTextWidth_, &NumberWidget<int>::valueChanged, this, [this]() {
+    connect(numberTextWidth_, &NumberWidget<int>::valueChanged, this, [this] {
         if (annotationIndex_.has_value() && annotation_.description.has_value() &&
             numberTextWidth_->getValue() != annotation_.description->width) {
             annotation_.description->width = numberTextWidth_->getValue();

@@ -117,7 +117,7 @@ void WorkspaceInfoLoader::operator()() {
 }
 
 void WorkspaceInfoLoader::submit() {
-    std::call_once(flag_, [&]() { app_->dispatchPool([l = shared_from_this()]() { (*l)(); }); });
+    std::call_once(flag_, [&] { app_->dispatchPool([l = shared_from_this()] { (*l)(); }); });
 }
 
 TreeItem::TreeItem(TreeItem* parent)

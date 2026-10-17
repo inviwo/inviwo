@@ -98,7 +98,7 @@ void OrthographicCamera::configureProperties(CameraProperty& cp, bool attach) {
     Camera::configureProperties(cp, attach);
     if (attach) {
         util::updateOrCreateCameraWidthProperty(
-            cp, [this]() { return getWidth(); },
+            cp, [this] { return getWidth(); },
             [this](const double& val) {
                 if (width_ != val) {
                     width_ = val;

@@ -60,7 +60,7 @@ public:
                        {BufferUsage::Static, BufferUsage::Dynamic},
                        0}
         , bufferTarget_{"bufferTarget", "Buffer Target",
-                        []() -> std::vector<BufferTarget> {
+                        [] -> std::vector<BufferTarget> {
                             if constexpr (std::is_integral_v<T>) {
                                 return {BufferTarget::Index, BufferTarget::Data};
                             } else {

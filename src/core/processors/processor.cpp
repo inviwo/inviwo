@@ -47,7 +47,7 @@
 namespace inviwo {
 
 std::function<ProcessorStatus()> Processor::getDefaultIsReadyUpdater(Processor* p) {
-    return [p]() -> ProcessorStatus {
+    return [p] -> ProcessorStatus {
         if (p->allInportsAreReady()) {
             return ProcessorStatus::Ready;
         } else {
@@ -64,9 +64,9 @@ Processor::Processor(std::string_view identifier, std::string_view displayName)
     , isReady_{true, [this](const bool&) { notifyObserversReadyChange(this); },
                getDefaultIsReadyUpdater(this)}
     , isSink_{true, [this](const bool&) { notifyObserversSinkChange(this); },
-              [this]() { return outports_.empty(); }}
+              [this] { return outports_.empty(); }}
     , isSource_{true, [this](const bool&) { notifyObserversSourceChange(this); },
-                [this]() { return inports_.empty(); }}
+                [this] { return inports_.empty(); }}
     , identifier_(identifier)
     , displayName_{displayName}
     , network_(nullptr) {
@@ -400,7 +400,7 @@ void Processor::deserialize(Deserializer& d) {
                 .getID = [](Inport* const& port) -> std::string_view {
                     return port->getIdentifier();
                 },
-                .makeNew = []() -> Inport* { return nullptr; },
+                .makeNew = [] -> Inport* { return nullptr; },
                 .shouldMakeNew = [&](std::string_view id,
                                      size_t) { return util::contains(ownedInportIds, id); },
                 .canRecreate = [&](std::string_view id,
@@ -433,7 +433,7 @@ void Processor::deserialize(Deserializer& d) {
                 .getID = [](Outport* const& port) -> std::string_view {
                     return port->getIdentifier();
                 },
-                .makeNew = []() -> Outport* { return nullptr; },
+                .makeNew = [] -> Outport* { return nullptr; },
                 .shouldMakeNew = [&](std::string_view id,
                                      size_t) { return util::contains(ownedOutportIds, id); },
                 .canRecreate = [&](std::string_view id,

@@ -233,8 +233,8 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
     max_.visibilityDependsOn(inputType_, folderCallback);
 
     // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isSink_.setUpdate([] { return true; });
+    isReady_.setUpdate([this] -> ProcessorStatus {
         static constexpr std::string_view noFileReason{"No valid input file"};
         if (error()) {
             return {ProcessorStatus::Error, error().value()};
@@ -256,7 +256,7 @@ SequenceSource<Conf>::SequenceSource(InviwoApplication* app)
         }
     });
 
-    file_.onChange([this]() { util::updateReaderFromFile(file_, reader_); });
+    file_.onChange([this] { util::updateReaderFromFile(file_, reader_); });
 }
 
 template <typename Conf>
@@ -304,7 +304,7 @@ void SequenceSource<Conf>::loadFile(bool deserialize) {
                             std::stop_token stop, pool::Progress progress) -> Sequence {
         if (stop.stop_requested()) return {};
         progress(0.0);
-        const util::OnScopeExit done{[&]() { progress(1.0); }};
+        const util::OnScopeExit done{[&] { progress(1.0); }};
         return loadSequence(file, ext, *rf, mdo, configReader);
     };
     dispatchOne(loader, [this, deserialize](Sequence sequence) {
@@ -351,7 +351,7 @@ void SequenceSource<Conf>::loadFolder(bool deserialize) {
                        std::stop_token stop, pool::Progress progress) -> Sequence {
                 if (stop.stop_requested()) return {};
                 progress(0.0);
-                const util::OnScopeExit done{[&]() { progress(1.0); }};
+                const util::OnScopeExit done{[&] { progress(1.0); }};
                 return loadSequence(path, FileExtension{}, *rf, mdo, configReader);
             };
         }) |

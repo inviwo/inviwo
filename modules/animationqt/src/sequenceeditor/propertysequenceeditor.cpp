@@ -110,13 +110,13 @@ public:
                     &DoubleValueDragSpinBox::valueChanged),
                 this, [this](double t) { keyframe_.setTime(Seconds(t)); });
         connect(timeSpinner_, &DoubleValueDragSpinBox::editingFinished, this,
-                [this]() { keyframe_.setTime(Seconds(timeSpinner_->value())); });
+                [this] { keyframe_.setTime(Seconds(timeSpinner_->value())); });
 
         layout->addWidget(timeSpinner_);
 
         property_.reset(propTrack.getProperty()->clone());
         propTrack.setPropertyFromKeyframe(property_.get(), &keyframe);
-        property_->onChange([p = property_.get(), &propTrack, k = &keyframe_]() {
+        property_->onChange([p = property_.get(), &propTrack, k = &keyframe_] {
             propTrack.setKeyframeFromProperty(p, k);
         });
         property_->setOwner(nullptr);

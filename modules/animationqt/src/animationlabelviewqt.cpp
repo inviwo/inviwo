@@ -149,7 +149,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     deleteAction->setShortcuts(QKeySequence::Delete);
     deleteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(deleteAction);
-    connect(deleteAction, &QAction::triggered, this, [this]() {
+    connect(deleteAction, &QAction::triggered, this, [this] {
         auto& animation = controller_.getAnimation();
         for (const auto& index : selectionModel()->selection().indexes()) {
             animation.remove(static_cast<TrackItem*>(model_->itemFromIndex(index))->track_);

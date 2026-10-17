@@ -90,7 +90,7 @@ void VolumeLaplacianProcessor::process() {
     inVolume_.setReadOnly(true);
 
     const auto calc = [volume = invol, postProcessing = postProcessing_.get(),
-                       scale = scale_.get()]() -> std::shared_ptr<Volume> {
+                       scale = scale_.get()] -> std::shared_ptr<Volume> {
         return util::volumeLaplacian(volume, postProcessing, scale);
     };
 

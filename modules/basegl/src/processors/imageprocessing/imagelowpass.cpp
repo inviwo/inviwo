@@ -67,7 +67,7 @@ ImageLowPass::ImageLowPass()
                 "Whether to use Gaussian weights or constant weights"_help, true)
     , sigma_("sigma", "Sigma",
              util::ordinalLength(1.f).set("Controls the shape of the Gaussian bell curve"_help))
-    , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+    , convolution_([&] { this->invalidate(InvalidationLevel::InvalidOutput); }) {
 
     addPort(inport_);
     addPort(outport_);
@@ -76,7 +76,7 @@ ImageLowPass::ImageLowPass()
     addProperty(sigma_);
     addProperty(gaussian_);
     kernelSize_.setVisible(false);
-    gaussian_.onChange([&]() {
+    gaussian_.onChange([&] {
         kernelSize_.setVisible(!gaussian_.get());
         sigma_.setVisible(gaussian_.get());
     });

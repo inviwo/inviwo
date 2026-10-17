@@ -433,7 +433,7 @@ void Texture::loadFromPBO(const Texture* src) {
 }
 
 size_t Texture::maxTextureSize() {
-    static const size_t size = []() {
+    static const size_t size = [] {
         int val{-1};
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
         if (val < 0) {
@@ -444,7 +444,7 @@ size_t Texture::maxTextureSize() {
     return size;
 }
 size_t Texture::maxTexture3DSize() {
-    static const size_t size = []() {
+    static const size_t size = [] {
         int val{-1};
         glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &val);
         if (val < 0) {
@@ -455,7 +455,7 @@ size_t Texture::maxTexture3DSize() {
     return size;
 }
 size_t Texture::maxTextureArraySize() {
-    static const size_t size = []() {
+    static const size_t size = [] {
         int val{-1};
         glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &val);
         if (val < 0) {

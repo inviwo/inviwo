@@ -119,7 +119,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     , scriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                  "python script")
     , scriptArgHolder_{app, scriptArg_,
-                       [this]() {
+                       [this] {
                            auto filename = std::filesystem::path{scriptArg_.getValue()};
                            if (!std::filesystem::is_regular_file(filename)) {
                                log::warn("Could not run script, file does not exist: {}", filename);
@@ -136,7 +136,7 @@ Python3Module::Python3Module(InviwoApplication* app)
                           "",
                           "python workspace script name"}
     , workspaceScriptArgHolder_{app, workspaceScriptArg_,
-                                [this]() {
+                                [this] {
                                     const auto key = workspaceScriptArg_.getValue();
                                     if (auto script = workspaceScripts_.getScript(key)) {
                                         auto code = PythonScript(*script, key);

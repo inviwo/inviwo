@@ -278,7 +278,7 @@ Shader& EntryExitPointsHelper::getEntryExitShader(IncludeNormals includeNormals,
         ees_.shader = createEntryExitShader(includeNormals, applyTrafo);
         ees_.includeNormals = includeNormals;
         ees_.applyTrafo = applyTrafo;
-        ees_.reloadCallback = ees_.shader->onReloadScoped([this]() { onReloadCallback_.invoke(); });
+        ees_.reloadCallback = ees_.shader->onReloadScoped([this] { onReloadCallback_.invoke(); });
     }
     return *ees_.shader;
 }
@@ -287,7 +287,7 @@ Shader& EntryExitPointsHelper::getNearClipShader(IncludeNormals includeNormals) 
     if (!ncs_.shader || includeNormals != ncs_.includeNormals) {
         ncs_.shader = createNearClipShader(includeNormals);
         ncs_.includeNormals = includeNormals;
-        ncs_.reloadCallback = ncs_.shader->onReloadScoped([this]() { onReloadCallback_.invoke(); });
+        ncs_.reloadCallback = ncs_.shader->onReloadScoped([this] { onReloadCallback_.invoke(); });
     }
     return *ncs_.shader;
 }

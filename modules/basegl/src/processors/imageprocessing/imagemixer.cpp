@@ -108,7 +108,7 @@ ImageMixer::ImageMixer()
     , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
     , shader_("img_mix.frag", Shader::Build::No) {
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(inport0_);
     addPort(inport1_);
@@ -118,7 +118,7 @@ ImageMixer::ImageMixer()
     addProperty(weight_);
     addProperty(clamp_);
 
-    blendingMode_.onChange([&]() { weight_.setVisible(blendingMode_.get() == BlendModes::Mix); });
+    blendingMode_.onChange([&] { weight_.setVisible(blendingMode_.get() == BlendModes::Mix); });
 }
 
 ImageMixer::~ImageMixer() = default;

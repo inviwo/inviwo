@@ -113,7 +113,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
 
     const auto time = std::chrono::system_clock::now();
 
-    const size_t maxWidth = [&]() {
+    const size_t maxWidth = [&] {
         if (width > 4 * reserved) {
             return width - reserved - 1;
         } else {

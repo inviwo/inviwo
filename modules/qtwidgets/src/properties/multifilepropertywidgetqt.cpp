@@ -88,7 +88,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     {
         connect(lineEdit_, &FilePathLineEditQt::pathChanged, this,
                 [this](const std::filesystem::path& path) {
-                    util::exceptionGuard([&]() { property_->set(path); });
+                    util::exceptionGuard([&] { property_->set(path); });
                 });
         QSizePolicy sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
@@ -100,7 +100,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
         auto revealButton = new QToolButton(this);
         revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
         hWidgetLayout->addWidget(revealButton);
-        connect(revealButton, &QToolButton::pressed, this, [&]() {
+        connect(revealButton, &QToolButton::pressed, this, [&] {
             const auto fileName = (!property_->get().empty() ? property_->get().front() : "");
             const auto dir =
                 std::filesystem::is_directory(fileName) ? fileName : fileName.parent_path();
@@ -132,7 +132,7 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
     if (fileDialog.exec()) {
-        util::exceptionGuard([&]() {
+        util::exceptionGuard([&] {
             property_->set(fileDialog.getSelectedFiles(), fileDialog.getSelectedFileExtension());
         });
     }
@@ -145,7 +145,7 @@ void MultiFilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
         for (auto&& url : mimeData->urls()) {
             paths.push_back(utilqt::toPath(url.toLocalFile()));
         }
-        util::exceptionGuard([&]() { property_->set(paths); });
+        util::exceptionGuard([&] { property_->set(paths); });
         drop->accept();
     } else {
         drop->ignore();

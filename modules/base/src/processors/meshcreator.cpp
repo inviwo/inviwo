@@ -171,7 +171,7 @@ MeshCreator::MeshCreator()
                rotationAngle_, lineSegments_);
     util::show(meshScale_, meshRes_);
 
-    meshType_.onChange([this]() {
+    meshType_.onChange([this] {
         const auto updateNone = [](PickingEvent*) {};
 
         const auto getDelta = [this](const PickingEvent* p) {

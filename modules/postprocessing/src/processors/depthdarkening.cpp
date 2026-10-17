@@ -91,7 +91,7 @@ DepthDarkening::DepthDarkening()
     , depthDarkeningShader_("depthdarkening.frag")
     , linearizeDepthShader_("depthlinearize.frag", Shader::Build::No)
 
-    , convolution_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); })
+    , convolution_([&] { this->invalidate(InvalidationLevel::InvalidOutput); })
 
 {
     addPort(inport_);
@@ -105,8 +105,8 @@ DepthDarkening::DepthDarkening()
     linearizeDepthShader_.getFragmentShaderObject()->addShaderDefine("NORMALIZE");
     linearizeDepthShader_.build();
 
-    depthDarkeningShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
-    linearizeDepthShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
+    depthDarkeningShader_.onReload([&] { this->invalidate(InvalidationLevel::InvalidOutput); });
+    linearizeDepthShader_.onReload([&] { this->invalidate(InvalidationLevel::InvalidOutput); });
 }
 
 void DepthDarkening::process() {

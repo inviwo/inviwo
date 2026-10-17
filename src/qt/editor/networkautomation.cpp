@@ -390,7 +390,7 @@ void NetworkAutomation::leave() {
 auto NetworkAutomation::drop(QPointF, Qt::KeyboardModifiers modifiers, Processor& processor)
     -> Result {
 
-    const util::OnScopeExit resetter{[&]() { leave(); }};
+    const util::OnScopeExit resetter{[&] { leave(); }};
 
     auto result = Result::None;
     if (connectionTarget_ &&

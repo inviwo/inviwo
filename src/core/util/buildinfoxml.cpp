@@ -56,7 +56,7 @@ struct DeserializeModuleDir : BuildInfo::ModulesDir {
 const std::optional<BuildInfo>& getBuildInfo() {
     static constexpr std::string_view xmlFileName = "inviwo_buildinfo.xml";
 
-    const auto maybeIn = []() -> std::optional<std::filesystem::path> {
+    const auto maybeIn = [] -> std::optional<std::filesystem::path> {
         const auto exeDir = filesystem::getExecutablePath().parent_path();
         auto dir = exeDir / xmlFileName;
         if (std::filesystem::is_regular_file(dir)) return dir;

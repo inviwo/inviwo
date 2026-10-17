@@ -60,7 +60,7 @@ void pool::detail::State::setProgress(size_t id, double newProgress) {
         if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
             const auto total = std::accumulate(progress.begin(), progress.end(), 0.0) /
                                static_cast<double>(progress.size());
-            progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
+            progressUpdate = dispatchFront([this, poolProcessor = processor, total] {
                 if (const auto p = poolProcessor.lock()) {
                     p->progress(this, total);
                 }
@@ -75,7 +75,7 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
     : Processor(identifier, displayName)
     , options_{options}
     , states_{}
-    , notifyRemainingJobsFinish_{[this]() {
+    , notifyRemainingJobsFinish_{[this] {
         const auto running =
             std::accumulate(states_.begin(), states_.end(), size_t{0},
                             [](size_t sum, auto& state) { return sum + state->nJobs; });
@@ -85,7 +85,7 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
     , delay_{}
     , delayBackgroundJobReset_{nullptr} {
 
-    isReady_.setUpdate([this]() -> ProcessorStatus {
+    isReady_.setUpdate([this] -> ProcessorStatus {
         if (error_) {
             return {ProcessorStatus::Error, error_.value()};
         } else if (allInportsAreReady()) {
@@ -188,7 +188,7 @@ Delay& PoolProcessor::getDelay() {
     if (!delay_) {
         delay_.emplace(std::chrono::milliseconds(500),
                        [poolProcessor = std::weak_ptr<PoolProcessor>(
-                            std::dynamic_pointer_cast<PoolProcessor>(shared_from_this()))]() {
+                            std::dynamic_pointer_cast<PoolProcessor>(shared_from_this()))] {
                            if (const auto p = poolProcessor.lock()) {
 
                                if (p->queuedDispatch() && !p->states_.empty()) {

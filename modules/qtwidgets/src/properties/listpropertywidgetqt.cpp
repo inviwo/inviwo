@@ -76,7 +76,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     addItemButton_->setObjectName("addListItemButton");
     addItemButton_->setToolTip("Add list element");
 
-    connect(addItemButton_, &QToolButton::clicked, this, [&]() {
+    connect(addItemButton_, &QToolButton::clicked, this, [&] {
         if (listProperty_ && listProperty_->getPrefabCount() > 0) {
             // need to activate the default render context in case the property contains member
             // depending on OpenGL
@@ -123,7 +123,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
         if (listProperty_->getPrefabCount() == 1) {
             const auto* addAction = menu->addAction(utilqt::toQString(
                 fmt::format("Add {}", listProperty_->getPrefabs().front()->getDisplayName())));
-            connect(addAction, &QAction::triggered, this, [this]() { addNewItem(0); });
+            connect(addAction, &QAction::triggered, this, [this] { addNewItem(0); });
         } else {
             auto addItemMenu = menu->addMenu("&Add Item");
             if (listProperty_->getPrefabCount() > 0) {
@@ -131,7 +131,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
                     auto addAction =
                         addItemMenu->addAction(utilqt::toQString(item.second()->getDisplayName()));
                     connect(addAction, &QAction::triggered, this,
-                            [this, index = item.first()]() { addNewItem(index); });
+                            [this, index = item.first()] { addNewItem(index); });
                 }
             } else {  // no prefab objects available
                 auto action = addItemMenu->addAction("No templates available");
@@ -145,7 +145,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
 
     if (listProperty_->getUIFlags() & ListPropertyUIFlag::Remove) {
         auto clearAction = menu->addAction(tr("&Clear Items"));
-        connect(clearAction, &QAction::triggered, this, [&]() {
+        connect(clearAction, &QAction::triggered, this, [&] {
             listProperty_->setInitiatingWidget(this);
             listProperty_->clear();
             listProperty_->clearInitiatingWidget();

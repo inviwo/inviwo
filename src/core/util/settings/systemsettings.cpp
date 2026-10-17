@@ -107,18 +107,18 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                   redirectCout_, redirectCerr_);
 
     logStackTraceProperty_.onChange(
-        [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
+        [this] { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
 
-    runtimeModuleReloading_.onChange([this]() {
+    runtimeModuleReloading_.onChange([this] {
         if (isDeserializing_) return;
         log::info(
             "Inviwo needs to be restarted for Runtime Module Reloading change to take effect");
     });
 
     breakOnMessage_.onChange(
-        [this]() { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
+        [this] { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
 
-    enableResourceTracking_.onChange([this]() {
+    enableResourceTracking_.onChange([this] {
         if (enableResourceTracking_) {
             log::warn("Resource tracking is enabled, this might slow down Inviwo");
         }
@@ -128,7 +128,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
         }
     });
 
-    redirectCout_.onChange([this]() {
+    redirectCout_.onChange([this] {
         if (redirectCout_ && !cout_) {
             if (app_->getCommandLineParser().getLogToConsole()) {
                 log::warn(
@@ -146,7 +146,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
         }
     });
 
-    redirectCerr_.onChange([&]() {
+    redirectCerr_.onChange([&] {
         if (redirectCerr_ && !cerr_) {
             if (app_->getCommandLineParser().getLogToConsole()) {
                 log::warn(
@@ -168,7 +168,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
 }
 
 bool SystemSettings::breakOnException() {
-    const util::OnScopeExit reset{[this]() { breakOnNextException_ = false; }};
+    const util::OnScopeExit reset{[this] { breakOnNextException_ = false; }};
     return breakOnException_.get() || breakOnNextException_;
 }
 

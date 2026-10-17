@@ -112,7 +112,7 @@ NoiseGenerator2D::NoiseGenerator2D()
                   poissonMaxPoints_, haltonNumPoints_, haltonXBase_, haltonYBase_, information_,
                   basis_);
 
-    const auto typeOnChange = [&]() {
+    const auto typeOnChange = [&] {
         range_.setVisible(type_.getSelectedValue() == NoiseType::Random);
         levels_.setVisible(type_.getSelectedValue() == NoiseType::Perlin);
         persistence_.setVisible(type_.getSelectedValue() == NoiseType::Perlin);
@@ -128,9 +128,9 @@ NoiseGenerator2D::NoiseGenerator2D()
 
     addProperty(randomness_);
     randomness_.addProperties(useSameSeed_, seed_);
-    useSameSeed_.onChange([&]() { seed_.setVisible(useSameSeed_.get()); });
+    useSameSeed_.onChange([&] { seed_.setVisible(useSameSeed_.get()); });
 
-    size_.onChange([&]() {
+    size_.onChange([&] {
         auto s = std::max(size_.get().x, size_.get().y);
         s = std::bit_ceil(s);
         const auto l2 = std::log(s) / std::numbers::ln2_v<float>;

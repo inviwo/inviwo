@@ -81,23 +81,23 @@ OpenGLSettings::OpenGLSettings()
                   stackSize_);
 
     debugSeverity_.onChange(
-        [&]() { utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue()); });
+        [&] { utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue()); });
 
-    debugMessages_.onChange([this]() {
+    debugMessages_.onChange([this] {
         utilgl::handleOpenGLDebugModeChange(debugMessages_.getSelectedValue(),
                                             debugSeverity_.getSelectedValue());
     });
 
-    errorChecking_.onChange([this]() {
+    errorChecking_.onChange([this] {
         utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
                                                 stackSize_.get());
     });
 
-    breakOnError_.onChange([this]() {
+    breakOnError_.onChange([this] {
         utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
                                                 stackSize_.get());
     });
-    stackSize_.onChange([this]() {
+    stackSize_.onChange([this] {
         utilgl::handleOpenGLErrorCheckingChange(errorChecking_.get(), breakOnError_.get(),
                                                 stackSize_.get());
     });

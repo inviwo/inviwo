@@ -60,12 +60,12 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels)
     : owner_(inport), invalidationLevels_(std::move(invalidationLevels)) {
 
-    inport->onConnect([&]() {
+    inport->onConnect([&] {
         setParent(&static_cast<BrushingAndLinkingOutport*>(
                        std::get<BrushingAndLinkingInport*>(owner_)->getConnectedOutport())
                        ->getManager());
     });
-    inport->onDisconnect([&]() { setParent(nullptr); });
+    inport->onDisconnect([&] { setParent(nullptr); });
 }
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(
@@ -485,7 +485,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
             d.deserialize(fmt::to_string(action), map, "selection",
                           deserializer::MapFunctions{
                               .idTransform = [](std::string_view id) { return BrushingTarget(id); },
-                              .makeNew = []() { return BitSet(); },
+                              .makeNew = [] { return BitSet(); },
                               .onNew = [&](const BrushingTarget& key, BitSet& b) { map[key] = b; },
                               .onRemove = [&](const BrushingTarget& key) { map.erase(key); }});
 
@@ -496,7 +496,7 @@ void BrushingAndLinkingManager::deserialize(Deserializer& d) {
                 fmt::to_string(action), map, "selection",
                 deserializer::MapFunctions{
                     .idTransform = [](std::string_view id) { return BrushingTarget(id); },
-                    .makeNew = []() { return IndexList(); },
+                    .makeNew = [] { return IndexList(); },
                     .onNew = [&](const BrushingTarget& key, IndexList& l) { map[key] = l; },
                     .onRemove = [&](const BrushingTarget& key) { map.erase(key); }});
         }

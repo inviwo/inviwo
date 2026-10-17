@@ -267,13 +267,13 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
     auto* addItem = menu.addAction("&Add Processor");
     addItem->setEnabled(!id.isEmpty());
     QObject::connect(addItem, &QAction::triggered, this,
-                     [&, id]() { processorTreeWidget_->addProcessor(id); });
+                     [&, id] { processorTreeWidget_->addProcessor(id); });
 
     menu.addSeparator();
 
     auto* expandAction = menu.addAction("&Expand All Categories");
     expandAction->setEnabled(enableExpandCollapse);
-    QObject::connect(expandAction, &QAction::triggered, this, [&]() { expandAll(); });
+    QObject::connect(expandAction, &QAction::triggered, this, [&] { expandAll(); });
 
     auto* collapseOtherAction = menu.addAction("C&ollapse Others");
     collapseOtherAction->setEnabled(index.isValid() && enableExpandCollapse);
@@ -281,14 +281,14 @@ void ProcessorListView::showContextMenu(const QPoint& p) {
     while (index.isValid() && index.parent().isValid()) {
         index = index.parent();
     }
-    QObject::connect(collapseOtherAction, &QAction::triggered, this, [&, index]() {
+    QObject::connect(collapseOtherAction, &QAction::triggered, this, [&, index] {
         collapseAll();
         expand(index);
     });
 
     auto* collapse = menu.addAction("&Collapse All Categories");
     collapse->setEnabled(enableExpandCollapse);
-    QObject::connect(collapse, &QAction::triggered, this, [&]() { collapseAll(); });
+    QObject::connect(collapse, &QAction::triggered, this, [&] { collapseAll(); });
 
     menu.exec(mapToGlobal(p));
 }

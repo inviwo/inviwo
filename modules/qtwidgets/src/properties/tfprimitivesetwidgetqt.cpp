@@ -149,7 +149,7 @@ void TFPrimitiveSetWidgetQt::initializeWidget() {
     hLayout->addWidget(textEdit_);
 
     setLayout(hLayout);
-    connect(textEdit_, &MultilineTextEdit::editingFinished, [this]() { setPropertyValue(); });
+    connect(textEdit_, &MultilineTextEdit::editingFinished, [this] { setPropertyValue(); });
 
     updateFromProperty();
 }

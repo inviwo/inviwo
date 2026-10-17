@@ -101,7 +101,7 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
     const splitter::Style style = settings.getStyle();
 
     const auto [lineWidth, handleWidth, drawHandle,
-                drawBorder] = [&]() -> std::tuple<float, float, bool, bool> {
+                drawBorder] = [&] -> std::tuple<float, float, bool, bool> {
         const float width = settings.getWidth();
         switch (style) {
             case splitter::Style::Handle:    return {width / 3.0f, width, true, true};
@@ -114,7 +114,7 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
 
     // create a matrix transforming the splitter position from normalized coords [0,1] to NDC [-1,1]
     // along x
-    mat4 posToNDC = []() {
+    mat4 posToNDC = [] {
         mat4 m(1.0f);
         m[0][0] = 2.0f;
         m[1][1] = 2.0f;

@@ -143,7 +143,7 @@ Axis2DProcessorHelper::Axis2DProcessorHelper(
     , getBoundingBox_{getBoundingBox} {
 
     presets_.setSerializationMode(PropertySerializationMode::None);
-    presets_.onChange([&]() {
+    presets_.onChange([&] {
         const NetworkLock lock(&visibility_);
         if (presets_.getSelectedValue() == "all") {
             for (auto& p : visibleAxes_) {

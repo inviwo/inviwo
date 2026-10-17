@@ -196,7 +196,7 @@ struct InviwoDefaults<glm::mat<C, R, T, Q>> {
         constexpr std::array<StaticString<1>, 4> num = {"1", "2", "3", "4"};
         constexpr auto t = InviwoDefaults<T>::get();
 
-        constexpr auto minVal = [&]() {
+        constexpr auto minVal = [&] {
             if constexpr (std::is_signed_v<T>) {
                 return type{-t.max};
             } else {

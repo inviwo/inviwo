@@ -106,7 +106,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 
         const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
-        const auto& image = [&]() {
+        const auto& image = [&] {
             const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
                 const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
@@ -160,7 +160,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         const auto indent =
             style->pixelMetric(QStyle::PM_TreeViewIndentation, nullptr, option.widget);
 
-        const auto level = [&]() {
+        const auto level = [&] {
             auto i = index.parent();
             int l = 0;
             while (i.isValid()) {
@@ -256,7 +256,7 @@ public:
         : QAbstractProxyModel(parent), chunkSize_{chunkSize} {
 
         setSourceModel(model);
-        const auto reset = [this]() {
+        const auto reset = [this] {
             beginResetModel();
             sourceIndexMapping_.clear();
             endResetModel();

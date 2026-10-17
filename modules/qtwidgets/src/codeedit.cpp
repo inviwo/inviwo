@@ -83,7 +83,7 @@ CodeEdit::CodeEdit(QWidget* parent)
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 
-    const auto updateSyntax = [this]() {
+    const auto updateSyntax = [this] {
         auto color = utilqt::toivec3(sh_->defaultFormat().background().color());
 
         const auto css =

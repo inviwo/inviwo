@@ -132,7 +132,7 @@ PointRenderer::PointRenderer()
                 texture_.getRequirement()},
 
                [&](Shader& shader) -> void {
-                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   shader.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
                }} {
 

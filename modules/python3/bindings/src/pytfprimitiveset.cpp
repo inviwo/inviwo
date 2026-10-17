@@ -254,7 +254,7 @@ void exposeTFPrimitiveSet(const pybind11::module& m) {
         });
 
     py::classh<TransferFunction, TFPrimitiveSet>(m, "TransferFunction")
-        .def(py::init([]() { return TransferFunction(); }))
+        .def(py::init([] { return TransferFunction(); }))
         .def(py::init([](const std::vector<TFPrimitiveData>& values) {
                  return new TransferFunction(values);
              }),

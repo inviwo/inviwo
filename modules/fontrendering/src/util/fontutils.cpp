@@ -97,7 +97,7 @@ std::filesystem::path getDefaultFontPath() {
 }
 
 std::filesystem::path getFont(FontType type, FullPath path) {
-    auto [name, ext] = [type]() -> std::pair<std::filesystem::path, std::string> {
+    auto [name, ext] = [type] -> std::pair<std::filesystem::path, std::string> {
         switch (type) {
             case FontType::Default: return {"OpenSans-Semibold", ".ttf"};
             case FontType::Bold:    return {"OpenSans-Bold", ".ttf"};

@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
 
     cmdParser.add(
         &snapshotArg,
-        [&]() {
+        [&] {
             auto path = cmdParser.getOutputPath();
             if (path.empty()) path = inviwo::filesystem::getPath(inviwo::PathType::Images);
             inviwo::util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path,
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
     inviwo::NetworkDebugObserver obs;
     cmdParser.add(
         &debugProcess,
-        [&]() {
+        [&] {
             inviwoApp.getProcessorNetwork()->addObserver(&obs);
             inviwoApp.getProcessorNetworkEvaluator()->addObserver(&obs);
             inviwoApp.getProcessorNetwork()->forEachProcessor(
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 
     TCLAP::SwitchArg fullscreenArg("f", "fullscreen", "Specify fullscreen if only one canvas");
 
-    cmdParser.add(&fullscreenArg, [&]() {
+    cmdParser.add(&fullscreenArg, [&] {
         auto* network = inviwoApp.getProcessorNetwork();
 
         std::vector<inviwo::ProcessorWidget*> widgets;
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
         "Specify the identifier of the processor to use for the central widget.", false, "Canvas",
         "Processor Identifier");
 
-    cmdParser.add(&centralWidget, [&]() {
+    cmdParser.add(&centralWidget, [&] {
         auto* network = inviwoApp.getProcessorNetwork();
         if (auto* processor = network->getProcessorByIdentifier(centralWidget.getValue())) {
             if (auto* widget = dynamic_cast<QWidget*>(processor->getProcessorWidget())) {
@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
         "", "property", "Specify a list of property paths to display in the property list widget",
         false, "Property path");
 
-    cmdParser.add(&exposeProperties, [&]() {
+    cmdParser.add(&exposeProperties, [&] {
         auto* network = inviwoApp.getProcessorNetwork();
         for (const auto& path : exposeProperties.getValue()) {
             auto [processorId, propertyPath] = inviwo::util::splitByFirst(path, '.');
@@ -195,8 +195,7 @@ int main(int argc, char** argv) {
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
     // before Processor can delete them.
-    const inviwo::util::OnScopeExit clearNetwork(
-        [&]() { inviwoApp.getProcessorNetwork()->clear(); });
+    const inviwo::util::OnScopeExit clearNetwork([&] { inviwoApp.getProcessorNetwork()->clear(); });
 
     // Load workspace
     inviwoApp.getProcessorNetwork()->lock();

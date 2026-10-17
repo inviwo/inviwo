@@ -79,7 +79,7 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+    const util::OnScopeExit closeFile{[file] { std::fclose(file); }};
 
     std::fseek(file, static_cast<long>(offset), SEEK_SET);
 

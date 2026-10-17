@@ -707,7 +707,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
                 add->setDisabled(empty);
             });
 
-    connect(add, &QToolButton::clicked, this, [subTree, subModel, superModel]() {
+    connect(add, &QToolButton::clicked, this, [subTree, subModel, superModel] {
         for (const auto index : subTree->selectionModel()->selectedIndexes()) {
             if (auto* prop = subModel->toProperty(index)) {
                 superModel->cp_.addSuperProperty(prop);

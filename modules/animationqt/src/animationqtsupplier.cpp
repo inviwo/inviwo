@@ -43,7 +43,7 @@ AnimationQtSupplier::AnimationQtSupplier(AnimationQtModule& animationQtModule)
     : animationQtModule_{animationQtModule} {}
 
 AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
-    : animationQtModule_{[&]() -> AnimationQtModule& {
+    : animationQtModule_{[&] -> AnimationQtModule& {
         if (auto* animationModule = util::getModuleByType<AnimationQtModule>(app)) {
             return *animationModule;
         }

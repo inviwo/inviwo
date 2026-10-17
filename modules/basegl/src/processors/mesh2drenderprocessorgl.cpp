@@ -101,7 +101,7 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     left_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
     right_.readonlyDependsOn(useCanvasDims_, [](BoolProperty& p) { return p; });
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this] { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() = default;

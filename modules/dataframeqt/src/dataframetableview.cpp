@@ -97,7 +97,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
     // change corner button to disable sorting instead of selecting all
     if (const auto* btn = findChild<QAbstractButton*>()) {
         if (QObject::disconnect(btn, &QAbstractButton::clicked, this, &QTableView::selectAll)) {
-            QObject::connect(btn, &QAbstractButton::clicked, this, [&]() {
+            QObject::connect(btn, &QAbstractButton::clicked, this, [&] {
                 horizontalHeader()->setSortIndicator(-1, Qt::AscendingOrder);
                 sortProxy_->sort(-1);
             });

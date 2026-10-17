@@ -83,7 +83,7 @@ public:
 template <size_t N>
 struct PropertyTraits<StringsProperty<N>> {
     static std::string_view classIdentifier() {
-        static constexpr auto cid = []() {
+        static constexpr auto cid = [] {
             constexpr auto format = IVW_COMPILE_STRING("org.inviwo.StringsProperty{}");
             constexpr size_t size = fmt::formatted_size(format, N);
             StaticString<size> res;

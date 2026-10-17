@@ -65,9 +65,9 @@ LayerCreator::LayerCreator()
     , format_{"format", "Format",
               OptionPropertyState<DataFormatId>{
                   .options =
-                      [&]() {
+                      [&] {
                           std::vector<OptionPropertyOption<DataFormatId>> formats;
-                          util::for_each_type<DefaultDataFormats>{}([&formats]<typename Format>() {
+                          util::for_each_type<DefaultDataFormats>{}([&formats]<typename Format> {
                               formats.emplace_back(Format::str(), Format::str(), Format::id());
                           });
                           return formats;
@@ -92,7 +92,7 @@ LayerCreator::LayerCreator()
 void LayerCreator::process() {
     if (util::any_of(util::ref<Property>(format_, type_, dimensions_), &Property::isModified)) {
         loadedData_ = dispatching::singleDispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
-            format_.get(), [&]<typename T>() {
+            format_.get(), [&]<typename T> {
                 using enum LayerCreator::Type;
                 switch (type_.get()) {
                     case SingleVoxel:

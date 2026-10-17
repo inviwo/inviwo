@@ -79,7 +79,7 @@ TFSelector::TFSelector()
     , cycle_("cycle", "Cycle TFs",
              "if true, the first TF will be the successor of the last available TF"_help)
     , tfPresets_("presets", "Presets", "List of TF presets"_help,
-                 []() {
+                 [] {
                      std::vector<std::unique_ptr<Property>> res;
                      res.push_back(std::make_unique<TransferFunctionProperty>("tfPreset1", "TF 1"));
                      return res;
@@ -124,16 +124,16 @@ TFSelector::TFSelector()
     addProperty(interactions_);
     interactions_.setCollapsed(true);
 
-    selectedTF_.onChange([this]() {
+    selectedTF_.onChange([this] {
         for (auto p : tfPresets_.getProperties()) {
-            p->onChange([]() {});
+            p->onChange([] {});
         }
         if (!tfPresets_.empty() && !selectedTF_.empty()) {
             auto p = static_cast<TransferFunctionProperty*>(
                 tfPresets_.getPropertyByIdentifier(selectedTF_.getSelectedIdentifier()));
             tfOut_.set(p->get());
             // ensure that if the TF is modified, the output is in sync
-            p->onChange([this, p]() {
+            p->onChange([this, p] {
                 if (p->getIdentifier() == selectedTF_.getSelectedIdentifier()) {
                     tfOut_.set(p->get());
                 }

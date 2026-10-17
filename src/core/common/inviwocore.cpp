@@ -160,7 +160,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
                                      bool, std::string>;
     // clang-format on
     util::for_each_type<MetaDataTypes>{}(
-        [&]<typename T>() { registerMetaData(std::make_unique<MetaDataType<T>>()); });
+        [&]<typename T> { registerMetaData(std::make_unique<MetaDataType<T>>()); });
 
     registerMetaData(std::make_unique<PositionMetaData>());
     registerMetaData(std::make_unique<ProcessorMetaData>());
@@ -231,7 +231,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // clang-format on
 
     // Functor for registering defaults for datatypes
-    util::for_each_type<types>{}([&]<typename T>() {
+    util::for_each_type<types>{}([&]<typename T> {
         registerDefaultsForScalarDataType<T>();
         registerDefaultsForScalarDataType<std::vector<T>>();
     });
@@ -279,7 +279,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
                                     double, dvec2, dvec3, dvec4, dmat2, dmat3, dmat4,
                                     glm::i64, glm::fquat, glm::dquat>;
     // clang-format on
-    util::for_each_type<OrdinalTypes>{}([&]<typename T>() {
+    util::for_each_type<OrdinalTypes>{}([&]<typename T> {
         registerProperty<OrdinalProperty<T>>();
         registerProperty<OrdinalRefProperty<T>>();
         registerProperty<OrdinalOptProperty<T>>();
@@ -287,14 +287,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Register MinMaxProperty widgets
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
-    util::for_each_type<ScalarTypes>{}(
-        [&]<typename T>() { registerProperty<MinMaxProperty<T>>(); });
+    util::for_each_type<ScalarTypes>{}([&]<typename T> { registerProperty<MinMaxProperty<T>>(); });
 
     // Register option property widgets
     using OptionTypes = std::tuple<char, unsigned char, unsigned int, int, size_t, float, double,
                                    std::string, FileExtension>;
-    util::for_each_type<OptionTypes>{}(
-        [&]<typename T>() { registerProperty<OptionProperty<T>>(); });
+    util::for_each_type<OptionTypes>{}([&]<typename T> { registerProperty<OptionProperty<T>>(); });
 
     registerProperty<IsoValueProperty>();
     registerProperty<IsoTFProperty>();
@@ -335,7 +333,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // arguments like: ConverterRegFunctor<float, float>(*this), ConverterRegFunctor<float,
     // double>(*this), ...
 
-    const auto ordinalLikeConverters = [&]<typename T, typename U>() {
+    const auto ordinalLikeConverters = [&]<typename T, typename U> {
         if constexpr (!std::is_same<T, U>::value) {
             registerPropertyConverter(
                 std::make_unique<
@@ -362,7 +360,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type_pair<Mat3s, Mat3s>{}(ordinalLikeConverters);
     util::for_each_type_pair<Mat4s, Mat4s>{}(ordinalLikeConverters);
 
-    const auto ordinalOptConverters = [&]<typename T>() {
+    const auto ordinalOptConverters = [&]<typename T> {
         registerPropertyConverter(
             std::make_unique<
                 OrdinalToOrdinalOptConverter<OrdinalProperty<T>, OrdinalOptProperty<T>>>());
@@ -378,12 +376,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<Mat3s>{}(ordinalOptConverters);
     util::for_each_type<Mat4s>{}(ordinalOptConverters);
 
-    const auto scalarStringConverter = [&]<typename T>() {
+    const auto scalarStringConverter = [&]<typename T> {
         registerPropertyConverter(std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
         registerPropertyConverter(
             std::make_unique<ScalarToStringConverter<OrdinalRefProperty<T>>>());
     };
-    const auto vectorStringConverter = [&]<typename T>() {
+    const auto vectorStringConverter = [&]<typename T> {
         registerPropertyConverter(std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
         registerPropertyConverter(
             std::make_unique<VectorToStringConverter<OrdinalRefProperty<T>>>());
@@ -393,15 +391,15 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<Vec3s>{}(vectorStringConverter);
     util::for_each_type<Vec4s>{}(vectorStringConverter);
 
-    const auto optionStringConverter = [&]<typename T>() {
+    const auto optionStringConverter = [&]<typename T> {
         registerPropertyConverter(std::make_unique<OptionToStringConverter<OptionProperty<T>>>());
     };
 
-    const auto optionIntConverter = [&]<typename T>() {
+    const auto optionIntConverter = [&]<typename T> {
         registerPropertyConverter(std::make_unique<OptionToIntConverter<OptionProperty<T>>>());
     };
 
-    const auto intOptionConverter = [&]<typename T>() {
+    const auto intOptionConverter = [&]<typename T> {
         registerPropertyConverter(std::make_unique<IntToOptionConverter<OptionProperty<T>>>());
     };
 

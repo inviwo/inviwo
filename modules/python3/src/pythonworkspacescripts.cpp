@@ -52,7 +52,7 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
         d.deserialize("PythonScripts", pythonScripts_, "Script",
                       deserializer::MapFunctions{
                           .idTransform = [](std::string_view id) { return std::string{id}; },
-                          .makeNew = []() { return std::string{}; },
+                          .makeNew = [] { return std::string{}; },
                           .onNew = [&](const std::string& key,
                                        std::string& script) { addScript(key, script); },
                           .onRemove = [&](const std::string& key) { removeScript(key); }});
@@ -61,7 +61,7 @@ PythonWorkspaceScripts::PythonWorkspaceScripts(WorkspaceManager& manager)
             notifyObserversOnScriptUpdate(key, script);
         }
     })}
-    , cHandle_{manager.onClear([this]() {
+    , cHandle_{manager.onClear([this] {
         while (!pythonScripts_.empty()) {
             const auto it = pythonScripts_.begin();
             notifyObserversOnScriptRemoved(it->first, it->second);

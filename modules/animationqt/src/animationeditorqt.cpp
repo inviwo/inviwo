@@ -286,7 +286,7 @@ void AnimationEditorQt::copy() {
 }
 
 void AnimationEditorQt::paste(std::optional<QPointF> scenePos, QGraphicsView* view) {
-    const auto targetTime = [&]() {
+    const auto targetTime = [&] {
         if (!scenePos) {
             return controller_.getCurrentTime();
         } else {
@@ -413,11 +413,11 @@ void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     {
         auto* cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), "Cu&t");
         cutAction->setEnabled(!selection.empty());
-        connect(cutAction, &QAction::triggered, this, [this]() { cut(); });
+        connect(cutAction, &QAction::triggered, this, [this] { cut(); });
 
         auto* copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
         copyAction->setEnabled(!selection.empty());
-        connect(copyAction, &QAction::triggered, this, [this]() { copy(); });
+        connect(copyAction, &QAction::triggered, this, [this] { copy(); });
 
         auto* pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
         const auto* clipboard = QApplication::clipboard();
@@ -425,11 +425,11 @@ void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             clipboard->mimeData() &&
             (clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframes)) ||
              clipboard->mimeData()->hasFormat(QString::fromUtf8(mimeKeyframeSequences))));
-        connect(pasteAction, &QAction::triggered, this, [this, pos, view]() { paste(pos, view); });
+        connect(pasteAction, &QAction::triggered, this, [this, pos, view] { paste(pos, view); });
 
         const auto* selectAllAction =
             menu.addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
-        connect(selectAllAction, &QAction::triggered, this, [this]() { selectAll(); });
+        connect(selectAllAction, &QAction::triggered, this, [this] { selectAll(); });
     }
     menu.addSeparator();
     {
@@ -439,9 +439,9 @@ void AnimationEditorQt::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         deleteAction->setEnabled(!selection.empty());
         connect(deleteAction, &QAction::triggered, this,
-                [this, selection]() { deleteItems(selection); });
+                [this, selection] { deleteItems(selection); });
 
-        connect(clearAction, &QAction::triggered, this, [this]() { deleteItems(items()); });
+        connect(clearAction, &QAction::triggered, this, [this] { deleteItems(items()); });
     }
 
     if (menu.exec(e->screenPos())) {

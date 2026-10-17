@@ -67,7 +67,7 @@ public:
     virtual void activate() override { glfwMakeContextCurrent(win_); }
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override {
         auto res =
-            dispatchFront([&]() { return std::make_unique<CanvasGLFW>("Background", uvec2(128)); });
+            dispatchFront([&] { return std::make_unique<CanvasGLFW>("Background", uvec2(128)); });
         return res.get();
     }
     virtual Canvas::ContextID activeContext() const override {

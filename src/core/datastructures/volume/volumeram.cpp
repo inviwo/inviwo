@@ -39,7 +39,7 @@ std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const Data
                                            InterpolationType interpolation,
                                            const Wrapping3D& wrapping) {
     return dispatching::singleDispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), [&]<typename T>() {
+        format->getId(), [&]<typename T> {
             return std::make_shared<VolumeRAMPrecision<T>>(static_cast<T*>(dataPtr), dimensions,
                                                            swizzleMask, interpolation, wrapping);
         });

@@ -90,7 +90,7 @@ ImageExport::ImageExport(InviwoApplication* app)
 
     this->port_.setOutportDeterminesSize(outportDeterminesSize_);
 
-    imageSize_.onChange([this]() { sendResizeEvent(); });
+    imageSize_.onChange([this] { sendResizeEvent(); });
 }
 const ProcessorInfo& ImageExport::getProcessorInfo() const { return processorInfo_; }
 

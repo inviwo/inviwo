@@ -45,7 +45,7 @@ std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* fo
                                            BufferUsage usage, BufferTarget target) {
 
     return dispatching::singleDispatch<std::shared_ptr<BufferRAM>, dispatching::filter::All>(
-        format->getId(), [&]<typename T>() -> std::shared_ptr<BufferRAM> {
+        format->getId(), [&]<typename T> -> std::shared_ptr<BufferRAM> {
             switch (target) {
                 case BufferTarget::Index:
                     return std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(size,

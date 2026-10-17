@@ -153,7 +153,7 @@ RandomMeshGenerator::RandomMeshGenerator()
     camera_.setInvalidationLevel(InvalidationLevel::Valid);
     camera_.setCollapsed(true);
 
-    reseed_.onChange([&]() {
+    reseed_.onChange([&] {
         seed_.set(static_cast<glm::i64>(rand(0.0f, static_cast<float>(seed_.getMaxValue()))));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
     });
@@ -162,11 +162,11 @@ RandomMeshGenerator::RandomMeshGenerator()
 void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
-    const auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
-    const auto randSize = [&]() { return size_.get() * randVec3(0.1f, 1.0f); };
-    const auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
-    const auto randDir = [&]() { return glm::normalize(randVec3()); };
-    const auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
+    const auto randPos = [&] { return randVec3(-scale_.get(), scale_.get()); };
+    const auto randSize = [&] { return size_.get() * randVec3(0.1f, 1.0f); };
+    const auto randColor = [&] { return vec4(randVec3(0.5f, 1.0f), 1); };
+    const auto randDir = [&] { return glm::normalize(randVec3()); };
+    const auto randScale = [&] { return size_.get() * rand(0.1f, 1.0f); };
 
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified();
 

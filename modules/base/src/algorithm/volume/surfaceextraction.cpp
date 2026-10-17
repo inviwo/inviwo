@@ -96,7 +96,7 @@ void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexB
 size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& positions,
                  std::vector<vec3>& normals, const vec3 pos) {
     auto nearest = vertexTree.findNearest(vec3(pos));
-    const auto nearestPos = [&]() {
+    const auto nearestPos = [&] {
         return vec3{nearest->getPosition()[0], nearest->getPosition()[1],
                     nearest->getPosition()[2]};
     };

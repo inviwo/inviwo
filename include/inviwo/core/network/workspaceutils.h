@@ -48,13 +48,13 @@ enum class DryRun { Yes, No };
 
 IVW_CORE_API size_t updateWorkspaces(
     InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
-    std::function<void()> updateGui = []() {}, size_t current = 0, size_t total = 0);
+    std::function<void()> updateGui = [] {}, size_t current = 0, size_t total = 0);
 
 IVW_CORE_API void updateExampleWorkspaces(
-    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
+    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = [] {});
 
 IVW_CORE_API void updateRegressionWorkspaces(
-    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
+    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = [] {});
 
 }  // namespace util
 

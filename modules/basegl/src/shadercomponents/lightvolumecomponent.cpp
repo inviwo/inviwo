@@ -75,8 +75,8 @@ LightVolumeComponent::LightVolumeComponent(Processor& processor, std::string_vie
 
     material_.addProperties(ambientColor_, diffuseColor_, specularColor_, specularExponent_);
 
-    lightVolume_.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
-    lightVolume_.onDisconnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
+    lightVolume_.onConnect([&] { processor.invalidate(InvalidationLevel::InvalidResources); });
+    lightVolume_.onDisconnect([&] { processor.invalidate(InvalidationLevel::InvalidResources); });
 }
 
 std::string_view LightVolumeComponent::getName() const { return lightVolume_.getIdentifier(); }

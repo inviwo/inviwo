@@ -356,7 +356,7 @@ void BaseNumberWidget::changeEvent(QEvent* event) {
 }
 
 void BaseNumberWidget::updateText() {
-    const QString str = [this]() {
+    const QString str = [this] {
         if (clearable_ && isEmpty()) return QString{};
         if (isReadOnly() || !isEnabled()) return getPrefixedText();
         return getTextFromValue(true);

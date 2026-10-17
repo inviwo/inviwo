@@ -318,7 +318,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     }
 
     // Check if point is within any desktops rect (with some extra padding applied).
-    const bool withinAnyDesktop = [&]() {
+    const bool withinAnyDesktop = [&] {
         if (const auto* screen = QGuiApplication::screenAt(pos)) {
             static constexpr QMargins padding{0, 0, 10, 10};
             return screen->availableGeometry().marginsRemoved(padding).contains(pos);
@@ -445,13 +445,13 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
         std::ostringstream oss;
         oss << name << (visible ? " (Visible)" : "");
         const auto* copyAction = copy->addAction(oss.str().c_str());
-        QAction::connect(copyAction, &QAction::triggered, [layer]() {
+        QAction::connect(copyAction, &QAction::triggered, [layer] {
             rendercontext::activateDefault();
             QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
         });
 
         const auto* saveAction = save->addAction(oss.str().c_str());
-        QAction::connect(saveAction, &QAction::triggered, [layer]() { util::saveLayer(*layer); });
+        QAction::connect(saveAction, &QAction::triggered, [layer] { util::saveLayer(*layer); });
     };
 
     const auto nLayers = image.getNumberOfColorLayers();
@@ -466,7 +466,7 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 
 void addViewActions(QMenu& menu, EventPropagator* ep) {
     const auto prop = [&](auto action) {
-        return [ep, action]() {
+        return [ep, action] {
             ViewEvent e{action};
             ep->propagateEvent(&e, nullptr);
         };

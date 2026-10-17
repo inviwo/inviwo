@@ -76,12 +76,12 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
 
     minIndex_.setSemantics(PropertySemantics::Text);
     maxIndex_.setSemantics(PropertySemantics::Text);
-    minIndex_.onChange([this]() {
+    minIndex_.onChange([this] {
         if (rangeSelection_.isChecked()) {
             updateFileList();
         }
     });
-    maxIndex_.onChange([this]() {
+    maxIndex_.onChange([this] {
         if (rangeSelection_.isChecked()) {
             updateFileList();
         }
@@ -92,12 +92,12 @@ FilePatternProperty::FilePatternProperty(std::string_view identifier, std::strin
     rangeSelection_.setCollapsed(true);
     rangeSelection_.setCurrentStateAsDefault();
 
-    const auto update = [this]() { updateFileList(); };
+    const auto update = [this] { updateFileList(); };
     pattern_.onChange(update);
     rangeSelection_.onChange(update);
 
-    sort_.onChange([this]() { sort(); });
-    matchShorterNumbers_.onChange([this]() { updateFileList(); });
+    sort_.onChange([this] { sort(); });
+    matchShorterNumbers_.onChange([this] { updateFileList(); });
     if (!pattern_.get().empty()) {
         updateFileList();
     }
@@ -131,21 +131,21 @@ FilePatternProperty::FilePatternProperty(const FilePatternProperty& rhs)
     rangeSelection_.addProperty(minIndex_);
     rangeSelection_.addProperty(maxIndex_);
 
-    minIndex_.onChange([this]() {
+    minIndex_.onChange([this] {
         if (rangeSelection_.isChecked()) {
             updateFileList();
         }
     });
-    maxIndex_.onChange([this]() {
+    maxIndex_.onChange([this] {
         if (rangeSelection_.isChecked()) {
             updateFileList();
         }
     });
-    const auto update = [this]() { updateFileList(); };
+    const auto update = [this] { updateFileList(); };
     pattern_.onChange(update);
     rangeSelection_.onChange(update);
-    sort_.onChange([this]() { sort(); });
-    matchShorterNumbers_.onChange([this]() { updateFileList(); });
+    sort_.onChange([this] { sort(); });
+    matchShorterNumbers_.onChange([this] { updateFileList(); });
     if (!pattern_.get().empty()) {
         updateFileList();
     }

@@ -68,7 +68,7 @@ struct TestProcessor : Processor {
         , callbacks{std::move(callbacks)} {
         addProperty(prop);
 
-        prop.onChange([this]() {
+        prop.onChange([this] {
             if (this->callbacks.onPropModified) this->callbacks.onPropModified(*this);
         });
     }

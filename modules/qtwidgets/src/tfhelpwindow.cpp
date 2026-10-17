@@ -173,7 +173,7 @@ exported and imported.</p>
 TFMenuHelper::TFMenuHelper() {
     if (utilqt::getApplicationMainWindow()) {
         showAction_ = std::make_unique<QAction>(QString("&Transfer Function"), nullptr);
-        QObject::connect(showAction_.get(), &QAction::triggered, this, [this]() {
+        QObject::connect(showAction_.get(), &QAction::triggered, this, [this] {
             auto window = getWindow();
             window->activateWindow();
             window->raise();
@@ -215,7 +215,7 @@ TFHelpWindow* TFMenuHelper::getWindow() const {
 
         // release unique pointer of window when it is about to be destroyed by Qt
         QObject::connect(helpWindow_.get(), &TFHelpWindow::destroyed, this,
-                         [this]() { helpWindow_.release(); });
+                         [this] { helpWindow_.release(); });
     }
 
     return helpWindow_.get();

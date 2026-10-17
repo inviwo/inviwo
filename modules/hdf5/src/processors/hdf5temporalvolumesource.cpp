@@ -121,7 +121,7 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     , selection_{"selection", "Selection", maxRank}
     , timeGroup_{"timeGroup", "Time"}
     , timeDimension_{"timeDimension", "Time Dimension",
-                     []() {
+                     [] {
                          std::vector<OptionPropertyOption<size_t>> opts;
                          opts.reserve(maxRank);
                          for (size_t i = 0; i < maxRank; ++i) {
@@ -208,7 +208,7 @@ void HDF5ToTemporalVolume::process() try {
         selection[timeIdx].count = 1;
     }
 
-    auto basis = [&]() {
+    auto basis = [&] {
         switch (basisSelection_.getSelectedIndex()) {
             case 0: {  // User defined basis
                 return basis_.get();

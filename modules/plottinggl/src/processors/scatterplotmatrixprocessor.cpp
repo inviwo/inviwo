@@ -160,7 +160,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     addProperties(scatterPlotproperties_, color_, selectedX_, selectedY_, labels_, correlationTF_,
                   showCorrelationValues_, parameters_, mouseEvent_);
 
-    color_.onChange([&]() {
+    color_.onChange([&] {
         if (dataFrame_.hasData()) {
             const auto index = color_.getSelectedValue();
             const auto* colorCol =
@@ -176,8 +176,8 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     labels_.addProperties(fontColor_, fontFace_, fontSize_, fontFaceStats_, statsFontSize_);
     fontColor_.setSemantics(PropertySemantics::Color);
 
-    const auto updateLabels = [&]() { labelsTextures_.clear(); };
-    const auto updateStatsLabels = [&]() { statsTextures_.clear(); };
+    const auto updateLabels = [&] { labelsTextures_.clear(); };
+    const auto updateStatsLabels = [&] { statsTextures_.clear(); };
     fontFace_.onChange(updateLabels);
     fontSize_.onChange(updateLabels);
     fontColor_.onChange(updateLabels);
@@ -187,14 +187,14 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     statsFontSize_.onChange(updateStatsLabels);
     correlationTF_.onChange(updateStatsLabels);
 
-    scatterPlotproperties_.onChange([&]() {
+    scatterPlotproperties_.onChange([&] {
         RenderContext::getPtr()->activateDefaultRenderContext();
         for (auto& p : plots_) {
             p->properties_.set(&scatterPlotproperties_);
         }
     });
 
-    parameters_.onChange([&]() {
+    parameters_.onChange([&] {
         RenderContext::getPtr()->activateDefaultRenderContext();
         plots_.clear();
         labelsTextures_.clear();
@@ -216,7 +216,7 @@ void ScatterPlotMatrixProcessor::process() {
             p->properties_.set(&scatterPlotproperties_);
         }
 
-        indexToRowMap_ = [&]() {
+        indexToRowMap_ = [&] {
             const auto iCol = dataFrame_.getData()->getIndexColumn();
             const auto& indexCol =
                 iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
@@ -300,7 +300,7 @@ void ScatterPlotMatrixProcessor::createScatterPlots() {
     if (outport_.hasData()) {
         const auto& dataFrame = *dataFrame_.getData();
 
-        const auto colorCol = [&]() -> std::shared_ptr<const Column> {
+        const auto colorCol = [&] -> std::shared_ptr<const Column> {
             const auto idx = color_.get();
             if (idx == -1) {
                 return nullptr;

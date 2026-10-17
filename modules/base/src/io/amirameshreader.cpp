@@ -142,7 +142,7 @@ std::shared_ptr<BufferBase> parseBufferData(std::string_view data,
         dataSpec.format.numericType, dataSpec.format.numComponents, dataSpec.format.precision);
 
     return dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::All>(
-        format->getId(), [data]<typename T>() {
+        format->getId(), [data]<typename T> {
             const auto end = data.find('@');
             std::vector<T> vec;
 

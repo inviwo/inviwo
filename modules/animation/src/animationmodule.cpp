@@ -121,14 +121,14 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
                              dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
-    util::for_each_type<Types>{}([&]<typename T>() {
+    util::for_each_type<Types>{}([&]<typename T> {
         using PropertyType = OrdinalProperty<T>;
         using ValueType = typename PropertyType::value_type;
         propertyHelper<PropertyType>();
         interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
     });
-    util::for_each_type<Types>{}([&]<typename T>() {
+    util::for_each_type<Types>{}([&]<typename T> {
         using PropertyType = OrdinalRefProperty<T>;
         using ValueType = typename PropertyType::value_type;
         propertyHelper<PropertyType>();
@@ -138,7 +138,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     // Register MinMaxProperties
     using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
-    util::for_each_type<ScalarTypes>{}([&]<typename T>() {
+    util::for_each_type<ScalarTypes>{}([&]<typename T> {
         using PropertyType = MinMaxProperty<T>;
         using ValueType = typename PropertyType::value_type;
         propertyHelper<PropertyType>();
@@ -148,13 +148,13 @@ AnimationModule::AnimationModule(InviwoApplication* app)
 
     // Register constant interpolation (no interpolation) properties
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
-        [&]<typename PropertyType>() {
+        [&]<typename PropertyType> {
             propertyHelper<PropertyType>();
             using ValueType = typename PropertyType::value_type;
             interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
         });
 
-    const auto optionReghelper = [&]<typename T>() {
+    const auto optionReghelper = [&]<typename T> {
         using PropertyType = OptionProperty<T>;
         using ValueType = typename PropertyType::value_type;
         propertyHelper<PropertyType>();

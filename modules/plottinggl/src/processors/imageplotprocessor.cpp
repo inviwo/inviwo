@@ -140,7 +140,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     addProperties(margins_, axisMargin_, plotImageSize_, rangeMode_, customRanges_, axisStyle_,
                   xAxis_, yAxis_, imageInteraction_);
 
-    const auto updateCallback = [&]() { updateViewport(); };
+    const auto updateCallback = [&] { updateViewport(); };
 
     margins_.onChange(updateCallback);
     axisMargin_.onChange(updateCallback);
@@ -149,7 +149,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     yAxis_.setCaption("y");
 
     const auto linkAxisRanges = [this](const DoubleVec2Property& from, DoubleVec2Property& to) {
-        auto func = [&]() {
+        auto func = [&] {
             if (!propertyUpdate_ && (rangeMode_.getSelectedValue() == AxisRangeMode::Custom)) {
                 const util::KeepTrueWhileInScope b(&propertyUpdate_);
                 to.set(from.get());
@@ -164,7 +164,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     rangeYaxis_.onChange(linkAxisRanges(rangeYaxis_, yAxis_.range_));
 
     // sync ranges when custom range is enabled or disabled
-    rangeMode_.onChange([this]() { adjustRanges(); });
+    rangeMode_.onChange([this] { adjustRanges(); });
 
     customRanges_.readonlyDependsOn(
         rangeMode_, [](const auto& p) { return p.getSelectedValue() != AxisRangeMode::Custom; });

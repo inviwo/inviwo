@@ -403,7 +403,7 @@ void BufferRAMPrecision<T, Target>::clear() {
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
     return dispatching::singleDispatch<Result, Predicate>(
-        getDataFormatId(), [&]<typename T>() -> Result {
+        getDataFormatId(), [&]<typename T> -> Result {
             switch (getBufferTarget()) {
                 case BufferTarget::Index:
                     return callable(static_cast<BufferRAMPrecision<T, BufferTarget::Index>*>(this),
@@ -419,7 +419,7 @@ auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
     return dispatching::singleDispatch<Result, Predicate>(
-        getDataFormatId(), [&]<typename T>() -> Result {
+        getDataFormatId(), [&]<typename T> -> Result {
             switch (getBufferTarget()) {
                 case BufferTarget::Index:
                     return callable(

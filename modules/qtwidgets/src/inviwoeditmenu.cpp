@@ -71,7 +71,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
     for (auto& action : actions_) {
         action.second->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action.second->setEnabled(true);
-        connect(action.second, &QAction::triggered, this, [this, type = action.first]() {
+        connect(action.second, &QAction::triggered, this, [this, type = action.first] {
             if (const auto item = getFocusItem()) {
                 item->invoke(type);
             }
@@ -79,7 +79,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
     }
 
     // enable the actions currently supported by the item in focus
-    connect(this, &QMenu::aboutToShow, this, [this]() {
+    connect(this, &QMenu::aboutToShow, this, [this] {
         if (const auto item = getFocusItem()) {
             for (auto& action : actions_) {
                 action.second->setEnabled(item->enabled(action.first));
@@ -92,7 +92,7 @@ InviwoEditMenu::InviwoEditMenu(QWidget* parent) : QMenu(tr("&Edit"), parent) {
     });
 
     // need to enable all for potential shortcut use to function
-    connect(this, &QMenu::aboutToHide, this, [this]() {
+    connect(this, &QMenu::aboutToHide, this, [this] {
         for (auto& action : actions_) {
             action.second->setEnabled(true);
         }
