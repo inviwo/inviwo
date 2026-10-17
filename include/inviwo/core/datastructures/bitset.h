@@ -101,14 +101,17 @@ public:
 
     BitSet(const std::vector<bool>& v);
 
-    template <typename InputIt, class = std::enable_if_t<is_iterator<InputIt>::value>>
-    BitSet(InputIt begin, InputIt end) : BitSet() {
+    template <typename InputIt>
+    BitSet(InputIt begin, InputIt end)
+        requires (is_iterator<InputIt>::value)
+        : BitSet() {
         add(begin, end);
     }
 
-    template <typename... Ts, class = std::enable_if_t<
-                                  std::conjunction<std::is_convertible<Ts, uint32_t>...>::value>>
-    BitSet(Ts&&... values) : BitSet() {
+    template <typename... Ts>
+    BitSet(Ts&&... values)
+        requires (std::conjunction<std::is_convertible<Ts, uint32_t>...>::value)
+        : BitSet() {
         add(values...);
     }
 
@@ -157,8 +160,10 @@ public:
     void add(std::span<const uint32_t> span);
     void add(const std::vector<bool>& v);
 
-    template <typename InputIt, class = typename std::enable_if_t<is_iterator<InputIt>::value>>
-    void add(InputIt begin, InputIt end) {
+    template <typename InputIt>
+    void add(InputIt begin, InputIt end)
+        requires is_iterator<InputIt>::value
+    {
         while (begin != end) {
             addSingle(*begin);
             ++begin;
@@ -170,9 +175,10 @@ public:
      *
      * @param values  one or more values
      */
-    template <typename... Ts,
-              typename = std::enable_if_t<std::conjunction_v<std::is_convertible<Ts, uint32_t>...>>>
-    void add(Ts&&... values) {
+    template <typename... Ts>
+    void add(Ts&&... values)
+        requires(std::conjunction_v<std::is_convertible<Ts, uint32_t>...>)
+    {
         (addSingle(static_cast<uint32_t>(values)), ...);
     }
 

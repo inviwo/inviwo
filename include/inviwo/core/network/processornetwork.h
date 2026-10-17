@@ -104,8 +104,10 @@ public:
      * @param[in] processor The Processor to be added.
      * @returns A pointer to the added processor of type T
      */
-    template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>>
-    T* addProcessor(std::shared_ptr<T> processor) {
+    template <typename T>
+    T* addProcessor(std::shared_ptr<T> processor)
+        requires(std::is_base_of_v<Processor, T>)
+    {
         return static_cast<T*>(addProcessor(std::shared_ptr<Processor>(std::move(processor))));
     }
 

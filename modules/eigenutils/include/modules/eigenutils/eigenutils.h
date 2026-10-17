@@ -42,9 +42,10 @@
 
 namespace inviwo::util {
 
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-auto glm2eigen(const T& elem)
-    -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
+template <typename T>
+auto glm2eigen(const T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1>
+    requires(util::rank<T>::value == 1)
+{
     Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
@@ -52,9 +53,11 @@ auto glm2eigen(const T& elem)
     return a;
 }
 
-template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+template <typename T>
 auto glm2eigen(const T& elem)
-    -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> {
+    -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value>
+    requires(util::rank<T>::value == 2)
+{
     Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, util::extent<T, 1>::value> a;
     for (size_t row = 0; row < util::extent<T, 0>::value; row++) {
         for (size_t col = 0; col < util::extent<T, 1>::value; col++) {
@@ -64,10 +67,10 @@ auto glm2eigen(const T& elem)
     return a;
 }
 
-template <
-    typename T, unsigned Rows, unsigned Cols,
-    typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4), int>::type = 0>
-auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
+template <typename T, unsigned Rows, unsigned Cols>
+auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m)
+    requires(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4)
+{
     using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
     GlmMatrix outm;
     for (size_t row = 0; row < Rows; row++) {
@@ -78,9 +81,10 @@ auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     return outm;
 }
 
-template <typename T, unsigned Rows, unsigned Cols,
-          typename std::enable_if<(Rows >= 2 && Rows <= 4 && Cols == 1), int>::type = 0>
-auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
+template <typename T, unsigned Rows, unsigned Cols>
+auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m)
+    requires(Rows >= 2 && Rows <= 4 && Cols == 1)
+{
     using GlmVector = typename util::glmtype<T, Rows, 1>::type;
     GlmVector outv;
     for (size_t row = 0; row < Rows; row++) {
@@ -89,9 +93,10 @@ auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m) {
     return outv;
 }
 
-template <typename T, unsigned Rows, unsigned Cols,
-          typename std::enable_if<(Cols >= 2 && Cols <= 4 && Rows == 1), int>::type = 0>
-auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
+template <typename T, unsigned Rows, unsigned Cols>
+auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m)
+    requires(Cols >= 2 && Cols <= 4 && Rows == 1)
+{
     using GlmVector = typename util::glmtype<T, Cols, 1>::type;
     GlmVector outv;
     for (size_t row = 0; row < Cols; row++) {

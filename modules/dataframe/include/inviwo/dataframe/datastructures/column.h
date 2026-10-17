@@ -665,8 +665,10 @@ void TemplateColumn<T>::add(const T& value) {
 
 namespace detail {
 
-template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* buffer, std::string_view value)
+    requires std::is_integral<T>::value
+{
     T result;
     if (value.empty()) {
         result = T{0};  // no special value indicating missing data for integral types
@@ -681,8 +683,10 @@ void add(Buffer<T>* buffer, std::string_view value) {
     buffer->getEditableRAMRepresentation()->add(result);
 }
 // Specialization for float and double types, add NaN instead of throwing an error
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* buffer, std::string_view value)
+    requires std::is_floating_point<T>::value
+{
     T result;
     std::stringstream stream;
     stream << value;
@@ -694,10 +698,10 @@ void add(Buffer<T>* buffer, std::string_view value) {
     }
 }
 
-template <typename T,
-          typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
-                                  int>::type = 0>
-void add(Buffer<T>* /*buffer*/, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* /*buffer*/, std::string_view value)
+    requires(!std::is_integral<T>::value && !std::is_floating_point<T>::value)
+{
     throw InvalidConversion(
         fmt::format("conversion to target type not implemented (\"{}\")", value));
 }

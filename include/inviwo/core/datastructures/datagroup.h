@@ -95,21 +95,19 @@ private:
 };
 
 namespace detail {
-template <typename Repr, typename T,
-          typename std::enable_if<!std::is_abstract<T>::value &&
-                                      std::is_default_constructible<T>::value &&
-                                      std::is_base_of<Repr, T>::value,
-                                  int>::type = 0>
-std::shared_ptr<T> createGroupRepresentation() {
+template <typename Repr, typename T>
+std::shared_ptr<T> createGroupRepresentation()
+    requires(!std::is_abstract<T>::value && std::is_default_constructible<T>::value &&
+             std::is_base_of<Repr, T>::value)
+{
     return std::make_shared<T>();
 }
 
-template <typename Repr, typename T,
-          typename std::enable_if<std::is_abstract<T>::value ||
-                                      !std::is_default_constructible<T>::value ||
-                                      !std::is_base_of<Repr, T>::value,
-                                  int>::type = 0>
-std::shared_ptr<T> createGroupRepresentation() {
+template <typename Repr, typename T>
+std::shared_ptr<T> createGroupRepresentation()
+    requires(std::is_abstract<T>::value || !std::is_default_constructible<T>::value ||
+             !std::is_base_of<Repr, T>::value)
+{
     return std::shared_ptr<T>();
 }
 }  // namespace detail

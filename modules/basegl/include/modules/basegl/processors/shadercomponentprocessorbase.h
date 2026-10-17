@@ -67,9 +67,10 @@ public:
      * added to this in the order registered.
      *
      */
-    template <typename... Ts, typename = std::enable_if_t<
-                                  std::conjunction_v<std::is_base_of<ShaderComponent, Ts>...>>>
-    void registerComponents(Ts&... comps) {
+    template <typename... Ts>
+    void registerComponents(Ts&... comps)
+        requires(std::conjunction_v<std::is_base_of<ShaderComponent, Ts>...>)
+    {
         (registerComponent(comps), ...);
     }
 

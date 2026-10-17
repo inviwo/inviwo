@@ -64,16 +64,16 @@ class IVW_MODULE_OPENGL_API Build {
 
 public:
     // Allow explicit conversion from anything bool like
-    template <
-        typename T,
-        std::enable_if_t<!std::is_same_v<T, bool> && std::is_constructible_v<bool, T>, int> = 0>
-    explicit constexpr Build(T value) noexcept : value_{value} {}
+    template <typename T>
+    explicit constexpr Build(T value) noexcept
+        requires(!std::is_same_v<T, bool> && std::is_constructible_v<bool, T>)
+        : value_{value} {}
 
     // Allow implicit construction only from bool
     // clang-format off
-    template <typename T, std::enable_if_t<std::is_same_v<T, bool>, int> = 0>
+    template <typename T>
     [[deprecated("Use Shader::Build::Yes or Shader::Build::No, instead of a true or false")]]
-    constexpr explicit Build(T value) noexcept : value_{value} {}
+    constexpr explicit Build(T value) noexcept requires (std::is_same_v<T, bool>) : value_{value} {}
     // clang-format on
 
     explicit constexpr operator bool() const { return value_; }

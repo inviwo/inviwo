@@ -350,14 +350,17 @@ private:
         for (auto& elem : v) res.push_back(elem.get());
         return res;
     }
-    template <typename T, typename std::enable_if<std::is_base_of<Inport, T>::value, int>::type = 0>
-    void registerPortInternal() {
+    template <typename T>
+    void registerPortInternal()
+        requires std::is_base_of<Inport, T>::value
+    {
         registerInport(std::make_unique<InportFactoryObjectTemplate<T>>());
     }
 
-    template <typename T,
-              typename std::enable_if<std::is_base_of<Outport, T>::value, int>::type = 0>
-    void registerPortInternal() {
+    template <typename T>
+    void registerPortInternal()
+        requires std::is_base_of<Outport, T>::value
+    {
         registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
 

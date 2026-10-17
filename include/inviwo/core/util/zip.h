@@ -76,21 +76,24 @@ struct proxy {
         return std::get<N>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<1 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) first() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) first() const
+        requires(1 <= std::tuple_size<Us>::value)
+    {
         return std::get<0>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<2 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) second() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) second() const
+        requires(2 <= std::tuple_size<Us>::value)
+    {
         return std::get<1>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) third() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) third() const
+        requires(3 <= std::tuple_size<Us>::value)
+    {
         return std::get<2>(data);
     }
 

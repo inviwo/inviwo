@@ -159,10 +159,10 @@ struct IndirectIterator {
     constexpr IndirectIterator(Iter iterator) noexcept(std::is_nothrow_move_constructible_v<Iter>)
         : iterator_(std::move(iterator)) {}
 
-    template <typename OtherIter,
-              typename = std::enable_if_t<std::is_convertible_v<OtherIter, Iter>>>
+    template <typename OtherIter>
     constexpr IndirectIterator(IndirectIterator<OtherIter> iterator) noexcept(
         std::is_nothrow_move_constructible_v<Iter>)
+        requires(std::is_convertible_v<OtherIter, Iter>)
         : iterator_(std::move(iterator.base())) {}
 
     constexpr IndirectIterator(const IndirectIterator&) noexcept(
