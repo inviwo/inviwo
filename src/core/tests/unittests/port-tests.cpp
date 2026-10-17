@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -75,7 +76,7 @@ const ProcessorInfo OutportTestProcessor::processorInfo_{
 
 struct VectorOutportTestProcessor : Processor {
     VectorOutportTestProcessor(std::string_view id, std::vector<int> val)
-        : Processor(id, id), outport{"outport"}, val{val} {
+        : Processor(id, id), outport{"outport"}, val{std::move(val)} {
         addPort(outport);
     }
 

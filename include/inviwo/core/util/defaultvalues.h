@@ -40,13 +40,19 @@
 
 #include <string_view>
 #include <string>
+#include <utility>
 
 namespace inviwo {
 
 template <typename T, size_t N>
 struct InviwoDefaultData {
     constexpr InviwoDefaultData(StaticString<N> aname, uvec2 adim, T aval, T amin, T amax, T ainc)
-        : name{aname}, dim{adim}, val{aval}, min{amin}, max{amax}, inc{ainc} {}
+        : name{aname}
+        , dim{adim}
+        , val{std::move(aval)}
+        , min{std::move(amin)}
+        , max{std::move(amax)}
+        , inc{std::move(ainc)} {}
 
     StaticString<N> name;
     uvec2 dim;

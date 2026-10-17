@@ -43,6 +43,7 @@
 #include <inviwo/core/util/transformiterator.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
@@ -70,7 +71,7 @@
 namespace inviwo {
 
 SuperPropertyMimeData::SuperPropertyMimeData(std::vector<Property*> someProperties)
-    : QMimeData{}, properties{someProperties} {
+    : QMimeData{}, properties{std::move(someProperties)} {
 
     const auto str = utilqt::toQString(fmt::format(
         "{}", fmt::join(util::transformRange(properties, [](Property* p) { return p->getPath(); }),

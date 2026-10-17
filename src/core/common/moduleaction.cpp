@@ -29,11 +29,13 @@
 
 #include <inviwo/core/common/moduleaction.h>
 
+#include <utility>
+
 namespace inviwo {
 
-ModuleCallbackAction::ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
+ModuleCallbackAction::ModuleCallbackAction(std::string actionName, InviwoModule* module,
                                            ModuleCallBackActionState state)
-    : module_(module), actionName_(actionName), actionState_(state) {}
+    : module_(module), actionName_(std::move(actionName)), actionState_(state) {}
 
 const std::string& ModuleCallbackAction::getActionName() const { return actionName_; }
 

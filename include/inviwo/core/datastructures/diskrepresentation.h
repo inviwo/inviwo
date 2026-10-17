@@ -40,6 +40,7 @@
 #include <memory>
 #include <filesystem>
 #include <stop_token>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -56,7 +57,7 @@ template <typename Repr, typename Self>
 class DiskRepresentation {
 public:
     DiskRepresentation() = default;
-    explicit DiskRepresentation(const std::filesystem::path& srcFile,
+    explicit DiskRepresentation(std::filesystem::path srcFile,
                                 DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
@@ -79,9 +80,9 @@ private:
 };
 
 template <typename Repr, typename Self>
-DiskRepresentation<Repr, Self>::DiskRepresentation(const std::filesystem::path& srcFile,
+DiskRepresentation<Repr, Self>::DiskRepresentation(std::filesystem::path srcFile,
                                                    DiskRepresentationLoader<Repr>* loader)
-    : sourceFile_(srcFile), loader_(loader) {}
+    : sourceFile_(std::move(srcFile)), loader_(loader) {}
 
 template <typename Repr, typename Self>
 DiskRepresentation<Repr, Self>* DiskRepresentation<Repr, Self>::clone() const {

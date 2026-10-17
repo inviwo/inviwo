@@ -34,14 +34,15 @@
 #include <streambuf>
 #include <regex>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include <fmt/format.h>
 
 namespace inviwo::meta {
 
-InviwoModuleRegistration::InviwoModuleRegistration(const std::filesystem::path& aModulecpp)
-    : modulecpp{aModulecpp} {
+InviwoModuleRegistration::InviwoModuleRegistration(std::filesystem::path aModulecpp)
+    : modulecpp{std::move(aModulecpp)} {
     std::ifstream ifs{modulecpp};
     if (!ifs) throw util::makeError("Unable to open module file '{}'", modulecpp.generic_string());
     file = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());

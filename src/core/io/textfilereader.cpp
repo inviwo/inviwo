@@ -33,11 +33,12 @@
 
 #include <thread>
 #include <iostream>
+#include <utility>
 #include <fmt/std.h>
 
 namespace inviwo {
 
-TextFileReader::TextFileReader(const std::filesystem::path& filePath) : filePath_(filePath) {}
+TextFileReader::TextFileReader(std::filesystem::path filePath) : filePath_(std::move(filePath)) {}
 
 std::string TextFileReader::read(const std::filesystem::path& filePath) {
     filePath_ = filePath;

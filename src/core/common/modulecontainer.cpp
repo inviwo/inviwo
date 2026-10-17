@@ -42,6 +42,7 @@
 #include <fmt/std.h>
 
 #include <ranges>
+#include <utility>
 
 namespace inviwo {
 
@@ -105,8 +106,8 @@ ModuleContainer::ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo)
     , factoryObject_{std::move(mfo)}
     , module_{nullptr} {}
 
-ModuleContainer::ModuleContainer(const std::filesystem::path& libFile, bool runtimeReload)
-    : libFile_{libFile}
+ModuleContainer::ModuleContainer(std::filesystem::path libFile, bool runtimeReload)
+    : libFile_{std::move(libFile)}
     , tmpFile_{}
     , protectedModule_{false}
     , protectedLibrary_{false}

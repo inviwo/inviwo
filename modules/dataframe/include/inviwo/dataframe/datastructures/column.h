@@ -534,7 +534,7 @@ private:
 template <typename T>
 TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer,
                                   Unit unit, std::optional<dvec2> range)
-    : header_{header}, unit_{unit}, range_{range}, buffer_{buffer} {}
+    : header_{header}, unit_{unit}, range_{range}, buffer_{std::move(buffer)} {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(std::string_view header, std::vector<T> data, Unit unit,

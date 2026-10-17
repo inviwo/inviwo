@@ -32,6 +32,8 @@
 #include <inviwo/core/interaction/events/eventutil.h>
 #include <inviwo/core/util/glm.h>
 
+#include <utility>
+
 namespace inviwo {
 
 TouchPoint::TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
@@ -104,7 +106,7 @@ dvec3 TouchPoint::ndc() const {
     return {2.0 * posNormalized_.x - 1.0, 2.0 * posNormalized_.y - 1.0, depth_};
 }
 
-TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_(name) {}
+TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_(std::move(name)) {}
 
 TouchEvent::TouchEvent() = default;
 

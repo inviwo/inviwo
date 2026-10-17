@@ -35,14 +35,15 @@
 #include <streambuf>
 #include <regex>
 #include <sstream>
+#include <utility>
 
 #include <fmt/format.h>
 
 namespace inviwo::meta {
 
-InviwoModule::InviwoModule(const std::filesystem::path& path, Config config,
+InviwoModule::InviwoModule(std::filesystem::path path, Config config,
                            std::optional<std::string_view> contents)
-    : config_{config}, path_{path}, cmf_{[&]() {
+    : config_{std::move(config)}, path_{std::move(path)}, cmf_{[&]() {
         if (contents) {
             return cmake::CMakeFile(*contents);
         } else {

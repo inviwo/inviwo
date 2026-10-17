@@ -46,6 +46,7 @@
 #include <modules/cimg/cimgutils.h>
 
 #include <type_traits>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -74,8 +75,8 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::st
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile)
-    : sourceFile_{sourceFile} {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(std::filesystem::path sourceFile)
+    : sourceFile_{std::move(sourceFile)} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 

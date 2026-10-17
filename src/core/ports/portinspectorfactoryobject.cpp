@@ -30,12 +30,14 @@
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
 #include <inviwo/core/ports/portinspector.h>
 
+#include <utility>
+
 namespace inviwo {
 
 PortInspectorFactoryObject::PortInspectorFactoryObject(
-    std::string_view portClassIdentifier, const std::filesystem::path& inspectorWorkspaceFileName)
+    std::string_view portClassIdentifier, std::filesystem::path inspectorWorkspaceFileName)
     : portClassIdentifier_(portClassIdentifier)
-    , inspectorWorkspaceFileName_(inspectorWorkspaceFileName) {}
+    , inspectorWorkspaceFileName_(std::move(inspectorWorkspaceFileName)) {}
 
 std::string_view PortInspectorFactoryObject::getClassIdentifier() const {
     return portClassIdentifier_;

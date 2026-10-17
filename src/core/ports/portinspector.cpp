@@ -41,13 +41,15 @@
 
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo {
 
 PortInspector::PortInspector() = default;
 
 PortInspector::PortInspector(std::string_view portClassIdentifier,
-                             const std::filesystem::path& inspectorWorkspaceFileName)
-    : inspectorNetworkFileName_(inspectorWorkspaceFileName)
+                             std::filesystem::path inspectorWorkspaceFileName)
+    : inspectorNetworkFileName_(std::move(inspectorWorkspaceFileName))
     , portClassIdentifier_(portClassIdentifier) {
 
     // Deserialize the network

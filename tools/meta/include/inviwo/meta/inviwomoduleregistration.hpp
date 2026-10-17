@@ -38,7 +38,7 @@ namespace inviwo::meta {
 
 class INVIWO_META_API InviwoModuleRegistration {
 public:
-    explicit InviwoModuleRegistration(const std::filesystem::path& aModulecpp);
+    explicit InviwoModuleRegistration(std::filesystem::path aModulecpp);
     ~InviwoModuleRegistration();
 
     void addInclude(const std::filesystem::path& incPath);

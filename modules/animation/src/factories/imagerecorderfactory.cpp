@@ -38,6 +38,8 @@
 
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace inviwo::animation {
 
 class ExceptionPropagator {
@@ -92,11 +94,11 @@ private:
 namespace {
 class ImageRecorder : public Recorder {
 public:
-    ImageRecorder(InviwoApplication* app, const std::filesystem::path& dir, std::string_view format,
+    ImageRecorder(InviwoApplication* app, std::filesystem::path dir, std::string_view format,
                   std::shared_ptr<DataWriterType<Layer>> writer)
         : Recorder{}
         , app_{app}
-        , dir_{dir}
+        , dir_{std::move(dir)}
         , format_{format}
         , writer_{std::move(writer)}
         , count_{1} {}

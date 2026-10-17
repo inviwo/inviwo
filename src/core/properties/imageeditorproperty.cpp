@@ -29,12 +29,14 @@
 
 #include <inviwo/core/properties/imageeditorproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 ImageLabel::ImageLabel() : startPoint_(0), rectSize_(0) {}
 
 ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
-    : name_(name), startPoint_(startPoint), rectSize_(rectSize) {}
+    : name_(std::move(name)), startPoint_(startPoint), rectSize_(rectSize) {}
 
 ImageEditorProperty::ImageEditorProperty(const ImageEditorProperty& rhs)
     : FileProperty(rhs), labels_(rhs.labels_), dimensions_(rhs.dimensions_) {}

@@ -47,6 +47,7 @@
 #include <type_traits>
 
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace inviwo {
 
@@ -67,7 +68,7 @@ LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzl
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
-    , data_{data}
+    , data_{std::move(data)}
     , dims_{data_.shape(1), data_.shape(0)} {
 
     gil_.reset();

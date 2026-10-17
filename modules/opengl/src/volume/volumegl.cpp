@@ -40,6 +40,7 @@
 #include <inviwo/core/resourcemanager/resource.h>
 
 #include <type_traits>
+#include <utility>
 
 namespace inviwo {
 
@@ -63,7 +64,8 @@ VolumeGL::VolumeGL(const VolumeReprConfig& config, bool initializeTexture)
                config.wrapping.value_or(VolumeConfig::defaultWrapping),
                initializeTexture} {}
 
-VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex) : VolumeRepresentation{}, texture_(tex) {
+VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex)
+    : VolumeRepresentation{}, texture_(std::move(tex)) {
     IVW_ASSERT(texture_, "The texture should never be nullptr.");
 }
 

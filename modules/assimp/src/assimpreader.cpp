@@ -42,6 +42,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 
@@ -87,8 +88,8 @@ private:
     const std::filesystem::path fileName_;
 
 public:
-    InviwoAssimpLogStream(LogLevel ploglevel, const std::filesystem::path& filename)
-        : loglevel_{ploglevel}, fileName_{filename} {}
+    InviwoAssimpLogStream(LogLevel ploglevel, std::filesystem::path filename)
+        : loglevel_{ploglevel}, fileName_{std::move(filename)} {}
     virtual ~InviwoAssimpLogStream() = default;
 
     void write(const char* message) {

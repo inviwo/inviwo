@@ -30,6 +30,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -119,7 +120,7 @@ Document::PathComponent Document::PathComponent::first() {
 
 Document::PathComponent::PathComponent(
     std::string_view strrep, std::function<ElemVec::const_iterator(const ElemVec&)> matcher)
-    : strrep_(strrep), matcher_(matcher) {}
+    : strrep_(strrep), matcher_(std::move(matcher)) {}
 
 Document::PathComponent::PathComponent(int index)
     : strrep_("Index: " + std::to_string(index))
