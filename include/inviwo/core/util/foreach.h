@@ -35,9 +35,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
@@ -140,6 +138,4 @@ void forEachParallel(const Iterable& iterable, Callback&& callback, size_t jobs 
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

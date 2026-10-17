@@ -29,15 +29,11 @@
 
 #include <modules/animation/factories/interpolationfactoryobject.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 InterpolationFactoryObject::InterpolationFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
 std::string_view InterpolationFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

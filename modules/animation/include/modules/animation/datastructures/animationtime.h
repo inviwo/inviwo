@@ -31,12 +31,8 @@
 #include <chrono>
 #include <ratio>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 using Seconds = std::chrono::duration<double, std::ratio<1>>;
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

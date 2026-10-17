@@ -34,14 +34,10 @@
 
 #include <Qt>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_MODULE_QTWIDGETS_API MouseCursor fromCursorShape(Qt::CursorShape cursor);
 
 IVW_MODULE_QTWIDGETS_API Qt::CursorShape toCursorShape(MouseCursor cursor);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -38,9 +38,7 @@
 #include <string>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 struct identifier {
     template <typename T>
@@ -179,5 +177,4 @@ constexpr bool is_callable_with(F&&) {
     return std::is_invocable_v<F, A...>;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

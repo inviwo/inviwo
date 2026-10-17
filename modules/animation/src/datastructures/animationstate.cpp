@@ -28,9 +28,3 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/animationstate.h>
-
-namespace inviwo {
-
-namespace animation {}  // namespace animation
-
-}  // namespace inviwo

@@ -56,9 +56,7 @@
 #include <ostream>
 #include <mutex>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
  * A small RAII wrapper around an open H5::DataSet that closes it on destruction.
@@ -169,6 +167,4 @@ private:
     H5::DSetAccPropList dapl_;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

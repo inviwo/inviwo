@@ -36,9 +36,7 @@
 #include <utility>
 #include <optional>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
@@ -200,6 +198,4 @@ auto transformRange(Range& range, Transform&& transform) {
                           makeTransformIterator(transform, end(range)));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

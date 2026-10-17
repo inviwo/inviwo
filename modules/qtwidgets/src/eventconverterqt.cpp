@@ -42,9 +42,7 @@
 #include <Qt>
 #include <flags/flags.h>
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 MouseButtons getMouseButtons(const QMouseEvent* e) {
     MouseButtons res(flags::none);
@@ -108,6 +106,4 @@ KeyModifiers getModifiers(Qt::KeyboardModifiers m) {
 
 IvwKey getKeyButton(const QKeyEvent* e) { return util::mapKeyFromQt(e); }
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

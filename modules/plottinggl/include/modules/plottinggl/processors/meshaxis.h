@@ -37,9 +37,7 @@
 
 #include <array>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API MeshAxis : public Processor {
 public:
@@ -58,6 +56,4 @@ private:
     Axis3DProcessorHelper axisHelper_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

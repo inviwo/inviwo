@@ -33,9 +33,7 @@
 
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 /**
  * @brief layout for aligning Elements vertically (top to bottom)
@@ -46,6 +44,4 @@ public:
     virtual ~VBoxLayout() = default;
 };
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

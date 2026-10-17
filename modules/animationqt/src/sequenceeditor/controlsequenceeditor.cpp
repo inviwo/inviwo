@@ -48,9 +48,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 namespace {
 
@@ -181,6 +179,4 @@ std::string ControlSequenceEditor::classIdentifier() {
     return "org.inviwo.animation.ControlSequenceEditor";
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

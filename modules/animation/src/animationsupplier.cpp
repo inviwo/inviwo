@@ -41,9 +41,7 @@
 #include <string_view>
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 static AnimationManager& getAnimationManager(InviwoApplication* app) {
     return util::getModuleByTypeOrThrow<AnimationModule>(app).getAnimationManager();
@@ -97,6 +95,4 @@ void AnimationSupplier::registerRecorderFactory(std::unique_ptr<RecorderFactory>
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

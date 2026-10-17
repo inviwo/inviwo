@@ -43,9 +43,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * A special track for manipulating the playback.
@@ -66,6 +64,4 @@ public:
                                           AnimationState state) const override;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

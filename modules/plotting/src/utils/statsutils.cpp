@@ -50,8 +50,7 @@
 #include <glm/matrix.hpp>
 #include <glm/vec2.hpp>
 
-namespace inviwo {
-namespace statsutil {
+namespace inviwo::statsutil {
 namespace detail {
 template <typename Tx, typename Ty>
 static RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
@@ -150,6 +149,4 @@ std::ostream& operator<<(std::ostream& os, RegresionResult res) {
     return os;
 }
 
-}  // namespace statsutil
-
-}  // namespace inviwo
+}  // namespace inviwo::statsutil

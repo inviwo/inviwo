@@ -41,9 +41,7 @@
 class QEvent;
 class QWidget;
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
@@ -82,6 +80,4 @@ private:
     bool ignoreNextUpdate_ = false;
 };
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

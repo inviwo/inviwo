@@ -45,9 +45,7 @@
 #include <ranges>
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 inline auto makeEnvironmentModuleFilter() {
     const auto disabled = []() -> std::vector<std::string_view> {
@@ -123,6 +121,4 @@ void registerModules(ModuleManager& moduleManager,
     moduleManager.registerModules(std::move(inviwoModules), std::move(progressCallback));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

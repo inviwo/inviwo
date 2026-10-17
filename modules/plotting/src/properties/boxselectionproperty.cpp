@@ -36,9 +36,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -81,6 +79,4 @@ void BoxSelectionProperty::update(BoxSelectionData& data) const {
     data.mode = mode_.get();
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

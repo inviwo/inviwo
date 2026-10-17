@@ -39,9 +39,7 @@
 #include <H5Cpp.h>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 class IVW_MODULE_HDF5_API PathSelection : public Processor {
 public:
@@ -61,5 +59,4 @@ private:
     OptionPropertyString selection_;
 };
 
-}  // namespace hdf5
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

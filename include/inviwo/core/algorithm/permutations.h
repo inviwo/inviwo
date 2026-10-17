@@ -37,9 +37,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename T>
 std::vector<T> makeVectorRange(ptrdiff_t start, ptrdiff_t end, ptrdiff_t step = 1) {
@@ -221,6 +219,4 @@ private:
 template <typename T, size_t N>
 IndexProduct(std::span<T, N>) -> IndexProduct<T>;
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

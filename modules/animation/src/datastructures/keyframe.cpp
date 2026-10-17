@@ -28,8 +28,3 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/keyframe.h>
-
-namespace inviwo {
-
-namespace animation {}  // namespace animation
-}  // namespace inviwo

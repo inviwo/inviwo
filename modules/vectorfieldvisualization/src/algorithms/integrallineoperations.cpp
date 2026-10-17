@@ -53,8 +53,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 IntegralLine curvature(const IntegralLine& line, dmat4 toWorld) {
     IntegralLine copy(line);
     curvature(copy, toWorld);
@@ -168,5 +167,4 @@ void tortuosity(IntegralLineSet& lines) {
     }
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

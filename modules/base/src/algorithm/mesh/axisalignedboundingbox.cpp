@@ -44,9 +44,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 std::pair<dvec3, dvec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes) {
@@ -84,6 +82,4 @@ std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh) {
     return {worldMin, worldMax};
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

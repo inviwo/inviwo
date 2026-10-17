@@ -43,9 +43,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * A track for executing callbacks when animating forward/backward.
@@ -69,6 +67,4 @@ public:
                                           AnimationState state) const override;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

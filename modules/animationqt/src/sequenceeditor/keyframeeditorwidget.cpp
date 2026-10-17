@@ -47,9 +47,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
     : QWidget(parent)
     , keyframe_(keyframe)
@@ -147,6 +145,4 @@ void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe*) {
     sequenceEditorWidget_->updateVisibility();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

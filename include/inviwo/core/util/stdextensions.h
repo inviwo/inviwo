@@ -52,9 +52,7 @@
 #include <ranges>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename Derived, typename Base, typename Del>
 std::unique_ptr<Derived, Del> static_unique_ptr_cast(std::unique_ptr<Base, Del>&& p) {
@@ -471,8 +469,7 @@ struct HashValueImpl<Tuple, 0> {
 };
 
 }  // namespace hashtuple
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util
 
 namespace std {
 

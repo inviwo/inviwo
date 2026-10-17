@@ -55,9 +55,7 @@
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 KeyframeWidgetQt::KeyframeWidgetQt(Keyframe& keyframe, QGraphicsItem* parent)
     : QGraphicsItem(parent), keyframe_(keyframe) {
@@ -154,6 +152,4 @@ KeyframeWidgetQtLock::~KeyframeWidgetQtLock() {
     if (keyframe_) keyframe_->unlock();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

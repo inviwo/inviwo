@@ -40,9 +40,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * KeyframeSequence for ButtonProperty. Button will be pressed when passing over keyframe.
@@ -67,6 +65,4 @@ public:
     void operator()(Seconds from, Seconds to, bool& pressed) const;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

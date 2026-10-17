@@ -38,9 +38,7 @@ class QStandardItem;
 class QHBoxLayout;
 class QToolButton;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationController;
 class Track;
@@ -68,6 +66,4 @@ private:
     QToolButton* btnAddAndDelete_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

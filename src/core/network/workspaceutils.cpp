@@ -41,9 +41,7 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 void forEachWorkspaceInDirRecursive(const std::filesystem::path& path,
                                     std::function<void(const std::filesystem::path&)> callback) {
@@ -150,6 +148,4 @@ void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun,
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

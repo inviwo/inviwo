@@ -34,9 +34,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Keyframe;
 class KeyframeSequence;
@@ -58,6 +56,4 @@ protected:
     void notifyKeyframeSequenceSelectionChanged(KeyframeSequence* seq);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

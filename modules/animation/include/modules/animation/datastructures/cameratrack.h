@@ -40,9 +40,7 @@
 #include <memory>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 using CameraKeyframeSequence = KeyframeSequenceTyped<CameraKeyframe>;
 using CameraTrack = PropertyTrack<CameraProperty, CameraKeyframe>;
@@ -86,6 +84,4 @@ struct DefaultInterpolationCreator<CameraKeyframe> {
 
 }  // namespace detail
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

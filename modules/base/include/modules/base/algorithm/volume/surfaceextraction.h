@@ -42,11 +42,10 @@
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 
-namespace inviwo {
 /*
 Common functions used in MarchingCubes and MarchingTetrahedron
 */
-namespace marching {
+namespace inviwo::marching {
 template <typename T>
 double getValue(const T* src, size3_t pos, size3_t dim, double iso, bool invert) {
     const auto v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
@@ -185,6 +184,4 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
     }
 }
 
-}  // namespace marching
-
-}  // namespace inviwo
+}  // namespace inviwo::marching

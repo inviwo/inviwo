@@ -55,8 +55,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 template <Wrapping X, Wrapping Y, Wrapping Z>
@@ -244,5 +243,4 @@ std::shared_ptr<Volume> voronoiSegmentation(
     return voronoiVolume;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

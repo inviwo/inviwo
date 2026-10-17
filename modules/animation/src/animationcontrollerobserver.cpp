@@ -32,9 +32,7 @@
 #include <modules/animation/datastructures/animationstate.h>
 #include <modules/animation/datastructures/animationtime.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void AnimationControllerObservable::notifyStateChanged(AnimationController* controller,
                                                        AnimationState oldState,
@@ -56,6 +54,4 @@ void AnimationControllerObservable::notifyAnimationChanged(AnimationController* 
     });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

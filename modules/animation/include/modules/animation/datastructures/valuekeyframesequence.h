@@ -53,9 +53,7 @@
 
 #include <glm/fwd.hpp>  // IWYU pragma: keep
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class InterpolationFactoryObject;
 class Keyframe;
 template <typename T>
@@ -308,6 +306,4 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

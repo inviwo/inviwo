@@ -52,9 +52,7 @@
 
 class QStandardItem;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
                                              AnimationController& controller)
@@ -174,6 +172,4 @@ void TrackControlsWidgetQt::onEnabledChanged(Track*) {
     btnDisable_->setChecked(!track_.isEnabled());
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -39,9 +39,7 @@
 #include <H5Cpp.h>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 template <typename T>
 struct TypeMap {
@@ -95,6 +93,4 @@ namespace util {
 IVW_MODULE_HDF5_API const DataFormatBase* getDataFormatFromDataSet(const H5::DataSet& dataset);
 }  // namespace util
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

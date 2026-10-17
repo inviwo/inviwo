@@ -38,8 +38,7 @@
 
 #include <chrono>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 ControlKeyframe::ControlKeyframe(Seconds time, ControlAction action, Seconds jumpTime)
     : BaseKeyframe(time), action_(action), jumpTime_(jumpTime) {}
@@ -111,5 +110,4 @@ void ControlKeyframe::serialize(Serializer& s) const {
     }
 }
 
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation

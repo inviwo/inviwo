@@ -36,9 +36,7 @@
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset, size2_t extent,
                                       bool clampBorderOutsideImage) {
@@ -52,6 +50,4 @@ std::shared_ptr<LayerRAM> layerSubSet(const Layer* in, ivec2 offset, size2_t ext
         });
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

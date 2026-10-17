@@ -33,9 +33,7 @@
 #include <modules/opengl/shader/stringshaderresource.h>
 #include <modules/opengl/shader/shadertype.h>
 
-namespace inviwo {
-
-namespace utilgl {
+namespace inviwo::utilgl {
 
 std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgIdentityVert() {
     static const std::shared_ptr<const ShaderResource> vert =
@@ -82,6 +80,4 @@ void main() {
     return {ShaderType::Fragment, frag};
 }
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl

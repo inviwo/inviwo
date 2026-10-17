@@ -36,9 +36,7 @@
 #include <iterator>
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief An iterator providing access to a subregion, or brick, within linearized 3D data.
@@ -178,6 +176,4 @@ private:
     Iter iterator_;
 };
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

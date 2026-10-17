@@ -33,9 +33,7 @@
 #include <string>
 #include <chrono>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief convert the given duration from milliseconds to a string.
@@ -69,6 +67,4 @@ std::string durationToString(std::chrono::duration<Rep, Period> duration, bool i
     return msToString(ms.count(), includeZeros, spacing);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

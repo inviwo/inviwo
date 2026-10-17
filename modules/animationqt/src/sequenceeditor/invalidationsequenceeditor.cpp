@@ -49,9 +49,7 @@
 #include <QWidget>
 #include <QLineEdit>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 namespace {
 
@@ -168,6 +166,4 @@ std::string InvalidationSequenceEditor::classIdentifier() {
     return "org.inviwo.animation.InvalidationSequenceEditor";
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

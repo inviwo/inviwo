@@ -38,8 +38,7 @@
 #include <ostream>
 #include <utility>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 TrackFactory::TrackFactory(ProcessorNetwork* network)
     : network_{network}, keyframeFactory{*this}, keyframeSequenceFactory{*this} {}
@@ -105,5 +104,4 @@ std::unique_ptr<Keyframe> KeyframeFactory::create(std::string_view key) const {
 }
 bool KeyframeFactory::hasKey(std::string_view key) const { return trackFactory_->hasKey(key); }
 
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation

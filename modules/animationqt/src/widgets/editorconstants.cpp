@@ -39,9 +39,7 @@
 #include <QFlags>
 #include <Qt>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 qreal getSnapTime(const qreal& actualTime, const qreal& scale) {
     if (QApplication::keyboardModifiers() & Qt::AltModifier) {
@@ -128,6 +126,4 @@ FindDivisionsResult findDivisions(double start, double stop, int divisions) {
 
     return {niceStart, factor, static_cast<size_t>(count), int_digits, frac_digits};
 }
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

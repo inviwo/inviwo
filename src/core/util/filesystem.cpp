@@ -88,9 +88,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 
 namespace fs = std::filesystem;
 
-namespace inviwo {
-
-namespace filesystem {
+namespace inviwo::filesystem {
 
 FileHandle::FileHandle(FILE* file) : file_{file} {}
 
@@ -892,6 +890,6 @@ std::vector<fs::path> getLoadedLibraries() {
 
 #endif
 
-}  // namespace filesystem
+}  // namespace inviwo::filesystem
 
-}  // end namespace inviwo
+// end namespace inviwo

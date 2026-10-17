@@ -39,9 +39,7 @@
 #include <vector>
 #include <future>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 IVW_CORE_API size_t getPoolSize();
@@ -106,6 +104,4 @@ IVW_CORE_API void flipImageHorizontal(Image& img);
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

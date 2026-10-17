@@ -44,9 +44,7 @@
 #include <unordered_set>
 #include <ranges>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useIndices) {
     auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Loop);
@@ -76,6 +74,4 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useI
     return mesh;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

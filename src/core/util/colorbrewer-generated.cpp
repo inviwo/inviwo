@@ -35,8 +35,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <inviwo/core/util/colorbrewer-generated.h>
 #include <inviwo/core/util/assertion.h>
 
-namespace inviwo {
-namespace colorbrewer {
+namespace inviwo::colorbrewer {
 
 const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
@@ -3281,6 +3280,4 @@ std::ostream& operator<<(std::ostream& os, Family family) {
     return os;
 }
 
-}  // namespace colorbrewer
-
-}  // namespace inviwo
+}  // namespace inviwo::colorbrewer

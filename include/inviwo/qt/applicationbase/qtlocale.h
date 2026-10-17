@@ -32,9 +32,7 @@
 
 #include <locale>
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 /**
  * @brief getCurrentStdLocale
@@ -45,6 +43,4 @@ namespace utilqt {
  */
 IVW_QTAPPLICATIONBASE_API std::locale getCurrentStdLocale();
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

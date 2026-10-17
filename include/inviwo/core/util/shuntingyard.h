@@ -69,8 +69,7 @@ THE SOFTWARE.
 #include <memory>
 #include <utility>
 
-namespace inviwo {
-namespace shuntingyard {
+namespace inviwo::shuntingyard {
 
 struct IVW_CORE_API TokenBase {
     virtual ~TokenBase() = default;
@@ -122,5 +121,4 @@ private:
     }
 };
 
-}  // namespace shuntingyard
-}  // namespace inviwo
+}  // namespace inviwo::shuntingyard

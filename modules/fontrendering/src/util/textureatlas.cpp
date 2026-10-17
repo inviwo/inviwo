@@ -59,9 +59,7 @@
 #include <glm/vec4.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 bool TextureAtlas::valid() const { return (atlasTex_ != nullptr); }
 
@@ -231,6 +229,4 @@ static_assert(!std::is_copy_assignable_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_constructible_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_assignable_v<TextureAtlas>);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

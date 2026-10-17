@@ -37,9 +37,7 @@
 #include <fstream>
 #include <locale>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace {
 
@@ -111,6 +109,4 @@ const std::optional<BuildInfo>& getBuildInfo() {
     return maybebuildInfo;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

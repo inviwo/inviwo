@@ -36,9 +36,7 @@
 #include <vector>
 #include <future>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename C>
 void forEachVoxel(const size3_t dims, C callback) {
@@ -96,6 +94,4 @@ void forEachVoxelParallel(const VolumeRAM& v, C callback, size_t jobs = 0) {
     forEachVoxelParallel(v.getDimensions(), callback, jobs);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

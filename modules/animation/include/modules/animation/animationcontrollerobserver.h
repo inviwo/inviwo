@@ -36,9 +36,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Animation;
 class AnimationController;
@@ -63,6 +61,4 @@ protected:
                                 Animation* newAnimation);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

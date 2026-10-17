@@ -58,9 +58,7 @@
 #include <cstdint>
 #include <string_view>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
@@ -146,6 +144,4 @@ template <size_t len>
     return constexpr_hash(std::string_view{str, len - 1});
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

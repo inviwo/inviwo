@@ -31,9 +31,7 @@
 
 #include <modules/animationqt/widgets/trackwidgetqt.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Track;
 
 ControlTrackWidgetQt::ControlTrackWidgetQt(Track& track) : TrackWidgetQt(track) {}
@@ -42,5 +40,4 @@ std::string ControlTrackWidgetQt::classIdentifier() {
     return "org.inviwo.animation.ControlTrackWidgetQt";
 }
 
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation

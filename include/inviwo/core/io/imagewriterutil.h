@@ -35,15 +35,11 @@
 
 #include <string>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_CORE_API void saveLayer(const Layer& layer, const std::filesystem::path& path,
                             const FileExtension& extension = FileExtension());
 
 IVW_CORE_API void saveLayer(const Layer& layer);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

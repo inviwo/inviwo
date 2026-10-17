@@ -31,9 +31,7 @@
 
 #include <functional>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 /**
  *    Function to combine several hash values
  *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
@@ -44,6 +42,4 @@ constexpr void hash_combine(std::size_t& seed, const T& v) noexcept {
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

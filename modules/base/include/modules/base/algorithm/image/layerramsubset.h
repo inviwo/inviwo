@@ -47,9 +47,7 @@
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief extracts a subregion from a layer and returns it as a new layer
@@ -152,6 +150,4 @@ std::shared_ptr<LayerRAMPrecision<T>> typedLayerSubSet(const Layer* in, ivec2 of
         });
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

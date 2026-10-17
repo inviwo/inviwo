@@ -31,9 +31,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::string msToString(double ms, bool includeZeros, bool spacing) {
     const std::string space = (spacing ? " " : "");
@@ -75,6 +73,4 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     return ss.str();
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

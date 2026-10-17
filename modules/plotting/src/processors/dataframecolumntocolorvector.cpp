@@ -55,9 +55,7 @@
 
 #include <fmt/base.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameColumnToColorVector::processorInfo_{
@@ -111,6 +109,4 @@ void DataFrameColumnToColorVector::process() {
                 }));
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

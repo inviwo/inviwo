@@ -33,9 +33,7 @@
 #include <type_traits>
 #include <memory>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail_indirect {
 template <typename Tag, typename Iter>
@@ -273,6 +271,4 @@ IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter iter) noexcept(
     return IndirectIterator<Iter, PropagateConst>(std::move(iter));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

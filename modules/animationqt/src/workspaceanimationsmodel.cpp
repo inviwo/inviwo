@@ -45,9 +45,7 @@
 
 class QModelIndex;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 AnimationsModel::AnimationsModel(WorkspaceAnimations& animations, QObject* parent)
     : QAbstractListModel(parent), animations_{animations} {
@@ -143,6 +141,4 @@ void AnimationsModel::onNameChanged(Animation* anim) {
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

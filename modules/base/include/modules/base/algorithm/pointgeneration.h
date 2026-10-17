@@ -48,9 +48,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 struct Grid3DPointGeneration {
     enum class Mode : std::uint8_t { HalfOpen, Closed, Center };
@@ -165,6 +163,4 @@ void generatePoints(OutIt outIt, std::variant<Grid3DPointGeneration, RandomCubic
         opts);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -32,9 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * Utility function to reverse the orders of the elements in a buffer.
@@ -42,6 +40,4 @@ namespace util {
  */
 IVW_CORE_API void reverse(BufferBase& b);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

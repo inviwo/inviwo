@@ -33,9 +33,7 @@
 #include <memory>
 #include <string>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class AnimationManager;
 class KeyframeSequence;
 class SequenceEditorWidget;
@@ -70,6 +68,4 @@ public:
     }
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

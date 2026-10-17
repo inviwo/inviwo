@@ -37,9 +37,7 @@
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>
 #include <modules/userinterfacegl/userinterfaceglmodule.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 WidgetSupplier::WidgetSupplier(UserInterfaceGLModule& uiGLModule) : uiGLModule_(uiGLModule) {}
 
@@ -64,6 +62,4 @@ void WidgetSupplier::unregisterAll() {
     widgets_.clear();
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

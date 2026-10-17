@@ -38,9 +38,7 @@
 #include <glm/vec4.hpp>
 #include <utility>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 BoxLayout::BoxLayout(LayoutDirection direction) : direction_(direction), spacing_(5) {}
 
@@ -145,6 +143,4 @@ void BoxLayout::removeElement(Element& element) {
     }
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

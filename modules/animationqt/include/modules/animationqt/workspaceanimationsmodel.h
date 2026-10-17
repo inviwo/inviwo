@@ -41,9 +41,7 @@
 class QModelIndex;
 class QObject;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Animation;
 
@@ -68,6 +66,4 @@ private:
     WorkspaceAnimations::OnChangedDispatcher::Handle onChangedHandle_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

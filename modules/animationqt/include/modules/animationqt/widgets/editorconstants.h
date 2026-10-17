@@ -36,9 +36,7 @@
 
 #include <QtGlobal>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 constexpr double trackHeight = 31.0;
 constexpr int trackHeightNudge = 2;
@@ -67,6 +65,4 @@ struct FindDivisionsResult {
 IVW_MODULE_ANIMATIONQT_API FindDivisionsResult findDivisions(double start, double stop,
                                                              int divisions);
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

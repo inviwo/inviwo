@@ -29,15 +29,11 @@
 
 #include <modules/animation/factories/trackfactoryobject.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 TrackFactoryObject::TrackFactoryObject(std::string_view classIdentifier)
     : classIdentifier_(classIdentifier) {}
 
 const std::string& TrackFactoryObject::getClassIdentifier() const { return classIdentifier_; }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

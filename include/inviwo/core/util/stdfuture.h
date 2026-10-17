@@ -35,9 +35,7 @@
 #include <future>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename T>
 bool is_future_ready(const std::future<T>& future) {
@@ -51,6 +49,4 @@ bool is_future_ready(const std::shared_future<T>& future) {
                                   std::future_status::ready);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

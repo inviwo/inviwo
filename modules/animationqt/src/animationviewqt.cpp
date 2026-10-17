@@ -67,9 +67,7 @@ class QMouseEvent;
 class QPaintEvent;
 class QWheelEvent;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class TimeLine : public QWidget {
 public:
@@ -317,6 +315,4 @@ void AnimationViewQt::onTimeChanged(AnimationController*, Seconds, Seconds) {
     this->viewport()->update();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

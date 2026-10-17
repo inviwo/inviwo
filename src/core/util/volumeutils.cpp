@@ -30,9 +30,7 @@
 #include <inviwo/core/util/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 bool hasMargins(const std::shared_ptr<const Volume>& volume) {
     return (volume && volume->getMetaData<BoolMetaData>("marginsEnabled", false));
@@ -96,6 +94,4 @@ double voxelVolume(const Volume& volume) {
     return glm::dot(glm::cross(a, b), c);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

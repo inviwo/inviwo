@@ -49,9 +49,7 @@
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 /**
  * @brief Axis for variables with a fixed number of possible values, e.g., categories.
@@ -107,6 +105,4 @@ private:
     void adjustAlignment();
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

@@ -39,8 +39,7 @@ struct IUnknown;
 #include <tao/pegtl/contrib/analyze.hpp>
 #include <string>
 
-namespace inviwo::meta {
-namespace cmake {
+namespace inviwo::meta::cmake {
 
 namespace p = tao::pegtl;
 
@@ -147,8 +146,7 @@ using selector =
     >;
 // clang-format on
 
-}  // namespace cmake
-}  // namespace inviwo::meta
+}  // namespace inviwo::meta::cmake
 
 namespace tao::pegtl {
 

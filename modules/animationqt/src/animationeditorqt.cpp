@@ -85,9 +85,7 @@
 
 class QGraphicsSceneDragDropEvent;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 AnimationEditorQt::AnimationEditorQt(
     AnimationController& controller, TrackWidgetQtFactory& widgetFactory,
@@ -550,6 +548,4 @@ void AnimationEditorQt::onFirstMoved() { updateSceneRect(); }
 
 void AnimationEditorQt::onLastMoved() { updateSceneRect(); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

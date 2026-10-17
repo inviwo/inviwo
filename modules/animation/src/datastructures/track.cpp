@@ -32,9 +32,3 @@
 #include <modules/animation/datastructures/animationtime.h>
 
 #include <chrono>
-
-namespace inviwo {
-
-namespace animation {}  // namespace animation
-
-}  // namespace inviwo

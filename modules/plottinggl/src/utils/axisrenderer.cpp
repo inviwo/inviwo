@@ -70,9 +70,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/trigonometric.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 namespace detail {
 
@@ -433,6 +431,4 @@ static_assert(!std::is_copy_assignable_v<AxisRenderer3D>);
 static_assert(std::is_nothrow_move_constructible_v<AxisRenderer3D>);
 static_assert(std::is_nothrow_move_assignable_v<AxisRenderer3D>);
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

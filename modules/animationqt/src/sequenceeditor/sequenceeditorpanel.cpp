@@ -50,9 +50,7 @@
 
 class QLayout;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class KeyframeSequence;
 
@@ -152,6 +150,4 @@ void SequenceEditorPanel::onKeyframeSequenceRemoved(Track*, KeyframeSequence* s)
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

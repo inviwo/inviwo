@@ -68,9 +68,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 EntryExitPointsHelper::EntryExitPointsHelper() = default;
 
@@ -523,6 +521,4 @@ std::shared_ptr<Shader> EntryExitPointsHelper::createNearClipShader(IncludeNorma
     }
 }
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

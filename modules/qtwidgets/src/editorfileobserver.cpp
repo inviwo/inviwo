@@ -45,9 +45,7 @@
 #include <Qt>
 #include <utility>
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 EditorFileObserver::EditorFileObserver(QWidget* parent, QString title,
                                        const std::filesystem::path& filename)
@@ -139,6 +137,4 @@ bool EditorFileObserver::widgetIsFocused() const {
     return std::ranges::any_of(children, [](auto w) { return w->hasFocus(); });
 }
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

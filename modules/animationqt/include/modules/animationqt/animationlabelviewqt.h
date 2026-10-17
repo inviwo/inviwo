@@ -37,9 +37,7 @@
 
 class QStandardItemModel;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationController;
 class Track;
@@ -62,6 +60,4 @@ public:
     QStandardItemModel* model_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -32,8 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 template <size_t N, typename IndexType = size_t>
 struct IndexMapper {};
@@ -83,5 +82,4 @@ auto makeIndexMapper(const Vector<N, IndexType>& dim) {
     return IndexMapper<N, IndexType>(dim);
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

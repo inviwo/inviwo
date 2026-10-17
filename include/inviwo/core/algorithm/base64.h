@@ -35,9 +35,7 @@
 
 #include <span>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_CORE_API std::string base64_encode(std::span<char> s, bool url = false);
 IVW_CORE_API std::string base64_encode_pem(std::span<char> s);
@@ -45,6 +43,4 @@ IVW_CORE_API std::string base64_encode_mime(std::span<char> s);
 
 IVW_CORE_API std::string base64_decode(std::string_view s, bool remove_linebreaks = false);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

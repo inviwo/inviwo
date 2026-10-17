@@ -36,9 +36,7 @@
 #include <functional>
 #include <stop_token>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(
     const Volume& volume,
@@ -46,6 +44,4 @@ IVW_MODULE_BASE_API std::shared_ptr<Volume> curlVolume(
         [](const VolumeConfig& config) { return std::make_shared<Volume>(config); },
     const std::function<void(double)>& progress = nullptr, std::stop_token stop = {});
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -29,14 +29,10 @@
 
 #include <modules/animation/demo/democontrollerobserver.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void DemoControllerObservable::notifyStateChanged(DemoController* controller) {
     forEachObserver([&](DemoControllerObserver* o) { o->onStateChanged(controller); });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

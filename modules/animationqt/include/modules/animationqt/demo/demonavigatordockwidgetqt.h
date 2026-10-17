@@ -37,9 +37,7 @@
 
 class QToolButton;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class IVW_MODULE_ANIMATIONQT_API DemoNavigatorDockWidgetQt : public InviwoDockWidget,
                                                              public DemoControllerObserver,
@@ -63,6 +61,4 @@ protected:
     QAction* btnEnd_{};
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -41,9 +41,7 @@
 #include <chrono>
 #include <iterator>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 ControlTrack::ControlTrack() : BaseTrack<ControlKeyframeSequence>{"Control Track", 0} {}
 
@@ -90,6 +88,4 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
     return {to, state};
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

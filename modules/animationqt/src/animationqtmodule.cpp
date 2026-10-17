@@ -92,12 +92,10 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 class SequenceEditorFactory;
 class TrackWidgetQtFactory;
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtAnimationResources {

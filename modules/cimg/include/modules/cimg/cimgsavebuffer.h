@@ -59,9 +59,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
-
-namespace cimgutil {
+namespace inviwo::cimgutil {
 
 template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
@@ -146,6 +144,4 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
     return res;
 }
 
-}  // namespace cimgutil
-
-}  // namespace inviwo
+}  // namespace inviwo::cimgutil
