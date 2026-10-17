@@ -83,7 +83,7 @@ public:
         bool emptyTag() const;
         bool noIndent() const;
 
-        friend void swap(Element& lhs, Element& rhs) {
+        friend void swap(Element& lhs, Element& rhs) noexcept {
             std::swap(lhs.type_, rhs.type_);
             std::swap(lhs.children_, rhs.children_);
             std::swap(lhs.data_, rhs.data_);
@@ -219,7 +219,7 @@ public:
     std::string str() const;
     operator std::string() const;
 
-    friend void swap(Document& lhs, Document& rhs) { std::swap(lhs.root_, rhs.root_); }
+    friend void swap(Document& lhs, Document& rhs) noexcept { std::swap(lhs.root_, rhs.root_); }
 
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
