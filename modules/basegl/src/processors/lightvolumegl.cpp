@@ -473,8 +473,7 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
     secondClosest->permutedLightDirection = secondClosest->axisPermutationLight * tmpLightDir;
 
     // Calculate the blending factor
-    blendingFactor_ =
-        static_cast<float>(1.f - (2.f * std::acos(closestVal) / std::numbers::pi_v<float>));
+    blendingFactor_ = 1.f - (2.f * std::acos(closestVal) / std::numbers::pi_v<float>);
 
     calculatedOnes_ = true;
 }

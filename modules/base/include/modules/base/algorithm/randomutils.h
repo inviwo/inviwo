@@ -382,7 +382,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     });
     const auto layerData = layerRam->getView();
 
-    while (!processList.empty() && samplePoints.size() < static_cast<size_t>(maxPoints)) {
+    while (!processList.empty() && samplePoints.size() < maxPoints) {
         std::uniform_int_distribution<size_t> ri(0, processList.size() - 1);
         const auto i = ri(randomNumberGenerator);
         const auto p = processList[i];

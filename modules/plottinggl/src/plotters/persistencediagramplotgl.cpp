@@ -535,7 +535,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
         }
         const auto& indexCol =
             indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-        const auto it = util::find(indexCol, static_cast<uint32_t>(id));
+        const auto it = util::find(indexCol, id);
         if (it != indexCol.end()) {
             return *it;
         } else {

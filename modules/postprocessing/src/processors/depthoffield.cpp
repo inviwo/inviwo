@@ -421,7 +421,7 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
 
     addToLightFieldShader_.setUniform("nearClip", static_cast<float>(camera_.getNearPlaneDist()));
     addToLightFieldShader_.setUniform("farClip", static_cast<float>(camera_.getFarPlaneDist()));
-    addToLightFieldShader_.setUniform("evalCount", static_cast<int>(evalCount_));
+    addToLightFieldShader_.setUniform("evalCount", evalCount_);
     addToLightFieldShader_.setUniform("aperture", static_cast<float>(aperture_.get()));
     addToLightFieldShader_.setUniform("nViews", static_cast<int>(viewCountApprox_.get()));
     addToLightFieldShader_.setUniform("nSimViews", static_cast<int>(simViewCountApprox_.get()));
