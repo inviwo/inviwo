@@ -240,7 +240,8 @@ constexpr std::string_view rtrim(std::string_view str) noexcept {
 constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
                                                                      char delimiter = ' ') {
     const auto pos = str.find(delimiter);
-    return {str.substr(0, pos), pos != str.npos ? str.substr(pos + 1) : std::string_view{}};
+    return {str.substr(0, pos),
+            pos != std::string_view::npos ? str.substr(pos + 1) : std::string_view{}};
 }
 
 /**
@@ -253,8 +254,8 @@ constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string
 constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string_view str,
                                                                      std::string_view delimiter) {
     const auto pos = str.find(delimiter);
-    return {str.substr(0, pos),
-            pos != str.npos ? str.substr(pos + delimiter.size()) : std::string_view{}};
+    return {str.substr(0, pos), pos != std::string_view::npos ? str.substr(pos + delimiter.size())
+                                                              : std::string_view{}};
 }
 
 /**
@@ -267,8 +268,8 @@ constexpr std::pair<std::string_view, std::string_view> splitByFirst(std::string
 constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_view str,
                                                                     char delimiter = ' ') {
     const auto pos = str.rfind(delimiter);
-    return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + 1)}
-                           : std::pair{std::string_view{}, str};
+    return pos != std::string_view::npos ? std::pair{str.substr(0, pos), str.substr(pos + 1)}
+                                         : std::pair{std::string_view{}, str};
 }
 
 /**
@@ -281,8 +282,9 @@ constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_
 constexpr std::pair<std::string_view, std::string_view> splitByLast(std::string_view str,
                                                                     std::string_view delimiter) {
     const auto pos = str.rfind(delimiter);
-    return pos != str.npos ? std::pair{str.substr(0, pos), str.substr(pos + delimiter.size())}
-                           : std::pair{std::string_view{}, str};
+    return pos != std::string_view::npos
+               ? std::pair{str.substr(0, pos), str.substr(pos + delimiter.size())}
+               : std::pair{std::string_view{}, str};
 }
 
 /**

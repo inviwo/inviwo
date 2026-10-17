@@ -235,6 +235,6 @@ int main(int argc, char** argv) {
     if (cmdParser.getQuitApplicationAfterStartup()) {
         return 0;
     } else {
-        return qtApp.exec();
+        return QApplication::exec();
     }
 }
