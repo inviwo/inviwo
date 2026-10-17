@@ -57,8 +57,8 @@ class ShaderResource;
 
 namespace detail {
 
-void syncMetaDataAndColorLayerState(const ImageInport& inport, Image& dstImage,
-                                    std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+static void syncMetaDataAndColorLayerState(const ImageInport& inport, Image& dstImage,
+                                           std::optional<SwizzleMask> swizzleMask = std::nullopt) {
     const auto srcImage = inport.getData();
     const auto srcColorLayer = srcImage->getColorLayer();
     auto dstColorLayer = dstImage.getColorLayer();
@@ -70,8 +70,8 @@ void syncMetaDataAndColorLayerState(const ImageInport& inport, Image& dstImage,
     dstColorLayer->setInterpolation(inport.getData()->getColorLayer()->getInterpolation());
 }
 
-bool equalColorLayerState(const ImageInport& inport, const ImageOutport& outport,
-                          std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+static bool equalColorLayerState(const ImageInport& inport, const ImageOutport& outport,
+                                 std::optional<SwizzleMask> swizzleMask = std::nullopt) {
     const auto source = inport.getData()->getColorLayer();
     auto dest = outport.getData()->getColorLayer();
 
@@ -80,9 +80,9 @@ bool equalColorLayerState(const ImageInport& inport, const ImageOutport& outport
            source->getInterpolation() == dest->getInterpolation();
 }
 
-bool needsNewImage(ImageInport& inport, ImageOutport& outport, const size2_t& dstDim,
-                   const DataFormatBase* dstDataFormat,
-                   std::optional<SwizzleMask> swizzleMask = std::nullopt) {
+static bool needsNewImage(ImageInport& inport, ImageOutport& outport, const size2_t& dstDim,
+                          const DataFormatBase* dstDataFormat,
+                          std::optional<SwizzleMask> swizzleMask = std::nullopt) {
 
     return dstDataFormat != outport.getData()->getDataFormat() ||
            dstDim != outport.getData()->getDimensions() ||

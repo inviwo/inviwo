@@ -259,8 +259,9 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& file
 namespace util {
 
 template <typename Func>
-size_t parse(std::string_view str, std::string_view delimiters, std::optional<size_t> expectedParts,
-             std::optional<size_t> refLine, Func&& func) {
+static size_t parse(std::string_view str, std::string_view delimiters,
+                    std::optional<size_t> expectedParts, std::optional<size_t> refLine,
+                    Func&& func) {
 
     std::string lookFor{delimiters};
     lookFor.push_back('"');  // We also have to handle quotes
@@ -324,7 +325,7 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
 }
 
 template <typename T>
-std::optional<T> toNumberLocale(std::string_view str) {
+static std::optional<T> toNumberLocale(std::string_view str) {
     const SafeCStr cstr{str};
     if constexpr (std::is_same_v<T, double>) {
         char* end = nullptr;
@@ -400,7 +401,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
 }
 
 template <typename T>
-std::optional<T> toNumber(std::string_view str, bool cLocale) {
+static std::optional<T> toNumber(std::string_view str, bool cLocale) {
     if constexpr (config::charconv || !std::is_floating_point_v<T>) {
         if (!cLocale) return toNumberLocale<T>(str);
 
@@ -417,11 +418,11 @@ std::optional<T> toNumber(std::string_view str, bool cLocale) {
 }
 
 template <typename T>
-bool isNumber(std::string_view str, bool cLocale) {
+static bool isNumber(std::string_view str, bool cLocale) {
     return util::toNumber<T>(str, cLocale).has_value();
 }
 
-std::string_view stripQuotes(std::string_view str) {
+static std::string_view stripQuotes(std::string_view str) {
     // remove surrounding quotes
     if (str.size() >= 2 && str.front() == '"' && str.back() == '"') {
         str = str.substr(1, str.size() - 2);
@@ -474,10 +475,9 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
 }
 
 template <typename T, bool index = false>
-std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
-                                                                std::string_view header, Unit unit,
-                                                                CSVReader::EmptyField emptyField,
-                                                                bool cLocale) {
+static std::function<void(std::string_view, size_t, size_t)> addColumn(
+    DataFrame& df, std::string_view header, Unit unit, CSVReader::EmptyField emptyField,
+    bool cLocale) {
     auto& data = [&]() -> decltype(auto) {
         if constexpr (index && std::is_same_v<T, std::uint32_t>) {
             df.getIndexColumn()->setHeader(header);

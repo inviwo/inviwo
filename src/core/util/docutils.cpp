@@ -46,7 +46,7 @@ void TableBuilder::tabledata(Document::DocumentHandle& row, const Header& val) {
 }
 
 void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const val) {
-    row.insert(Document::PathComponent::end(), "td", std::string(val));
+    row.insert(Document::PathComponent::end(), "td", val);
 }
 
 void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {

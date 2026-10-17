@@ -250,7 +250,7 @@ bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     }
     const std::string nameStr(name);
     // glbinding extension names always include the "GL_" prefix
-    const std::string fullName = (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
+    const std::string fullName = (!nameStr.starts_with("GL_")) ? "GL_" + nameStr : nameStr;
 
     return std::ranges::any_of(cachedExtensions, [&fullName](const auto& ext) {
         return glbinding::aux::Meta::getString(ext) == fullName;
@@ -499,7 +499,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
     if (getNumTexUnits() < 0) glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&numTexUnits_);
 
-    if (numTexUnits_ < 0) numTexUnits_ = 0;
+    numTexUnits_ = std::max(numTexUnits_, 0);
     // FBO
     fboSupported_ = isExtensionSupported("GL_EXT_framebuffer_object");
     maxColorAttachments_ = 0;
@@ -526,8 +526,8 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
             versionStr.end());
 
         const auto versionSplit = util::splitStringView(versionStr);
-        if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 ||
-                                        versionSplit[1].compare("compatibility") == 0)) {
+        if (versionSplit.size() > 1 &&
+            (versionSplit[1] == "core" || versionSplit[1] == "compatibility")) {
             addShaderVersionIfEqualOrLower(
                 GLSLShaderVersion(stringTo<int>(versionSplit[0]), versionSplit[1]), compVersion);
         } else {

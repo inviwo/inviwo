@@ -29,7 +29,7 @@
 
 #include <inviwo/dataframe/util/filters.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <functional>
 #include <regex>
@@ -65,7 +65,7 @@ ItemFilter stringMatch(int column, filters::StringComp op, std::string_view matc
 namespace detail {
 
 template <typename T>
-ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsilon) {
+static ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsilon) {
     const auto createFilter = [v = value, column](auto comp) {
         return ItemFilter{std::function<bool(T)>([v, comp](T value) { return comp(value, v); }),
                           column, false};
@@ -95,7 +95,7 @@ ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsi
 }
 
 template <typename T>
-ItemFilter rangeComparison(int column, T min, T max) {
+static ItemFilter rangeComparison(int column, T min, T max) {
     return ItemFilter{
         std::function<bool(T)>([min, max](T value) { return (value >= min) && (value <= max); }),
         column, false};
@@ -142,10 +142,9 @@ RowFilter emptyLines(bool filterOnHeader) {
 }
 
 RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
-    return RowFilter{[str = std::string{begin}](std::string_view row, size_t) {
-                         return row.substr(0, str.size()) == str;
-                     },
-                     filterOnHeader};
+    return RowFilter{
+        [str = std::string{begin}](std::string_view row, size_t) { return row.starts_with(str); },
+        filterOnHeader};
 }
 
 RowFilter lineRange(int min, int max, bool filterOnHeader) {

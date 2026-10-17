@@ -175,7 +175,7 @@ std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, b
 
 }  // namespace
 
-std::string encode(std::span<char> s, bool url);
+static std::string encode(std::span<char> s, bool url);
 
 template <typename String, unsigned int line_length>
 static std::string encode_with_line_breaks(String s) {

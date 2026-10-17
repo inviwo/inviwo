@@ -46,7 +46,7 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeBnL(py::module& m) {
+static void exposeBnL(py::module& m) {
 
     py::module::import("inviwopy");
 

@@ -123,7 +123,7 @@ private:
     InviwoApplication* app_;
 };
 
-void exposeModuleIdentifierWrapper(const pybind11::module& m, const std::string& name) {
+static void exposeModuleIdentifierWrapper(const pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
 
     py::classh<ModuleIdentifierWrapper>(m, name.c_str())

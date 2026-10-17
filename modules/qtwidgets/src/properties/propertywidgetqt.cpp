@@ -287,13 +287,11 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         callbackMapPerModule[moduleName].push_back(moduleAction.get());
     }
 
-    for (const auto& elem : callbackMapPerModule) {
-        const auto& moduleName = elem.first;
-        const auto& actions = elem.second;
+    for (const auto& [moduleName, actions] : callbackMapPerModule) {
         if (actions.empty()) continue;
         auto submenu = menu->addMenu(QString::fromStdString(moduleName));
         for (const auto& mAction : actions) {
-            auto actionName = mAction->getActionName();
+            const auto& actionName = mAction->getActionName();
             auto action = submenu->addAction(QString::fromStdString(actionName));
             connect(action, &QAction::triggered, this,
                     [app, actionName, property = property_](bool /*checked*/) {
@@ -427,7 +425,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
 
         presetMenu->addSeparator();
         for (const auto& type : types) {
-            for (const auto preset : presetManager->getAvailablePresets(property_, type)) {
+            for (const auto& preset : presetManager->getAvailablePresets(property_, type)) {
                 addPresetToMenu(presetMenu, preset, property_, type);
             }
         }

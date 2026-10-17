@@ -59,7 +59,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <functional>
 #include <string>
 #include <string_view>

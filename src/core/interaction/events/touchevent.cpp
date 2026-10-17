@@ -213,7 +213,7 @@ PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) 
 std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
     std::vector<const TouchPoint*> returnVec;
     if (touchPoints_.size() > 1) {
-        const TouchPoint* touchPoint1 = &touchPoints_[0];
+        const TouchPoint* touchPoint1 = touchPoints_.data();
         const TouchPoint* touchPoint2 = &touchPoints_[1];
         double distance = std::numeric_limits<float>::max();
         for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
@@ -230,7 +230,7 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
         returnVec.push_back(touchPoint1);
         returnVec.push_back(touchPoint2);
     } else if (!touchPoints_.empty()) {
-        returnVec.push_back(&touchPoints_[0]);
+        returnVec.push_back(touchPoints_.data());
     }
     return returnVec;
 }

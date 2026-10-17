@@ -157,7 +157,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     // Create groups of neighboring edges and nodes
     std::unordered_map<NodeId, std::vector<EdgeId>> edgeGroups;
     std::unordered_map<NodeId, std::vector<NodeId>> nodeGroups;
-    for (const auto item : edgeMap) {
+    for (const auto& item : edgeMap) {
         const NodeId i = item.first;
         const NodeId groupId = groups.find(i);
         nodeGroups[groupId].push_back(i);

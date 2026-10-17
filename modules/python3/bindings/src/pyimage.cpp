@@ -51,7 +51,7 @@
 
 namespace inviwo {
 
-auto getLayers = [](Image* img) {
+static auto getLayers = [](Image* img) {
     pybind11::list list;
     for (size_t idx = 0; idx < img->getNumberOfColorLayers(); idx++) {
         list.append(pybind11::cast(img->getColorLayer(idx),

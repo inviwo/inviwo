@@ -647,7 +647,7 @@ template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     bool modified = false;
     if (const auto value = fallbackValue_.lock()) {
-        modified |= value->reset();
+        modified |= (*value).reset();
     }
     modified |= minValue_.reset();
     modified |= maxValue_.reset();

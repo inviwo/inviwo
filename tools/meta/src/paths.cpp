@@ -50,7 +50,7 @@ bool isInviwoDir(const std::filesystem::path& inviwoPath) {
                        [&](const auto& dir) { return std::filesystem::exists(inviwoPath / dir); });
 }
 
-std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
+static std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
     std::vector<std::filesystem::path> guesses) {
 
     using path = std::filesystem::path;

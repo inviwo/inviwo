@@ -125,9 +125,7 @@ void RangeSliderQt::setMinValue(int minVal) {
     if (value_.x != minVal) {
         value_.x = minVal;
 
-        if (value_.x > range_.y - minSeparation_) {
-            value_.x = range_.y - minSeparation_;
-        }
+        value_.x = std::min(value_.x, range_.y - minSeparation_);
 
         if (value_.y - value_.x < minSeparation_) {
             value_.y = value_.x + minSeparation_;
@@ -140,9 +138,7 @@ void RangeSliderQt::setMinValue(int minVal) {
 void RangeSliderQt::setMaxValue(int maxVal) {
     if (value_.y != maxVal) {
         value_.y = maxVal;
-        if (value_.y < range_.x + minSeparation_) {
-            value_.y = range_.x + minSeparation_;
-        }
+        value_.y = std::max(value_.y, range_.x + minSeparation_);
 
         if (value_.y - value_.x < minSeparation_) {
             value_.x = value_.y - minSeparation_;

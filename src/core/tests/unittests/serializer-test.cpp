@@ -40,7 +40,7 @@
 namespace inviwo {
 
 TEST(SerializationTest, initTest) {
-    const auto refpath = filesystem::findBasePath();
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.write(xml);
@@ -48,8 +48,8 @@ TEST(SerializationTest, initTest) {
 }
 
 template <typename T>
-T serializationOfType(T inValue) {
-    const auto refpath = filesystem::findBasePath();
+static T serializationOfType(T inValue) {
+    const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);

@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     if (auto numErrors = logCounter->getErrorCount()) {
         inviwo::log::warn("{} errors generated during startup", numErrors);
     }
-    logCounter.reset();
+    logCounter = nullptr;
 
     // process last arguments
     if (clp.getQuitApplicationAfterStartup()) {

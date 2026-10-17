@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-void forceBufferRepresentationCreation() {
+static void forceBufferRepresentationCreation() {
     LogCentral logCentral;
     LogCentral::init(&logCentral);
     InviwoApplication inviwoApp("Inviwo-InitDeinit-Tests");
