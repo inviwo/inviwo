@@ -113,7 +113,7 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
 
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
     img->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
-    if (name != "") {
+    if (!name.empty()) {
         img->template setMetaData<StringMetaData>("name", name);
     }
 

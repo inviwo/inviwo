@@ -99,12 +99,12 @@ private:
     void ExplainSuccess(const std::string& first_explanation, const std::string& second_explanation,
                         ::testing::MatchResultListener* listener) const {
         *listener << "whose both fields match";
-        if (first_explanation != "") {
+        if (!first_explanation.empty()) {
             *listener << ", where the first field is a value " << first_explanation;
         }
-        if (second_explanation != "") {
+        if (!second_explanation.empty()) {
             *listener << ", ";
-            if (first_explanation != "") {
+            if (!first_explanation.empty()) {
                 *listener << "and ";
             } else {
                 *listener << "where ";

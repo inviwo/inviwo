@@ -139,7 +139,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices, const Wrapping3D& wrapping,
     const std::optional<std::vector<float>>& weights) {
 
-    if (seedPointsWithIndices.size() == 0) {
+    if (seedPointsWithIndices.empty()) {
         throw Exception("No seed points, cannot create volume voronoi segmentation");
     }
 

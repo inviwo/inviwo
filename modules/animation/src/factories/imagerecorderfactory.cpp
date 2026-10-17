@@ -154,7 +154,7 @@ ImageRecorderFactory::ImageRecorderFactory(InviwoApplication* app)
 const std::string& ImageRecorderFactory::getClassIdentifier() const { return name_; }
 BoolCompositeProperty* ImageRecorderFactory::options() {
 
-    if (writer_.size() == 0) {
+    if (writer_.empty()) {
         auto writerFactory = util::getDataWriterFactory(app_);
         const auto exts = writerFactory->getExtensionsForType<Layer>();
         std::vector<OptionPropertyOption<FileExtension>> opts;

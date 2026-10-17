@@ -154,7 +154,7 @@ T* LinkDialogGraphicsScene::getItemAt(const QPointF pos, const Qt::ItemSelection
                                       Qt::SortOrder order) const {
     QList<QGraphicsItem*> graphicsItems = items(pos, mode, order);
 
-    if (graphicsItems.size() > 0) {
+    if (!graphicsItems.empty()) {
         for (auto& i : graphicsItems) {
             T* graphicsItem = qgraphicsitem_cast<T*>(i);
             if (graphicsItem) return graphicsItem;

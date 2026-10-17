@@ -225,7 +225,7 @@ void ColorLineEdit::updateColor() {
 
         // detect type of representation
         // If it contains at least one decimal point it must be a float range color, i.e. [0,1]
-        if (tokens.filter(locale.decimalPoint()).size() == 0) {
+        if (tokens.filter(locale.decimalPoint()).empty()) {
             // assuming uint8 representation, renormalize values to [0,1]
             color /= 255.0;
         }
