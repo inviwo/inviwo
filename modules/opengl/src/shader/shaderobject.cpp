@@ -59,6 +59,7 @@
 
 #include <fmt/base.h>
 #include <boost/sml.hpp>
+#include <utility>
 
 namespace sml = boost::sml;
 
@@ -291,7 +292,7 @@ std::string ShaderObject::OutDeclaration::toString() const {
 }
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
-    : shaderType_{shaderType}, id_{0}, resource_{resource} {
+    : shaderType_{shaderType}, id_{0}, resource_{std::move(resource)} {
 
     IVW_ASSERT(resource_, "Should never be null");
 

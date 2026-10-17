@@ -33,10 +33,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <utility>
 
 namespace inviwo {
-FileShaderResource::FileShaderResource(std::string_view key, const std::filesystem::path& fileName)
-    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(fileName) {
+FileShaderResource::FileShaderResource(std::string_view key, std::filesystem::path fileName)
+    : FileObserver(util::getInviwoApplication()), key_(key), fileName_(std::move(fileName)) {
     startFileObservation(fileName_);
 }
 

@@ -67,6 +67,7 @@ THE SOFTWARE.
 #include <sstream>
 #include <queue>
 #include <memory>
+#include <utility>
 
 namespace inviwo {
 namespace shuntingyard {
@@ -78,7 +79,7 @@ struct IVW_CORE_API TokenBase {
 template <class T>
 class Token : public TokenBase {
 public:
-    explicit Token(T t) : val(t) {}
+    explicit Token(T t) : val(std::move(t)) {}
     T val;
 };
 

@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -64,7 +65,7 @@ TEST(SerializationContainerTest, Minimal) {
 TEST(SerialitionContainerTest, IdentifierFunctions) {
     struct Item : Serializable {
         Item() = default;
-        Item(std::string id, int value) : id_(id), value_(value) {}
+        Item(std::string id, int value) : id_(std::move(id)), value_(value) {}
 
         virtual void serialize(Serializer& s) const override {
             s.serialize("identifier", id_, SerializationTarget::Attribute);

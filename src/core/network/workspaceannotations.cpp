@@ -34,6 +34,7 @@
 #include <inviwo/core/util/glm.h>
 
 #include <fstream>
+#include <utility>
 #include <fmt/std.h>
 
 namespace inviwo {
@@ -43,7 +44,7 @@ WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string bas
     : Base64Image{name, base64jpeg, ivec2{w, h}} {}
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, ivec2 size)
-    : name(name), base64jpeg(base64jpeg), size(size) {}
+    : name(std::move(name)), base64jpeg(std::move(base64jpeg)), size(size) {}
 
 bool WorkspaceAnnotations::Base64Image::isValid() const {
     return !base64jpeg.empty() && glm::compMul(size) > 0;

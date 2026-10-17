@@ -29,12 +29,14 @@
 
 #include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>
 
+#include <utility>
+
 namespace inviwo {
 
 namespace animation {
 
-TrackWidgetQtFactoryObject::TrackWidgetQtFactoryObject(const std::string& classIdentifier)
-    : classIdentifier_(classIdentifier) {}
+TrackWidgetQtFactoryObject::TrackWidgetQtFactoryObject(std::string classIdentifier)
+    : classIdentifier_(std::move(classIdentifier)) {}
 
 const std::string& TrackWidgetQtFactoryObject::getClassIdentifier() const {
     return classIdentifier_;

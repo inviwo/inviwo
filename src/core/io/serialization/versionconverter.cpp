@@ -32,16 +32,18 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 
+#include <utility>
+
 namespace inviwo {
 VersionConverter::VersionConverter() = default;
 
 NodeVersionConverter::NodeVersionConverter(std::function<bool(TxElement*)> fun)
-    : VersionConverter(), fun_(fun) {}
+    : VersionConverter(), fun_(std::move(fun)) {}
 
 bool NodeVersionConverter::convert(TxElement* root) { return fun_(root); }
 
 TraversingVersionConverter::TraversingVersionConverter(std::function<bool(TxElement*)> fun)
-    : VersionConverter(), fun_(fun) {}
+    : VersionConverter(), fun_(std::move(fun)) {}
 
 bool TraversingVersionConverter::convert(TxElement* root) { return traverseNodes(root); }
 
@@ -330,8 +332,8 @@ bool xml::changeAttributeRecursive(TxElement* node, const std::vector<Kind>& pat
     return res;
 }
 
-xml::Kind::Kind(const std::string& name, const std::string& list, const std::string& type)
-    : name_(name), list_(list), type_(type) {
+xml::Kind::Kind(std::string name, std::string list, std::string type)
+    : name_(std::move(name)), list_(std::move(list)), type_(std::move(type)) {
 
     const ElementMatcher m1 = {list_, {}};
     const ElementMatcher m2 = {name_, {{"type", type_}}};
@@ -386,9 +388,9 @@ const std::string& xml::Kind::type() const { return type_; }
 
 const std::vector<xml::ElementMatcher>& xml::Kind::getMatchers() const { return matchers_; }
 
-xml::IdentifierReplacement::IdentifierReplacement(const std::vector<xml::Kind>& p,
-                                                  const std::string& oi, const std::string& ni)
-    : path(p), oldId(oi), newId(ni) {}
+xml::IdentifierReplacement::IdentifierReplacement(const std::vector<xml::Kind>& p, std::string oi,
+                                                  std::string ni)
+    : path(p), oldId(std::move(oi)), newId(std::move(ni)) {}
 
 xml::IdentifierReplacement::IdentifierReplacement(IdentifierReplacement&& rhs) noexcept
     : path(std::move(rhs.path)), oldId(std::move(rhs.oldId)), newId(std::move(rhs.newId)) {}

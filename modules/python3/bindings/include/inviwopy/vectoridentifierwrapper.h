@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ranges>
+#include <utility>
 
 namespace inviwo {
 
@@ -67,7 +68,7 @@ class VectorIdentifierWrapper {
     }
 
 public:
-    VectorIdentifierWrapper(It begin, It end) : begin_{begin}, end_{end} {}
+    VectorIdentifierWrapper(It begin, It end) : begin_{std::move(begin)}, end_{std::move(end)} {}
 
     decltype(auto) getFromIdentifier(std::string_view identifier) const {
         const auto it =

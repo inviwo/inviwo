@@ -35,12 +35,14 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 
+#include <utility>
+
 namespace inviwo {
 
 Settings::Settings(const std::string& id) : Settings(id, InviwoApplication::getPtr()) {}
 
-Settings::Settings(const std::string& id, InviwoApplication* app)
-    : identifier_(id), isDeserializing_(false), app_(app) {}
+Settings::Settings(std::string id, InviwoApplication* app)
+    : identifier_(std::move(id)), isDeserializing_(false), app_(app) {}
 
 Settings::~Settings() = default;
 

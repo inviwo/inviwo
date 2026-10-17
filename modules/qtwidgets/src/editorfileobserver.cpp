@@ -43,14 +43,18 @@
 #include <QMessageBox>
 #include <QWidget>
 #include <Qt>
+#include <utility>
 
 namespace inviwo {
 
 namespace utilqt {
 
-EditorFileObserver::EditorFileObserver(QWidget* parent, const QString& title,
+EditorFileObserver::EditorFileObserver(QWidget* parent, QString title,
                                        const std::filesystem::path& filename)
-    : QObject(parent), FileObserver(util::getInviwoApplication()), parent_(parent), title_(title) {
+    : QObject(parent)
+    , FileObserver(util::getInviwoApplication())
+    , parent_(parent)
+    , title_(std::move(title)) {
     if (parent_) {
         parent_->installEventFilter(this);
     }

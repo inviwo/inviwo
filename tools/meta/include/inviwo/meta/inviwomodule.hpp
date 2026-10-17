@@ -48,7 +48,7 @@ public:
 
     using Config = std::variant<ModuleConf, LegacyModuleConf, InviwoConf, QtEditorConf>;
 
-    InviwoModule(const std::filesystem::path& path, Config config,
+    InviwoModule(std::filesystem::path path, Config config,
                  std::optional<std::string_view> contents = {});
 
     ~InviwoModule();

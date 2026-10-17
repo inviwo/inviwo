@@ -46,7 +46,7 @@ class IVW_CORE_API PortInspector {
 public:
     PortInspector();  // Should only be used for deserialization.
     PortInspector(std::string_view portClassIdentifier,
-                  const std::filesystem::path& inspectorWorkspaceFileName);
+                  std::filesystem::path inspectorWorkspaceFileName);
     PortInspector(const PortInspector&) = delete;
     PortInspector(PortInspector&&) = default;
     PortInspector& operator=(const PortInspector&) = delete;

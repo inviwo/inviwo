@@ -46,7 +46,7 @@ enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, C
  */
 class IVW_CORE_API ModuleCallbackAction {
 public:
-    ModuleCallbackAction(const std::string& actionName, InviwoModule* module,
+    ModuleCallbackAction(std::string actionName, InviwoModule* module,
                          ModuleCallBackActionState state = ModuleCallBackActionState::Disabled);
     const std::string& getActionName() const;
     InviwoModule* getModule() const;

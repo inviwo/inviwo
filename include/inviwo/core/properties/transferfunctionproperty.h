@@ -41,6 +41,8 @@
 
 #include <inviwo/core/ports/volumeport.h>
 
+#include <utility>
+
 namespace inviwo {
 
 class IsoTFProperty;
@@ -62,8 +64,8 @@ protected:
 
 template <>
 struct ValueWrapper<TransferFunction> {
-    ValueWrapper(std::string_view name, const TransferFunction& transferFunction)
-        : value{transferFunction}, defaultPoints{value.get()}, name{name} {}
+    ValueWrapper(std::string_view name, TransferFunction transferFunction)
+        : value{std::move(transferFunction)}, defaultPoints{value.get()}, name{name} {}
 
     ValueWrapper(const ValueWrapper& rhs) = default;
     ValueWrapper(ValueWrapper&& rhs) = default;

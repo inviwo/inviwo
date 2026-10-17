@@ -34,6 +34,8 @@
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basekeyframe.h>
 
+#include <utility>
+
 namespace inviwo {
 
 namespace animation {
@@ -49,7 +51,7 @@ public:
     using value_type = T;
     ValueKeyframe() = default;
     explicit ValueKeyframe(Seconds time);
-    ValueKeyframe(Seconds time, const T& value);
+    ValueKeyframe(Seconds time, T value);
     virtual ~ValueKeyframe() = default;
     virtual ValueKeyframe* clone() const override;
 
@@ -81,7 +83,8 @@ template <typename T>
 ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_{} {}
 
 template <typename T>
-ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}
+ValueKeyframe<T>::ValueKeyframe(Seconds time, T value)
+    : BaseKeyframe{time}, value_(std::move(value)) {}
 
 template <typename T>
 ValueKeyframe<T>& ValueKeyframe<T>::operator=(const ValueKeyframe<T>& that) {

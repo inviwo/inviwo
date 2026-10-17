@@ -97,7 +97,7 @@ AnimationEditorQt::AnimationEditorQt(
     , controller_(controller)
     , widgetFactory_{widgetFactory}
     , trackFactory_{trackFactory}
-    , showText_{showText} {
+    , showText_{std::move(showText)} {
     auto& animation = controller_.getAnimation();
     animation.addObserver(this);
     controller_.AnimationControllerObservable::addObserver(this);
