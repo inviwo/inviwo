@@ -513,8 +513,8 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
             std::string newIdentifier(*identifier);
             std::transform(newIdentifier.begin(), newIdentifier.end(), newIdentifier.begin(),
                            [](char c) {
-                               if (!(util::contains(std::string_view{" ()=&"}, c) ||
-                                     std::isalnum(c) || c == '_')) {
+                               if (!util::contains(std::string_view{" ()=&"}, c) &&
+                                   !std::isalnum(c) && c != '_') {
                                    return ' ';
                                }
                                return c;

@@ -258,7 +258,7 @@ KDNode<N, T, P>* KDTree<N, T, P>::find(const P pos[N]) {
 template <unsigned char N, typename T, typename P>
 void KDTree<N, T, P>::erase(KDNode<N, T, P>* node, KDNode<N, T, P>* parent) {
     if (node == 0) {
-        std::cerr << "Trying to delete a null node" << std::endl;
+        std::cerr << "Trying to delete a null node" << '\n';
         return;
     }
 

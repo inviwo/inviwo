@@ -193,7 +193,7 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
         if ((lang == Language::Cpp || lang == Language::Glsl) && code[i] == '/' && i + 1 < n &&
             code[i + 1] == '*') {
             i += 2;
-            while (i + 1 < n && !(code[i] == '*' && code[i + 1] == '/')) ++i;
+            while (i + 1 < n && (code[i] != '*' || code[i + 1] != '/')) ++i;
             if (i + 1 < n) i += 2;  // consume '*/'
             tokens.emplace_back(code.substr(start, i - start), TokenKind::Comment);
             continue;
@@ -251,7 +251,7 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
              (code[i] == '\'' && i + 2 < n && code[i + 1] == '\'' && code[i + 2] == '\''))) {
             const char q = code[i];
             i += 3;
-            while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q)) {
+            while (i + 2 < n && (code[i] != q || code[i + 1] != q || code[i + 2] != q)) {
                 ++i;
             }
             if (i + 2 < n) i += 3;
@@ -330,14 +330,12 @@ std::vector<Token> tokenize(std::string_view code, Language lang) {
                     code[i + 1] == '"') {
                     // Triple-quoted after prefix
                     i += 2;
-                    while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
-                        ++i;
+                    while (i + 2 < n && (code[i] != q || code[i + 1] != q || code[i + 2] != q)) ++i;
                     if (i + 2 < n) i += 3;
                 } else if (lang == Language::Python && q == '\'' && i + 1 < n && code[i] == '\'' &&
                            code[i + 1] == '\'') {
                     i += 2;
-                    while (i + 2 < n && !(code[i] == q && code[i + 1] == q && code[i + 2] == q))
-                        ++i;
+                    while (i + 2 < n && (code[i] != q || code[i + 1] != q || code[i + 2] != q)) ++i;
                     if (i + 2 < n) i += 3;
                 } else {
                     while (i < n && code[i] != q && code[i] != '\n') {

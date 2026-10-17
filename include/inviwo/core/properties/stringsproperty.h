@@ -46,7 +46,7 @@ namespace util {
 
 template <size_t N>
 std::span<const std::string_view, N> defaultValues() {
-    static constexpr std::string_view empty = "";
+    static constexpr std::string_view empty;
     static constexpr std::array<std::string_view, N> values =
         util::make_array<N>([&](auto) { return empty; });
     return values;

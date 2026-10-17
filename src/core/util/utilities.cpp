@@ -159,7 +159,7 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
     std::string str{identifier};
     std::replace_if(
         str.begin(), str.end(),
-        [&](char c) { return !(util::contains(extra, c) || std::isalnum(c) || c == '_'); }, ' ');
+        [&](char c) { return !util::contains(extra, c) && !std::isalnum(c) && c != '_'; }, ' ');
     std::erase_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';
@@ -170,7 +170,7 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
 
 std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
     const auto fileNameWithoutExtension = filePath.stem().string();
-#if defined(WIN32)
+#ifdef WIN32
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");
 #else
@@ -201,7 +201,7 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
 std::string stripIdentifier(std::string_view identifier) {
     // Valid identifier: [a-zA-Z_][a-zA-Z0-9_]*
     const auto firstCharValid = [](char c) -> bool { return (c == '_' || std::isalpha(c)); };
-    const auto invalidChar = [](char c) -> bool { return !(c == '_' || std::isalnum(c)); };
+    const auto invalidChar = [](char c) -> bool { return c != '_' && !std::isalnum(c); };
 
     std::string stripped{identifier};
     while (!stripped.empty()) {

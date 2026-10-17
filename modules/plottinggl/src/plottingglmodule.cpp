@@ -323,12 +323,12 @@ bool updateV3(TxElement* root) {
         }
         if (auto* elem = xml::getElement(node,
                                          "Properties/Property&identifier=lines/Properties/"
-                                         "Property&identifier=blendMode/selectedIdentifier")) {
-            if (elem->GetAttribute("content") == "subractive") {
-                elem->SetAttribute("content", "subtractive");
-                res = true;
-            }
+                                         "Property&identifier=blendMode/selectedIdentifier");
+            elem && (elem->GetAttribute("content") == "subractive")) {
+            elem->SetAttribute("content", "subtractive");
+            res = true;
         }
+
         return true;
     }};
     conv.convert(root);

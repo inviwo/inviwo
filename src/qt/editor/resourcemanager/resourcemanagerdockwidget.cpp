@@ -83,11 +83,11 @@ public:
     virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override {
         if (parent == QModelIndex{}) {
             return createIndex(row, column, root);
-        } else if (parent.parent() == QModelIndex{}) {
-            if (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row())))) {
-                return createIndex(row, column, parent.row());
-            }
+        } else if ((parent.parent() == QModelIndex{}) &&
+                   (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row()))))) {
+            return createIndex(row, column, parent.row());
         }
+
         return {};
     }
     virtual Qt::ItemFlags flags(const QModelIndex&) const override { return Qt::ItemIsEnabled; }
@@ -135,10 +135,8 @@ public:
                     return utilqt::toQString(resource->desc);
                 } else if (index.column() == Cols::Size) {
                     return static_cast<qulonglong>(resource->sizeInBytes());
-                } else if (index.column() == Cols::Meta) {
-                    if (resource->meta.has_value()) {
-                        return utilqt::toQString(resource->meta->source);
-                    }
+                } else if ((index.column() == Cols::Meta) && (resource->meta.has_value())) {
+                    return utilqt::toQString(resource->meta->source);
                 }
             }
         }
@@ -185,10 +183,8 @@ public:
                 return utilqt::toQString(resource->desc);
             } else if (index.column() == Cols::Size) {
                 return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
-            } else if (index.column() == Cols::Meta) {
-                if (resource->meta.has_value()) {
-                    return utilqt::toQString(resource->meta->source);
-                }
+            } else if ((index.column() == Cols::Meta) && (resource->meta.has_value())) {
+                return utilqt::toQString(resource->meta->source);
             }
         }
         return {};

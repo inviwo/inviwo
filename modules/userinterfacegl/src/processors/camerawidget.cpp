@@ -380,7 +380,7 @@ std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
 }
 
 void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
-    if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
+    if (!widgetImage_ || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
         std::tie(widgetImage_, widgetImageGL_) = createWidgetImage(widgetSize);
     }
     // enable fbo for rendering only the widget
@@ -958,12 +958,9 @@ void CameraWidget::Animate::willInvokeEvent(Event* e) {
         if (me->state() == MouseState::Press) {
             interactionStart();
         }
-    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
-        if (!ke->hasBeenUsed()) {
-            if (ke->state() == KeyState::Press) {
-                interactionStart();
-            }
-        }
+    } else if (const auto* ke = e->getAs<KeyboardEvent>();
+               ke && (!ke->hasBeenUsed()) && (ke->state() == KeyState::Press)) {
+        interactionStart();
     }
 }
 
@@ -972,12 +969,9 @@ void CameraWidget::Animate::didInvokeEvent(Event* e) {
         if (me->state() == MouseState::Release && me->buttonState() == MouseButton::None) {
             interactionStop();
         }
-    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
-        if (!ke->hasBeenUsed()) {
-            if (ke->state() == KeyState::Release) {
-                interactionStop();
-            }
-        }
+    } else if (const auto* ke = e->getAs<KeyboardEvent>();
+               ke && (!ke->hasBeenUsed()) && (ke->state() == KeyState::Release)) {
+        interactionStop();
     }
 }
 

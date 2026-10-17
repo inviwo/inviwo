@@ -224,7 +224,7 @@ void FilePatternProperty::updateFileList() {
             if (!hasWildcard) {
                 // look for exact match
                 if (util::contains(fileList, pattern)) {
-                    files_.push_back(std::make_tuple(-1, item));
+                    files_.emplace_back(-1, item);
                 }
             } else if (hasDigits) {
                 ivec2 indexRange{-1, std::numeric_limits<int>::max()};
@@ -244,7 +244,7 @@ void FilePatternProperty::updateFileList() {
                         found = true;
                         // check index
                         if ((index >= indexRange.x) && (index <= indexRange.y)) {
-                            files_.push_back(std::make_tuple(index, filePath / file));
+                            files_.emplace_back(index, filePath / file);
                         }
                     }
                 }
@@ -268,7 +268,7 @@ void FilePatternProperty::updateFileList() {
                 for (const auto& file : fileList) {
                     if (filesystem::wildcardStringMatch(strPattern, file.generic_string())) {
                         // match found
-                        files_.push_back(std::make_tuple(-1, filePath / file));
+                        files_.emplace_back(-1, filePath / file);
                     }
                 }
             }
@@ -295,7 +295,7 @@ void FilePatternProperty::sort() {
     std::sort(files_.begin(), files_.end());
 }
 
-std::string FilePatternProperty::guessFilePattern() const {
+std::string_view FilePatternProperty::guessFilePattern() const {
     log::error("not implemented yet");
     return "";
 }

@@ -68,14 +68,14 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     }
 
     // Copy and resize depth layer
-    if (source->getDepthLayerRAM() && target->getDepthLayerRAM())
-        if (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))
-            return false;
+    if ((source->getDepthLayerRAM() && target->getDepthLayerRAM()) &&
+        (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM())))
+        return false;
 
     // Copy and resize picking layer
-    if (source->getPickingLayerRAM() && target->getPickingLayerRAM())
-        if (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))
-            return false;
+    if ((source->getPickingLayerRAM() && target->getPickingLayerRAM()) &&
+        (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM())))
+        return false;
 
     return true;
 }

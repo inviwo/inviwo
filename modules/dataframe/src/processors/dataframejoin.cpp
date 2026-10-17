@@ -118,31 +118,29 @@ DataFrameJoin::DataFrameJoin()
 void DataFrameJoin::process() {
     if (inportLeft_.isChanged()) {
         for (auto p : secondaryLeftKeys_) {
-            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
-                if (inportLeft_.hasData()) {
-                    keyProp->setOptions(*inportLeft_.getData());
-                }
+            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p);
+                keyProp && (inportLeft_.hasData())) {
+                keyProp->setOptions(*inportLeft_.getData());
             }
         }
     }
     if (inportRight_.isChanged()) {
         for (auto p : secondaryRightKeys_) {
-            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p)) {
-                if (inportRight_.hasData()) {
-                    keyProp->setOptions(*inportRight_.getData());
-                }
+            if (auto keyProp = dynamic_cast<ColumnOptionProperty*>(p);
+                keyProp && (inportRight_.hasData())) {
+                keyProp->setOptions(*inportRight_.getData());
             }
         }
     }
 
     std::vector<std::pair<std::string, std::string>> keys;
-    keys.push_back({leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader()});
+    keys.emplace_back(leftKey_.getSelectedColumnHeader(), rightKey_.getSelectedColumnHeader());
 
     for (auto&& [left, right] : util::zip(secondaryLeftKeys_, secondaryRightKeys_)) {
         if (auto leftKeyProp = dynamic_cast<ColumnOptionProperty*>(left)) {
             if (auto rightKeyProp = dynamic_cast<ColumnOptionProperty*>(right)) {
-                keys.push_back({leftKeyProp->getSelectedColumnHeader(),
-                                rightKeyProp->getSelectedColumnHeader()});
+                keys.emplace_back(leftKeyProp->getSelectedColumnHeader(),
+                                  rightKeyProp->getSelectedColumnHeader());
             }
         }
     }

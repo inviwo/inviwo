@@ -103,15 +103,14 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
                 const auto& dispName = processor->getDisplayName();
 
                 std::ostringstream oss;
-                oss << "/** \\docpage{" << classID << ", " << dispName << "}" << std::endl;
-                oss << "* ![](" << classID << ".png?classIdentifier=" << classID << ")"
-                    << std::endl;
-                oss << "* " << std::endl;
-                oss << "* Description of the processor" << std::endl;
-                oss << "* " << std::endl;
-                oss << "* " << std::endl;
+                oss << "/** \\docpage{" << classID << ", " << dispName << "}" << '\n';
+                oss << "* ![](" << classID << ".png?classIdentifier=" << classID << ")" << '\n';
+                oss << "* " << '\n';
+                oss << "* Description of the processor" << '\n';
+                oss << "* " << '\n';
+                oss << "* " << '\n';
                 if (!inports.empty()) {
-                    oss << "* ### Inports" << std::endl;
+                    oss << "* ### Inports" << '\n';
                     for (const auto& port : inports) {
                         oss << "*   * __" << port->getIdentifier() << "__ Describe port.\n";
                     }
@@ -119,7 +118,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
                 }
 
                 if (!outports.empty()) {
-                    oss << "* ### Outports" << std::endl;
+                    oss << "* ### Outports" << '\n';
                     for (const auto& port : outports) {
                         oss << "*   * __" << port->getIdentifier() << "__ Describe port.\n";
                     }
@@ -127,7 +126,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
                 }
 
                 if (!properties.empty()) {
-                    oss << "* ### Properties" << std::endl;
+                    oss << "* ### Properties" << '\n';
                     for (const auto& prop : properties) {
                         oss << "*   * __" << prop->getDisplayName() << "__ Describe property.\n";
                     }

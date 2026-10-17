@@ -96,15 +96,15 @@ using Gaussian3DProperty = GaussianProperty<dvec3>;
 
 template <>
 struct PropertyTraits<Gaussian1DProperty> {
-    static std::string classIdentifier() { return "org.inviwo.Gaussian1DProperty"; }
+    static std::string_view classIdentifier() { return "org.inviwo.Gaussian1DProperty"; }
 };
 template <>
 struct PropertyTraits<Gaussian2DProperty> {
-    static std::string classIdentifier() { return "org.inviwo.Gaussian2DProperty"; }
+    static std::string_view classIdentifier() { return "org.inviwo.Gaussian2DProperty"; }
 };
 template <>
 struct PropertyTraits<Gaussian3DProperty> {
-    static std::string classIdentifier() { return "org.inviwo.Gaussian3DProperty"; }
+    static std::string_view classIdentifier() { return "org.inviwo.Gaussian3DProperty"; }
 };
 
 }  // namespace inviwo

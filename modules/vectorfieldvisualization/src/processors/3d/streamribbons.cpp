@@ -252,8 +252,8 @@ void StreamRibbonsDeprecated::process() {
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size() + 1));
-                vertices.push_back({p0, N, p0, c});
-                vertices.push_back({p1, N, p1, c});
+                vertices.emplace_back(p0, N, p0, c);
+                vertices.emplace_back(p1, N, p1, c);
 
                 position++;
                 velocity++;

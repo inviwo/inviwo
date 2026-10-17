@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ImageLabel::ImageLabel() : name_(""), startPoint_(0), rectSize_(0) {}
+ImageLabel::ImageLabel() : startPoint_(0), rectSize_(0) {}
 
 ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
     : name_(name), startPoint_(startPoint), rectSize_(rectSize) {}
@@ -67,7 +67,7 @@ ImageEditorProperty::ImageEditorProperty(std::string_view identifier, std::strin
 void ImageEditorProperty::setDimensions(ivec2 imgSize) { dimensions_ = imgSize; }
 
 void ImageEditorProperty::addLabel(vec2 startPoint, vec2 rectSize, std::string name) {
-    labels_.push_back(ImageLabel(startPoint, rectSize, name));
+    labels_.emplace_back(startPoint, rectSize, name);
 }
 
 const std::vector<ImageLabel>& ImageEditorProperty::getLabels() const { return labels_; }

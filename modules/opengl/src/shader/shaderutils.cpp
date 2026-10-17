@@ -411,9 +411,9 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     const std::string_view allChannelsGradientKey =
         "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
 
-    std::string_view gradientValue = "";
-    std::string_view singleChannelGradientValue = "";
-    std::string_view allChannelsGradientValue = "";
+    std::string_view gradientValue;
+    std::string_view singleChannelGradientValue;
+    std::string_view allChannelsGradientValue;
     std::string_view channel = "channel";
     std::string_view defaultChannel = "0";
 
@@ -480,7 +480,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
 
     // classification defines, red channel is used
     std::string_view classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
-    std::string_view classificationValue = "";
+    std::string_view classificationValue;
     if (property.classificationMode_.isSelectedIdentifier("none"))
         classificationValue = "vec4(voxel.r)";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))

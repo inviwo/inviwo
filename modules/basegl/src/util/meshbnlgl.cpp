@@ -48,33 +48,31 @@ MeshBnLGL::MeshBnLGL()
     , unitNumber{0} {}
 
 void MeshBnLGL::update() {
-    if (inport.isConnected()) {
-        if (inport.isChanged() || filter.isModified() || select.isModified() ||
-            highlight.isModified()) {
-            const auto size = inport.getManager().getMax() + 1;
-            if (size > buffer.getSize()) {
-                buffer.setSize(bit_ceil(size));
-            }
-
-            const auto bnlData = buffer.map(GL_WRITE_ONLY);
-            std::fill(bnlData.begin(), bnlData.end(), 0);
-            if (select) {
-                for (const auto i : inport.getSelectedIndices()) {
-                    bnlData[i] = 1;
-                }
-            }
-            if (highlight) {
-                for (const auto i : inport.getHighlightedIndices()) {
-                    bnlData[i] = 2;
-                }
-            }
-            if (filter) {
-                for (const auto i : inport.getFilteredIndices()) {
-                    bnlData[i] = 3;
-                }
-            }
-            buffer.unmap();
+    if ((inport.isConnected()) && (inport.isChanged() || filter.isModified() ||
+                                   select.isModified() || highlight.isModified())) {
+        const auto size = inport.getManager().getMax() + 1;
+        if (size > buffer.getSize()) {
+            buffer.setSize(bit_ceil(size));
         }
+
+        const auto bnlData = buffer.map(GL_WRITE_ONLY);
+        std::fill(bnlData.begin(), bnlData.end(), 0);
+        if (select) {
+            for (const auto i : inport.getSelectedIndices()) {
+                bnlData[i] = 1;
+            }
+        }
+        if (highlight) {
+            for (const auto i : inport.getHighlightedIndices()) {
+                bnlData[i] = 2;
+            }
+        }
+        if (filter) {
+            for (const auto i : inport.getFilteredIndices()) {
+                bnlData[i] = 3;
+            }
+        }
+        buffer.unmap();
     }
 }
 

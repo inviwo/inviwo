@@ -1058,11 +1058,11 @@ void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
 }
 
 bool TFEditor::handleGroupSelection(QKeyEvent* event) {
-#if defined(_WIN32)
+#ifdef _WIN32
     static constexpr std::array<std::pair<qint32, int>, 10> nativeKeyMap{
         {{2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 0}}};
     const quint32 nativeKey = event->nativeScanCode();
-#elif defined(__APPLE__)
+#elifdef __APPLE__
     static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
         {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
     const quint32 nativeKey = event->nativeVirtualKey();
@@ -1159,10 +1159,8 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.back()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.back()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.back()->setSelected(true);
             }
 
             break;
@@ -1175,11 +1173,10 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.front()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.front()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.front()->setSelected(true);
             }
+
             break;
         case Qt::Key_Up:
         case 'I':

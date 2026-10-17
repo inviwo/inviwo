@@ -122,10 +122,8 @@ int main(int argc, char** argv) {
         std::vector<ProcessorWidget*> widgets;
         network->forEachProcessor([&](Processor* p) {
             if (p->isSink()) {
-                if (auto widget = p->getProcessorWidget()) {
-                    if (widget->isVisible()) {
-                        widgets.push_back(widget);
-                    }
+                if (auto widget = p->getProcessorWidget(); widget && (widget->isVisible())) {
+                    widgets.push_back(widget);
                 }
             }
         });
