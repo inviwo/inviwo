@@ -64,9 +64,9 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     , minSeparation_(0)
     , formatTooltip_{[](int /*handle*/, int pos) { return fmt::to_string(pos); }} {
 
-    QFrame* left = new QFrame(this);
-    QFrame* middle = new QFrame(this);
-    QFrame* right = new QFrame(this);
+    auto* left = new QFrame(this);
+    auto* middle = new QFrame(this);
+    auto* right = new QFrame(this);
 
     addWidget(left);
     addWidget(middle);

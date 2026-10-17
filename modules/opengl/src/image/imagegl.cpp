@@ -436,7 +436,7 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
 
     // Make a buffer that can hold the largest possible pixel type
     vec4 res{0.0f};
-    GLvoid* ptr = static_cast<GLvoid*>(glm::value_ptr(res));
+    auto* ptr = static_cast<GLvoid*>(glm::value_ptr(res));
     const auto x = static_cast<GLint>(pos.x);
     const auto y = static_cast<GLint>(pos.y);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

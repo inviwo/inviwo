@@ -54,7 +54,7 @@ constexpr auto dispatcher = []<typename T>(
                                 const VolumeRepresentation* in, size3_t dim, size3_t offset,
                                 const VolumeBorders& border,
                                 bool clampBorderOutsideVolume) -> std::shared_ptr<VolumeRAM> {
-    const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
+    const auto* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
     if (!volume) return nullptr;
 
     // determine parameters

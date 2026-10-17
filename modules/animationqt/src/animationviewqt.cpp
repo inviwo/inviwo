@@ -198,7 +198,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this,
             [this]() { timeline_->update(); });
 
-    QGridLayout* gridLayout = new QGridLayout();
+    auto* gridLayout = new QGridLayout();
     gridLayout->setSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 

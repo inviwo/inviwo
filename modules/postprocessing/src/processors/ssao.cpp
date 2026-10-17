@@ -199,7 +199,7 @@ SSAO::SSAO()
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
             const auto dim = outport_.getData()->getDimensions();
-            Image* img = new Image(dim, format);
+            auto* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
             img->getColorLayer()->setSwizzleMask(swizzleMask);

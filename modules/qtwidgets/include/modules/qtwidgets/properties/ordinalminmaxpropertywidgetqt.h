@@ -135,7 +135,7 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 
@@ -145,8 +145,8 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     setFocusPolicy(min_->focusPolicy());
     setFocusProxy(min_);
 
-    QHBoxLayout* hSliderLayout = new QHBoxLayout();
-    QWidget* sliderWidget = new QWidget();
+    auto* hSliderLayout = new QHBoxLayout();
+    auto* sliderWidget = new QWidget();
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 

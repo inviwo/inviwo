@@ -85,8 +85,8 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(50, 80)));  // default size
 
-    QWidget* centralWidget = new QWidget();
-    QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
+    auto* centralWidget = new QWidget();
+    auto* vLayout = new QVBoxLayout(centralWidget);
     const auto space = utilqt::refSpacePx(this);
     vLayout->setSpacing(space);
     vLayout->setContentsMargins(space, space, space, space);
@@ -113,7 +113,7 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
         });
         vLayout->addWidget(lineEdit_);
     }
-    QHBoxLayout* listViewLayout = new QHBoxLayout();
+    auto* listViewLayout = new QHBoxLayout();
     listViewLayout->addWidget(new QLabel("Group by", centralWidget));
     listView_ = new QComboBox(centralWidget);
     listView_->addItem("Alphabet", QVariant::fromValue(Grouping::Alphabetical));

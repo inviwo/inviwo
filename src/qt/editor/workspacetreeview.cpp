@@ -91,7 +91,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         const auto& image = [&]() {
             const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
-                const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
+                const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
                 return workspaceInfo.annotations->getPrimaryCanvasQImage();
             } else {
                 return WorkspaceAnnotationsQt::getMissingImage();

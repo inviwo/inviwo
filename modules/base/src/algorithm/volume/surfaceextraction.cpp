@@ -48,7 +48,7 @@ glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, doubl
     if (v0 == v1) {
         return p0;
     }
-    const float t = static_cast<float>(v0 / (v0 - v1));
+    const auto t = static_cast<float>(v0 / (v0 - v1));
     return p0 + t * (p1 - p0);
 }
 

@@ -139,7 +139,7 @@ void HeightFieldMapper::process() {
     // check format of output image
     if (!outImg || (outImg->getDataFormat()->getId() != DataFormatId::Float32)) {
         // replace with new floating point image
-        Image* img = new Image(dim, DataFloat32::get());
+        auto* img = new Image(dim, DataFloat32::get());
         outport_.setData(img);
         outImg = img;
     } else if (outImg->getDimensions() != dim) {
@@ -147,15 +147,15 @@ void HeightFieldMapper::process() {
         outImg->setDimensions(dim);
     }
 
-    LayerRAM* dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();
-    float* data = static_cast<float*>(dstLayer->getData());
+    auto* dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();
+    auto* data = static_cast<float*>(dstLayer->getData());
 
     // convert input image to float image
-    const LayerRAM* srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
+    const auto* srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
 
     // special case: input image is already FLOAT32 with 1 channel
     if ((numInputChannels == 1) && (format->getId() == DataFormatId::Float32)) {
-        const float* srcData = static_cast<const float*>(srcLayer->getData());
+        const auto* srcData = static_cast<const float*>(srcLayer->getData());
         std::copy(srcData, srcData + dim.x * dim.y, data);
     } else {
         switch (numInputChannels) {

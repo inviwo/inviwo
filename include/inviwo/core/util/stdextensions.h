@@ -62,7 +62,7 @@ std::unique_ptr<Derived, Del> static_unique_ptr_cast(std::unique_ptr<Base, Del>&
 
 template <typename Derived, typename Base, typename Del>
 std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>&& p) {
-    if (Derived* result = dynamic_cast<Derived*>(p.get())) {
+    if (auto* result = dynamic_cast<Derived*>(p.get())) {
         p.release();
         return std::unique_ptr<Derived, Del>(result, std::move(p.get_deleter()));
     }
@@ -72,7 +72,7 @@ std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>
 template <typename Derived, typename Base>
 std::unique_ptr<Derived> dynamic_unique_ptr_cast(
     std::unique_ptr<Base, std::default_delete<Base>>&& p) {
-    if (Derived* result = dynamic_cast<Derived*>(p.get())) {
+    if (auto* result = dynamic_cast<Derived*>(p.get())) {
         p.release();
         return std::unique_ptr<Derived>(result);
     }

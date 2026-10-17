@@ -69,15 +69,15 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     setFocusProxy(lineEdit_);
     setAcceptDrops(true);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));
-    QHBoxLayout* hWidgetLayout = new QHBoxLayout();
+    auto* hWidgetLayout = new QHBoxLayout();
 
     {
         hWidgetLayout->setContentsMargins(0, 0, 0, 0);
-        QWidget* widget = new QWidget();
+        auto* widget = new QWidget();
         widget->setLayout(hWidgetLayout);
         auto sp = widget->sizePolicy();
         sp.setHorizontalStretch(3);

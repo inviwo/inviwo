@@ -248,7 +248,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         auto clipped = algorithm::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y),
                                                           rectMin, rectMax);
         if (std::get<0>(clipped)) {
-            const uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+            const auto indexOffset = static_cast<uint32_t>(vertices.size());
 
             vertices.emplace_back(std::get<1>(clipped), properties_.pointColor_.get(), 0);
             vertices.emplace_back(std::get<2>(clipped), properties_.pointColor_.get(), 0);
@@ -297,7 +297,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
     {
         // vertical lines
-        uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+        auto indexOffset = static_cast<uint32_t>(vertices.size());
         for (const auto& index : selectedIndices) {
             const auto& point = xyPairs[index];
 
@@ -336,7 +336,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
                 }
             };
 
-        uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+        auto indexOffset = static_cast<uint32_t>(vertices.size());
         for (const auto& index : selectedIndices) {
             const vec2 pLower(xyPairs[index].x);
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
@@ -545,7 +545,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
         }
     };
 
-    const uint32_t id = static_cast<uint32_t>(p->getPickedId());
+    const auto id = static_cast<uint32_t>(p->getPickedId());
     auto rowIndex = idToDataFrameIndex(id);
 
     // Show tooltip for current item

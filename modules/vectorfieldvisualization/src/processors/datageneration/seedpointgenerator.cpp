@@ -222,9 +222,9 @@ void SeedPointGenerator::planePoints() {
 void SeedPointGenerator::randomPoints() {
     const auto points = std::make_shared<std::vector<vec3>>();
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        const float x = util::randomNumber<float>(mt_);
-        const float y = util::randomNumber<float>(mt_);
-        const float z = util::randomNumber<float>(mt_);
+        const auto x = util::randomNumber<float>(mt_);
+        const auto y = util::randomNumber<float>(mt_);
+        const auto z = util::randomNumber<float>(mt_);
         points->emplace_back(x, y, z);
     }
     seedPoints_.setData(points);
