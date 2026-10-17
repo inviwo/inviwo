@@ -336,7 +336,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     // double>(*this), ...
 
     const auto ordinalLikeConverters = [&]<typename T, typename U>() {
-        if constexpr (!std::is_same<T, U>::value) {
+        if constexpr (!std::is_same_v<T, U>) {
             registerPropertyConverter(
                 std::make_unique<
                     OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());

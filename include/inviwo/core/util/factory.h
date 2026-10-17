@@ -153,7 +153,7 @@ protected:
  */
 template <typename K>
 struct FactoryKeyType {
-    using type = std::remove_cv_t<std::remove_reference_t<K>>;
+    using type = std::remove_cvref_t<K>;
 };
 /**
  * Specialization that maps std::string_view to std::string

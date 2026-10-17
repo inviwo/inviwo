@@ -103,35 +103,35 @@ TEST(IndirectIteratorTest, Pair) {
 
     {
         const auto b = util::makeIndirectIterator(vec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value);
+        static_assert(std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator(cvec.begin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value);
+        static_assert(!std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator(vec.cbegin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value);
+        static_assert(!std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator(cvec.cbegin());
-        static_assert(!std::is_assignable<decltype(*b), int>::value);
+        static_assert(!std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator<false>(vec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value);
+        static_assert(std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator<false>(cvec.begin());
-        static_assert(std::is_assignable<decltype(*b), int>::value);
+        static_assert(std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator<false>(vec.cbegin());
-        static_assert(std::is_assignable<decltype(*b), int>::value);
+        static_assert(std::is_assignable_v<decltype(*b), int>);
     }
     {
         const auto b = util::makeIndirectIterator<false>(cvec.cbegin());
-        static_assert(std::is_assignable<decltype(*b), int>::value);
+        static_assert(std::is_assignable_v<decltype(*b), int>);
     }
 }
 

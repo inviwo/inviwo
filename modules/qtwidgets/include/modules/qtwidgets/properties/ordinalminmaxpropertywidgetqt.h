@@ -71,7 +71,7 @@ public:
 };
 
 template <typename T>
-class Transformer<T, typename std::enable_if<util::is_floating_point<T>::value>::type> {
+class Transformer<T, std::enable_if_t<util::is_floating_point<T>::value>> {
 public:
     static T sliderToValue(MinMaxProperty<T>* p, int val) {
         return (static_cast<T>(val) / steps()) * (p->getRangeMax() - p->getRangeMin()) +

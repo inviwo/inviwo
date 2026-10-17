@@ -116,7 +116,7 @@ namespace detail {
 
 template <typename To, typename From>
 constexpr bool is_scalar_conv =
-    !std::is_same<To, From>::value && util::rank_v<To> == 0 && util::rank_v<From> == 0;
+    !std::is_same_v<To, From> && util::rank_v<To> == 0 && util::rank_v<From> == 0;
 
 template <typename T>
 constexpr bool is_unsigned_int = std::is_unsigned_v<T> && std::is_integral_v<T>;
@@ -153,13 +153,12 @@ struct growImpl<unsigned int, false> {
 
 template <typename T>
 struct growImpl<T, true> {
-    using type =
-        typename std::make_signed<typename growImpl<std::make_unsigned_t<T>, false>::type>::type;
+    using type = std::make_signed_t<typename growImpl<std::make_unsigned_t<T>, false>::type>;
 };
 
 template <typename T>
 struct grow {
-    using type = typename growImpl<T, std::is_signed<T>::value>::type;
+    using type = typename growImpl<T, std::is_signed_v<T>>::type;
 };
 template <typename T>
 using grow_t = typename grow<T>::type;

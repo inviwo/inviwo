@@ -143,7 +143,7 @@ public:
                    SerializationTarget target = SerializationTarget::Node);
 
     // Enum types
-    template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+    template <typename T, std::enable_if_t<std::is_enum_v<T>, int> = 0>
     void serialize(std::string_view key, const T& data,
                    SerializationTarget target = SerializationTarget::Node);
 
@@ -153,11 +153,11 @@ public:
                    SerializationTarget target = SerializationTarget::Node);
 
     // glm vector types
-    template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
+    template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int> = 0>
     void serialize(std::string_view key, const Vec& data);
 
     // glm matrix types
-    template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type = 0>
+    template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int> = 0>
     void serialize(std::string_view key, const Mat& data);
 
     // bitsets
@@ -295,7 +295,7 @@ void Serializer::serialize(std::string_view key, const T& data, SerializationTar
 }
 
 // enum types
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
+template <typename T, std::enable_if_t<std::is_enum_v<T>, int>>
 void Serializer::serialize(std::string_view key, const T& data, SerializationTarget target) {
     using ET = std::underlying_type_t<T>;
     const ET tmpdata{static_cast<const ET>(data)};
@@ -310,7 +310,7 @@ void Serializer::serialize(std::string_view key, const flags::flags<T>& data,
 }
 
 // glm vector types
-template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
+template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int>>
 void Serializer::serialize(std::string_view key, const Vec& data) {
     const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
@@ -320,7 +320,7 @@ void Serializer::serialize(std::string_view key, const Vec& data) {
 }
 
 // glm matrix types
-template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
+template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int>>
 void Serializer::serialize(std::string_view key, const Mat& data) {
     const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {

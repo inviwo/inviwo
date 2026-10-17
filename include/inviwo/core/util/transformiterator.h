@@ -41,7 +41,7 @@ namespace inviwo::util {
 namespace detail {
 
 template <typename Tag, typename Iter>
-struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_category>::value> {};
+struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
 using require_t = typename require<Tag, Iter>::type;
 
@@ -67,7 +67,7 @@ struct TransformIterator {
         : transform_{Transform{}}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
         : transform_{std::move(transform)}, iterator_(iterator) {
-        static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value);
+        static_assert(std::is_same_v<base_reference, decltype(*std::declval<Iter>())>);
     }
     TransformIterator(const TransformIterator& rhs) = default;
     TransformIterator(TransformIterator&& rhs) = default;

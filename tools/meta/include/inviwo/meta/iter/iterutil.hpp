@@ -34,7 +34,7 @@
 namespace inviwo::meta::iterutil {
 
 template <typename Tag, typename Iter>
-struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_category>::value> {};
+struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
 using require_t = typename require<Tag, Iter>::type;
 

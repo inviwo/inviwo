@@ -43,28 +43,28 @@ using namespace util;
 
 template <typename T>
 static T minv()
-    requires std::is_floating_point<T>::value
+    requires std::is_floating_point_v<T>
 {
     return T{0.0};
 }
 
 template <typename T>
 static T minv()
-    requires(!std::is_floating_point<T>::value)
+    requires(!std::is_floating_point_v<T>)
 {
     return std::numeric_limits<T>::lowest();
 }
 
 template <typename T>
 static T maxv()
-    requires std::is_floating_point<T>::value
+    requires std::is_floating_point_v<T>
 {
     return T{1.0};
 }
 
 template <typename T>
 static T maxv()
-    requires(!std::is_floating_point<T>::value)
+    requires(!std::is_floating_point_v<T>)
 {
     return std::numeric_limits<T>::max();
 }

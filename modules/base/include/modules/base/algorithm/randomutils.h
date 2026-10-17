@@ -171,10 +171,10 @@ inline static T randomNumber(RNG& rng, T min = detail::RandomNumberRangeValues::
  * Fills a data container of type T with numberOfElements random numbers using the given random
  * number generator and distribution
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
     std::generate(data, data + numberOfElements,
@@ -185,10 +185,10 @@ void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerato
  * Fills a span of type T with numberOfElements random numbers using the given random
  * number generator and distribution
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 void randomSequence(std::span<T> data, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
     std::generate(data.begin(), data.end(), [&]() { return distribution(randomNumberGenerator); });
@@ -206,10 +206,10 @@ void randomSequence(std::span<T> data, Rand& randomNumberGenerator = Rand(),
  * @param distribution the distribution to use for the random numbers
  * @return LayerRAM with white noise
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<LayerRAMPrecision<T>> randomLayerRAM(size2_t dims,
                                                      Rand& randomNumberGenerator = Rand(),
                                                      Dist& distribution = Dist(0, 1)) {
@@ -232,10 +232,10 @@ std::shared_ptr<LayerRAMPrecision<T>> randomLayerRAM(size2_t dims,
  * std::uniform_int/real_distribution between zero and one
  * @see randomLayerRAM
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<Layer> randomLayer(size2_t dims, Rand& randomNumberGenerator = Rand(),
                                    Dist& distribution = Dist(0, 1)) {
     auto layer =
@@ -253,10 +253,10 @@ std::shared_ptr<Layer> randomLayer(size2_t dims, Rand& randomNumberGenerator = R
  * @param distribution the distribution to use for the random numbers, defaults to
  * std::uniform_int/real_distribution between zero and one
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<Volume> randomVolume(size3_t dims, Rand& randomNumberGenerator = Rand(),
                                      Dist& distribution = Dist(0, 1)) {
     const auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{

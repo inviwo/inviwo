@@ -53,7 +53,7 @@ public:
     void reset(T* ptr = nullptr);
     T* get() const;
 
-    typename std::add_lvalue_reference<T>::type operator*() const;
+    std::add_lvalue_reference_t<T> operator*() const;
     T* operator->() const;
     explicit operator bool() const;
 
@@ -92,7 +92,7 @@ T* cloneable_ptr<T>::operator->() const {
 }
 
 template <typename T>
-typename std::add_lvalue_reference<T>::type cloneable_ptr<T>::operator*() const {
+std::add_lvalue_reference_t<T> cloneable_ptr<T>::operator*() const {
     return ptr_.operator*();
 }
 

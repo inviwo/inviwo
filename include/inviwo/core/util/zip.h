@@ -78,21 +78,21 @@ struct proxy {
 
     template <typename Us = std::tuple<Ts...>>
     decltype(auto) first() const
-        requires(1 <= std::tuple_size<Us>::value)
+        requires(1 <= std::tuple_size_v<Us>)
     {
         return std::get<0>(data);
     }
 
     template <typename Us = std::tuple<Ts...>>
     decltype(auto) second() const
-        requires(2 <= std::tuple_size<Us>::value)
+        requires(2 <= std::tuple_size_v<Us>)
     {
         return std::get<1>(data);
     }
 
     template <typename Us = std::tuple<Ts...>>
     decltype(auto) third() const
-        requires(3 <= std::tuple_size<Us>::value)
+        requires(3 <= std::tuple_size_v<Us>)
     {
         return std::get<2>(data);
     }
@@ -205,8 +205,8 @@ struct iterator_tools;
 template <typename... Ts>
 struct iterator_tools<std::tuple<Ts...>> {
     using difference_type = std::ptrdiff_t;
-    using iterator_category = typename std::common_type<
-        typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>::type;
+    using iterator_category =
+        std::common_type_t<typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>;
     using value_type = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
     using pointer = std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::pointer...>;
     using reference = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
@@ -216,7 +216,7 @@ struct iterator_tools<std::tuple<Ts...>> {
 template <typename Tag, typename IterTuple>
 struct require
     : std::enable_if<
-          std::is_base_of<Tag, typename iterator_tools<IterTuple>::iterator_category>::value> {};
+          std::is_base_of_v<Tag, typename iterator_tools<IterTuple>::iterator_category>> {};
 template <typename Tag, typename IterTuple>
 using require_t = typename require<Tag, IterTuple>::type;
 
@@ -229,7 +229,7 @@ struct zipIterator {
     using pointer = typename detailzip::iterator_tools<Iterables>::pointer;
     using reference = typename detailzip::iterator_tools<Iterables>::reference;
 
-    static_assert(std::is_base_of<std::input_iterator_tag, iterator_category>::value,
+    static_assert(std::is_base_of_v<std::input_iterator_tag, iterator_category>,
                   "All iterators have to be at least input iterators");
 
     template <typename Tag, typename IterTuple>
@@ -299,7 +299,7 @@ struct zipIterator {
     pointer operator->() const { return detailzip::pointer(iterators_); }
 
     template <size_t N>
-    typename std::tuple_element<N, Iterators>::type& get() {
+    std::tuple_element_t<N, Iterators>& get() {
         return std::get<N>(iterators_);
     }
 

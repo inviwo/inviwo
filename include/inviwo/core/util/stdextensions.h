@@ -455,7 +455,7 @@ namespace hashtuple {
  * Hashing for tuples
  * https://stackoverflow.com/questions/20834838/using-tuple-in-unordered-map
  */
-template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+template <class Tuple, size_t Index = std::tuple_size_v<Tuple> - 1>
 struct HashValueImpl {
     static void apply(size_t& seed, const Tuple& tuple) {
         HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);

@@ -111,7 +111,7 @@ namespace serialization {
  */
 template <typename U>
 static constexpr bool isPrimitiveType() {
-    using T = std::remove_cv_t<std::remove_reference_t<U>>;
+    using T = std::remove_cvref_t<U>;
     return std::is_same_v<T, bool> || std::is_same_v<T, char> || std::is_same_v<T, int> ||
            std::is_same_v<T, signed int> || std::is_same_v<T, unsigned int> ||
            std::is_same_v<T, size_t> || std::is_same_v<T, long long> ||

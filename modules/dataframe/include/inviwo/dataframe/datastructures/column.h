@@ -667,7 +667,7 @@ namespace detail {
 
 template <typename T>
 void add(Buffer<T>* buffer, std::string_view value)
-    requires std::is_integral<T>::value
+    requires std::is_integral_v<T>
 {
     T result;
     if (value.empty()) {
@@ -685,7 +685,7 @@ void add(Buffer<T>* buffer, std::string_view value)
 // Specialization for float and double types, add NaN instead of throwing an error
 template <typename T>
 void add(Buffer<T>* buffer, std::string_view value)
-    requires std::is_floating_point<T>::value
+    requires std::is_floating_point_v<T>
 {
     T result;
     std::stringstream stream;
@@ -700,7 +700,7 @@ void add(Buffer<T>* buffer, std::string_view value)
 
 template <typename T>
 void add(Buffer<T>* /*buffer*/, std::string_view value)
-    requires(!std::is_integral<T>::value && !std::is_floating_point<T>::value)
+    requires(!std::is_integral_v<T> && !std::is_floating_point_v<T>)
 {
     throw InvalidConversion(
         fmt::format("conversion to target type not implemented (\"{}\")", value));

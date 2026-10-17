@@ -110,7 +110,7 @@ public:
 
     template <typename... Ts>
     BitSet(Ts&&... values)
-        requires (std::conjunction<std::is_convertible<Ts, uint32_t>...>::value)
+        requires (std::conjunction_v<std::is_convertible<Ts, uint32_t>...>)
         : BitSet() {
         add(values...);
     }

@@ -330,7 +330,7 @@ static std::optional<T> toNumberLocale(std::string_view str) {
     const SafeCStr cstr{str};
     if constexpr (std::is_same_v<T, double>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const double val = strtod(cstr.c_str(), &end);
         std::swap(errno, errno_save);
@@ -341,7 +341,7 @@ static std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, float>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const float val = strtof(cstr.c_str(), &end);
         std::swap(errno, errno_save);
@@ -353,7 +353,7 @@ static std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, int>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const long val = strtol(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
@@ -369,7 +369,7 @@ static std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, std::uint32_t>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const unsigned long val = strtoul(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
@@ -386,7 +386,7 @@ static std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, std::int64_t>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         std::int64_t val = strtoll(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);

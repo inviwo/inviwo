@@ -352,14 +352,14 @@ private:
     }
     template <typename T>
     void registerPortInternal()
-        requires std::is_base_of<Inport, T>::value
+        requires std::is_base_of_v<Inport, T>
     {
         registerInport(std::make_unique<InportFactoryObjectTemplate<T>>());
     }
 
     template <typename T>
     void registerPortInternal()
-        requires std::is_base_of<Outport, T>::value
+        requires std::is_base_of_v<Outport, T>
     {
         registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
@@ -420,7 +420,7 @@ void InviwoModule::registerProcessorWidget() {
 
 template <typename T>
 void InviwoModule::registerPort() {
-    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
+    static_assert(std::is_base_of_v<Inport, T> || std::is_base_of_v<Outport, T>,
                   "A port has to derive from either Inport of Outport");
     try {
         registerPortInternal<T>();

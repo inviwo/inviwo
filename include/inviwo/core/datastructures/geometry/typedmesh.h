@@ -566,7 +566,7 @@ uint32_t TypedMesh<BufferTraits...>::addVertex(const Vertex& vertex) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
         *this, vertex);
 
-    using BT = typename std::tuple_element<0, Traits>::type;
+    using BT = std::tuple_element_t<0, Traits>;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
 }
 
@@ -582,7 +582,7 @@ uint32_t TypedMesh<BufferTraits...>::addVertex(Args&&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
         *this, typename TypedMesh<BufferTraits...>::Vertex{args...});
 
-    using BT = typename std::tuple_element<0, Traits>::type;
+    using BT = std::tuple_element_t<0, Traits>;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
 }
 

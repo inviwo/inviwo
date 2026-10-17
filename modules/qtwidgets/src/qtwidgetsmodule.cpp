@@ -172,7 +172,7 @@ struct MinMaxTextWidgetReghelper {
     template <typename T>
     auto operator()(QtWidgetsModule& qm, const PropertySemantics& semantics) {
         using PropertyType = MinMaxProperty<T>;
-        using DataType = std::conditional_t<std::is_integral<T>::value, int, double>;
+        using DataType = std::conditional_t<std::is_integral_v<T>, int, double>;
         using PropertyWidget = OrdinalMinMaxTextPropertyWidgetQt<DataType, T>;
         qm.registerPropertyWidget<PropertyWidget, PropertyType>(semantics);
     }
