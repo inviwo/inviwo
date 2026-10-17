@@ -197,7 +197,7 @@ void NetworkEditorView::fitNetwork() {
     setTransform(QTransform::fromScale(scale, scale), false);
 
     if (auto* const network = mainwindow_->getInviwoApplication()->getProcessorNetwork()) {
-        if (network->getProcessors().size() > 0) {
+        if (!network->getProcessors().empty()) {
             const auto br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             setSceneRect(growSceneRect(br));
             fitInView(br, Qt::KeepAspectRatio);

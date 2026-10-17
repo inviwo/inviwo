@@ -327,7 +327,7 @@ void IntegralLineVectorToMesh::process() {
         updateOptions();
     }
 
-    if (colorBy_.size() == 0) {
+    if (colorBy_.empty()) {
         updateOptions();
     }
     auto mesh = std::make_shared<BasicMesh>();
@@ -357,7 +357,7 @@ void IntegralLineVectorToMesh::process() {
 
         if (!mdProp) {  // Fallback
             auto props = getPropertiesByType<ColorByProperty>();
-            if (props.size() == 0) {
+            if (props.empty()) {
                 throw Exception(SourceContext{}, "Couldn't get ColorByProperty for meta data {}",
                                 metaDataKey);
             }

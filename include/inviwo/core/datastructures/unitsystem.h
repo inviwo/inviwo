@@ -291,23 +291,23 @@ struct fmt::formatter<::inviwo::Unit> {
             endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
         auto unitFormat = range.substr(0, endPos);
 
-        if (unitFormat.size() > 0 && unitFormat[0] == ' ') {
+        if (!unitFormat.empty() && unitFormat[0] == ' ') {
             leadingSpace = true;
             unitFormat.remove_prefix(1);
         }
 
-        if (unitFormat.size() > 0 && unitFormat[0] == '(') {
+        if (!unitFormat.empty() && unitFormat[0] == '(') {
             braces = Braces::Paren;
             unitFormat.remove_prefix(1);
-        } else if (unitFormat.size() > 0 && unitFormat[0] == '[') {
+        } else if (!unitFormat.empty() && unitFormat[0] == '[') {
             braces = Braces::Square;
             unitFormat.remove_prefix(1);
         }
 
-        if (unitFormat.size() > 0 && unitFormat[0] == 'p') {
+        if (!unitFormat.empty() && unitFormat[0] == 'p') {
             usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
             unitFormat.remove_prefix(1);
-        } else if (unitFormat.size() > 0 && unitFormat[0] == 'P') {
+        } else if (!unitFormat.empty() && unitFormat[0] == 'P') {
             usePrefix = ::inviwo::util::UseUnitPrefixes::No;
             unitFormat.remove_prefix(1);
         }

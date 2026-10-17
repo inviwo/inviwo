@@ -770,7 +770,7 @@ fs::path getFileNameWithoutExtension(const fs::path& url) { return url.stem(); }
 
 std::string getFileExtension(const fs::path& url) {
     auto ext = url.extension().string();
-    if (ext.size() >= 1 && ext[0] == '.') {
+    if (!ext.empty() && ext[0] == '.') {
         return ext.substr(1);
     } else {
         return ext;

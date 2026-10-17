@@ -81,7 +81,7 @@ std::string OpenGLCapabilities::GLSLShaderVersion::getVersionAndProfileAsString(
     return (hasProfile() ? getVersionAsString() + " " + profile_ : getVersionAsString());
 }
 
-bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() const { return (profile_ != ""); }
+bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() const { return (!profile_.empty()); }
 
 bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i,
                                                              GLSLShaderVersion j) {

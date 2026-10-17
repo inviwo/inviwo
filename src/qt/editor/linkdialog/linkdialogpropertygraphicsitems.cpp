@@ -108,7 +108,7 @@ bool LinkDialogPropertyGraphicsItem::propertyVisible() const {
     return item_->getVisible() || !connections_.empty() || show;
 }
 
-bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return subProperties_.size() > 0; }
+bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return !subProperties_.empty(); }
 
 int LinkDialogPropertyGraphicsItem::getLevel() const { return parent()->getLevel() + 1; }
 

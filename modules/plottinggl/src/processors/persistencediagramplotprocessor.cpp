@@ -175,10 +175,10 @@ void PersistenceDiagramPlotProcessor::onYAxisChange() {
     if (!dataFrame_.hasData()) return;
     const auto data = dataFrame_.getData();
 
-    if (death_.size() > 0 && death_.get() > 0) {
+    if (!death_.empty() && death_.get() > 0) {
         persistenceDiagramPlot_.setYAxis(data->getColumn(death_.get()),
                                          PersistenceDiagramPlotGL::Type::Death);
-    } else if (persistence_.size() > 0 && persistence_.get() > 0) {
+    } else if (!persistence_.empty() && persistence_.get() > 0) {
         persistenceDiagramPlot_.setYAxis(data->getColumn(persistence_.get()),
                                          PersistenceDiagramPlotGL::Type::Persistence);
     } else {
