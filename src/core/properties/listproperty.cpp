@@ -39,6 +39,7 @@
 #include <iterator>
 #include <ranges>
 #include <set>
+#include <utility>
 
 namespace inviwo {
 
@@ -48,7 +49,8 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
                            std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics))
     , uiFlags_(uiFlags)
     , maxNumElements_("maxNumberOfElements", maxNumberOfElements)
     , prefabs_{"prefabs", std::move(prefabs)} {}
@@ -58,7 +60,7 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : ListProperty(identifier, displayName, Document{}, std::move(prefabs), maxNumberOfElements,
-                   uiFlags, invalidationLevel, semantics) {}
+                   uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            std::unique_ptr<Property> prefab, size_t maxNumberOfElements,
@@ -71,13 +73,13 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
               tmp.push_back(std::move(prefab));
               return tmp;
           }(),
-          maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
+          maxNumberOfElements, uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : ListProperty(identifier, displayName, Document{}, std::vector<std::unique_ptr<Property>>{},
-                   maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
+                   maxNumberOfElements, uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(const ListProperty& rhs)
     : CompositeProperty(rhs)

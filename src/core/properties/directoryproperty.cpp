@@ -30,6 +30,8 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/util/filedialogstate.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view DirectoryProperty::getClassIdentifier() const { return classIdentifier; }
@@ -48,7 +50,7 @@ DirectoryProperty::DirectoryProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : DirectoryProperty(identifier, displayName, Document{}, value, contentType, invalidationLevel,
-                        semantics) {}
+                        std::move(semantics)) {}
 
 DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
 DirectoryProperty* DirectoryProperty::clone() const { return new DirectoryProperty(*this); }

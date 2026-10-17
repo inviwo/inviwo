@@ -47,8 +47,9 @@ FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                font::FontType fontType,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : FontFaceOptionProperty(identifier, displayName, help, font::getFont(fontType).string(),
-                             invalidationLevel, std::move(semantics)) {}
+    : FontFaceOptionProperty(identifier, displayName, std::move(help),
+                             font::getFont(fontType).string(), invalidationLevel,
+                             std::move(semantics)) {}
 
 FontFaceOptionProperty::FontFaceOptionProperty(std::string_view identifier,
                                                std::string_view displayName,

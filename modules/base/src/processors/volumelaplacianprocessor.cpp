@@ -95,7 +95,7 @@ void VolumeLaplacianProcessor::process() {
     };
 
     outport_.clear();
-    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+    dispatchOne(calc, [this](const std::shared_ptr<Volume>& result) {
         outVolume_.updateForNewVolume(*result, util::OverwriteState::Yes);
         outVolume_.updateVolume(*result);
         outport_.setData(result);

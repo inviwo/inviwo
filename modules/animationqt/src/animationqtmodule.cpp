@@ -167,7 +167,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
 
-        const auto addWidgetLazy = [&](QString name, Qt::DockWidgetArea area, auto factory) {
+        const auto addWidgetLazy = [&](const QString& name, Qt::DockWidgetArea area, auto factory) {
             auto* action = menu->addAction(name);
             action->setCheckable(true);
             QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory]() {

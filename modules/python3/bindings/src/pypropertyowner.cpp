@@ -67,7 +67,7 @@ void exposePropertyOwner(pybind11::module& m) {
             py::return_value_policy::reference)
         .def(
             "__setattr__",
-            [](py::object po, py::object key, py::object value) {
+            [](py::object po, py::object key, const py::object& value) {
                 const auto isProperty = [&]() {
                     const auto pyProperty =
                         py::module_::import("inviwopy").attr("properties").attr("Property");
@@ -122,7 +122,7 @@ void exposePropertyOwner(pybind11::module& m) {
             py::arg("prop"), py::arg("owner") = false, py::keep_alive<1, 2>{})
         .def(
             "addProperties",
-            [](PropertyOwner& po, std::vector<Property*> props, bool owner) {
+            [](PropertyOwner& po, const std::vector<Property*>& props, bool owner) {
                 for (auto p : props) {
                     po.addProperty(p, owner);
                 }

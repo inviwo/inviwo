@@ -71,7 +71,7 @@ arr.shape = (3, 4, 2)
 )");
 
     bool status = false;
-    s.run([&](pybind11::dict dict) {
+    s.run([&](const pybind11::dict& dict) {
         ASSERT_TRUE(dict.contains("arr"));
 
         const auto ob = dict["arr"];
@@ -141,7 +141,7 @@ result = np.array_equal(expected, arr.flatten())
 )");
     bool status = false;
     script.run({{"expected", pybind11::cast(data)}, {"arr", layerpy->data()}},
-               [&](pybind11::dict dict) {
+               [&](const pybind11::dict& dict) {
                    EXPECT_TRUE(pybind11::cast<bool>(dict["result"]))
                        << "difference between input and LayerPy data";
                    status = true;
@@ -162,7 +162,7 @@ arr.shape = (1, 3, 4, 2)
 )");
 
     bool status = false;
-    s.run([&](pybind11::dict dict) {
+    s.run([&](const pybind11::dict& dict) {
         ASSERT_TRUE(dict.contains("arr"));
 
         const auto ob = dict["arr"];
@@ -233,7 +233,7 @@ result = np.array_equal(expected, arr.flatten())
 )");
     bool status = false;
     script.run({{"expected", pybind11::cast(data)}, {"arr", volumepy->data()}},
-               [&](pybind11::dict dict) {
+               [&](const pybind11::dict& dict) {
                    EXPECT_TRUE(pybind11::cast<bool>(dict["result"]))
                        << "difference between input and VolumePy data";
                    status = true;

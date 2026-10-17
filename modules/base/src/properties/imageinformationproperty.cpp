@@ -48,6 +48,7 @@
 #include <cstddef>
 #include <limits>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <glm/vec2.hpp>
@@ -62,7 +63,7 @@ ImageInformationProperty::ImageInformationProperty(std::string_view identifier,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, "Information about an image"_help,
-                        invalidationLevel, semantics)
+                        invalidationLevel, std::move(semantics))
     , dimensions_("dimensions", "Dimensions", "Image dimensions"_help, size2_t(0),
                   {size2_t(0), ConstraintBehavior::Immutable},
                   {size2_t(std::numeric_limits<size_t>::max()), ConstraintBehavior::Immutable},

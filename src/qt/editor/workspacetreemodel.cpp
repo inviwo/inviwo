@@ -66,7 +66,7 @@ public:
     explicit TreeItem(TreeItem* parent);
     TreeItem(std::string_view caption, WorkspaceTreeModel::Type type);
     TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
-             std::function<void(TreeItem*)> onChange, bool isExample);
+             const std::function<void(TreeItem*)>& onChange, bool isExample);
 
     TreeItem(const TreeItem&) = delete;
     TreeItem& operator=(const TreeItem&) = delete;
@@ -127,7 +127,7 @@ TreeItem::TreeItem(std::string_view caption, WorkspaceTreeModel::Type type)
     : type_{type}, parent_{nullptr}, row_{0}, caption_{utilqt::toQString(caption)} {}
 
 TreeItem::TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
-                   std::function<void(TreeItem*)> onChange, bool isExample)
+                   const std::function<void(TreeItem*)>& onChange, bool isExample)
     : type_{WorkspaceTreeModel::Type::File}
     , parent_{nullptr}
     , row_{0}

@@ -94,7 +94,7 @@ void exposeVolume(pybind11::module& m) {
                 auto rep = volume->getRepresentation<VolumePy>();
                 return rep->data();
             },
-            [](Volume* volume, py::array data) {
+            [](Volume* volume, const py::array& data) {
                 if (volume->hasRepresentation<VolumePy>()) {
                     volume->removeRepresentation(volume->getRepresentation<VolumePy>());
                 }

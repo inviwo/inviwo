@@ -30,6 +30,8 @@
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <utility>
+
 namespace inviwo {
 
 InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
@@ -41,7 +43,9 @@ void InteractionEvent::setToolTip(std::string_view tooltip) const {
     if (tooltip_) tooltip_(tooltip);
 }
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
+void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) {
+    tooltip_ = std::move(tooltip);
+}
 auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
 
 void InteractionEvent::showContextMenu(std::span<ContextMenuEntry> entries,

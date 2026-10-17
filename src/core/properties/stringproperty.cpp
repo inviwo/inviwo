@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/stringproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view StringProperty::getClassIdentifier() const { return classIdentifier; }
@@ -37,12 +39,12 @@ StringProperty::StringProperty(std::string_view identifier, std::string_view dis
                                Document help, std::string_view value,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<std::string>(identifier, displayName, std::move(help), std::string{value},
-                                    invalidationLevel, semantics) {}
+                                    invalidationLevel, std::move(semantics)) {}
 
 StringProperty::StringProperty(std::string_view identifier, std::string_view displayName,
                                std::string_view value, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
-    : StringProperty(identifier, displayName, {}, value, invalidationLevel, semantics) {}
+    : StringProperty(identifier, displayName, {}, value, invalidationLevel, std::move(semantics)) {}
 
 StringProperty::StringProperty(const StringProperty& rhs) : TemplateProperty<std::string>(rhs) {}
 

@@ -31,6 +31,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/docutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view BoolProperty::getClassIdentifier() const { return classIdentifier; }
@@ -39,11 +41,12 @@ BoolProperty::BoolProperty(std::string_view identifier, std::string_view display
                            bool value, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : TemplateProperty<bool>(identifier, displayName, std::move(help), value, invalidationLevel,
-                             semantics) {}
+                             std::move(semantics)) {}
 
 BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, bool value,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<bool>(identifier, displayName, value, invalidationLevel, semantics) {}
+    : TemplateProperty<bool>(identifier, displayName, value, invalidationLevel,
+                             std::move(semantics)) {}
 
 BoolProperty::BoolProperty(const BoolProperty& rhs) : TemplateProperty<bool>(rhs) {}
 

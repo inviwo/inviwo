@@ -46,6 +46,7 @@
 #include <cxxabi.h>
 #include <cwchar>
 #include <ranges>
+#include <utility>
 #elifdef WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -380,7 +381,7 @@ std::string rtrim(std::string s) {
 }
 
 // trim from both ends
-std::string trim(std::string s) { return ltrim(rtrim(s)); }
+std::string trim(std::string s) { return ltrim(rtrim(std::move(s))); }
 
 std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);

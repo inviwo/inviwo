@@ -51,6 +51,7 @@
 #include <cstddef>
 #include <limits>
 #include <tuple>
+#include <utility>
 
 namespace inviwo {
 
@@ -77,7 +78,7 @@ LayerInformationProperty::LayerInformationProperty(std::string_view identifier,
     : BoolCompositeProperty(
           identifier, displayName,
           "A CompositeProperty holding properties to show a information about an image layer"_help,
-          false, invalidationLevel, semantics)
+          false, invalidationLevel, std::move(semantics))
     , layerType("layerType", "Layer Type", "Type of the layer (Color, Depth, or Picking)"_help)
     , dimensions("dimensions", "Dimensions",
                  util::ordinalCount(size2_t{0})

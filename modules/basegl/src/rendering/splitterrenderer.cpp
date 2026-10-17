@@ -85,9 +85,11 @@ SplitterRenderer::SplitterRenderer(Processor* processor)
                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
 
-void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) { invalidate_ = callback; }
+void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) {
+    invalidate_ = std::move(callback);
+}
 
-void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = callback; }
+void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = std::move(callback); }
 
 void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direction direction,
                               std::span<const float> pos, size2_t canvasDims) {

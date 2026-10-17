@@ -52,7 +52,7 @@ namespace inviwo {
 #include <warn/ignore/attributes>
 class ProcessorFactoryObjectPythonWrapper : public ProcessorFactoryObject {
 public:
-    explicit ProcessorFactoryObjectPythonWrapper(pybind11::object pfo)
+    explicit ProcessorFactoryObjectPythonWrapper(const pybind11::object& pfo)
         : ProcessorFactoryObject{pfo.cast<ProcessorFactoryObject*>()->getProcessorInfo(),
                                  "PythonProcessor"}
         , pfo_(pfo) {}
@@ -148,7 +148,7 @@ void exposeInviwoModule(const pybind11::module& m) {
         .def_property_readonly("path", [](InviwoModule* m) { return m->getPath(); })
         .def_property_readonly("version", &InviwoModule::getVersion)
         .def("getPath", [](InviwoModule* m, ModulePath type) { return m->getPath(type); })
-        .def("registerProcessor", [](InviwoModule* m, py::object pfo) {
+        .def("registerProcessor", [](InviwoModule* m, const py::object& pfo) {
             m->registerProcessor(std::make_unique<ProcessorFactoryObjectPythonWrapper>(pfo));
         });
 

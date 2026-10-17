@@ -36,6 +36,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 #include <string>
+#include <utility>
 
 #include <fmt/base.h>
 
@@ -46,7 +47,7 @@ class TextureUnitContainer;
 
 CameraComponent::CameraComponent(std::string_view name,
                                  std::function<std::optional<dmat4>()> boundingBox)
-    : ShaderComponent(), camera(name, "Camera", boundingBox) {}
+    : ShaderComponent(), camera(name, "Camera", std::move(boundingBox)) {}
 
 std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 

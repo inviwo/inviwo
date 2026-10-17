@@ -70,7 +70,7 @@ struct DataFrameAddColumnReg {
 
         d.def(
             fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, std::string header, std::vector<T> data, Unit unit = Unit(),
+            [](DataFrame& d, const std::string& header, std::vector<T> data, Unit unit = Unit(),
                std::optional<dvec2> range = std::nullopt) {
                 return d.addColumn(std::move(header), std::move(data), unit, range);
             },

@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view AdvancedMaterialProperty::getClassIdentifier() const { return classIdentifier; }
@@ -37,7 +39,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , phaseFunctionProp("phaseFunction", "Phase function", InvalidationLevel::Valid)
     , indexOfRefractionProp("IOR", "Index of refraction", 1.f, 1.f, 20.f)
     , roughnessProp("roughness", "Roughness", 0.1f, 0.01f, 1.f)

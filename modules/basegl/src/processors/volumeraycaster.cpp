@@ -175,7 +175,7 @@ void VolumeRaycaster::process() {
                 glFinish();
                 return volume;
             },
-            [this](std::shared_ptr<const Volume> volume) {
+            [this](const std::shared_ptr<const Volume>& volume) {
                 raycast(*volume);
                 newResults();
             });

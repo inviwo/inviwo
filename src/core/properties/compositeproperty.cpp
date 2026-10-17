@@ -35,6 +35,7 @@
 #include <inviwo/core/network/networkvisitor.h>
 
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -43,7 +44,7 @@ std::string_view CompositeProperty::getClassIdentifier() const { return classIde
 CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
                                      Document help, InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , PropertyOwner()
     , collapsed_("collapsed", false)
     , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
@@ -51,7 +52,7 @@ CompositeProperty::CompositeProperty(std::string_view identifier, std::string_vi
 CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, {}, invalidationLevel, semantics) {}
+    : CompositeProperty(identifier, displayName, {}, invalidationLevel, std::move(semantics)) {}
 
 CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
 

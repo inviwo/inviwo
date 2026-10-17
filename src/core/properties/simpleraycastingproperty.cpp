@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view SimpleRaycastingProperty::getClassIdentifier() const { return classIdentifier; }
@@ -37,7 +39,7 @@ SimpleRaycastingProperty::SimpleRaycastingProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , classificationMode_("classificationMode", "Classification",
                           InvalidationLevel::InvalidResources)
     , compositingMode_("compositingMode", "Compositing", InvalidationLevel::InvalidResources)

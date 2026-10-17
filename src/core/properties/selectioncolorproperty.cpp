@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/selectioncolorproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view SelectionColorProperty::getClassIdentifier() const { return classIdentifier; }
@@ -47,7 +49,7 @@ SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, std::move(help), checked, invalidationLevel,
-                            semantics)
+                            std::move(semantics))
     , color_("color", "Color", util::ordinalColor(color).set("Overlay color"_help))
     , alpha_("alpha", "Alpha", "Determines the opacity of the overlay color"_help, alpha)
     , intensity_(

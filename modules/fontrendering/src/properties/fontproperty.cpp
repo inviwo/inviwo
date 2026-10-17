@@ -37,6 +37,8 @@
 #include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 #include <modules/fontrendering/util/fontutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view FontProperty::getClassIdentifier() const { return classIdentifier; }
@@ -67,13 +69,13 @@ FontProperty::FontProperty(std::string_view identifier, std::string_view display
 FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FontProperty(identifier, displayName, font::getFont(font::FontType::Default).string(), 14,
-                   0.0f, vec2{-1.0f}, invalidationLevel, semantics) {}
+                   0.0f, vec2{-1.0f}, invalidationLevel, std::move(semantics)) {}
 
 FontProperty::FontProperty(std::string_view identifier, std::string_view displayName,
                            font::FontType fontType, int size, float lineSpacing, vec2 anchorPos,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FontProperty(identifier, displayName, font::getFont(fontType).string(), size, lineSpacing,
-                   anchorPos, invalidationLevel, semantics) {}
+                   anchorPos, invalidationLevel, std::move(semantics)) {}
 
 FontProperty::FontProperty(const FontProperty& rhs)
     : CompositeProperty(rhs)

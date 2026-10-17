@@ -42,6 +42,7 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <functional>
+#include <utility>
 
 namespace inviwo {
 
@@ -115,11 +116,10 @@ void exposeDocument(pybind11::module& m) {
                            const UnorderedStringMap<std::string>&) const>(&Document::insert))
         .def("append",
              static_cast<Document::DocumentHandle (Document::*)(
-                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&)
-                            const>(&Document::append))
-        .def("insert",
-             static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)
-                            const>(&Document::insert))
+                 std::string_view, std::string_view, const UnorderedStringMap<std::string>&) const>(
+                 &Document::append))
+        .def("insert", static_cast<Document::DocumentHandle (Document::*)(
+                           Document::PathComponent, Document) const>(&Document::insert))
         .def("insertText", &Document::insertText)
         .def("appendText", &Document::appendText)
         .def("append",
@@ -128,7 +128,7 @@ void exposeDocument(pybind11::module& m) {
              [](Document& d,
                 std::function<void(Document::Element*, std::vector<Document::Element*>&)> before,
                 std::function<void(Document::Element*, std::vector<Document::Element*>&)> after)
-                 -> void { d.visit(before, after); });
+                 -> void { d.visit(std::move(before), std::move(after)); });
 
     m.def("md2doc", &util::md2doc);
     m.def("unindentMd2doc", &util::unindentMd2doc);

@@ -36,6 +36,7 @@
 #include <modules/userinterfacegl/glui/widgets/toolbutton.h>
 
 #include <functional>
+#include <utility>
 
 namespace inviwo {
 class Processor;
@@ -95,7 +96,7 @@ ToolButtonPropertyWidget::ToolButtonPropertyWidget(ButtonProperty& property,
                                                    std::shared_ptr<Texture2D> image,
                                                    Processor& processor, Renderer& uiRenderer,
                                                    const ivec2& extent)
-    : ToolButton(image, processor, uiRenderer, extent)
+    : ToolButton(std::move(image), processor, uiRenderer, extent)
     , PropertyWidget(&property)
     , property_(&property) {
     property_->addObserver(this);

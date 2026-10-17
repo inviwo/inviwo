@@ -44,6 +44,8 @@
 #include <inviwopy/pyflags.h>
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace py = pybind11;
 
 namespace inviwo {
@@ -55,7 +57,7 @@ void exposeCompositeProperties(const py::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new CompositeProperty(identifier, displayName, invalidationLevel,
-                                              semantics);
+                                              std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
@@ -69,7 +71,7 @@ void exposeCompositeProperties(const py::module& m) {
         .def(py::init([](std::string_view identifier, std::string_view displayName, bool checked,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new BoolCompositeProperty(identifier, displayName, checked,
-                                                  invalidationLevel, semantics);
+                                                  invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("checked"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
@@ -85,7 +87,7 @@ void exposeCompositeProperties(const py::module& m) {
                          size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new ListProperty(identifier, displayName, maxNumberOfElements, uiFlags,
-                                         invalidationLevel, semantics);
+                                         invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("maxNumberOfElements") = 0,
              py::arg("uiFlags") = ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove,
@@ -111,7 +113,7 @@ void exposeCompositeProperties(const py::module& m) {
                          VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new IsoTFProperty(identifier, displayName, isovalues, tf, volumeInport,
-                                          invalidationLevel, semantics);
+                                          invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("isovalues"), py::arg("tf"),
              py::arg("inport") = nullptr,
@@ -121,7 +123,7 @@ void exposeCompositeProperties(const py::module& m) {
                          VolumeInport* volumeInport, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new IsoTFProperty(identifier, displayName, volumeInport, invalidationLevel,
-                                          semantics);
+                                          std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("inport"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
@@ -142,7 +144,7 @@ void exposeCompositeProperties(const py::module& m) {
                          std::string_view pattern, std::string_view directory,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new FilePatternProperty(identifier, displayName, pattern, directory,
-                                                invalidationLevel, semantics);
+                                                invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("pattern") = "",
              py::arg("directory") = "",

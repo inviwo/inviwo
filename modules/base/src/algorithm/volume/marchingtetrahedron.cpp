@@ -49,6 +49,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <glm/detail/setup.hpp>
@@ -66,7 +67,7 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::function<bool(const size3_t&)> maskingCallback) {
     log::warn("Deprecated: Use util::marchingtetrahedron(...) instead");
     return util::marchingtetrahedron(std::move(volume), isoValues, isoValueMode, invert, enclose,
-                                     std::move(progressCallback), maskingCallback);
+                                     std::move(progressCallback), std::move(maskingCallback));
 }
 
 namespace marchingtetrahedron {

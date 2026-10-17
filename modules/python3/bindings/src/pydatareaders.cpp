@@ -48,6 +48,7 @@
 
 namespace inviwo {
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/attributes>
 // Allow overriding virtual functions from Python
@@ -131,7 +132,7 @@ public:
 
     std::shared_ptr<T> read(const std::filesystem::path& filePath,
                             std::optional<FileExtension> ext = std::nullopt) {
-        return factory->readDataForTypeAndExtension<T>(filePath, ext);
+        return factory->readDataForTypeAndExtension<T>(filePath, std::move(ext));
     }
 
 private:

@@ -50,6 +50,8 @@
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
 
+#include <utility>
+
 namespace py = pybind11;
 
 namespace inviwo {
@@ -94,7 +96,7 @@ void exposeNetwork(py::module& m) {
             py::return_value_policy::reference)
         .def("addProcessor",
              [](ProcessorNetwork* pn, std::shared_ptr<Processor> processor) {
-                 pn->addProcessor(processor);
+                 pn->addProcessor(std::move(processor));
              })
         .def("removeProcessor",
              [](ProcessorNetwork* pn, Processor* processor) { pn->removeProcessor(processor); })

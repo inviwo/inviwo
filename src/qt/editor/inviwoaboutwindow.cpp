@@ -104,7 +104,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainWindow)
         return utilqt::fromQString(utilqt::toQString(str).toHtmlEscaped());
     };
 
-    const auto makeImg = [](QString path, int size) {
+    const auto makeImg = [](const QString& path, int size) {
         const auto img = QImage(path);
         QByteArray imgData;
         QBuffer buffer(&imgData);

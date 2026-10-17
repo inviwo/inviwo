@@ -42,6 +42,8 @@
 
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace py = pybind11;
 
 namespace inviwo {
@@ -59,7 +61,7 @@ struct OrdinalPropertyHelper {
                              const T& min, const T& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, value, min, max, increment, invalidationLevel,
-                                  semantics);
+                                  std::move(semantics));
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("value") = Defaultvalues<T>::getVal(),
@@ -73,7 +75,7 @@ struct OrdinalPropertyHelper {
                              const std::pair<T, ConstraintBehavior>& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, std::move(help), value, min, max, increment,
-                                  invalidationLevel, semantics);
+                                  invalidationLevel, std::move(semantics));
                  }),
                  py::arg("identifier"), py::arg("name"), py::arg("help") = Document{},
                  py::arg("value") = Defaultvalues<T>::getVal(),
@@ -89,7 +91,7 @@ struct OrdinalPropertyHelper {
                              const std::pair<T, ConstraintBehavior>& max, const T& increment,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, value, min, max, increment, invalidationLevel,
-                                  semantics);
+                                  std::move(semantics));
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("value") = Defaultvalues<T>::getVal(),

@@ -42,7 +42,7 @@ namespace inviwo {
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, int w,
                                                int h)
-    : Base64Image{name, base64jpeg, ivec2{w, h}} {}
+    : Base64Image{std::move(name), std::move(base64jpeg), ivec2{w, h}} {}
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, ivec2 size)
     : name(std::move(name)), base64jpeg(std::move(base64jpeg)), size(size) {}

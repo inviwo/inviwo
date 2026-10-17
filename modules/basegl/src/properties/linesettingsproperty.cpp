@@ -36,6 +36,8 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/basegl/properties/stipplingproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 class StipplingSettingsInterface;
 
@@ -45,7 +47,7 @@ LineSettingsProperty::LineSettingsProperty(std::string_view identifier,
                                            std::string_view displayName,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
+    : CompositeProperty{identifier, displayName, invalidationLevel, std::move(semantics)}
     , overrideLineWidth{"overrideLineWidth", "Override Line Width",
                         "Enable a fixed user-defined with for the line"_help, false,
                         InvalidationLevel::InvalidResources}

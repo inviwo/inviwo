@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLayout>
@@ -70,7 +71,7 @@ void DataFrameTableProcessorWidget::setManager(BrushingAndLinkingManager& manage
 
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                                  bool categoryIndices) {
-    tableview_->setDataFrame(dataframe, categoryIndices);
+    tableview_->setDataFrame(std::move(dataframe), categoryIndices);
 }
 
 void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
