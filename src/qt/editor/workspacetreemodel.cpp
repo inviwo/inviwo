@@ -66,7 +66,7 @@ public:
     explicit TreeItem(TreeItem* parent);
     TreeItem(std::string_view caption, WorkspaceTreeModel::Type type);
     TreeItem(const std::filesystem::path& filename, InviwoApplication* app,
-             std::function<void(TreeItem*)> onChange, bool readOnly);
+             std::function<void(TreeItem*)> onChange, bool isExample);
 
     TreeItem(const TreeItem&) = delete;
     TreeItem& operator=(const TreeItem&) = delete;

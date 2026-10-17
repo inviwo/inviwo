@@ -79,8 +79,8 @@ public:
 
     BufferObject(const BufferObject& rhs);
     BufferObject(BufferObject&& rhs);
-    BufferObject& operator=(const BufferObject& other);
-    BufferObject& operator=(BufferObject&& other);
+    BufferObject& operator=(const BufferObject& rhs);
+    BufferObject& operator=(BufferObject&& rhs);
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
 

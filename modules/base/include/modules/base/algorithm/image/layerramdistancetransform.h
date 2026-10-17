@@ -83,7 +83,7 @@ void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
                                ProgressCallback callback);
 
 template <typename T, typename U>
-void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inVolume,
+void layerRAMDistanceTransform(const LayerRAMPrecision<T>* inLayer,
                                LayerRAMPrecision<U>* outDistanceField, Matrix<3, U> basis,
                                size2_t upsample);
 
@@ -95,7 +95,7 @@ void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDista
 template <typename U, typename ProgressCallback>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,
                             size2_t upsample, double threshold, bool normalize, bool flip,
-                            bool square, double scale, ProgressCallback callback);
+                            bool square, double scale, ProgressCallback progress);
 
 template <typename U>
 void layerDistanceTransform(const Layer* inLayer, LayerRAMPrecision<U>* outDistanceField,

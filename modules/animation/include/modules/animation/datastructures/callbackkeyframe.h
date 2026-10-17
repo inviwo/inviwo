@@ -53,7 +53,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CallbackKeyframe : public BaseKeyframe {
 public:
     CallbackKeyframe() = default;
-    explicit CallbackKeyframe(Seconds time, std::function<void()> do_ = nullptr,
+    explicit CallbackKeyframe(Seconds time, std::function<void()> doForward = nullptr,
                               std::function<void()> undo = nullptr);
     CallbackKeyframe(const CallbackKeyframe& rhs) = default;
     CallbackKeyframe& operator=(const CallbackKeyframe& that) = default;

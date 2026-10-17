@@ -62,7 +62,7 @@ public:
     bool exportIndexCol = false;
     bool separateVectorTypesIntoColumns = true;
 
-    void writeData(const DataFrame* data, std::ostream& os) const;
+    void writeData(const DataFrame* data, std::ostream& file) const;
 };
 
 }  // namespace inviwo

@@ -53,10 +53,10 @@ public:
     Path& operator=(Path&& that) = default;
 
     Path& push(std::string_view path);
-    Path& push(const Path& path);
+    Path& push(const Path& rhs);
     Path& pop();
 
-    Path& operator+=(const Path& path);
+    Path& operator+=(const Path& rhs);
     Path& operator+=(std::string_view path);
 
     operator const std::string&() const;

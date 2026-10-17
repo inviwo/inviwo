@@ -58,10 +58,10 @@ public:
         const Mesh* data, std::string_view fileExtension) const override;
 
 private:
-    static void writePrimitives(std::ostream& f, const Mesh::MeshInfo& info, const IndexBuffer& ib,
-                                bool hasNormals, bool hasTextures);
+    static void writePrimitives(std::ostream& f, const Mesh::MeshInfo& info,
+                                const IndexBuffer& indices, bool hasNormals, bool hasTextures);
 
-    void writeData(const Mesh* data, std::ostream& os) const;
+    void writeData(const Mesh* data, std::ostream& f) const;
 };
 
 }  // namespace inviwo

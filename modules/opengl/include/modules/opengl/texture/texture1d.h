@@ -50,10 +50,10 @@ public:
               const SwizzleMask& swizzleMask = swizzlemasks::rgba,
               GLenum wrapping = GL_CLAMP_TO_EDGE, GLint level = 0);
 
-    Texture1D(const Texture1D& other);
-    Texture1D(Texture1D&& other);
-    Texture1D& operator=(const Texture1D& other);
-    Texture1D& operator=(Texture1D&& other);
+    Texture1D(const Texture1D& rhs);
+    Texture1D(Texture1D&& rhs);
+    Texture1D& operator=(const Texture1D& rhs);
+    Texture1D& operator=(Texture1D&& rhs);
     virtual ~Texture1D();
 
     Texture1D* clone() const;

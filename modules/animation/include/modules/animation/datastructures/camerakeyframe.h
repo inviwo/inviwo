@@ -75,7 +75,7 @@ public:
      */
     vec3 getDirection() const;
 
-    void updateFrom(const Camera& value);
+    void updateFrom(const Camera& cam);
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

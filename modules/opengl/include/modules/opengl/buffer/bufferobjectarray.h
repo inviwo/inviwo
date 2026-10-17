@@ -91,7 +91,7 @@ public:
      * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
      * @see attachBufferObjectForce maxSize
      */
-    void attachBufferObject(const BufferObject* obj, GLuint location,
+    void attachBufferObject(const BufferObject* bufferObject, GLuint location,
                             BindingType bindingType = BindingType::Native);
 
     /**
@@ -101,7 +101,7 @@ public:
      * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
      * @see attachBufferObject maxSize
      */
-    void attachBufferObjectEnforce(const BufferObject* obj, GLuint location,
+    void attachBufferObjectEnforce(const BufferObject* bufferObject, GLuint location,
                                    BindingType bindingType = BindingType::Native);
 
     /**

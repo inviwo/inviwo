@@ -46,11 +46,11 @@ public:
     virtual ~TransferFunctionLayerWriter() override = default;
     virtual TransferFunctionLayerWriter* clone() const override;
 
-    virtual void writeData(const TransferFunction* data,
+    virtual void writeData(const TransferFunction* tf,
                            const std::filesystem::path& filePath) const override;
 
     virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const TransferFunction* data, std::string_view fileExtension) const override;
+        const TransferFunction* tf, std::string_view fileExtension) const override;
 
 private:
     std::unique_ptr<DataWriterType<Layer>> layerWriter_;

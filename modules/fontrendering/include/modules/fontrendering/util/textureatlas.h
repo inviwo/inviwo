@@ -65,7 +65,7 @@ public:
 
     void clear();
 
-    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& atlas);
+    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries);
     void fillAtlas(TextRenderer& textRenderer, const std::vector<std::string>& strings, vec4 color);
 
     void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,

@@ -126,7 +126,7 @@ public:
      * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
                          const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     /**

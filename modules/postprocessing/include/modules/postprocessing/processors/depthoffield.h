@@ -109,8 +109,8 @@ private:
                              size2_t dim, vec2 cameraPos);
     void warpToLightfieldCPU(std::shared_ptr<const Image> img, double fovy, double focusDepth,
                              size2_t dim, vec2 cameraPos);
-    void warp(vec2 st, vec2 uv, vec4 color, double zWorld, size_t viewIndex, VolumeRAM* lightField,
-              VolumeRAM* lightFieldDepth, double fovy, double focusDepth);
+    void warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorld, size_t viewIndex,
+              VolumeRAM* lightField, VolumeRAM* lightFieldDepth, double fovy, double focusDepth);
     void synthesizeLightfield(TextureUnitContainer& cont);
     void moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount, double focusDepth);
     double ndcToWorldDepth(double depthNdc);

@@ -69,7 +69,7 @@ public:
      * @param canvasCoordinate Canvas coordinates [0 dim-1]^2
      * @return NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(ivec2 canvasCoordinate) const;
+    double getDepthValueAtCoord(ivec2 coord) const;
     double getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate) const;
 
 protected:

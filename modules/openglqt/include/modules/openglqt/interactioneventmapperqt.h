@@ -82,7 +82,7 @@ private:
     bool mapWheelEvent(QWheelEvent* e);
     bool mapKeyPressEvent(QKeyEvent* keyEvent);
     bool mapKeyReleaseEvent(QKeyEvent* keyEvent);
-    bool mapTouchEvent(QTouchEvent* e);
+    bool mapTouchEvent(QTouchEvent* touch);
     bool mapGestureEvent(QGestureEvent* e);
     bool mapPanTriggered(QPanGesture* e);
     bool mapPinchTriggered(QPinchGesture* e);

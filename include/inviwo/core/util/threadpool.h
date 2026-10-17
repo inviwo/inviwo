@@ -91,7 +91,7 @@ public:
     /**
      * Enqueue a plain functor. The functor may not throw exceptions.
      */
-    void enqueueRaw(std::function<void()> f);
+    void enqueueRaw(std::function<void()> task);
 
     size_t trySetSize(size_t size);
     size_t getSize() const;

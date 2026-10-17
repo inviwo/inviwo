@@ -261,7 +261,7 @@ public:
                      std::string_view itemKey = "item");
 
     template <typename T, size_t N>
-    void deserialize(std::string_view key, std::array<T, N>& sContainer,
+    void deserialize(std::string_view key, std::array<T, N>& cont,
                      std::string_view itemKey = "item");
 
     enum class Result { NoChange, Modified, NotFound };

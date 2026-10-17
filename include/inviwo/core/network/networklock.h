@@ -41,8 +41,8 @@ class Property;
 struct IVW_CORE_API NetworkLock {
     NetworkLock();
     explicit NetworkLock(ProcessorNetwork* network);
-    explicit NetworkLock(Processor* network);
-    explicit NetworkLock(Property* network);
+    explicit NetworkLock(Processor* processor);
+    explicit NetworkLock(Property* property);
     ~NetworkLock();
 
     NetworkLock(const NetworkLock&) = delete;

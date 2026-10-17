@@ -87,9 +87,9 @@ public:
     virtual ~BasisProperty() = default;
 
     void updateForNewEntity(const dmat4& modelMatrix, size3_t dims, bool deserialize);
-    void updateForNewEntity(const SpatialEntity& volume, bool deserialize);
+    void updateForNewEntity(const SpatialEntity& entity, bool deserialize);
     void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
-    void updateForNewEntity(const StructuredGridEntity<2>& volume, bool deserialize);
+    void updateForNewEntity(const StructuredGridEntity<2>& layer, bool deserialize);
 
     void updateEntity(SpatialEntity& volume) const;
 
