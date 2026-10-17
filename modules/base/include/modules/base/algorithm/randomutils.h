@@ -134,7 +134,7 @@ std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size
 namespace detail {
 struct RandomNumberRangeValues {
     template <typename T>
-    inline static constexpr T min() {
+    static constexpr T min() {
         if constexpr (std::is_floating_point_v<T>) {
             return 0;
         } else {
@@ -143,7 +143,7 @@ struct RandomNumberRangeValues {
     }
 
     template <typename T>
-    inline static constexpr T max() {
+    static constexpr T max() {
         if constexpr (std::is_floating_point_v<T>) {
             return 1;
         } else {
