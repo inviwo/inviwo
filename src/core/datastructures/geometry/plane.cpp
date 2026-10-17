@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/geometry/plane.h>
 
+#include <algorithm>
 #include <glm/gtx/perpendicular.hpp>
 #include <array>
 
@@ -51,9 +52,8 @@ mat4 Plane::inPlaneBasis() const {
                                 glm::perp(vec3{0.0f, 1.0f, 0.0}, normal_),
                                 glm::perp(vec3{0.0f, 0.0f, 1.0}, normal_)};
 
-    const auto a1 = glm::normalize(*std::max_element(
-        perp.begin(), perp.end(),
-        [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
+    const auto a1 = glm::normalize(*std::ranges::max_element(
+        perp, [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
     const auto a2 = glm::cross(normal_, a1);
 
     return glm::translate(point_) *

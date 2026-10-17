@@ -70,7 +70,7 @@ void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<Bu
 }
 
 void IntegralLine::reverse() {
-    std::reverse(positions_.begin(), positions_.end());
+    std::ranges::reverse(positions_);
     for (const auto& m : metaData_) {
         util::reverse(*m.second);
     }

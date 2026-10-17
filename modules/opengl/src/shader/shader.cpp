@@ -449,9 +449,8 @@ const ShaderObject* Shader::operator[](ShaderType type) const { return getShader
 ShaderObject* Shader::operator[](ShaderType type) { return getShaderObject(type); }
 
 const ShaderObject* Shader::getShaderObject(ShaderType type) const {
-    const auto it =
-        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it = std::ranges::find_if(
+        shaderObjects_, [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {
@@ -460,9 +459,8 @@ const ShaderObject* Shader::getShaderObject(ShaderType type) const {
 }
 
 ShaderObject* Shader::getShaderObject(ShaderType type) {
-    const auto it =
-        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it = std::ranges::find_if(
+        shaderObjects_, [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {

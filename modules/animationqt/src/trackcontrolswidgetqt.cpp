@@ -117,8 +117,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         auto* prev = new QAction(prevIcon, "Prev Keyframe", this);
         connect(prev, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            const auto it =
-                std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it = std::ranges::lower_bound(times, controller_.getCurrentTime());
             if (it != times.begin()) {
                 controller_.eval(controller_.getCurrentTime(), *std::prev(it));
             }
@@ -155,8 +154,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         auto* next = new QAction(nextIcon, "Next Keyframe", this);
         connect(next, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            const auto it =
-                std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it = std::ranges::upper_bound(times, controller_.getCurrentTime());
             if (it != times.end()) {
                 controller_.eval(controller_.getCurrentTime(), *it);
             }

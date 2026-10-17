@@ -41,6 +41,7 @@
 #include <inviwo/core/network/autolinker.h>
 #include <inviwo/core/network/networkedge.h>
 
+#include <algorithm>
 #include <iterator>
 #include <unordered_set>
 #include <vector>
@@ -513,7 +514,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
         std::vector<Inport*> oldInports = oldProcessor->getInports();
         for (auto* newInport : newProcessor.getInports()) {
             const auto it =
-                std::find_if(oldInports.begin(), oldInports.end(), [&](Inport* oldInport) {
+                std::ranges::find_if(oldInports, [&](Inport* oldInport) {
                     return std::all_of(
                         oldInport->getConnectedOutports().begin(),
                         oldInport->getConnectedOutports().end(),
@@ -533,7 +534,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
         std::vector<Outport*> oldOutports = oldProcessor->getOutports();
         for (auto* newOutport : newProcessor.getOutports()) {
             const auto it =
-                std::find_if(oldOutports.begin(), oldOutports.end(), [&](Outport* oldOutport) {
+                std::ranges::find_if(oldOutports, [&](Outport* oldOutport) {
                     return std::all_of(
                         oldOutport->getConnectedInports().begin(),
                         oldOutport->getConnectedInports().end(),

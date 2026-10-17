@@ -29,6 +29,7 @@
 
 #include <inviwo/ffmpeg/wrap/outputformat.h>
 
+#include <algorithm>
 #include <set>
 
 extern "C" {
@@ -94,7 +95,7 @@ std::vector<CodecID> OutputFormat::supportedCodecs(AVMediaType type) const {
     }
 
     std::vector<CodecID> res(codecs.begin(), codecs.end());
-    std::sort(res.begin(), res.end(), [](CodecID a, CodecID b) { return a.name() < b.name(); });
+    std::ranges::sort(res, [](CodecID a, CodecID b) { return a.name() < b.name(); });
     return res;
 }
 

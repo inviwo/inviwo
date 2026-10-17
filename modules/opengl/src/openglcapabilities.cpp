@@ -399,8 +399,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
                                      glslVersion);
         }
 
-        std::sort(supportedShaderVersions_.begin(), supportedShaderVersions_.end(),
-                  &GLSLShaderVersion::sortHighestFirst);
+        std::ranges::sort(supportedShaderVersions_, &GLSLShaderVersion::sortHighestFirst);
     }
 
     if (numberOfSupportedVersions == 0) {
@@ -522,8 +521,9 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
     if (!versionStr.empty()) {
         // Remove all non-alphanumeric characters, but keep spaces
         versionStr.erase(
-            std::remove_if(versionStr.begin(), versionStr.end(),
-                           [](char c) { return !(std::isspace(c) || std::isalnum(c)); }),
+            std::ranges::remove_if(versionStr,
+                                   [](char c) { return !(std::isspace(c) || std::isalnum(c)); })
+                .begin(),
             versionStr.end());
 
         const auto versionSplit = util::splitStringView(versionStr);

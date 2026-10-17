@@ -64,7 +64,7 @@ MemoryFileHandle::operator FILE*() { return handle_; }
 
 void MemoryFileHandle::reset() {
     fflush(handle_);
-    std::fill(buffer_.begin(), buffer_.end(), magicCode_);
+    std::ranges::fill(buffer_, magicCode_);
 }
 
 void MemoryFileHandle::resize(size_t bufferSize) {

@@ -181,21 +181,23 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     std::vector<std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>>> slices;
     slices.reserve(files.size());
 
-    std::transform(files.begin(), files.end(), std::back_inserter(slices),
-                   [&](const auto& file)
-                       -> std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>> {
-                       return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
-                                         filePattern_.getSelectedExtension(), file))};
-                   });
+    std::ranges::transform(
+        files, std::back_inserter(slices),
+        [&](const auto& file)
+            -> std::pair<std::filesystem::path, std::unique_ptr<DataReaderType<Layer>>> {
+            return {file, std::move(readerFactory_->getReaderForTypeAndExtension<Layer>(
+                              filePattern_.getSelectedExtension(), file))};
+        });
     if (skipUnsupportedFiles_) {
-        slices.erase(std::remove_if(slices.begin(), slices.end(),
-                                    [](auto& elem) { return elem.second == nullptr; }),
-                     slices.end());
+        slices.erase(
+            std::ranges::remove_if(slices, [](auto& elem) { return elem.second == nullptr; })
+                .begin(),
+            slices.end());
     }
 
     // identify first slice with a reader
-    const auto first = std::find_if(slices.begin(), slices.end(),
-                                    [](auto& item) { return item.second != nullptr; });
+    const auto first =
+        std::ranges::find_if(slices, [](auto& item) { return item.second != nullptr; });
     if (first == slices.end()) {  // could not find any suitable data reader for the images
         throw Exception(SourceContext{}, "No supported images found in '{}'",
                         filePattern_.getFilePatternPath());

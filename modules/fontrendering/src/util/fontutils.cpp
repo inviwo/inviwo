@@ -81,15 +81,15 @@ std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
 
     std::vector<std::pair<std::string, std::filesystem::path>> result;
     // create readable font names from file names and add full path to each file
-    std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
-                   [path, makeReadable](const std::filesystem::path& str)
-                       -> std::pair<std::string, std::filesystem::path> {
-                       return {makeReadable(str.stem()), path / str};
-                   });
+    std::ranges::transform(fonts, std::back_inserter(result),
+                           [path, makeReadable](const std::filesystem::path& str)
+                               -> std::pair<std::string, std::filesystem::path> {
+                               return {makeReadable(str.stem()), path / str};
+                           });
 
     // sort file names case insensitive
-    std::sort(result.begin(), result.end(),
-              [](const auto& a, const auto& b) { return iCaseLess(a.first, b.first); });
+    std::ranges::sort(result,
+                      [](const auto& a, const auto& b) { return iCaseLess(a.first, b.first); });
 
     return result;
 }

@@ -245,7 +245,7 @@ void StreamParticles::initBuffers() {
             });
     }
 
-    std::fill(lifes.begin(), lifes.end(), 1.0f);
+    std::ranges::fill(lifes, 1.0f);
 
     bufPos_->getEditableRepresentation<BufferGL>();
     bufLife_->getEditableRepresentation<BufferGL>();

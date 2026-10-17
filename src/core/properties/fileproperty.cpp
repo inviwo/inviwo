@@ -35,6 +35,7 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/properties/multifileproperty.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace inviwo {
@@ -117,14 +118,13 @@ void FileBase::setSelectedExtension(const FileExtension& ext) {
 bool FileBase::updateExtension(const std::filesystem::path& file) {
     bool modified = false;
     if (!selectedExtension_->matches(file)) {
-        const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
-            return !f.matchesAll() && f.matches(file);
-        });
+        const auto it = std::ranges::find_if(
+            nameFilters_, [&](const auto& f) { return !f.matchesAll() && f.matches(file); });
         if (it != nameFilters_.end() && selectedExtension_ != *it) {
             modified |= selectedExtension_.update(*it);
         } else {
-            const auto allIt = std::find_if(nameFilters_.begin(), nameFilters_.end(),
-                                            [&](const auto& f) { return f.matchesAll(); });
+            const auto allIt =
+                std::ranges::find_if(nameFilters_, [&](const auto& f) { return f.matchesAll(); });
             if (allIt != nameFilters_.end() && selectedExtension_ != *allIt) {
                 modified |= selectedExtension_.update(*allIt);
             }

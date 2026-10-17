@@ -622,7 +622,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
     std::iota(indices.begin(), indices.end(), 32u);
 
     // sort labels according to width then height
-    std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
+    std::ranges::sort(indices, [&](auto a, auto b) {
         const auto& extA(fc.glyphMap[a].size);
         const auto& extB(fc.glyphMap[b].size);
 

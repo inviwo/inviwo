@@ -43,6 +43,7 @@
 #include <inviwo/core/util/transformiterator.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <algorithm>
 #include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -411,11 +412,12 @@ protected:
 
     static std::vector<Processor*> networkToProcessors(ProcessorNetwork& net) {
         auto processors = net.getProcessors();
-        processors.erase(std::remove_if(processors.begin(), processors.end(),
-                                        [](Processor* p) {
-                                            return dynamic_cast<CompositeSinkBase*>(p) ||
-                                                   dynamic_cast<CompositeSourceBase*>(p);
-                                        }),
+        processors.erase(std::ranges::remove_if(processors,
+                                                [](Processor* p) {
+                                                    return dynamic_cast<CompositeSinkBase*>(p) ||
+                                                           dynamic_cast<CompositeSourceBase*>(p);
+                                                })
+                             .begin(),
                          processors.end());
         return processors;
     }

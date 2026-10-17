@@ -816,7 +816,7 @@ void TFEditor::updateConnections() {
     for (auto&& [set, items] : primitives_) {
         if (!items.connected) continue;
 
-        std::stable_sort(items.points.begin(), items.points.end(), comparePtr{});
+        std::ranges::stable_sort(items.points, comparePtr{});
         while (items.connections.size() < items.points.size() + 1) {
             auto c = std::make_unique<TFControlPointConnection>();
             addItem(c.get());
@@ -870,8 +870,8 @@ std::vector<TFPrimitive*> TFEditor::getAllPrimitives() const {
     std::vector<TFPrimitive*> res;
 
     for (auto&& [set, items] : primitives_) {
-        std::transform(items.points.begin(), items.points.end(), std::back_inserter(res),
-                       [](auto& p) { return &p->getPrimitive(); });
+        std::ranges::transform(items.points, std::back_inserter(res),
+                               [](auto& p) { return &p->getPrimitive(); });
     }
 
     return res;
@@ -930,12 +930,11 @@ QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
     const std::array corners = {selRect.bottomLeft(), selRect.bottomRight(), selRect.topLeft(),
                                 selRect.topRight()};
 
-    return *std::max_element(corners.begin(), corners.end(),
-                             [&](const QPointF& a, const QPointF& b) {
-                                 const auto da = a - start->pos();
-                                 const auto db = b - start->pos();
-                                 return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
-                             });
+    return *std::ranges::max_element(corners, [&](const QPointF& a, const QPointF& b) {
+        const auto da = a - start->pos();
+        const auto db = b - start->pos();
+        return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
+    });
 }
 
 void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform) {
@@ -1147,7 +1146,7 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
     }
 
     auto points = getSelectedPrimitiveItems();
-    std::stable_sort(points.begin(), points.end(), comparePtr{});
+    std::ranges::stable_sort(points, comparePtr{});
 
     switch (k) {
         case Qt::Key_Left:

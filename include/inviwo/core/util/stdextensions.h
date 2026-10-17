@@ -36,6 +36,7 @@
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/iterrange.h>
 
+#include <numeric>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <memory>
@@ -48,6 +49,7 @@
 #include <type_traits>
 #include <utility>
 #include <tuple>
+#include <ranges>
 #include <warn/pop>
 
 namespace inviwo {
@@ -398,11 +400,11 @@ auto transform(const T& cont, UnaryOperation op)
 
 template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
-    std::vector<size_t> res(std::ranges::distance(cont));
-    std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(),
-              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
-    return res;
+    auto indices = std::views::iota(0uz, static_cast<size_t>(std::ranges::distance(cont))) |
+                   std::ranges::to<std::vector>();
+    std::ranges::sort(indices,
+                      [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
+    return indices;
 }
 
 template <typename T>

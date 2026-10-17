@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <unordered_map>
 #include <utility>
 #include <numbers>
@@ -385,8 +386,10 @@ std::shared_ptr<Mesh> rotatingLine(vec3 start, vec3 stop, float endAngle, vec4 c
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::vector{segments + 1, color}));
 
     const auto ct = withAdjacency ? ConnectivityType::StripAdjacency : ConnectivityType::Strip;
-    std::vector<std::uint32_t> indices(segments + 1);
-    std::iota(indices.begin(), indices.end(), 0);
+
+    auto indices = std::views::iota(uint32_t{0}, static_cast<uint32_t>(segments + 1)) |
+                   std::ranges::to<std::vector>();
+
     if (withAdjacency) {
         indices.insert(indices.begin(), 0);
         indices.emplace_back(indices.back());

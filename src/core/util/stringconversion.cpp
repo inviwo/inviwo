@@ -34,6 +34,7 @@
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/chronoutils.h>
 
+#include <algorithm>
 #include <random>
 #include <iomanip>
 #include <clocale>
@@ -44,6 +45,7 @@
 #include <memory>
 #include <cxxabi.h>
 #include <cwchar>
+#include <ranges>
 #elifdef WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -205,7 +207,7 @@ std::vector<std::string> splitStringWithMultipleDelimiters(std::string_view str,
 }
 
 std::string removeFromString(std::string str, char char_to_remove) {
-    str.erase(std::remove(str.begin(), str.end(), char_to_remove), str.end());
+    str.erase(std::ranges::remove(str, char_to_remove).begin(), str.end());
     return str;
 }
 
@@ -279,16 +281,18 @@ std::string util::htmlEncode(std::string_view text) {
 std::string toUpper(std::string_view str) {
     std::string res;
     res.reserve(str.size());
-    std::transform(str.begin(), str.end(), std::back_inserter(res),
-                   [](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
+    std::ranges::transform(str, std::back_inserter(res), [](unsigned char c) {
+        return static_cast<unsigned char>(std::toupper(c));
+    });
     return res;
 }
 
 std::string toLower(std::string_view str) {
     std::string res;
     res.reserve(str.size());
-    std::transform(str.begin(), str.end(), std::back_inserter(res),
-                   [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
+    std::ranges::transform(str, std::back_inserter(res), [](unsigned char c) {
+        return static_cast<unsigned char>(std::tolower(c));
+    });
     return res;
 }
 
@@ -345,34 +349,33 @@ std::string camelCaseToHeader(std::string_view s) {
 }
 
 bool iCaseCmp(std::string_view l, std::string_view r) {
-    return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-                      [](std::string_view::value_type l1, std::string_view::value_type r1) {
-                          return std::tolower(l1) == std::tolower(r1);
-                      });
+    return std::ranges::equal(l, r,
+                              [](std::string_view::value_type l1, std::string_view::value_type r1) {
+                                  return std::tolower(l1) == std::tolower(r1);
+                              });
 }
 
 bool iCaseLess(std::string_view l, std::string_view r) {
-    return std::lexicographical_compare(
-        l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-        [](std::string_view::value_type l1, std::string_view::value_type r1) {
+    return std::ranges::lexicographical_compare(
+        l, r, [](std::string_view::value_type l1, std::string_view::value_type r1) {
             return std::tolower(l1) < std::tolower(r1);
         });
 }
 
 // trim from start
 std::string ltrim(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
-                return !std::isspace(static_cast<unsigned char>(c));
-            }));
+    s.erase(s.begin(), std::ranges::find_if(
+                           s, [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); }));
     return s;
 }
 
 // trim from end
 std::string rtrim(std::string s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-                         [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); })
-                .base(),
-            s.end());
+    s.erase(
+        std::ranges::find_if(std::views::reverse(s),
+                             [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); })
+            .base(),
+        s.end());
     return s;
 }
 

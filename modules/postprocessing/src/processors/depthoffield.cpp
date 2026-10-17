@@ -307,7 +307,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
                                                  DataFormat<float>::get());
             auto* haltonData = static_cast<float*>(
                 haltonImg_->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-            std::copy(haltonX_.begin(), haltonX_.end(), haltonData);
+            std::ranges::copy(haltonX_, haltonData);
         }
 
     } else {

@@ -37,6 +37,7 @@ namespace inviwo {
 
 ProcessorNetworkConverter::ProcessorNetworkConverter(int from) : VersionConverter(), from_(from) {}
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/implicit-fallthrough>
 bool ProcessorNetworkConverter::convert(TxElement* root) {
@@ -364,14 +365,14 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
         virtual bool VisitEnter(const TiXmlElement& node, const TiXmlAttribute*) override {
             if (const auto id = node.Attribute("id")) {
                 ids_.emplace_back(*id);
-                std::sort(ids_.begin(), ids_.end());
+                std::ranges::sort(ids_);
             }
             return true;
         }
         virtual bool VisitEnter(const TiXmlDocument&) override { return true; }
         std::string getNewRef() {
             std::string ref("ref0");
-            for (int i = 1; std::find(ids_.begin(), ids_.end(), ref) != ids_.end(); ++i) {
+            for (int i = 1; std::ranges::find(ids_, ref) != ids_.end(); ++i) {
                 ref = fmt::format("ref{}", i);
             }
             ids_.push_back(ref);
@@ -511,14 +512,12 @@ void ProcessorNetworkConverter::updateProcessorIdentifiers(TxElement* node) {
     if (key == "Processor") {
         if (auto identifier = node->Attribute("identifier")) {
             std::string newIdentifier(*identifier);
-            std::transform(newIdentifier.begin(), newIdentifier.end(), newIdentifier.begin(),
-                           [](char c) {
-                               if (!util::contains(std::string_view{" ()=&"}, c) &&
-                                   !std::isalnum(c) && c != '_') {
-                                   return ' ';
-                               }
-                               return c;
-                           });
+            std::ranges::transform(newIdentifier, newIdentifier.begin(), [](char c) {
+                if (!util::contains(std::string_view{" ()=&"}, c) && !std::isalnum(c) && c != '_') {
+                    return ' ';
+                }
+                return c;
+            });
 
             node->SetAttribute("identifier", newIdentifier);
         }
@@ -802,7 +801,7 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
                 if (node->Value() == "Processor") break;
                 node = node->Parent()->Parent()->ToElement();
             }
-            std::reverse(path.begin(), path.end());
+            std::ranges::reverse(path);
             path[0] = util::stripIdentifier(path[0]);
 
             properties[xmlId] = joinString(path, ".");

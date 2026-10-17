@@ -38,6 +38,8 @@
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 Property::Property(std::string_view identifier, std::string_view displayName, Document help,
@@ -162,7 +164,7 @@ std::string_view Property::getPath() const {
         }
     };
     traverse(traverse, owner_);
-    std::copy(identifier_.begin(), identifier_.end(), std::back_inserter(path_));
+    std::ranges::copy(identifier_, std::back_inserter(path_));
 
     return path_;
 }

@@ -88,8 +88,8 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickMarks, dv
     auto mesh = std::make_unique<Mesh>(DrawType::Lines, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
 
-    std::vector<uint32_t> indices(numTicks * 2);
-    std::iota(indices.begin(), indices.end(), 0);
+    auto indices = std::views::iota(uint32_t{0}, static_cast<uint32_t>(numTicks * 2)) |
+                   std::ranges::to<std::vector>();
 
     mesh->addIndices(Mesh::MeshInfo{.dt = DrawType::Lines, .ct = ConnectivityType::None},
                      inviwo::util::makeIndexBuffer(std::move(indices)));

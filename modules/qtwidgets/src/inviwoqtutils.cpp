@@ -110,7 +110,7 @@ std::ios_base& localizeStream(std::ios_base& stream) {
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
-    const auto it = std::find_if(widgets.begin(), widgets.end(), [](const auto& item) {
+    const auto it = std::ranges::find_if(widgets, [](const auto& item) {
         return item->objectName().compare("InviwoMainWindow") == 0;
     });
     if (it != widgets.end()) {
@@ -391,7 +391,7 @@ QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
         std::string menuNoAnd{menuName};
         replaceInString(menuNoAnd, "&", "");
 
-        const auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
+        const auto menuItem = std::ranges::find_if(menus, [&](auto& m) {
             std::string title = utilqt::fromQString(m->title());
             replaceInString(title, "&", "");
             return menuNoAnd == title;
@@ -618,7 +618,7 @@ std::vector<std::string> getMonoSpaceFonts() {
 size_t getDefaultMonoSpaceFontIndex() {
     const auto fonts = getMonoSpaceFonts();
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    const auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
+    const auto it = std::ranges::find(fonts, utilqt::fromQString(fixedFont.family()));
     if (it != fonts.end()) {
         return it - fonts.begin();
     } else {

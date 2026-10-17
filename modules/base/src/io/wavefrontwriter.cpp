@@ -207,8 +207,10 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
         writePrimitives(f, info, *indices, hasNormals, hasTextures);
     }
     if (data->getIndexBuffers().empty()) {
-        std::vector<std::uint32_t> indices(data->getBuffer(0)->getSize());
-        std::iota(indices.begin(), indices.end(), 0);
+        auto indices =
+            std::views::iota(uint32_t{0}, static_cast<uint32_t>(data->getBuffer(0)->getSize())) |
+            std::ranges::to<std::vector>();
+
         const auto ib = IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(indices)));
         writePrimitives(f, data->getDefaultMeshInfo(), ib, hasNormals, hasTextures);
     }

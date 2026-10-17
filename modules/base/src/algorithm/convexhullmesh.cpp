@@ -42,6 +42,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <ranges>
 
 namespace inviwo {
 
@@ -64,9 +65,8 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useI
         const auto indices = std::make_shared<IndexBuffer>();
         auto indexBuffer = indices->getEditableRAMRepresentation();
 
-        std::vector<uint32_t> seq(hull.size());
-        // create a sequence of increasing numbers
-        std::iota(seq.begin(), seq.end(), 0);
+        auto seq = std::views::iota(uint32_t{0}, static_cast<uint32_t>(hull.size())) |
+                   std::ranges::to<std::vector>();
 
         indexBuffer->append(&seq);
 
