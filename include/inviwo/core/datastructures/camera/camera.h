@@ -154,8 +154,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    inline friend bool operator==(const Camera& lhs, const Camera& rhs) { return lhs.equal(rhs); }
-    inline friend bool operator!=(const Camera& lhs, const Camera& rhs) { return !(lhs == rhs); }
+    friend bool operator==(const Camera& lhs, const Camera& rhs) { return lhs.equal(rhs); }
+    friend bool operator!=(const Camera& lhs, const Camera& rhs) { return !(lhs == rhs); }
 
 protected:
     virtual bool equal(const Camera& other) const = 0;

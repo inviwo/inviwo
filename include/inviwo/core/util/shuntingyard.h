@@ -92,9 +92,9 @@ public:
                                   std::map<std::string, std::string>& symbols);
 
 private:
-    inline static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
+    static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
 
-    inline static std::string getVariable(std::stringstream& expr) {
+    static std::string getVariable(std::stringstream& expr) {
         std::stringstream ss;
         char c = 0;
         expr.get(c);

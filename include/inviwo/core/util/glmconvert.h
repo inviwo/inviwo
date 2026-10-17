@@ -46,7 +46,7 @@ namespace inviwo::util {
 // Just using standard casts. When targets has more dimensions then the source
 // pad with zero. When there are more dimensions in source just discard the extra ones.
 template <typename To = double, typename From>
-inline constexpr To glm_convert(From x) {
+constexpr To glm_convert(From x) {
     if constexpr (std::is_same_v<To, From>) {
         return x;
     } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 0) {
