@@ -108,7 +108,7 @@ public:
     }
 
     static DataFormatId get(const GLFormat& glFormat) noexcept {
-        const auto* const it = std::find(formats_.begin(), formats_.end(), glFormat);
+        const auto* const it = std::ranges::find(formats_, glFormat);
 
         if (it != formats_.end()) {
             return static_cast<DataFormatId>(it - formats_.begin());
@@ -119,9 +119,9 @@ public:
 
     static DataFormatId getDataFormat(GLenum type, GLuint channels) noexcept {
 
-        const auto* const it = std::find_if(
-            formats_.begin(), formats_.end(),
-            [&](const GLFormat& item) { return item.type == type && item.channels == channels; });
+        const auto* const it = std::ranges::find_if(formats_, [&](const GLFormat& item) {
+            return item.type == type && item.channels == channels;
+        });
 
         if (it != formats_.end()) {
             return static_cast<DataFormatId>(it - formats_.begin());
@@ -130,9 +130,9 @@ public:
         }
     }
     static const GLFormat& getGLFormat(GLenum type, GLuint channels) {
-        const auto* const it = std::find_if(
-            formats_.begin(), formats_.end(),
-            [&](const GLFormat& item) { return item.type == type && item.channels == channels; });
+        const auto* const it = std::ranges::find_if(formats_, [&](const GLFormat& item) {
+            return item.type == type && item.channels == channels;
+        });
 
         if (it != formats_.end()) {
             return *it;

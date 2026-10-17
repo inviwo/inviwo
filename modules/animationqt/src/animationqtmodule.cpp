@@ -152,7 +152,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
         QMenu* menu = nullptr;
         // Find view menu
         auto menus = win->menuBar()->findChildren<QMenu*>();
-        const auto viewMenuIt = std::find_if(menus.begin(), menus.end(), [](auto& m) {
+        const auto viewMenuIt = std::ranges::find_if(menus, [](auto& m) {
             return m->title().compare(QObject::tr("&View"), Qt::CaseInsensitive) == 0;
         });
 

@@ -131,12 +131,12 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                     [&]() {
                         OptionPropertyState<FileExtension> state;
                         const auto exts = util::getDataWriterFactory(app)->getKeyView();
-                        std::transform(exts.begin(), exts.end(), std::back_inserter(state.options),
-                                       [](const auto& ext) {
-                                           return OptionPropertyOption<FileExtension>{ext};
-                                       });
-                        const auto it = std::find_if(exts.begin(), exts.end(),
-                                                     [&](auto& e) { return e.extension == "png"; });
+                        std::ranges::transform(exts, std::back_inserter(state.options),
+                                               [](const auto& ext) {
+                                                   return OptionPropertyOption<FileExtension>{ext};
+                                               });
+                        const auto it = std::ranges::find_if(
+                            exts, [&](auto& e) { return e.extension == "png"; });
                         if (it != exts.end()) {
                             state.selectedIndex = std::distance(exts.begin(), it);
                         }

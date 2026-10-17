@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/threadutil.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <algorithm>
@@ -109,10 +110,9 @@ void TimerThread::TimerLoop() {
         if (sort_) {
             // Sort could be done at insert
             // but probably this thread has time to do
-            std::sort(timers_.begin(), timers_.end(),
-                      [](const TimerInfo& ti1, const TimerInfo& ti2) {
-                          return ti1.timePoint_ > ti2.timePoint_;
-                      });
+            std::ranges::sort(timers_, [](const TimerInfo& ti1, const TimerInfo& ti2) {
+                return ti1.timePoint_ > ti2.timePoint_;
+            });
             sort_ = false;
         }
 

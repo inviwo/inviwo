@@ -553,10 +553,10 @@ void ParallelCoordinates::partitionLines() {
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     const auto lastFilteredIt =
-        std::partition(lines_.starts.begin(), lines_.starts.end(), [&](auto ind) {
+        std::ranges::partition(lines_.starts, [&](auto ind) {
             return brushingAndLinking_.isFiltered(
                 indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
-        });
+        }).begin();
     const auto lastRegularIt = std::partition(lastFilteredIt, lines_.starts.end(), [&](auto ind) {
         const auto idx = indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)];
         return !brushingAndLinking_.isSelected(idx) && !brushingAndLinking_.isHighlighted(idx);

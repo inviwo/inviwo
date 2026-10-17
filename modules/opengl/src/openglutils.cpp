@@ -62,7 +62,7 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
         }
     };
     std::array<GLint, 4> swizzleMaskGL{};
-    std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
+    std::ranges::transform(mask, swizzleMaskGL.begin(), convertToGL);
     return swizzleMaskGL;
 }
 
@@ -115,7 +115,7 @@ SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
         }
     };
     SwizzleMask mask;
-    std::transform(maskGL.begin(), maskGL.end(), mask.begin(), convertFromGL);
+    std::ranges::transform(maskGL, mask.begin(), convertFromGL);
     return mask;
 }
 

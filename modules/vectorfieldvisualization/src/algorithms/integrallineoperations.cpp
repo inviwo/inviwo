@@ -71,7 +71,7 @@ void curvature(IntegralLine& line, dmat4 toWorld) {
     if (line.getPositions().size() <= 1) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
 
-    std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
+    std::ranges::transform(positions, positions.begin(), [&](dvec3 pos) {
         const dvec4 P = toWorld * dvec4(pos, 1);
         return dvec3(P) / P.w;
     });
@@ -139,7 +139,7 @@ void tortuosity(IntegralLine& line, dmat4 toWorld) {
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
     if (positions.size() <= 1) return;
 
-    std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
+    std::ranges::transform(positions, positions.begin(), [&](dvec3 pos) {
         const dvec4 P = toWorld * dvec4(pos, 1);
         return dvec3(P) / P.w;
     });

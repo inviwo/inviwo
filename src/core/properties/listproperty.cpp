@@ -37,6 +37,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <set>
 
 namespace inviwo {
@@ -173,14 +174,14 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
 
         // if prefab has a trailing number in its display name, use number of identifier
         const auto displayName = property->getDisplayName();
-        const auto it = std::find_if(displayName.rbegin(), displayName.rend(),
-                                     [](char c) { return !std::isdigit(c); });
+        const auto it = std::ranges::find_if(std::views::reverse(displayName),
+                                             [](char c) { return !std::isdigit(c); });
         const std::string baseName = trim(std::string{displayName.begin(), it.base()});
         if (it.base() != displayName.end()) {
             // extract number from identifier
             const auto identifier = property->getIdentifier();
-            const auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
-                                                   [](char c) { return !std::isdigit(c); });
+            const auto itIdentifier = std::ranges::find_if(std::views::reverse(identifier),
+                                                           [](char c) { return !std::isdigit(c); });
             const std::string number(itIdentifier.base(), identifier.end());
             if (!number.empty()) {
                 property->setDisplayName(baseName + " " + number);

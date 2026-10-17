@@ -41,6 +41,7 @@
 #include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/network/workspacemanager.h>
 
+#include <algorithm>
 #include <string>
 #include <functional>
 #include <ranges>
@@ -82,7 +83,7 @@ void topologicalSort(std::vector<ModuleContainer>& containers) {
         helper(helper, containers, item.identifier(), visited, tmpVisited, sorted);
     }
     // Sort modules according to dependency graph
-    std::sort(containers.begin(), containers.end(), [&](const auto& a, const auto& b) {
+    std::ranges::sort(containers, [&](const auto& a, const auto& b) {
         return std::ranges::find(sorted, a.identifier()) <
                std::ranges::find(sorted, b.identifier());
     });
@@ -184,7 +185,7 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
     std::vector<std::string> enabledModules;
     std::copy(std::istream_iterator<std::string>(enabledModulesFile),
               std::istream_iterator<std::string>(), std::back_inserter(enabledModules));
-    std::for_each(std::begin(enabledModules), std::end(enabledModules), toLower);
+    std::ranges::for_each(enabledModules, toLower);
 
     return [enabledModules](std::string_view name) { return util::contains(enabledModules, name); };
 }

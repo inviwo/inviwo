@@ -106,8 +106,7 @@ private:
 
 void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
     const std::scoped_lock lock{mutex_};
-    IVW_ASSERT(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
-                   fileObservers_.cend(),
+    IVW_ASSERT(std::ranges::find(fileObservers_, fileObserver) == fileObservers_.cend(),
                "File observer already registered.");
     fileObservers_.push_back(fileObserver);
 }

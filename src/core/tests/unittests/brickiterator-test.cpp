@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <numeric>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -45,7 +46,7 @@ namespace inviwo {
 
 TEST(BrickIteratorTest, subBlock) {
     std::vector<int> data(27);
-    std::iota(data.begin(), data.end(), 0);
+    std::ranges::iota(data, 0);
 
     const auto it =
         util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{1, 1, 1}, size3_t{2, 2, 2}};
@@ -59,7 +60,7 @@ TEST(BrickIteratorTest, subBlock) {
 
 TEST(BrickIteratorTest, decrement) {
     std::vector<int> data(27);
-    std::iota(data.begin(), data.end(), 0);
+    std::ranges::iota(data, 0);
 
     const auto it =
         util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{1, 1, 1}};
@@ -73,7 +74,7 @@ TEST(BrickIteratorTest, decrement) {
 
 TEST(BrickIteratorTest, extractVoxel) {
     std::vector<int> data(27);
-    std::iota(data.begin(), data.end(), 0);
+    std::ranges::iota(data, 0);
     const util::IndexMapper3D im(size3_t{3, 3, 3});
 
     auto it =
@@ -93,7 +94,7 @@ TEST(BrickIteratorTest, extractVoxel) {
 
 TEST(BrickIteratorTest, entireBlock) {
     std::vector<int> data(27);
-    std::iota(data.begin(), data.end(), 0);
+    std::ranges::iota(data, 0);
 
     const auto it =
         util::BrickIterator{data.begin(), size3_t{3, 3, 3}, size3_t{0, 0, 0}, size3_t{3, 3, 3}};

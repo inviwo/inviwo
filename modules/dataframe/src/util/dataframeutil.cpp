@@ -410,11 +410,11 @@ std::shared_ptr<DataFrame> innerJoin(
     IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
     std::vector<std::string> leftKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
-                   [](const auto& item) { return item.first; });
+    std::ranges::transform(keyColumns, std::back_inserter(leftKeys),
+                           [](const auto& item) { return item.first; });
     std::vector<std::string> rightKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(keyColumns, std::back_inserter(rightKeys),
+                           [](const auto& item) { return item.second; });
 
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
@@ -474,11 +474,11 @@ std::shared_ptr<DataFrame> leftJoin(
         });
 
     std::vector<std::string> leftKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
-                   [](const auto& item) { return item.first; });
+    std::ranges::transform(keyColumns, std::back_inserter(leftKeys),
+                           [](const auto& item) { return item.first; });
     std::vector<std::string> rightKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(keyColumns, std::back_inserter(rightKeys),
+                           [](const auto& item) { return item.second; });
 
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
@@ -582,7 +582,7 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                 [](const std::function<bool(int64_t)>&) { return false; },
                 [](const std::function<bool(double)>&) { return false; }};
             const auto op = [&](const auto& f) { return std::visit(test, f.filter); };
-            if (std::any_of(filters.begin(), filters.end(), op)) {
+            if (std::ranges::any_of(filters, op)) {
                 rows.push_back(row);
             }
         }

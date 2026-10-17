@@ -40,6 +40,7 @@
 #include <sys/stat.h>
 
 // For working directory
+#include <algorithm>
 #include <cstdio>  // FILENAME_MAX
 #include <codecvt>
 #include <cctype>  // isdigit()
@@ -232,7 +233,7 @@ fs::path getInviwoBinDir() {
 
 #else
     auto allLibs = getLoadedLibraries();
-    const auto it = std::find_if(allLibs.begin(), allLibs.end(), [&](const auto& lib) {
+    const auto it = std::ranges::find_if(allLibs, [&](const auto& lib) {
         return lib.string().find("inviwo-core") != std::string::npos;
     });
 
@@ -423,10 +424,10 @@ std::vector<fs::path> getDirectoryContents(const fs::path& path, ListMode mode) 
             break;
     }
 
-    std::transform(res.begin(), res.end(), res.begin(),
-                   [&](const fs::path& child) { return fs::relative(child, path); });
+    std::ranges::transform(res, res.begin(),
+                           [&](const fs::path& child) { return fs::relative(child, path); });
 
-    std::sort(res.begin(), res.end());
+    std::ranges::sort(res);
 
     return res;
 }
@@ -461,10 +462,10 @@ std::vector<fs::path> getDirectoryContentsRecursively(const fs::path& path, List
             break;
     }
 
-    std::transform(res.begin(), res.end(), res.begin(),
-                   [&](const fs::path& child) { return fs::relative(child, path); });
+    std::ranges::transform(res, res.begin(),
+                           [&](const fs::path& child) { return fs::relative(child, path); });
 
-    std::sort(res.begin(), res.end());
+    std::ranges::sort(res);
 
     return res;
 }
@@ -587,7 +588,7 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
 
     fs::path prevDir;
     do {
-        if (std::all_of(childFolders.begin(), childFolders.end(), [&](const fs::path& childFolder) {
+        if (std::ranges::all_of(childFolders, [&](const fs::path& childFolder) {
                 return fs::is_directory(currentDir / childFolder);
             })) {
             return currentDir;
@@ -775,7 +776,7 @@ fs::path cleanupPath(std::string_view path) {
 
     std::string result(path);
     // replace backslashes '\' with forward slashes '/'
-    std::replace(result.begin(), result.end(), '\\', '/');
+    std::ranges::replace(result, '\\', '/');
 
     // check for matching quotes at begin and end
     if ((result.size() > 1) && (result.front() == '\"') && (result.back() == '\"')) {

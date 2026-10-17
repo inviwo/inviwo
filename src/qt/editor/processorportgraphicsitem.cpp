@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPen>
@@ -73,7 +74,7 @@ void ProcessorPortGraphicsItem::addConnection(ConnectionGraphicsItem* connection
     update();  // we need to repaint the connection
 }
 void ProcessorPortGraphicsItem::removeConnection(ConnectionGraphicsItem* connection) {
-    connections_.erase(std::find(connections_.begin(), connections_.end(), connection));
+    connections_.erase(std::ranges::find(connections_, connection));
     connectionIndicator_->setVisible(!connections_.empty());
     update();  // we need to repaint the connection
 }

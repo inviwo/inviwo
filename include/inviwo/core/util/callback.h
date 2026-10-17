@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/dispatcher.h>
 
+#include <algorithm>
 #include <functional>
 #include <algorithm>
 
@@ -84,10 +85,12 @@ public:
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        const auto it = std::remove_if(callBackList_.begin(), callBackList_.end(),
-                                       [&](const std::shared_ptr<std::function<void()>>& ptr) {
-                                           return ptr.get() == callback;
-                                       });
+        const auto it =
+            std::ranges::remove_if(callBackList_,
+                                   [&](const std::shared_ptr<std::function<void()>>& ptr) {
+                                       return ptr.get() == callback;
+                                   })
+                .begin();
         const auto nelem = std::distance(it, callBackList_.end());
         callBackList_.erase(it, callBackList_.end());
         return nelem > 0;

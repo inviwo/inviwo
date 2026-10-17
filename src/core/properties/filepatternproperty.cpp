@@ -173,15 +173,15 @@ std::filesystem::path FilePatternProperty::getFilePatternPath() const {
 
 std::vector<std::filesystem::path> FilePatternProperty::getFileList() const {
     std::vector<std::filesystem::path> fileList;
-    std::transform(files_.begin(), files_.end(), std::back_inserter(fileList),
-                   [](const auto& elem) { return std::get<1>(elem); });
+    std::ranges::transform(files_, std::back_inserter(fileList),
+                           [](const auto& elem) { return std::get<1>(elem); });
     return fileList;
 }
 
 std::vector<int> FilePatternProperty::getFileIndices() const {
     std::vector<int> indexList;
-    std::transform(files_.begin(), files_.end(), std::back_inserter(indexList),
-                   [](const auto& elem) { return std::get<0>(elem); });
+    std::ranges::transform(files_, std::back_inserter(indexList),
+                           [](const auto& elem) { return std::get<0>(elem); });
     return indexList;
 }
 
@@ -293,7 +293,7 @@ std::string FilePatternProperty::getFormattedFileList() const {
 void FilePatternProperty::sort() {
     if (!sort_.get()) return;
 
-    std::sort(files_.begin(), files_.end());
+    std::ranges::sort(files_);
 }
 
 std::string_view FilePatternProperty::guessFilePattern() {

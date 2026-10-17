@@ -40,6 +40,7 @@
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/editor/editorsettings.h>
 
+#include <algorithm>
 #include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -159,7 +160,7 @@ void TreeItem::addChildren(std::vector<std::unique_ptr<TreeItem>> children) {
         child->parent_ = this;
         child->row_ = static_cast<int>(i + children_.size());
     }
-    std::move(children.begin(), children.end(), std::back_inserter(children_));
+    std::ranges::move(children, std::back_inserter(children_));
 }
 
 void TreeItem::removeChildren() { children_.clear(); }
@@ -171,8 +172,8 @@ TreeItem* TreeItem::child(int row) const {
 
 TreeItem* TreeItem::findChild(std::string_view caption) const {
     auto qCaption = utilqt::toQString(caption);
-    const auto it = std::find_if(children_.begin(), children_.end(),
-                                 [&](auto& child) { return child->caption_ == qCaption; });
+    const auto it =
+        std::ranges::find_if(children_, [&](auto& child) { return child->caption_ == qCaption; });
     if (it != children_.end()) {
         return it->get();
     } else {
@@ -407,23 +408,22 @@ void WorkspaceTreeModel::updateRestoreEntries() {
         return path.extension().string() == ".inv";
     });
 
-    std::sort(files.begin(), files.end(),
-              [](const std::filesystem::path& a, const std::filesystem::path& b) {
-                  return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
-              });
+    std::ranges::sort(files, [](const std::filesystem::path& a, const std::filesystem::path& b) {
+        return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
+    });
 
     std::vector<std::unique_ptr<TreeItem>> items;
 
-    std::transform(files.begin(), files.end(), std::back_inserter(items),
-                   [&](const std::filesystem::path& path) {
-                       return std::make_unique<TreeItem>(
-                           path, app_,
-                           [this](TreeItem* item) {
-                               const auto id = getIndex(item);
-                               dataChanged(id, id);
-                           },
-                           true);
-                   });
+    std::ranges::transform(files, std::back_inserter(items),
+                           [&](const std::filesystem::path& path) {
+                               return std::make_unique<TreeItem>(
+                                   path, app_,
+                                   [this](TreeItem* item) {
+                                       const auto id = getIndex(item);
+                                       dataChanged(id, id);
+                                   },
+                                   true);
+                           });
 
     updateCategory(getCategory(restore), std::move(items));
 }
@@ -448,13 +448,12 @@ void WorkspaceTreeModel::updateCustomEntries() {
             return path.extension().string() == ".inv";
         });
 
-        std::sort(files.begin(), files.end(),
-                  [](const std::filesystem::path& a, const std::filesystem::path& b) {
-                      return std::filesystem::last_write_time(a) >
-                             std::filesystem::last_write_time(b);
-                  });
+        std::ranges::sort(
+            files, [](const std::filesystem::path& a, const std::filesystem::path& b) {
+                return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
+            });
 
-        std::for_each(files.begin(), files.end(), [&](const std::filesystem::path& path) {
+        std::ranges::for_each(files, [&](const std::filesystem::path& path) {
             section->addChild(std::make_unique<TreeItem>(
                 path, app_,
                 [this](TreeItem* item) {

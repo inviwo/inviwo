@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/property.h>
 #include <fmt/base.h>
 #include <fmt/std.h>
+#include <algorithm>
 #include <ranges>
 #include <filesystem>
 
@@ -157,9 +158,9 @@ std::string findUniqueIdentifier(std::string_view identifier,
 
 std::string cleanIdentifier(std::string_view identifier, std::string_view extra) {
     std::string str{identifier};
-    std::replace_if(
-        str.begin(), str.end(),
-        [&](char c) { return !util::contains(extra, c) && !std::isalnum(c) && c != '_'; }, ' ');
+    std::ranges::replace_if(
+        str, [&](char c) { return !util::contains(extra, c) && !std::isalnum(c) && c != '_'; },
+        ' ');
     std::erase_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';

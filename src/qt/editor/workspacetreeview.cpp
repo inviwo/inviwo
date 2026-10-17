@@ -39,6 +39,7 @@
 
 #include <inviwo/qt/editor/workspacemodelroles.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QStyledItemDelegate>
@@ -185,11 +186,12 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
         directories.erase(directories.begin());
     }
 
-    std::reverse(directories.begin(), directories.end());
+    std::ranges::reverse(directories);
 
     std::vector<int> widthDirs;
-    std::transform(directories.begin(), directories.end(), std::back_inserter(widthDirs),
-                   [&](const auto& dir) { return metrics.boundingRect("/" + dir).width(); });
+    std::ranges::transform(directories, std::back_inserter(widthDirs), [&](const auto& dir) {
+        return metrics.boundingRect("/" + dir).width();
+    });
 
     const int widthDots = metrics.boundingRect("/...").width();
 

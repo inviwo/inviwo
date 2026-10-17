@@ -45,14 +45,15 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <algorithm>
 #include <string_view>
 
 namespace inviwo {
 
 PortInspector* PortInspectorManager::borrow(Outport* outport) {
-    const auto it = std::find_if(
-        unusedInspectors_.begin(), unusedInspectors_.end(),
-        [&](const auto& pi) { return pi->getPortClassName() == outport->getClassIdentifier(); });
+    const auto it = std::ranges::find_if(unusedInspectors_, [&](const auto& pi) {
+        return pi->getPortClassName() == outport->getClassIdentifier();
+    });
     if (it != unusedInspectors_.end()) {
         return it->get();
     } else {
@@ -66,9 +67,9 @@ PortInspector* PortInspectorManager::borrow(Outport* outport) {
     }
 }
 std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* outport) {
-    const auto it = std::find_if(
-        unusedInspectors_.begin(), unusedInspectors_.end(),
-        [&](const auto& pi) { return pi->getPortClassName() == outport->getClassIdentifier(); });
+    const auto it = std::ranges::find_if(unusedInspectors_, [&](const auto& pi) {
+        return pi->getPortClassName() == outport->getClassIdentifier();
+    });
     if (it != unusedInspectors_.end()) {
         auto pi = std::move(*it);
         unusedInspectors_.erase(it);
@@ -195,8 +196,8 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
     auto* network = app_->getProcessorNetwork();
     const NetworkLock lock(network);
     {
-        const auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
-                                     [&](const auto& item) { return item.first == portId; });
+        const auto it = std::ranges::find_if(
+            portInspectors_, [&](const auto& item) { return item.first == portId; });
         if (it != portInspectors_.end()) {
             removePortInspector(it);
             portInspectors_.erase(it);

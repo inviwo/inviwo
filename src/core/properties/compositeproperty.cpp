@@ -34,6 +34,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networkvisitor.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 std::string_view CompositeProperty::getClassIdentifier() const { return classIdentifier; }
@@ -122,8 +124,7 @@ CompositeProperty& CompositeProperty::resetToDefaultState() {
 
 bool CompositeProperty::isDefaultState() const {
     return collapsed_.isDefault() &&
-           std::all_of(properties_.begin(), properties_.end(),
-                       [](const Property* p) { return p->isDefaultState(); });
+           std::ranges::all_of(properties_, [](const Property* p) { return p->isDefaultState(); });
 }
 
 bool CompositeProperty::needsSerialization() const {
@@ -133,8 +134,8 @@ bool CompositeProperty::needsSerialization() const {
         case PropertySerializationMode::Default: [[fallthrough]];
         default:
             return !getMetaDataMap()->empty() || !collapsed_.isDefault() ||
-                   std::any_of(properties_.begin(), properties_.end(),
-                               [](const Property* p) { return p->needsSerialization(); });
+                   std::ranges::any_of(properties_,
+                                       [](const Property* p) { return p->needsSerialization(); });
     }
 }
 

@@ -305,7 +305,7 @@ void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
         std::make_shared<BufferRAMPrecision<uint32_t>>(mesh.getBuffer(0)->getSize());
     const auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
     auto& data = bufferRAM->getDataContainer();
-    std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
+    std::ranges::fill(data, static_cast<uint32_t>(id));
     mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);
 }
 

@@ -35,6 +35,8 @@
 
 #include <fmt/format.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 void pool::Progress::operator()(float progress) const noexcept {
@@ -173,7 +175,7 @@ void PoolProcessor::progress(pool::detail::State* state, double progress) {
 }
 
 bool PoolProcessor::removeState(const std::shared_ptr<pool::detail::State>& state) {
-    const auto it = std::find(states_.begin(), states_.end(), state);
+    const auto it = std::ranges::find(states_, state);
     IVW_ASSERT(it != states_.end(), "The state should always be found");
 
     const bool isLast = std::next(it) == states_.end();

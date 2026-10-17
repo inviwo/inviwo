@@ -33,6 +33,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 MeshBnLGL::MeshBnLGL()
@@ -56,7 +58,7 @@ void MeshBnLGL::update() {
         }
 
         const auto bnlData = buffer.map(GL_WRITE_ONLY);
-        std::fill(bnlData.begin(), bnlData.end(), 0);
+        std::ranges::fill(bnlData, 0);
         if (select) {
             for (const auto i : inport.getSelectedIndices()) {
                 bnlData[i] = 1;

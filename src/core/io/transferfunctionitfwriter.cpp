@@ -30,6 +30,7 @@
 #include <inviwo/core/io/transferfunctionitfwriter.h>
 #include <inviwo/core/io/serialization/serializer.h>
 
+#include <algorithm>
 #include <string>
 #include <memory_resource>
 #include <filesystem>
@@ -65,7 +66,7 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeData
     serializer.write(xml);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
+    std::ranges::copy(xml, buffer->begin());
     return buffer;
 }
 

@@ -46,6 +46,7 @@
 #include <modules/qtwidgets/textlabeloverlay.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <algorithm>
 #include <ranges>
 
 #include <fmt/format.h>
@@ -153,7 +154,7 @@ void NetworkAutomation::AutoIn::update(QPointF scenePos, Qt::KeyboardModifiers m
     std::unordered_map<Inport*, std::unique_ptr<ConnectionOutportDragGraphicsItem>>
         updatedConnections;
     const auto isPortFree = [&updatedConnections](Outport* p) {
-        return std::none_of(updatedConnections.begin(), updatedConnections.end(), [&](auto& item) {
+        return std::ranges::none_of(updatedConnections, [&](auto& item) {
             if (!item.second) return false;
             return item.second->getOutportGraphicsItem()->getPort() == p;
         });
@@ -208,7 +209,7 @@ void NetworkAutomation::AutoOut::update(QPointF scenePos, Qt::KeyboardModifiers 
     std::unordered_map<Outport*, std::unique_ptr<ConnectionInportDragGraphicsItem>>
         updatedConnections;
     const auto isPortFree = [&updatedConnections](Inport* p) {
-        return std::none_of(updatedConnections.begin(), updatedConnections.end(), [&](auto& item) {
+        return std::ranges::none_of(updatedConnections, [&](auto& item) {
             if (!item.second) return false;
             return item.second->getInportGraphicsItem()->getPort() == p;
         });

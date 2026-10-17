@@ -42,6 +42,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriterfactory.h>
 
+#include <algorithm>
 #include <cmath>
 #include <streambuf>
 
@@ -81,9 +82,8 @@ std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrim
     // Find the point which will result in the smallest error when removed.
     const auto nextToRemove = [&]() {
         const auto index = util::make_sequence<std::ptrdiff_t>(1, std::ssize(simple) - 1, 1);
-        return *std::min_element(
-            index.begin(), index.end(),
-            [&](std::ptrdiff_t a, std::ptrdiff_t b) { return error(a) < error(b); });
+        return *std::ranges::min_element(
+            index, [&](std::ptrdiff_t a, std::ptrdiff_t b) { return error(a) < error(b); });
     };
 
     // Iteratively remove the point with the smallest error until the error gets larger then delta

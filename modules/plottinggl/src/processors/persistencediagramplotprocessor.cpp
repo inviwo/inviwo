@@ -144,8 +144,9 @@ void PersistenceDiagramPlotProcessor::process() {
         vec.reserve(dfSize - filteredIndicies.size());
 
         const auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
-        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
+        std::ranges::copy_if(seq, std::back_inserter(vec), [&](const auto& id) {
+            return !brushingPort_.isFiltered(indexCol[id]);
+        });
 
         if (backgroundPort_.hasData()) {
             persistenceDiagramPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(),

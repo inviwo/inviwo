@@ -35,6 +35,7 @@
 
 #include <flags/flags.h>
 
+#include <algorithm>
 #include <set>
 #include <vector>
 #include <memory>
@@ -209,9 +210,8 @@ private:
 
         Prefabs(const Prefabs& rhs) {
             properties.reserve(rhs.properties.size());
-            std::transform(rhs.properties.begin(), rhs.properties.end(),
-                           std::back_inserter(properties),
-                           [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
+            std::ranges::transform(rhs.properties, std::back_inserter(properties),
+                                   [](auto& p) { return std::unique_ptr<Property>(p->clone()); });
         }
         Prefabs(Prefabs&& rhs) noexcept : properties{std::move(rhs.properties)} {}
         Prefabs& operator=(const Prefabs& that) {
@@ -233,8 +233,8 @@ private:
         const std::unique_ptr<Property>& operator[](size_t i) const { return properties[i]; }
 
         friend bool operator==(const Prefabs& a, const Prefabs& b) {
-            return std::equal(
-                a.properties.begin(), a.properties.end(), b.properties.begin(), b.properties.end(),
+            return std::ranges::equal(
+                a.properties, b.properties,
                 [](const std::unique_ptr<Property>& pa, const std::unique_ptr<Property>& pb) {
                     return pa->getClassIdentifier() == pb->getClassIdentifier() &&
                            pa->getIdentifier() == pb->getIdentifier();

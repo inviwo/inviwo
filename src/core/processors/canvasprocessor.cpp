@@ -44,6 +44,8 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 CanvasProcessor::CanvasProcessor(InviwoApplication* app)
@@ -109,14 +111,13 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                         OptionPropertyState<FileExtension> opts{};
                         const auto exts =
                             app->getDataWriterFactory()->getExtensionsForType<Layer>();
-                        std::transform(exts.begin(), exts.end(), std::back_inserter(opts.options),
-                                       [](auto& ext) {
-                                           return OptionPropertyOption<FileExtension>{
-                                               ext.toString(), ext.toString(), ext};
-                                       });
-                        if (const auto it =
-                                std::find_if(exts.begin(), exts.end(),
-                                             [](auto& ext) { return ext.extension == "png"; });
+                        std::ranges::transform(exts, std::back_inserter(opts.options),
+                                               [](auto& ext) {
+                                                   return OptionPropertyOption<FileExtension>{
+                                                       ext.toString(), ext.toString(), ext};
+                                               });
+                        if (const auto it = std::ranges::find_if(
+                                exts, [](auto& ext) { return ext.extension == "png"; });
                             it == exts.end()) {
                             opts.selectedIndex = std::distance(exts.begin(), it);
                         }

@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/exception.h>
 
+#include <algorithm>
 #include <string>
 #include <iosfwd>
 #include <tuple>
@@ -217,7 +218,7 @@ constexpr Version::Version(std::string_view version) {
                             "Pre-release version string too long: len('{}') >= {} ", preRelease,
                             preReleaseBuffer.size());
         }
-        std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
+        std::ranges::copy(preRelease, preReleaseBuffer.begin());
     }
 
     const auto buildBegin = version.find_first_of('+', 0);
@@ -227,7 +228,7 @@ constexpr Version::Version(std::string_view version) {
             throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ",
                             build, buildBuffer.size());
         }
-        std::copy(build.begin(), build.end(), buildBuffer.begin());
+        std::ranges::copy(build, buildBuffer.begin());
     }
 }
 
@@ -243,8 +244,8 @@ constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int 
         throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ", build,
                         buildBuffer.size());
     }
-    std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
-    std::copy(build.begin(), build.end(), buildBuffer.begin());
+    std::ranges::copy(preRelease, preReleaseBuffer.begin());
+    std::ranges::copy(build, buildBuffer.begin());
 }
 
 constexpr bool Version::semanticVersionEqual(const Version& other) const {

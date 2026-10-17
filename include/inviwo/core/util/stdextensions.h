@@ -36,6 +36,7 @@
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/iterrange.h>
 
+#include <numeric>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <memory>
@@ -399,7 +400,7 @@ auto transform(const T& cont, UnaryOperation op)
 template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
     std::vector<size_t> res(std::ranges::distance(cont));
-    std::iota(res.begin(), res.end(), 0);
+    std::ranges::iota(res, 0);
     std::sort(res.begin(), res.end(),
               [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
     return res;

@@ -96,7 +96,7 @@ marching::Config::Config()
     }()}
     , nodeIdsToEdgeId{util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {
         return util::make_array<8, NodeId>([&](NodeId j) -> EdgeId {
-            const auto* it = std::find_if(edges.begin(), edges.end(), [&](auto e) {
+            const auto* it = std::ranges::find_if(edges, [&](auto e) {
                 return (e[0] == i && e[1] == j) || (e[0] == j && e[1] == i);
             });
             if (it != edges.end()) {
@@ -106,8 +106,8 @@ marching::Config::Config()
         });
     })}
     , edgeIdToFaceIds{util::make_array<12, EdgeId>([&](EdgeId edge) -> std::array<FaceId, 2> {
-        const auto* it1 = std::find_if(faces.begin(), faces.end(),
-                                       [&](auto& face) { return util::contains(face, edge); });
+        const auto* it1 =
+            std::ranges::find_if(faces, [&](auto& face) { return util::contains(face, edge); });
         const auto* it2 = std::find_if(it1 + 1, faces.end(),
                                        [&](auto& face) { return util::contains(face, edge); });
         return {static_cast<FaceId>(std::distance(faces.begin(), it1)),
@@ -240,7 +240,7 @@ std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, b
         return calcIncrenents(~corners, true);
     }
     std::array<size_t, 8> res;
-    std::fill(res.begin(), res.end(), 0);
+    std::ranges::fill(res, 0);
 
     // Check which edges that are involved add group neighboring nodes
     const std::array<int, 12> edgeToCache = {{0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5}};

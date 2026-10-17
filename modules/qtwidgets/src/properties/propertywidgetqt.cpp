@@ -296,9 +296,9 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
             connect(action, &QAction::triggered, this,
                     [app, actionName, property = property_](bool /*checked*/) {
                         const auto& mActions = app->getCallbackActions();
-                        const auto it = std::find_if(
-                            mActions.begin(), mActions.end(),
-                            [&](auto& item) { return item->getActionName() == actionName; });
+                        const auto it = std::ranges::find_if(mActions, [&](auto& item) {
+                            return item->getActionName() == actionName;
+                        });
                         if (it != mActions.end()) {
                             (*it)->getCallBack().invoke(property);
                         }

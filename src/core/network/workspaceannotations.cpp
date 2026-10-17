@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/glm.h>
 
+#include <algorithm>
 #include <fstream>
 #include <utility>
 #include <fmt/std.h>
@@ -150,9 +151,8 @@ const WorkspaceAnnotations::Base64Image& WorkspaceAnnotations::getCanvasImage(si
 }
 
 std::optional<size_t> WorkspaceAnnotations::getPrimaryCanvasIndex() const {
-    const auto it = std::find_if(canvases_.begin(), canvases_.end(), [&](const Base64Image& img) {
-        return img.name == primaryCanvasId_.get();
-    });
+    const auto it = std::ranges::find_if(
+        canvases_, [&](const Base64Image& img) { return img.name == primaryCanvasId_.get(); });
     if (it != canvases_.end()) {
         return std::distance(canvases_.begin(), it);
     } else if (!canvases_.empty()) {

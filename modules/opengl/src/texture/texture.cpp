@@ -264,8 +264,8 @@ Texture::~Texture() {
 }
 
 size_t Texture::targetDims(GLenum target) {
-    const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
-                                 [&](auto& item) { return item.first == target; });
+    const auto it =
+        std::ranges::find_if(targetToDim, [&](auto& item) { return item.first == target; });
     return it != targetToDim.end() ? it->second : size_t{0};
 }
 
