@@ -60,7 +60,7 @@ public:
      * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
-                         AddNoneOption noneOption = AddNoneOption::No, int defaultIndex = 0);
+                         AddNoneOption emptySelection = AddNoneOption::No, int defaultIndex = 0);
 
     /**
      * Constructor, no options will be created unless @p noneOption is set to AddNoneOption::Yes
@@ -71,7 +71,7 @@ public:
      * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName,
-                         AddNoneOption noneOption = AddNoneOption::No, int defaultIndex = 0);
+                         AddNoneOption emptySelection = AddNoneOption::No, int defaultIndex = 0);
 
     /**
      * Constructor using an inport @p port to populate the options. The onChange event of @p port
@@ -85,7 +85,7 @@ public:
      * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName, Document help,
-                         DataFrameInport& port, AddNoneOption noneOption = AddNoneOption::No,
+                         DataFrameInport& port, AddNoneOption emptySelection = AddNoneOption::No,
                          int defaultIndex = 0);
 
     /**
@@ -99,7 +99,7 @@ public:
      * @param defaultIndex index of the selected column when the property options are updated
      */
     ColumnOptionProperty(std::string_view identifier, std::string_view displayName,
-                         DataFrameInport& port, AddNoneOption noneOption = AddNoneOption::No,
+                         DataFrameInport& port, AddNoneOption emptySelection = AddNoneOption::No,
                          int defaultIndex = 0);
 
     ColumnOptionProperty(const ColumnOptionProperty& rhs);
@@ -145,7 +145,7 @@ public:
 
     bool hasNoneOption() const;
 
-    virtual void set(const Property* p) override;
+    virtual void set(const Property* srcProperty) override;
 
 private:
     DataFrameInport* inport_ = nullptr;

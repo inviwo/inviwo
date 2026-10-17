@@ -180,7 +180,7 @@ public:
     /**
      * @brief Enable or disable editing of property
      */
-    virtual Property& setReadOnly(bool value);
+    virtual Property& setReadOnly(bool readOnly);
     virtual bool getReadOnly() const;
 
     virtual Property& setInvalidationLevel(InvalidationLevel invalidationLevel);
@@ -311,7 +311,7 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
-    virtual Property& setVisible(bool val);
+    virtual Property& setVisible(bool visible);
     virtual bool getVisible() const;
 
     /* @brief sets visibility depending another property `prop`, according to `callback`

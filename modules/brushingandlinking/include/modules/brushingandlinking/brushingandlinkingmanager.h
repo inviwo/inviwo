@@ -189,11 +189,11 @@ public:
                std::string_view source = {});
 
     //! convenience function for brush(BrushingAction::Filter, target, idx, source)
-    void filter(const BitSet& idx, BrushingTarget target, std::string_view source);
+    void filter(const BitSet& indices, BrushingTarget target, std::string_view source);
     //! convenience function for brush(BrushingAction::Select, target, idx)
-    void select(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
+    void select(const BitSet& indices, BrushingTarget target = BrushingTarget::Row);
     //! convenience function for brush(BrushingAction::Highlight, target, idx)
-    void highlight(const BitSet& idx, BrushingTarget target = BrushingTarget::Row);
+    void highlight(const BitSet& indices, BrushingTarget target = BrushingTarget::Row);
 
     /**
      * check if the state of the manager was changed since the last network evaluation

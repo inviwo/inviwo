@@ -100,8 +100,7 @@ public:
      */
     void setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp);
 
-    dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNormalizedDeviceCoord,
-                                               const dvec3& toNormalizedDeviceCoord);
+    dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNDC, const dvec3& toNDC);
 
 protected:
     enum class Direction { Up = 0, Down, Left, Right };

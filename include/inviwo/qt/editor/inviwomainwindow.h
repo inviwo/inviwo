@@ -210,7 +210,7 @@ private:
      * @return true if the workspace was saved, otherwise false.
      */
     bool saveWorkspace(const std::filesystem::path& workspaceFileName);
-    void appendWorkspace(const std::filesystem::path& workspaceFileName);
+    void appendWorkspace(const std::filesystem::path& file);
 
     std::optional<std::filesystem::path> askForWorkspaceToOpen();
 

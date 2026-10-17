@@ -55,10 +55,10 @@ public:
               const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
               GLint level = 0);
 
-    Texture2D(const Texture2D& other);
-    Texture2D(Texture2D&& other);
-    Texture2D& operator=(const Texture2D& other);
-    Texture2D& operator=(Texture2D&& other);
+    Texture2D(const Texture2D& rhs);
+    Texture2D(Texture2D&& rhs);
+    Texture2D& operator=(const Texture2D& rhs);
+    Texture2D& operator=(Texture2D&& rhs);
     virtual ~Texture2D();
 
     Texture2D* clone() const;

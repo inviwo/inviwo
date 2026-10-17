@@ -148,9 +148,9 @@ public:
     void plot(const ivec2& start, const ivec2& size, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
 
-    void setXAxisLabel(const std::string& label);
+    void setXAxisLabel(const std::string& caption);
 
-    void setYAxisLabel(const std::string& label);
+    void setYAxisLabel(const std::string& caption);
 
     void setXAxis(std::shared_ptr<const Column> col);
 

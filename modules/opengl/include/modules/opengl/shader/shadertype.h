@@ -58,7 +58,7 @@ public:
     static constexpr std::string_view extension(const ShaderType& type);
     static ShaderType typeFromExtension(std::string_view ext);
     static ShaderType typeFromString(std::string_view str);
-    static ShaderType typeFromFile(const std::filesystem::path& ext);
+    static ShaderType typeFromFile(const std::filesystem::path& file);
 
     friend bool operator==(const ShaderType& lhs, const ShaderType& rhs) {
         return lhs.type_ == rhs.type_;

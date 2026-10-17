@@ -44,12 +44,12 @@ class HelpBrowser;
 
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
 public:
-    explicit HelpWidget(InviwoMainWindow* parent);
+    explicit HelpWidget(InviwoMainWindow* mainWindow);
     virtual ~HelpWidget();
     HelpWidget(const HelpWidget&) = delete;
     HelpWidget& operator=(const HelpWidget&) = delete;
 
-    void showDocForClassName(std::string_view className);
+    void showDocForClassName(std::string_view classIdentifier);
 
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;

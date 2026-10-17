@@ -57,11 +57,11 @@ public:
     /**
      * @note Registers as a file observer in FileSystemObserver.
      */
-    explicit FileObserver(FileSystemObserver* app);
+    explicit FileObserver(FileSystemObserver* fso);
 
     FileObserver(const FileObserver&) = delete;
     FileObserver& operator=(const FileObserver&) = delete;
-    FileObserver(FileObserver&& rhs);
+    FileObserver(FileObserver&& other);
     FileObserver& operator=(FileObserver&& that);
 
     /**
@@ -73,12 +73,12 @@ public:
      * @brief Starts observing file if it exists.
      * @param filePath Full path to file
      */
-    bool startFileObservation(const std::filesystem::path& filePath);
+    bool startFileObservation(const std::filesystem::path& fileName);
     /**
      * @brief Stops observing the file if being observed.
      * @param filePath Full path to file
      */
-    bool stopFileObservation(const std::filesystem::path& filePath);
+    bool stopFileObservation(const std::filesystem::path& fileName);
 
     /**
      * Stop observation of all observed files

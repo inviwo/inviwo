@@ -59,7 +59,7 @@ public:
 
 protected:
     virtual void onFindFiles();
-    bool isValidImageFile(const std::filesystem::path& path);
+    bool isValidImageFile(const std::filesystem::path& fileName);
     void updateProperties();
     void updateFileName();
 

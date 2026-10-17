@@ -49,7 +49,7 @@ public:
                         const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
                         InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                         const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
-    explicit VolumeDisk(const std::filesystem::path& path,
+    explicit VolumeDisk(const std::filesystem::path& srcFile,
                         size3_t dimensions = VolumeConfig::defaultDimensions,
                         const DataFormatBase* format = VolumeConfig::defaultFormat,
                         const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,

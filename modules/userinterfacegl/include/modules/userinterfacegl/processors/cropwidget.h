@@ -84,7 +84,7 @@ private:
     void initMesh();
     void createLineStripMesh();
     void updateAxisRanges();
-    void objectPicked(PickingEvent* p);
+    void objectPicked(PickingEvent* e);
     void rangePositionHandlePicked(size_t axisIndex, PickingEvent* p, InteractionElement element);
 
     void renderAxis(size_t axisIndex, dvec3 start, dvec3 stop, const dmat4& rotMat,

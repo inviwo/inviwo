@@ -73,7 +73,7 @@ public:
     explicit ConnectionInDragHelper(NetworkEditor& editor);
     virtual ~ConnectionInDragHelper();
 
-    void start(ProcessorInportGraphicsItem* inport, QPointF endPoint, uvec3 color);
+    void start(ProcessorInportGraphicsItem* inport, QPointF startPoint, uvec3 color);
     void reset();
 
     virtual bool eventFilter(QObject* obj, QEvent* event) override;

@@ -79,12 +79,12 @@ public:
      * @param inport This processor's inport
      * @param outport Another processor's outport
      */
-    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
+    virtual bool isConnectionActive(Inport* from, Outport* to) const override;
 
 protected:
     virtual void process() override;
 
-    void updateViewports(ivec2 size, bool force = false);
+    void updateViewports(ivec2 dim, bool force = false);
     void onStatusChange(bool propagate = true);
 
 private:

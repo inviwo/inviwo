@@ -65,7 +65,7 @@ public:
      * @note Does not differentiate between lower and uppercase letters. Use text instead.
      */
     virtual IvwKey key() const;
-    void setKey(IvwKey key);
+    void setKey(IvwKey button);
 
     /*
      * Returns virtual key representation of pressed key.

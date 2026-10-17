@@ -54,13 +54,13 @@ public:
     PickingManager& operator=(PickingManager&&) = delete;
     virtual ~PickingManager();
 
-    PickingAction* registerPickingAction(Processor* processor, PickingAction::Callback callback,
+    PickingAction* registerPickingAction(Processor* processor, PickingAction::Callback action,
                                          size_t size = 1);
 
     bool unregisterPickingAction(const PickingAction*);
     bool pickingEnabled();
 
-    static uvec3 indexToColor(size_t index);
+    static uvec3 indexToColor(size_t id);
     static size_t colorToIndex(uvec3 color);
     /*
      * Returns PickingAction for corresponding picking color if found, nullptr otherwise.

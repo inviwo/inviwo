@@ -127,14 +127,14 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void render(const Layer& image, const ivec2& pos, const size2_t& canvasSize,
+    void render(const Layer& layer, const ivec2& pos, const size2_t& canvasSize,
                 const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
-    void render(const Layer& image, const std::vector<ivec2>& pos,
+    void render(const Layer& layer, const std::vector<ivec2>& pos,
                 const std::vector<mat4>& texTransform, const size2_t& canvasSize,
                 const mat4& transformation = mat4(1));
-    void render(const std::shared_ptr<Layer>& image, const ivec2& pos, const size2_t& canvasSize,
+    void render(const std::shared_ptr<Layer>& layer, const ivec2& pos, const size2_t& canvasSize,
                 const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
-    void render(const std::shared_ptr<Layer>& image, const std::vector<ivec2>& pos,
+    void render(const std::shared_ptr<Layer>& layer, const std::vector<ivec2>& pos,
                 const std::vector<mat4>& texTransform, const size2_t& canvasSize,
                 const mat4& transformation = mat4(1));
 
@@ -240,16 +240,16 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect(const Layer& image, const ivec2& pos, const ivec2& extent,
+    void renderToRect(const Layer& layer, const ivec2& pos, const ivec2& extent,
                       const size2_t& canvasSize, const mat4& transformation = mat4(1),
                       const mat4& texTransform = mat4(1));
-    void renderToRect(const Layer& image, const std::vector<ivec2>& pos,
+    void renderToRect(const Layer& layer, const std::vector<ivec2>& pos,
                       const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
                       const size2_t& canvasSize, const mat4& transformation = mat4(1));
-    void renderToRect(const std::shared_ptr<Layer>& image, const ivec2& pos, const ivec2& extent,
+    void renderToRect(const std::shared_ptr<Layer>& layer, const ivec2& pos, const ivec2& extent,
                       const size2_t& canvasSize, const mat4& transformation = mat4(1),
                       const mat4& texTransform = mat4(1));
-    void renderToRect(const std::shared_ptr<Layer>& image, const std::vector<ivec2>& pos,
+    void renderToRect(const std::shared_ptr<Layer>& layer, const std::vector<ivec2>& pos,
                       const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
                       const size2_t& canvasSize, const mat4& transformation = mat4(1));
 

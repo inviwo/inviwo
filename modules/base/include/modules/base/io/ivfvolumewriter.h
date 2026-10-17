@@ -95,7 +95,7 @@ public:
     virtual IvfVolumeWriter* clone() const;
     virtual ~IvfVolumeWriter() = default;
 
-    virtual void writeData(const Volume* data, const std::filesystem::path& filePath) const;
+    virtual void writeData(const Volume* volume, const std::filesystem::path& filePath) const;
 };
 
 /**
@@ -146,7 +146,8 @@ public:
     virtual IvfVolumeSequenceWriter* clone() const;
     virtual ~IvfVolumeSequenceWriter() = default;
 
-    virtual void writeData(const VolumeSequence* data, const std::filesystem::path& filePath) const;
+    virtual void writeData(const VolumeSequence* volumes,
+                           const std::filesystem::path& filePath) const;
 };
 
 namespace util {

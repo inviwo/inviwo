@@ -169,12 +169,12 @@ public:
     MinMaxProperty<T>& setStart(const T& value);
     MinMaxProperty<T>& setEnd(const T& value);
 
-    MinMaxProperty<T>& setRangeMin(const T& value);
-    MinMaxProperty<T>& setRangeMax(const T& value);
-    MinMaxProperty<T>& setIncrement(const T& value);
-    MinMaxProperty<T>& setMinSeparation(const T& value);
+    MinMaxProperty<T>& setRangeMin(const T& newMin);
+    MinMaxProperty<T>& setRangeMax(const T& newMax);
+    MinMaxProperty<T>& setIncrement(const T& newIncrement);
+    MinMaxProperty<T>& setMinSeparation(const T& newMinSeparation);
 
-    MinMaxProperty<T>& setRange(const value_type& value);
+    MinMaxProperty<T>& setRange(const value_type& newRange);
 
     /**
      * @brief set all parameters of the range property at the same time with only a
@@ -201,7 +201,7 @@ public:
     virtual bool isDefaultState() const override;
 
     virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& s) override;
+    virtual void deserialize(Deserializer& d) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 

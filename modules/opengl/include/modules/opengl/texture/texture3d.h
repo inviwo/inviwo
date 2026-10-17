@@ -54,10 +54,10 @@ public:
               const std::array<GLenum, 3>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE,
                                                        GL_CLAMP_TO_EDGE},
               GLint level = 0);
-    Texture3D(const Texture3D& other);
-    Texture3D(Texture3D&& other);
-    Texture3D& operator=(const Texture3D& other);
-    Texture3D& operator=(Texture3D&& other);
+    Texture3D(const Texture3D& rhs);
+    Texture3D(Texture3D&& rhs);
+    Texture3D& operator=(const Texture3D& rhs);
+    Texture3D& operator=(Texture3D&& rhs);
     virtual ~Texture3D();
 
     Texture3D* clone() const;

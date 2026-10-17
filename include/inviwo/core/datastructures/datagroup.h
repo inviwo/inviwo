@@ -84,7 +84,7 @@ public:
 protected:
     DataGroup() = default;
     DataGroup(const DataGroup<Self, Repr>& rhs);
-    DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& rhs);
+    DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& that);
 
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;

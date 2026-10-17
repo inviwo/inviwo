@@ -68,7 +68,7 @@ public:
     void setMinRange(int);
     void setMaxRange(int);
 
-    void setTooltipFormat(std::function<std::string(int, int)> formater);
+    void setTooltipFormat(std::function<std::string(int, int)> formatter);
 
 signals:
     void valuesChanged(int min, int max);

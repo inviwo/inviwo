@@ -60,7 +60,7 @@ public:
      * Register a `ShaderComponent`s. The Inport and Properties of each components will be
      * added to this in the order registered.
      */
-    void registerComponent(ShaderComponent& comps);
+    void registerComponent(ShaderComponent& component);
 
     /**
      * Register a set of `ShaderComponent`s. The Inport and Properties of each components will be

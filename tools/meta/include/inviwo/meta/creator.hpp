@@ -89,7 +89,7 @@ private:
         log(fmt::format(format, std::forward<Args>(args)...));
     }
 
-    static json::json createSettings(const InviwoModule& module, std::string_view fileName);
+    static json::json createSettings(const InviwoModule& im, std::string_view fileName);
 
     std::filesystem::path inviwoRepo_;
     std::filesystem::path templateDir_;

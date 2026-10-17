@@ -83,7 +83,7 @@ public:
     bool hasFirstColIndices() const;
 
     /** @see CSVReader::defaultUnitInHeaders */
-    CSVReader& setUnitsInHeaders(bool unitInHeaders);
+    CSVReader& setUnitsInHeaders(bool unitsInHeaders);
     bool hasUnitsInHeaders() const;
 
     /** @see CSVReader::defaultUnitRegexp */
@@ -95,7 +95,7 @@ public:
      * true, values are stored as double (64 bits), otherwise float (32 bits) is used.
      * @see CSVReader::defaultDoublePrecision
      */
-    CSVReader& setEnableDoublePrecision(bool useDoublePrecision);
+    CSVReader& setEnableDoublePrecision(bool doubleprec);
     bool hasDoublePrecision() const;
 
     /** @see CSVReader::defaultNumberOfExampleRows */
@@ -219,7 +219,7 @@ private:
         size_t sampleRows) const;
 
     std::vector<std::function<void(std::string_view, size_t, size_t)>> addColumns(
-        DataFrame& df, const std::vector<TypeCounts>& types,
+        DataFrame& df, const std::vector<TypeCounts>& typeCounts,
         const std::vector<std::string>& headers) const;
 
     bool skipRow(std::string_view row, size_t lineNumber, bool filterOnHeader) const;

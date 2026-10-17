@@ -74,7 +74,7 @@ public:
     ProcessorNetwork* getNetwork() const;
 
     void removeAllPropertyLinks();
-    void addPropertyLink(Property* srcProperty, Property* dstProperty, bool bidirectional);
+    void addPropertyLink(Property* sProp, Property* eProp, bool bidirectional);
 
     void toggleExpand();
     void showHidden(bool val);
@@ -103,7 +103,7 @@ protected:
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
     // Override for tooltips
-    virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
+    virtual void helpEvent(QGraphicsSceneHelpEvent* e) override;
 
     void removePropertyLink(DialogConnectionGraphicsItem* propertyLink);
 
@@ -112,8 +112,8 @@ protected:
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
 
     DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(
-        const PropertyLink& propLink);
-    void removePropertyLinkRepresentation(const PropertyLink& propLink);
+        const PropertyLink& propertyLink);
+    void removePropertyLinkRepresentation(const PropertyLink& propertyLink);
 
     DialogConnectionGraphicsItem* getConnectionGraphicsItem(LinkDialogPropertyGraphicsItem*,
                                                             LinkDialogPropertyGraphicsItem*) const;

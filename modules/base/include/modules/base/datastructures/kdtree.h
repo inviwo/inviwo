@@ -100,7 +100,7 @@ public:
     KDNode<N, T, P>* findNearest(const P pos[N], KDNode* nearest);
     void findNNearest(const P pos[N], size_t amount,
                       std::vector<KDNodeDistWrapper<N, T, P>>& current);
-    void findCloseTo(const P pos[N], P squaredDistance, std::vector<KDNode*>& nodes);
+    void findCloseTo(const P pos[N], P sqDist, std::vector<KDNode*>& nodes);
 
     static void swap(KDNode<N, T, P>* n0, KDNode<N, T, P>* n1, KDNode<N, T, P>* p0,
                      KDNode<N, T, P>* p1);

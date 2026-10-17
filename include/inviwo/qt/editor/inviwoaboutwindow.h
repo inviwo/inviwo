@@ -38,7 +38,7 @@ class InviwoMainWindow;
 
 class IVW_QTEDITOR_API InviwoAboutWindow : public InviwoDockWidget {
 public:
-    explicit InviwoAboutWindow(InviwoMainWindow* parent);
+    explicit InviwoAboutWindow(InviwoMainWindow* mainWindow);
     virtual ~InviwoAboutWindow() = default;
 };
 
