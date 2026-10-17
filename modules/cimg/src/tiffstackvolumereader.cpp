@@ -49,6 +49,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -89,8 +90,8 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::filesystem::p
     return volume;
 }
 
-TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(const std::filesystem::path& sourceFile)
-    : sourceFile_{sourceFile} {}
+TIFFStackVolumeRAMLoader::TIFFStackVolumeRAMLoader(std::filesystem::path sourceFile)
+    : sourceFile_{std::move(sourceFile)} {}
 
 TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
     return new TIFFStackVolumeRAMLoader(*this);

@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
+#include <utility>
+
 namespace inviwo {
 
 class IVW_CORE_API Spatial4DSamplerBase {
@@ -101,7 +103,7 @@ struct DataTraits<Spatial4DSampler<ReturnType>> {
 
 template <typename ReturnType>
 Spatial4DSampler<ReturnType>::Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity)
-    : spatialEntity_(spatialEntity) {}
+    : spatialEntity_(std::move(spatialEntity)) {}
 
 template <typename ReturnType>
 ReturnType Spatial4DSampler<ReturnType>::sample(const dvec4& pos, CoordinateSpace space) const {

@@ -40,7 +40,7 @@ class InviwoApplication;
 class IVW_CORE_API Settings : public PropertyOwner {
 
 public:
-    Settings(const std::string& id, InviwoApplication* app);
+    Settings(std::string id, InviwoApplication* app);
     explicit Settings(const std::string& id = "");
     virtual ~Settings();
 

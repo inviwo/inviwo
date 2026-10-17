@@ -32,10 +32,12 @@
 #include <inviwo/core/util/stdextensions.h>
 
 #include <glm/gtx/component_wise.hpp>
+#include <utility>
 
 namespace inviwo {
 
-ImageCache::ImageCache(std::shared_ptr<const Image> master) : valid_(true), master_(master) {}
+ImageCache::ImageCache(std::shared_ptr<const Image> master)
+    : valid_(true), master_(std::move(master)) {}
 
 void ImageCache::setMaster(std::shared_ptr<const Image> master) {
     // Clear cache if format changes.

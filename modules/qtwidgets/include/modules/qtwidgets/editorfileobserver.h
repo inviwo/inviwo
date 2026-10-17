@@ -47,7 +47,7 @@ namespace utilqt {
 
 class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
-    explicit EditorFileObserver(QWidget* parent, const QString& title = "Editor",
+    explicit EditorFileObserver(QWidget* parent, QString title = "Editor",
                                 const std::filesystem::path& filename = {});
     virtual ~EditorFileObserver() = default;
 

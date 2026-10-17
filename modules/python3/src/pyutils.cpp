@@ -44,6 +44,7 @@
 #include <array>
 #include <string_view>
 #include <filesystem>
+#include <utility>
 
 namespace inviwo {
 
@@ -75,7 +76,9 @@ void removeModulePath(const std::filesystem::path& path) {
     py::module::import("sys").attr("path").attr("remove")(pathConv);
 }
 
-ModulePath::ModulePath(const std::filesystem::path& path) : path_{path} { addModulePath(path_); }
+ModulePath::ModulePath(std::filesystem::path path) : path_{std::move(path)} {
+    addModulePath(path_);
+}
 
 ModulePath::~ModulePath() { removeModulePath(path_); }
 

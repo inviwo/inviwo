@@ -233,7 +233,7 @@ struct zipIterator {
     using require_t = detailzip::require_t<Tag, IterTuple>;
 
     zipIterator() = default;
-    zipIterator(Iterators iterators) : iterators_(iterators) {}
+    zipIterator(Iterators iterators) : iterators_(std::move(iterators)) {}
 
     zipIterator& operator++() {
         for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);

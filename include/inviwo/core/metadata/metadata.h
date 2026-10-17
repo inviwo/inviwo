@@ -36,6 +36,7 @@
 #include <inviwo/core/util/glmmat.h>
 
 #include <string>
+#include <utility>
 
 namespace inviwo {
 
@@ -101,7 +102,7 @@ template <typename T>
 MetaDataType<T>::MetaDataType() : MetaData(), value_() {}
 
 template <typename T>
-MetaDataType<T>::MetaDataType(T value) : MetaData(), value_(value) {}
+MetaDataType<T>::MetaDataType(T value) : MetaData(), value_(std::move(value)) {}
 
 template <typename T>
 bool MetaDataType<T>::equal(const MetaData& rhs) const {

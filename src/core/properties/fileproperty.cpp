@@ -35,6 +35,8 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/properties/multifileproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 FileBase::FileBase(std::function<void()> onModified, AcceptMode acceptMode, FileMode fileMode,
@@ -43,7 +45,7 @@ FileBase::FileBase(std::function<void()> onModified, AcceptMode acceptMode, File
     , acceptMode_{"acceptMode", acceptMode}
     , fileMode_{"fileMode", fileMode}
     , contentType_{"contentType", contentType}
-    , onModified_{onModified} {
+    , onModified_{std::move(onModified)} {
 
     addNameFilter(FileExtension::all());
 }

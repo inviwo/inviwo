@@ -33,19 +33,20 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <unordered_set>
+#include <utility>
 
 namespace inviwo {
 
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     std::string_view aName, Version aVersion, std::string_view aDescription,
-    const std::filesystem::path& aSrcPath, Version aInviwoCoreVersion,
+    std::filesystem::path aSrcPath, Version aInviwoCoreVersion,
     std::vector<std::string> someDependencies, std::vector<Version> someDependenciesVersion,
     std::vector<std::string> someAliases, std::vector<LicenseInfo> someLicenses,
     ProtectedModule aProtectedModule)
     : name(aName)
     , version(aVersion)
     , description(aDescription)
-    , srcPath(aSrcPath)
+    , srcPath(std::move(aSrcPath))
     , inviwoCoreVersion(aInviwoCoreVersion)
     , dependencies([&]() {
         if (someDependencies.size() != someDependenciesVersion.size()) {

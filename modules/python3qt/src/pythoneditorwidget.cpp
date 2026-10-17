@@ -54,6 +54,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <QAction>
@@ -104,9 +105,9 @@ PythonEditorWidget::PythonEditorWidget(
     , app_(app)
     , appendLog_(nullptr)
     , fileObserver_(this, "Python Editor")
-    , onTextChange_{onTextChange}
-    , stateLoader_{stateLoader}
-    , stateSaver_{stateSaver} {
+    , onTextChange_{std::move(onTextChange)}
+    , stateLoader_{std::move(stateLoader)}
+    , stateSaver_{std::move(stateSaver)} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);

@@ -34,6 +34,7 @@
 
 #include <string>
 #include <filesystem>
+#include <utility>
 
 #include <fmt/format.h>
 
@@ -43,7 +44,7 @@ class INVIWO_META_API ModuleConf {
 public:
     using path = std::filesystem::path;
 
-    ModuleConf(const std::string& name, std::string_view org) : name_{name}, org_{org} {}
+    ModuleConf(std::string name, std::string_view org) : name_{std::move(name)}, org_{org} {}
     std::string name() const { return name_; }
     std::string org() const { return org_; }
     std::string api() const { return fmt("IVW_MODULE_{uname}_API"); }

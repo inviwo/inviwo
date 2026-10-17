@@ -49,6 +49,7 @@
 #include <QSignalBlocker>
 #include <QSizePolicy>
 #include <QWidget>
+#include <utility>
 
 class QHBoxLayout;
 namespace inviwo {
@@ -62,7 +63,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetDelegate : public PropertyWidget {
 public:
     PropertyWidgetDelegate(Property* p, std::function<void()> func)
-        : PropertyWidget(p), func{func} {}
+        : PropertyWidget(p), func{std::move(func)} {}
 
     virtual void updateFromProperty() override { func(); }
     std::function<void()> func;
