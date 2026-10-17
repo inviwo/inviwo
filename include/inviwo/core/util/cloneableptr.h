@@ -32,9 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <memory>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 /**
  * @brief A resource handle for classes that should be cloned on copy and assignment
  */
@@ -113,6 +111,4 @@ T* inviwo::util::cloneable_ptr<T>::get() const {
     return ptr_.get();
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -66,8 +66,7 @@ THE SOFTWARE.
 #include <stdexcept>
 #include <cmath>
 
-namespace inviwo {
-namespace shuntingyard {
+namespace inviwo::shuntingyard {
 
 TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> opPrecedence) {
     TokenQueue rpnQueue;
@@ -262,6 +261,4 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
     return evaluation.top();
 }
 
-}  // namespace shuntingyard
-
-}  // namespace inviwo
+}  // namespace inviwo::shuntingyard

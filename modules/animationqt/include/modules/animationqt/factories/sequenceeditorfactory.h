@@ -41,9 +41,7 @@
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationManager;
 class KeyframeSequence;
@@ -64,6 +62,4 @@ private:
     std::map<std::string, std::string, std::less<>> trackToEditor_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

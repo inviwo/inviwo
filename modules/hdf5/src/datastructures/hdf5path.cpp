@@ -32,9 +32,7 @@
 #include <ranges>
 #include <string_view>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 Path::Path() : path_{"/"} {}
 
@@ -78,6 +76,4 @@ void Path::append(std::string_view path) {
     }
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

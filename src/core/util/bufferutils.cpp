@@ -32,9 +32,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 void reverse(BufferBase& b) {
     b.getEditableRepresentation<BufferRAM>()->dispatch<void>([](auto bufRam) {
@@ -42,6 +40,4 @@ void reverse(BufferBase& b) {
     });
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

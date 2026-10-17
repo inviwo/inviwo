@@ -39,9 +39,7 @@
 class QPaintEvent;
 class QVBoxLayout;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationManager;
 class Keyframe;
@@ -80,6 +78,4 @@ protected:
     bool reorderNeeded_{true};
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

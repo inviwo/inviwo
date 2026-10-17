@@ -36,9 +36,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * Intersects a unit cube with the given plane. The intersection points and the midpoint will be
@@ -57,6 +55,4 @@ inline auto cubePlaneInstersection(const Plane& plane) {
     return std::make_tuple(pos, inds);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -38,9 +38,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 /**
  * @brief Compute bounding box of meshes aligned to principal axes of world space.
  *
@@ -60,6 +58,4 @@ IVW_MODULE_BASE_API std::pair<dvec3, dvec3> axisAlignedBoundingBox(
  */
 IVW_MODULE_BASE_API std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh);
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

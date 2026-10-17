@@ -40,9 +40,7 @@
 #include <optional>
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * Save @p data to @p filePath using the writer given by @p extension
@@ -95,6 +93,4 @@ std::optional<std::filesystem::path> saveData(const T& data, const std::filesyst
     return std::nullopt;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

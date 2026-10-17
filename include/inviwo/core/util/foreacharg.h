@@ -35,9 +35,7 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 // https://isocpp.org/blog/2015/01/for-each-arg-eric-niebler
 template <class F, class... Args>
@@ -161,6 +159,4 @@ public:
     }
 };
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

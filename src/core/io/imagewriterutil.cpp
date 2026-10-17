@@ -36,9 +36,7 @@
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datawriterutil.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 void saveLayer(const Layer& layer, const std::filesystem::path& path,
                const FileExtension& extension) {
@@ -70,6 +68,4 @@ void saveLayer(const Layer& layer) {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

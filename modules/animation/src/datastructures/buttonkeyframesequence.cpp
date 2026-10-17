@@ -37,9 +37,7 @@
 #include <algorithm>
 #include <chrono>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 ButtonKeyframeSequence::ButtonKeyframeSequence(
     std::vector<std::unique_ptr<ButtonKeyframe>> keyframes)
@@ -66,6 +64,4 @@ void ButtonKeyframeSequence::operator()(Seconds from, Seconds to, bool& pressed)
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

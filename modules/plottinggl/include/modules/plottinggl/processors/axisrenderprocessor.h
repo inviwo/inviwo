@@ -43,9 +43,7 @@
 
 #include <array>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 /**
  * @brief Test processor for axis rendering
@@ -76,6 +74,4 @@ private:
     std::array<AxisRenderer, 3> axisRenderers_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

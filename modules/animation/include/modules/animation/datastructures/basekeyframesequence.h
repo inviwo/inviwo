@@ -45,9 +45,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Keyframe;
 
 template <std::derived_from<Keyframe> Key>
@@ -342,6 +340,4 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

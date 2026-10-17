@@ -33,9 +33,7 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <modules/opengl/texture/textureutils.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MeshAxis::processorInfo_{
@@ -77,6 +75,4 @@ void MeshAxis::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

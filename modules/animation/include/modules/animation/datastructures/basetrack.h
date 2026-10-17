@@ -48,9 +48,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Keyframe;
 class KeyframeSequence;
 
@@ -579,6 +577,4 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

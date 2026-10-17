@@ -37,9 +37,7 @@
 
 #include <QGraphicsItem>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Track;
 
 class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
@@ -54,6 +52,4 @@ public:
     virtual int type() const override { return Type; }
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

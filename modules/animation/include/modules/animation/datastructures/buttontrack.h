@@ -34,9 +34,7 @@
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class ButtonKeyframe;
 
 using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
@@ -76,6 +74,4 @@ struct AnimateSequence<ButtonProperty, ButtonKeyframeSequence> {
 
 }  // namespace detail
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

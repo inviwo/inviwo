@@ -36,9 +36,7 @@
 
 #include <functional>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * Keyframe which calls one function when animating forward and a different one when animating
@@ -68,6 +66,4 @@ private:
     std::function<void()> undo_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

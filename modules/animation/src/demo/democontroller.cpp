@@ -48,9 +48,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 DemoController::DemoController(InviwoApplication* app)
     : app_(app), demoFolder_("demoFolder", "Folder", ""), demoFile_("demoFile", "File") {
@@ -145,6 +143,4 @@ void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
 
 InviwoApplication* DemoController::getInviwoApplication() { return app_; }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

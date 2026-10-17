@@ -36,9 +36,7 @@
 
 #include <string>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 TEST(HDF5Path, RoundTrip) {
     const Path path{"/group/subgroup/dataset"};
@@ -82,6 +80,4 @@ TEST(HDF5Path, ImplicitStringConversion) {
     EXPECT_EQ(str, "/a/b");
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

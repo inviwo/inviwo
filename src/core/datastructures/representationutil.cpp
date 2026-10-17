@@ -45,9 +45,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace {
 
@@ -148,6 +146,4 @@ void registerCoreRepresentations(RepresentationFactoryManager& obj) {
     registerCoreRepresentationsHelper(obj);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -43,9 +43,7 @@ class QRectF;
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class KeyframeSequence;
 class Track;
@@ -73,6 +71,4 @@ protected:
     std::unordered_map<KeyframeSequence*, std::unique_ptr<KeyframeSequenceWidgetQt>> sequences_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

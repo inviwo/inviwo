@@ -43,9 +43,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
     auto res = std::make_unique<Mesh>();
@@ -163,6 +161,4 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
     }
     return res;
 }
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

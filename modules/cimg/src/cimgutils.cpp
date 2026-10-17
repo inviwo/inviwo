@@ -113,9 +113,7 @@
 #include <OpenEXRConfig.h>
 #endif
 
-namespace inviwo {
-
-namespace cimgutil {
+namespace inviwo::cimgutil {
 
 static std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
     {".jpg", DataFormatId::UInt8},
@@ -571,8 +569,6 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 #endif
 }
 
-}  // namespace cimgutil
-
-}  // namespace inviwo
+}  // namespace inviwo::cimgutil
 
 #include <warn/pop>

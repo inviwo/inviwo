@@ -31,12 +31,8 @@
 
 #include <modules/userinterfacegl/glui/layout/boxlayout.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 VBoxLayout::VBoxLayout() : BoxLayout(BoxLayout::LayoutDirection::Vertical) {}
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

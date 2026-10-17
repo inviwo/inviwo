@@ -73,9 +73,7 @@
 #include <QVariant>
 #include <QWidget>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 namespace {
 
@@ -350,6 +348,4 @@ std::string PropertySequenceEditor::classIdentifier() {
     return "org.inviwo.animation.PropertySequenceEditor";
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

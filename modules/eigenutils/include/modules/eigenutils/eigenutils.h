@@ -40,9 +40,7 @@
 #include <Eigen/Sparse>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
 auto glm2eigen(const T& elem)
@@ -129,6 +127,4 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
     return img;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

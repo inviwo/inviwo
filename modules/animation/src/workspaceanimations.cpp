@@ -50,9 +50,7 @@
 #include <string>
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class AnimationController;
 class AnimationManager;
 
@@ -273,6 +271,4 @@ void WorkspaceAnimations::onKeyframeSequenceSelectionChanged(KeyframeSequence*) 
 void WorkspaceAnimations::onKeyframeTimeChanged(Keyframe*, Seconds) { onAnyChange(); }
 void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) { onAnyChange(); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

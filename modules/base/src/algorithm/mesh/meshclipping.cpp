@@ -70,9 +70,7 @@
 #include <glm/vec4.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 namespace detail {
 
@@ -615,6 +613,4 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     return clippedMesh;
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

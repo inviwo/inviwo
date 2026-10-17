@@ -55,9 +55,7 @@
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Keyframe;
 
@@ -170,6 +168,4 @@ QVariant KeyframeSequenceWidgetQt::itemChange(GraphicsItemChange change, const Q
     return QGraphicsItem::itemChange(change, value);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

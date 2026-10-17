@@ -32,9 +32,7 @@
 
 #include <memory>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo PathSelection::processorInfo_{
     "org.inviwo.hdf5.PathSelection",  // Class identifier
@@ -76,6 +74,4 @@ void PathSelection::process() {
     outport_.setData(
         std::make_shared<Handle>(data->getHandleForPath(selection_.getSelectedValue())));
 }
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

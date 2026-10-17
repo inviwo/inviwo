@@ -31,9 +31,7 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 Layout::Layout() = default;
 
@@ -45,6 +43,4 @@ void Layout::setMargins(const ivec4& margins) { margins_ = margins; }
 
 const ivec4& Layout::getMargins() const { return margins_; }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

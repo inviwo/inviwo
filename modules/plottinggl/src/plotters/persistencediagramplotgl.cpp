@@ -89,9 +89,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view PersistenceDiagramPlotGL::Properties::getClassIdentifier() const {
     return classIdentifier;
@@ -587,6 +585,4 @@ uint32_t PersistenceDiagramPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

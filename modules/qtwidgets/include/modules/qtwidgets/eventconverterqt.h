@@ -43,9 +43,7 @@ class QInputEvent;
 class QGesture;
 class QKeyEvent;
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 /**
  * @brief  Convert the button state
  * when the event was generated
@@ -74,6 +72,4 @@ IVW_MODULE_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
 
 IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

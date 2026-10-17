@@ -37,8 +37,7 @@
 
 #include <inviwo/core/util/colorbrewer-generated.h>
 
-namespace inviwo {
-namespace colorbrewer {
+namespace inviwo::colorbrewer {
 
 class IVW_CORE_API ColorBrewerException : public Exception {
 public:
@@ -99,5 +98,4 @@ IVW_CORE_API TransferFunction getTransferFunction(const Category& category, cons
                                                   double divergenceMidPoint = 0.5,
                                                   double start = 0.0, double stop = 1.0);
 
-}  // namespace colorbrewer
-}  // namespace inviwo
+}  // namespace inviwo::colorbrewer

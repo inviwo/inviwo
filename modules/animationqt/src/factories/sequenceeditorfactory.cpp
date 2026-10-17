@@ -31,9 +31,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void SequenceEditorFactory::registerTrackToSequenceEditorMap(std::string_view trackId,
                                                              std::string_view widgetId) {
@@ -49,6 +47,4 @@ std::string SequenceEditorFactory::getSequenceEditorId(std::string_view trackId)
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

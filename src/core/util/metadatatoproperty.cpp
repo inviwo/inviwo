@@ -37,9 +37,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 struct RegisterOrdinalPropertyForMetaData {
     template <typename T>
@@ -153,6 +151,4 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

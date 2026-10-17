@@ -50,9 +50,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor) {
     std::unordered_set<Processor*> predecessors;
@@ -651,5 +649,4 @@ bool canSplitConnection(const Processor& p, const PortConnection& connection) {
     return inputMatch && outputMatch;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

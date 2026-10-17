@@ -28,13 +28,3 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/cameratrack.h>
-
-namespace inviwo {
-
-namespace animation {
-
-namespace detail {}  // namespace detail
-
-}  // namespace animation
-
-}  // namespace inviwo

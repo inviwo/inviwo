@@ -31,9 +31,7 @@
 
 #include <modules/animation/datastructures/animationtime.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void KeyframeObservable::notifyKeyframeTimeChanged(Keyframe* key, Seconds oldTime) {
     forEachObserver([&](KeyframeObserver* o) { o->onKeyframeTimeChanged(key, oldTime); });
@@ -47,6 +45,4 @@ void KeyframeObservable::notifyKeyframeEasingChanged(Keyframe* key) {
     forEachObserver([&](KeyframeObserver* o) { o->onKeyframeEasingChanged(key); });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

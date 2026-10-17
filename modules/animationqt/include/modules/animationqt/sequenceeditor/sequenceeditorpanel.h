@@ -42,9 +42,7 @@ class QLayout;
 class QWidget;
 class QVBoxLayout;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationController;
 class KeyframeSequence;
@@ -83,6 +81,4 @@ private:
 
     std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
 };
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

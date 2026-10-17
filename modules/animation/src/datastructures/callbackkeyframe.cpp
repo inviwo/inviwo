@@ -36,9 +36,7 @@
 #include <chrono>
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CallbackKeyframe::CallbackKeyframe(Seconds time, std::function<void()> doForward,
                                    std::function<void()> undo)
@@ -58,6 +56,4 @@ AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
     return {to, state};
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

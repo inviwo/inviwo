@@ -36,9 +36,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * Keyframe of a given value type (float, integer, vec3 and so on).
@@ -125,6 +123,4 @@ void ValueKeyframe<T>::deserialize(Deserializer& d) {
     BaseKeyframe::deserialize(d);
     d.deserialize("value", value_);
 }
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -31,9 +31,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 MemoryFileHandle::MemoryFileHandle(size_t bufferSize) : buffer_(bufferSize, magicCode_) {
     initBuffer();
@@ -117,6 +115,4 @@ void MemoryFileHandle::initBuffer() {
     setvbuf(handle_, reinterpret_cast<char*>(buffer_.data()), _IOFBF, buffer_.size());
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

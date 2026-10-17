@@ -49,9 +49,7 @@
 
 #include <glm/vec2.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo AxisRenderProcessor::processorInfo_{
@@ -130,6 +128,4 @@ void AxisRenderProcessor::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

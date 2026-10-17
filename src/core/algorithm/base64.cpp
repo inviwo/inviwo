@@ -33,9 +33,7 @@
 #include <stdexcept>
 #include <array>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /*
    base64.cpp and base64.h
@@ -279,6 +277,4 @@ std::string base64_decode(std::string_view s, bool remove_linebreaks) {
     return decode(s, remove_linebreaks);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

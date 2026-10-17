@@ -32,9 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/modulemanager.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 ModuleManager& getModuleManager(InviwoApplication* app) { return app->getModuleManager(); }
 
@@ -98,6 +96,4 @@ std::filesystem::path getModulePath(std::string_view identifier, ModulePath path
     return getModulePath(InviwoApplication::getPtr(), identifier, pathType);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

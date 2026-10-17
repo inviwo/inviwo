@@ -46,8 +46,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace utilgl {
+namespace inviwo::utilgl {
 
 std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
     const auto convertToGL = [](ImageChannel channel) -> GLint {
@@ -552,6 +551,4 @@ GLfloat validateLineWidth(GLfloat width) {
     return width;
 }
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl

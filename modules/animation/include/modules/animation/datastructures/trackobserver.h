@@ -34,9 +34,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class KeyframeSequence;
 class Track;
@@ -67,6 +65,4 @@ protected:
     void notifyPriorityChanged(Track* t);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

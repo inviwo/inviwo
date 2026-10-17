@@ -35,9 +35,7 @@
 #include <inviwo/core/ports/layerport.h>
 #include <modules/plottinggl/utils/axis2dprocessorhelper.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 class IVW_MODULE_PLOTTINGGL_API LayerAxis : public Processor {
 public:
@@ -56,6 +54,4 @@ private:
     Axis2DProcessorHelper axisHelper_;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

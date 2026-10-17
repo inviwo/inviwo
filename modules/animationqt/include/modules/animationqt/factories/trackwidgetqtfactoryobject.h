@@ -33,9 +33,7 @@
 #include <memory>
 #include <string>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Track;
 class TrackWidgetQt;
 
@@ -66,6 +64,4 @@ public:
     }
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

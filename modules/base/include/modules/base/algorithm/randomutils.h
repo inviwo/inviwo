@@ -47,9 +47,7 @@
 #include <numbers>
 #include <bit>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * Compute the @p n th point of the Halton sequence with base @p base on the open range (0 1).
@@ -426,6 +424,4 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     return std::make_shared<Layer>(layerRam);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

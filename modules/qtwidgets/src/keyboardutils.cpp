@@ -39,9 +39,7 @@
 
 #include <QKeyEvent>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 IvwKey mapKeyFromQt(const QKeyEvent* keyevent) {
 
@@ -247,6 +245,4 @@ ModifierAction getModifierAction(Qt::KeyboardModifiers modifiers) {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

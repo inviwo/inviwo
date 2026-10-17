@@ -46,9 +46,7 @@
 #include <filesystem>
 #include <utility>
 
-namespace inviwo {
-
-namespace pyutil {
+namespace inviwo::pyutil {
 
 void addModulePath(const std::filesystem::path& path) {
     namespace py = pybind11;
@@ -82,6 +80,4 @@ ModulePath::ModulePath(std::filesystem::path path) : path_{std::move(path)} {
 
 ModulePath::~ModulePath() { removeModulePath(path_); }
 
-}  // namespace pyutil
-
-}  // namespace inviwo
+}  // namespace inviwo::pyutil

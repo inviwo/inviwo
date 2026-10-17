@@ -36,9 +36,7 @@
 #include <modules/animation/datastructures/callbackkeyframe.h>
 #include <modules/animation/datastructures/callbackkeyframesequence.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CallbackTrack::CallbackTrack() : BaseTrack<CallbackKeyframeSequence>{"Callback Track", 0} {}
 
@@ -52,6 +50,4 @@ AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, Animation
     return animateRange(begin(), end(), from, to, state);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

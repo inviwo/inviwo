@@ -38,9 +38,7 @@
 
 #include <QVBoxLayout>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationManager;
 class Track;
@@ -112,6 +110,4 @@ void SequenceEditorWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -42,9 +42,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 namespace {
 
@@ -131,6 +129,4 @@ const DataFormatBase* conversionFormat(size_t index) {
 
 }  // namespace util
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

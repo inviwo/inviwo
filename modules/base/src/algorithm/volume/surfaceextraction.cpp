@@ -41,8 +41,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-namespace inviwo {
-namespace marching {
+namespace inviwo::marching {
 
 glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, double v1) {
     if (v0 == v1) {
@@ -134,5 +133,4 @@ void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer
     normals[i2] += n;
 }
 
-}  // namespace marching
-}  // namespace inviwo
+}  // namespace inviwo::marching

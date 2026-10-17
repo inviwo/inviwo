@@ -42,8 +42,7 @@
 #include <ranges>
 #include <filesystem>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 void saveNetwork(const ProcessorNetwork* network, std::string_view filename) {
     try {
@@ -234,5 +233,4 @@ void Hideer::operator()(ProcessorWidget& p) { p.setVisible(false); }
 
 }  // namespace detail
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

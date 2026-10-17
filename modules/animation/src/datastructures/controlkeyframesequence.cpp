@@ -36,9 +36,7 @@
 #include <modules/animation/datastructures/controlkeyframe.h>
 #include <modules/animation/datastructures/keyframe.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 ControlKeyframeSequence::ControlKeyframeSequence(
     std::vector<std::unique_ptr<ControlKeyframe>> keyframes)
@@ -53,6 +51,4 @@ AnimationTimeState ControlKeyframeSequence::operator()(Seconds from, Seconds to,
     return animateRange(begin(), end(), from, to, state);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -67,9 +67,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace dataframe {
+namespace inviwo::dataframe {
 
 std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> buffer,
                                              ivec2 range) {
@@ -672,6 +670,4 @@ std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     return doc;
 }
 
-}  // namespace dataframe
-
-}  // namespace inviwo
+}  // namespace inviwo::dataframe

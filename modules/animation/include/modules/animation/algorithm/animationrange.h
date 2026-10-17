@@ -35,9 +35,7 @@
 #include <chrono>
 #include <iterator>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class KeyframeSequence;
 
 namespace detail {
@@ -108,6 +106,4 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

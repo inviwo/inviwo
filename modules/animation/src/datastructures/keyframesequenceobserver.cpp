@@ -29,9 +29,7 @@
 
 #include <modules/animation/datastructures/keyframesequenceobserver.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void KeyframeSequenceObserverble::notifyKeyframeAdded(Keyframe* key, KeyframeSequence* seq) {
     forEachObserver([&](KeyframeSequenceObserver* o) { o->onKeyframeAdded(key, seq); });
@@ -50,6 +48,4 @@ void KeyframeSequenceObserverble::notifyKeyframeSequenceSelectionChanged(Keyfram
         [&](KeyframeSequenceObserver* o) { o->onKeyframeSequenceSelectionChanged(seq); });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

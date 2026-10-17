@@ -34,9 +34,7 @@
 
 #include <chrono>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 bool KeyframeSequence::isAnyKeyframeSelected() const {
     for (size_t i = 0; i < size(); i++) {
@@ -52,6 +50,4 @@ std::pair<Seconds, Seconds> KeyframeSequence::getTimeSpan() const {
     return {getFirstTime(), getLastTime()};
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

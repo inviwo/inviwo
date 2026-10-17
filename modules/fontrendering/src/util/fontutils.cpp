@@ -42,9 +42,7 @@
 #include <fmt/base.h>
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace font {
+namespace inviwo::font {
 
 std::vector<std::pair<std::string, std::filesystem::path>> getAvailableFonts(
     const std::filesystem::path& fontPath) {
@@ -117,6 +115,4 @@ std::filesystem::path getFont(FontType type, FullPath path) {
     return name;
 }
 
-}  // namespace font
-
-}  // namespace inviwo
+}  // namespace inviwo::font

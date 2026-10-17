@@ -31,9 +31,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 SequenceEditorFactoryObject::SequenceEditorFactoryObject(std::string classIdentifier)
     : classIdentifier_(std::move(classIdentifier)) {}
@@ -42,6 +40,4 @@ const std::string& SequenceEditorFactoryObject::getClassIdentifier() const {
     return classIdentifier_;
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

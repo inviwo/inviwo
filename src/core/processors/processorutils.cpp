@@ -37,8 +37,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 const ProcessorMetaData* getMetaData(const Processor* processor) {
     if (processor) {
@@ -107,6 +106,4 @@ std::optional<std::string_view> getProcessorModuleIdentifier(std::string_view cl
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

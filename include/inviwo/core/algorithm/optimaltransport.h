@@ -35,9 +35,7 @@
 #include <vector>
 #include <span>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 /**
  * @brief Interpolate two transfer functions using 1D Optimal Transport (Earth Mover's Distance).
@@ -79,6 +77,4 @@ IVW_CORE_API double earthMoversDistance(std::span<const TFPrimitiveData> tfA,
                                         std::span<const TFPrimitiveData> tfB,
                                         std::size_t samplesPerSegment = 16);
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

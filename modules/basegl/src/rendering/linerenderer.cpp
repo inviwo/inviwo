@@ -57,9 +57,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 namespace detail {
 
@@ -207,6 +205,4 @@ void LineRenderer::configureShader(Shader& shader) const {
     shader.build();
 }
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

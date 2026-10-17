@@ -34,8 +34,7 @@
 #include <fmt/ostream.h>
 #include <cmath>
 
-namespace inviwo {
-namespace colorbrewer {
+namespace inviwo::colorbrewer {
 
 std::vector<colorbrewer::Family> getFamilies() {
     using Index = std::underlying_type_t<Family>;
@@ -206,6 +205,4 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
     return tf;
 }
 
-}  // namespace colorbrewer
-
-}  // namespace inviwo
+}  // namespace inviwo::colorbrewer

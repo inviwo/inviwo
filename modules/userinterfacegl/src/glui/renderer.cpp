@@ -69,9 +69,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 Renderer::Renderer()
     : uiShader_("renderui.vert", "renderui.frag")
@@ -274,6 +272,4 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     return texture;
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

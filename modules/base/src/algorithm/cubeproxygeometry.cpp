@@ -42,9 +42,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume>& volume,
                                               meshutil::IncludeNormals normals) {
@@ -147,6 +145,4 @@ std::shared_ptr<Mesh> createCubeProxyGeometry(const std::shared_ptr<const Volume
                                    vec3{endPoint - origin} * volumeExtentInverse, normals);
 }
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

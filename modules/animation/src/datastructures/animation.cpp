@@ -59,9 +59,7 @@
 #include <ostream>
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 Animation::Animation(AnimationManager* am, std::string_view name)
     : AnimationObservable(), TrackObserver(), PropertyOwnerObserver(), name_(name), am_(am) {}
@@ -401,6 +399,4 @@ void Animation::onFirstMoved(Track*) { notifyFirstMoved(); }
 
 void Animation::onLastMoved(Track*) { notifyLastMoved(); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

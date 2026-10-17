@@ -39,9 +39,7 @@
 #include <functional>
 #include <string>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 AnimationManager::AnimationManager(InviwoApplication* app)
     : app_(app), trackFactory_{app_->getProcessorNetwork()}, interpolationFactory_{app_} {
@@ -80,6 +78,4 @@ std::vector<Animation> AnimationManager::import(Deserializer& d) {
     return animations;
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

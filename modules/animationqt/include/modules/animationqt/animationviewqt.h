@@ -44,9 +44,7 @@ class QRectF;
 class QWheelEvent;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationController;
 class AnimationEditorQt;
@@ -84,6 +82,4 @@ protected:
     TimeLine* timeline_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -34,9 +34,7 @@
 #include <string>
 #include <string_view>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
  * A normalized HDF5 group path, e.g. `/group/subgroup/dataset`. The path is stored as a single
@@ -79,6 +77,4 @@ private:
     std::string path_;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

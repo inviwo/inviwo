@@ -42,8 +42,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <fmt/base.h>
 #include <fmt/ostream.h>
 
-namespace inviwo {
-namespace colorbrewer {
+namespace inviwo::colorbrewer {
 
 // clang-format off
 enum class Colormap {
@@ -121,8 +120,7 @@ IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family& family);
  **/
 IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category& category);
 
-}  // namespace colorbrewer
-}  // namespace inviwo
+}  // namespace inviwo::colorbrewer
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>

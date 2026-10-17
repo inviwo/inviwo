@@ -52,9 +52,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/vec3.hpp>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CameraLinearInterpolation::CameraLinearInterpolation(InviwoApplication* app)
     : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
@@ -116,6 +114,4 @@ void CameraLinearInterpolation::serialize(Serializer& s) const {
 
 void CameraLinearInterpolation::deserialize(Deserializer& /*d*/) {}
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

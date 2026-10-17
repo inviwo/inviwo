@@ -33,9 +33,7 @@
 
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 class Element;
 
@@ -96,6 +94,4 @@ protected:
     double scaling_ = 1.0;
 };
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

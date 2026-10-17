@@ -36,9 +36,7 @@
 
 #include <modules/animation/algorithm/animationrange.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 InvalidationKeyframe::InvalidationKeyframe(Seconds time) : BaseKeyframe(time) {}
 InvalidationKeyframe::~InvalidationKeyframe() = default;
@@ -100,6 +98,4 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
     return {to, state};
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

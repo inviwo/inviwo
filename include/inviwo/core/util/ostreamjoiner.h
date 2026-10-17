@@ -35,9 +35,7 @@
 #include <iterator>
 #include <string>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 // Based on http://codereview.stackexchange.com/questions/13176/infix-iterator-code
 // and http://en.cppreference.com/w/cpp/experimental/ostream_joiner
@@ -82,6 +80,4 @@ ostream_joiner<std::decay_t<DelimT>, charT, traits> make_ostream_joiner(
     return ostream_joiner<std::decay_t<DelimT>, charT, traits>(os, delimiter);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

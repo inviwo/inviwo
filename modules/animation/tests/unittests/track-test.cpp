@@ -60,8 +60,7 @@
 
 #include <filesystem>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 TEST(AnimationTests, FloatInterpolation) {
 
@@ -624,6 +623,4 @@ TEST(AnimationTests, AnimationSerializationTest) {
     processorFactory.unRegisterObject(&testPFO);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

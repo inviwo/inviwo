@@ -31,9 +31,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 TrackWidgetQtFactoryObject::TrackWidgetQtFactoryObject(std::string classIdentifier)
     : classIdentifier_(std::move(classIdentifier)) {}
@@ -42,6 +40,4 @@ const std::string& TrackWidgetQtFactoryObject::getClassIdentifier() const {
     return classIdentifier_;
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

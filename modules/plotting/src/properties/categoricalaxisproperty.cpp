@@ -50,9 +50,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 class MinorTickSettings;
 class PlotTextSettings;
 
@@ -157,6 +155,4 @@ void CategoricalAxisProperty::update(AxisData& data) const {
     majorTicks_.update(data.major);
     data.minor.style = TickData::Style::None;
 }
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

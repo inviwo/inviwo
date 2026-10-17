@@ -56,9 +56,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 Element::Element(std::string_view label, Processor& processor, Renderer& uiRenderer,
                  UIOrientation orientation)
@@ -420,6 +418,4 @@ void Element::renderLabel(const ivec2& origin, const size2_t& canvasDim) {
     }
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui
