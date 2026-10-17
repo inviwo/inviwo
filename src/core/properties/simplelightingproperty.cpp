@@ -110,9 +110,12 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 SimpleLightingProperty::~SimpleLightingProperty() = default;
 
 LightingState SimpleLightingProperty::getState() const {
-    return {shadingMode_,   lightPosition_.get(CoordinateSpace::World),
-            ambientColor_,  diffuseColor_,
-            specularColor_, specularExponent_};
+    return {.shadingMode = shadingMode_,
+            .position = lightPosition_.get(CoordinateSpace::World),
+            .ambient = ambientColor_,
+            .diffuse = diffuseColor_,
+            .specular = specularColor_,
+            .exponent = specularExponent_};
 }
 
 LightingConfig SimpleLightingProperty::config() const {

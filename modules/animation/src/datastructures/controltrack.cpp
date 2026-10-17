@@ -59,7 +59,7 @@ std::string_view ControlTrack::getClassIdentifier() const { return classIdentifi
  *           |-case 2a---|-case 2b---|
  */
 AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
-    if (!isEnabled() || empty()) return {to, state};
+    if (!isEnabled() || empty()) return {.time = to, .state = state};
 
     // 'it' will be the first seq. with a first time larger than 'to'.
     const auto it =
@@ -85,7 +85,7 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
             // we moved in an unmarked region, do nothing.
         }
     }
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 }  // namespace inviwo::animation

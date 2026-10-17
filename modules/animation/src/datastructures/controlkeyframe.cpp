@@ -81,7 +81,7 @@ AnimationTimeState ControlKeyframe::operator()(Seconds from, Seconds to,
             }
         }
     }
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 void ControlKeyframe::deserialize(Deserializer& d) {

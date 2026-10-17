@@ -180,8 +180,9 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
                             app->getWorkspaceManager()->save(workspaceName);
                             util::exportAllFiles(
                                 *app->getProcessorNetwork(), testdir, "UPN",
-                                {FileExtension{"png", ""}, FileExtension{"csv", ""},
-                                 FileExtension{"txt", ""}},
+                                {FileExtension{.extension = "png", .description = ""},
+                                 FileExtension{.extension = "csv", .description = ""},
+                                 FileExtension{.extension = "txt", .description = ""}},
                                 Overwrite::Yes);
 
                         } catch (const Exception& error) {

@@ -210,7 +210,8 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(const 
             if (!convertToDouble(alpha, tokens[1], "alpha", lineCount)) continue;
             try {
                 primitives.push_back(
-                    {pos, vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
+                    {.pos = pos,
+                     .color = vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
             } catch (Exception& e) {
                 errorMsg += "\n(" + std::to_string(lineCount) + ") " + e.getMessage();
             }

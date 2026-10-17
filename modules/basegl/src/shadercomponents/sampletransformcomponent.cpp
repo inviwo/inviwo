@@ -89,15 +89,18 @@ samplePosition -= {shift};
 auto SampleTransformComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    return {{fmt::format(uniforms, "shift"_a = shift_.getIdentifier(),
-                         "repeat"_a = repeat_.getIdentifier()),
-             placeholder::uniform, 300},
-            {fmt::format(first, "shift"_a = shift_.getIdentifier(),
-                         "repeat"_a = repeat_.getIdentifier()),
-             placeholder::first, 300},
-            {fmt::format(first, "shift"_a = shift_.getIdentifier(),
-                         "repeat"_a = repeat_.getIdentifier()),
-             placeholder::loop, 300}};
+    return {{.snippet = fmt::format(uniforms, "shift"_a = shift_.getIdentifier(),
+                                    "repeat"_a = repeat_.getIdentifier()),
+             .placeholder = placeholder::uniform,
+             .priority = 300},
+            {.snippet = fmt::format(first, "shift"_a = shift_.getIdentifier(),
+                                    "repeat"_a = repeat_.getIdentifier()),
+             .placeholder = placeholder::first,
+             .priority = 300},
+            {.snippet = fmt::format(first, "shift"_a = shift_.getIdentifier(),
+                                    "repeat"_a = repeat_.getIdentifier()),
+             .placeholder = placeholder::loop,
+             .priority = 300}};
 }
 
 }  // namespace inviwo

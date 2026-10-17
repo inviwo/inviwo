@@ -168,7 +168,8 @@ void TFInterpolationBlend::operator()(
 
     out.set(views::set_union(v1.get() | pos, v2.get() | pos) |
             std::views::transform([&](double pos) {
-                return TFPrimitiveData{pos, glm::mix(v1.sample(pos), v2.sample(pos), t)};
+                return TFPrimitiveData{.pos = pos,
+                                       .color = glm::mix(v1.sample(pos), v2.sample(pos), t)};
             }));
 }
 

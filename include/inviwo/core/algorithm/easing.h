@@ -236,20 +236,21 @@ template <typename T>
 constexpr T ease(const T& x, std::optional<EasingType> inEasing,
                  std::optional<EasingType> outEasing) {
     if (!outEasing && !inEasing) {
-        return ease(x, Easing{EasingType::linear, EasingMode::inOut});
+        return ease(x, Easing{.type = EasingType::linear, .mode = EasingMode::inOut});
     } else if (!outEasing && inEasing) {
-        return ease(x, Easing{*inEasing, EasingMode::in});
+        return ease(x, Easing{.type = *inEasing, .mode = EasingMode::in});
     } else if (outEasing && !inEasing) {
-        return ease(x, Easing{*outEasing, EasingMode::out});
+        return ease(x, Easing{.type = *outEasing, .mode = EasingMode::out});
     } else {
         if (*outEasing == *inEasing) {
-            return ease(x, Easing{*outEasing, EasingMode::inOut});
+            return ease(x, Easing{.type = *outEasing, .mode = EasingMode::inOut});
         }
 
         if (x < 0.5) {
-            return 0.5 * ease(x * 2.0, Easing{*inEasing, EasingMode::in});
+            return 0.5 * ease(x * 2.0, Easing{.type = *inEasing, .mode = EasingMode::in});
         } else {
-            return 0.5 + 0.5 * ease(2.0 * x - 1.0, Easing{*outEasing, EasingMode::out});
+            return 0.5 +
+                   0.5 * ease(2.0 * x - 1.0, Easing{.type = *outEasing, .mode = EasingMode::out});
         }
     }
 }

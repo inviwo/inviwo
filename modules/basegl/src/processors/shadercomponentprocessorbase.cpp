@@ -97,8 +97,10 @@ void ShaderComponentProcessorBase::initializeResources() {
     for (auto* comp : components_) {
         try {
             for (auto&& segment : comp->getSegments()) {
-                fso->addSegment(ShaderSegment{segment.placeholder, std::string(comp->getName()),
-                                              segment.snippet, segment.priority});
+                fso->addSegment(ShaderSegment{.placeholder = segment.placeholder,
+                                              .name = std::string(comp->getName()),
+                                              .snippet = segment.snippet,
+                                              .priority = segment.priority});
             }
         } catch (...) {
             handleError("adding shader segments", comp->getName());

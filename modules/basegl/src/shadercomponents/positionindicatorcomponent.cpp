@@ -78,10 +78,14 @@ auto PositionIndicatorComponent::getSegments() -> std::vector<Segment> {
         if (positionIndicator_.plane2_) buff.append(code, getName(), 2);
         if (positionIndicator_.plane3_) buff.append(code, getName(), 3);
 
-        return {{R"(#include "utils/raycastgeometry.glsl")", placeholder::include, 1100},
-                {fmt::format(uniforms, getName()), placeholder::uniform, 1100},
-                {std::string{buff}, placeholder::first, 1100},
-                {std::string{buff}, placeholder::loop, 1100}};
+        return {{.snippet = R"(#include "utils/raycastgeometry.glsl")",
+                 .placeholder = placeholder::include,
+                 .priority = 1100},
+                {.snippet = fmt::format(uniforms, getName()),
+                 .placeholder = placeholder::uniform,
+                 .priority = 1100},
+                {.snippet = std::string{buff}, .placeholder = placeholder::first, .priority = 1100},
+                {.snippet = std::string{buff}, .placeholder = placeholder::loop, .priority = 1100}};
     } else {
         return {};
     }

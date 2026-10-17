@@ -63,8 +63,12 @@ std::vector<Property*> LightComponent::getProperties() { return {&lighting_}; }
 
 auto LightComponent::getSegments() -> std::vector<Segment> {
     return {
-        {"uniform LightParameters lighting;", placeholder::uniform, 500},
-        {R"(#include "utils/shading.glsl")", placeholder::include, 500},
+        {.snippet = "uniform LightParameters lighting;",
+         .placeholder = placeholder::uniform,
+         .priority = 500},
+        {.snippet = R"(#include "utils/shading.glsl")",
+         .placeholder = placeholder::include,
+         .priority = 500},
     };
 }
 

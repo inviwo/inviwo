@@ -172,11 +172,16 @@ private:
     // Each interaction widget has two trigger areas to
     // distinguish the direction of rotation when clicked.
     static constexpr std::array widgets_ = {
-        Widget{Interaction::Yaw, true},          Widget{Interaction::Yaw, false},
-        Widget{Interaction::Pitch, true},        Widget{Interaction::Pitch, false},
-        Widget{Interaction::FreeRotation, true}, Widget{Interaction::FreeRotation, false},
-        Widget{Interaction::Roll, true},         Widget{Interaction::Roll, false},
-        Widget{Interaction::Zoom, true},         Widget{Interaction::Zoom, false}};
+        Widget{.dir = Interaction::Yaw, .clockwise = true},
+        Widget{.dir = Interaction::Yaw, .clockwise = false},
+        Widget{.dir = Interaction::Pitch, .clockwise = true},
+        Widget{.dir = Interaction::Pitch, .clockwise = false},
+        Widget{.dir = Interaction::FreeRotation, .clockwise = true},
+        Widget{.dir = Interaction::FreeRotation, .clockwise = false},
+        Widget{.dir = Interaction::Roll, .clockwise = true},
+        Widget{.dir = Interaction::Roll, .clockwise = false},
+        Widget{.dir = Interaction::Zoom, .clockwise = true},
+        Widget{.dir = Interaction::Zoom, .clockwise = false}};
 
     // UI state and textures
     struct Picking {

@@ -111,7 +111,9 @@ EmbeddedVolumeSlice::EmbeddedVolumeSlice()
     , transferFunction_{"transferFunction", "Transfer Function",
                         "Defines the transfer function for mapping "
                         "voxel values to color and opacity"_help,
-                        TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}), &inport_}
+                        TransferFunction(
+                            {{.pos = 0.0, .color = vec4(0.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}),
+                        &inport_}
     , camera_{"camera", "Camera", util::boundingBox(inport_)}
     , trackball_{&camera_}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {

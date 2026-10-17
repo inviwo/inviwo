@@ -51,16 +51,16 @@ public:
 
     IsoTFProperty(std::string_view identifier, std::string_view displayName, Document help,
                   const IsoValueCollection& isovalues = {},
-                  const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
-                                                                 {1.0f, vec4(1.0f)}}),
+                  const TransferFunction& tf = TransferFunction(
+                      {{.pos = 0.0f, .color = vec4(0.0f)}, {.pos = 1.0f, .color = vec4(1.0f)}}),
                   TFData port = {},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(std::string_view identifier, std::string_view displayName,
                   const IsoValueCollection& isovalues = {},
-                  const TransferFunction& tf = TransferFunction({{0.0f, vec4(0.0f)},
-                                                                 {1.0f, vec4(1.0f)}}),
+                  const TransferFunction& tf = TransferFunction(
+                      {{.pos = 0.0f, .color = vec4(0.0f)}, {.pos = 1.0f, .color = vec4(1.0f)}}),
                   TFData port = {},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);

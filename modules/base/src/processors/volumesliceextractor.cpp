@@ -117,8 +117,8 @@ VolumeSliceExtractor::VolumeSliceExtractor()
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "Defines the transfer function for mapping voxel values to color and opacity"_help,
-          TransferFunction(
-              {{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+          TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 1.0f)},
+                            {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
           &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", "Offset alpha values in transfer function"_help,
                      0.0f, {0.0f, ConstraintBehavior::Editable},
@@ -358,10 +358,14 @@ void VolumeSliceExtractor::process() {
             break;
     }
 
-    detail::SliceState state{sliceAlongAxis_,      static_cast<size_t>(sliceNumber_.get() - 1),
-                             &imageCache_,         flipHorizontal_,
-                             flipVertical_,        &transferFunction_.get(),
-                             tfAlphaOffset_.get(), channel_.get()};
+    detail::SliceState state{.axis = sliceAlongAxis_,
+                             .slice = static_cast<size_t>(sliceNumber_.get() - 1),
+                             .cache = &imageCache_,
+                             .flipHorizontal = flipHorizontal_,
+                             .flipVertical = flipVertical_,
+                             .tf = &transferFunction_.get(),
+                             .alphaOffset = tfAlphaOffset_.get(),
+                             .channel = channel_.get()};
 
     std::shared_ptr<Image> image;
 

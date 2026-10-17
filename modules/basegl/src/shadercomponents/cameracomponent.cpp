@@ -67,7 +67,9 @@ uniform CameraParameters {0};
 }  // namespace
 
 auto CameraComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format(uniforms, getName()), placeholder::uniform, 500}};
+    return {Segment{.snippet = fmt::format(uniforms, getName()),
+                    .placeholder = placeholder::uniform,
+                    .priority = 500}};
 }
 
 }  // namespace inviwo

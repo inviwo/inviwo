@@ -34,7 +34,7 @@ namespace inviwo {
 void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive&) {}
 
 TFPrimitive::TFPrimitive(double pos, const vec4& color)
-    : Observable<TFPrimitiveObserver>(), data_({pos, color}) {}
+    : Observable<TFPrimitiveObserver>(), data_({.pos = pos, .color = color}) {}
 
 // Cannot use default constructors and assignment operator for TFPrimitive!
 //
@@ -138,7 +138,7 @@ void TFPrimitive::deserialize(Deserializer& d) {
     vec4 color;
     d.deserialize("pos", pos);
     d.deserialize("rgba", color);
-    setData({pos, color});
+    setData({.pos = pos, .color = color});
 }
 vec4 util::interpolateColor(const TFPrimitiveData& p1, const TFPrimitiveData& p2, double x) {
     if (std::abs(p1.pos - p2.pos) < 1e-8) return glm::mix(p1.color, p2.color, 0.5);

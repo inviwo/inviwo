@@ -73,15 +73,25 @@ SeedPointGenerator2D::SeedPointGenerator2D()
                {"disk", "Disk", SamplingDomain::Disk}}}
     , position_{"position",
                 "Position",
-                {vec2{0.0f, 0.0f}, vec2{0.0f}, ConstraintBehavior::Ignore, vec2{1.0f},
-                 ConstraintBehavior::Ignore, vec2{0.01f}, InvalidationLevel::InvalidOutput,
-                 PropertySemantics::SpinBox}}
+                {.value = vec2{0.0f, 0.0f},
+                 .min = vec2{0.0f},
+                 .minConstraint = ConstraintBehavior::Ignore,
+                 .max = vec2{1.0f},
+                 .maxConstraint = ConstraintBehavior::Ignore,
+                 .increment = vec2{0.01f},
+                 .invalidationLevel = InvalidationLevel::InvalidOutput,
+                 .semantics = PropertySemantics::SpinBox}}
     , extent_{"extent", "Extent", util::ordinalLength(vec2{0.5f}, vec2{1.0f})}
     , endpoint_{"endpoint",
                 "End Point",
-                {vec2{0.0f, 0.0f}, vec2{0.0f}, ConstraintBehavior::Ignore, vec2{1.0f},
-                 ConstraintBehavior::Ignore, vec2{0.01f}, InvalidationLevel::InvalidOutput,
-                 PropertySemantics::SpinBox}}
+                {.value = vec2{0.0f, 0.0f},
+                 .min = vec2{0.0f},
+                 .minConstraint = ConstraintBehavior::Ignore,
+                 .max = vec2{1.0f},
+                 .maxConstraint = ConstraintBehavior::Ignore,
+                 .increment = vec2{0.01f},
+                 .invalidationLevel = InvalidationLevel::InvalidOutput,
+                 .semantics = PropertySemantics::SpinBox}}
     , radius_{"radius", "Radius", util::ordinalLength(0.5f)}
 
     , generator_{"generator",

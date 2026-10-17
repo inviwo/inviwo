@@ -75,7 +75,7 @@ void DataMapper::initWithFormat(const DataFormatBase* format, SignedNormalizatio
 
     dataRange = defaultDataRangeFor(format, normalization);
     valueRange = dataRange;
-    valueAxis = {"", Unit{}};
+    valueAxis = {.name = "", .unit = Unit{}};
 }
 
 std::string format_as(const DataMapper& dataMapper) {

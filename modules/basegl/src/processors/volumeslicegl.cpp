@@ -210,8 +210,8 @@ VolumeSliceGL::VolumeSliceGL()
     , channel_("channel", "Channel", "Channel used to for transfer function lookups"_help,
                util::enumeratedOptions("Channel", 4))
     , transferFunction_("transferFunction", "Transfer Function",
-                        TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)},
-                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                        TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 1.0f)},
+                                          {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
                         &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)

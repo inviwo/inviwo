@@ -791,7 +791,7 @@ void Layout::calculateViews(ivec2 imgSize) {
             const auto pos = dvec2{imgSize} * fracPos;
             const auto fracViewSize = dvec2{xStop - xStart, yStop - yStart};
             const auto size = dvec2{imgSize} * fracViewSize;
-            views_.push_back({ivec2{glm::round(pos)}, ivec2{glm::round(size)}});
+            views_.push_back({.pos = ivec2{glm::round(pos)}, .size = ivec2{glm::round(size)}});
 
             eventTransformer_.views.push_back(EventTransformer::View{
                 .globalNdcToLocalNdc =

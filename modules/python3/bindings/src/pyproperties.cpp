@@ -207,8 +207,9 @@ void exposeProperties(pybind11::module& m) {
                                                      semantics);
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"),
-             py::arg("value") = TransferFunction(
-                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+             py::arg("value") =
+                 TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                   {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
@@ -219,8 +220,9 @@ void exposeProperties(pybind11::module& m) {
                                                      invalidationLevel, semantics);
              }),
              py::arg("identifier"), py::arg("displayName"),
-             py::arg("value") = TransferFunction(
-                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+             py::arg("value") =
+                 TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                   {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)

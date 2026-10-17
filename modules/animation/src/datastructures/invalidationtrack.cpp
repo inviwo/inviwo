@@ -75,7 +75,7 @@ std::string_view InvalidationTrack::classIdentifier() {
 std::string_view InvalidationTrack::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationState state) const {
-    if (!isEnabled() || empty()) return {to, state};
+    if (!isEnabled() || empty()) return {.time = to, .state = state};
 
     for (const auto& it : *this) {
         if (it.getFirstTime() <= to && it.getLastTime() >= to) {
@@ -95,7 +95,7 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
         }
     }
 
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 }  // namespace inviwo::animation

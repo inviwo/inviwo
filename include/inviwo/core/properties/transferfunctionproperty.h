@@ -161,19 +161,22 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.TransferFunctionProperty"};
     using value_type = TransferFunction;
 
-    TransferFunctionProperty(
-        std::string_view identifier, std::string_view displayName, Document help,
-        const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-                                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-        TFData port = {}, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    TransferFunctionProperty(std::string_view identifier, std::string_view displayName,
+                             Document help,
+                             const TransferFunction& value = TransferFunction(
+                                 {{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                  {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                             TFData port = {},
+                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                             PropertySemantics semantics = PropertySemantics::Default);
 
-    TransferFunctionProperty(
-        std::string_view identifier, std::string_view displayName,
-        const TransferFunction& value = TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-                                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-        TFData port = {}, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    TransferFunctionProperty(std::string_view identifier, std::string_view displayName,
+                             const TransferFunction& value = TransferFunction(
+                                 {{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                  {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                             TFData port = {},
+                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                             PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(std::string_view identifier, std::string_view displayName, TFData port,
                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

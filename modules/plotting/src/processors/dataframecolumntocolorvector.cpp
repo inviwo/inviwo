@@ -76,8 +76,9 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     , colors_("colors", "resulting vector of colors matching the selected DataFrame column"_help)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
     , tf_("tf", "Color Mapping", "mapping data values to colors via a transfer function"_help,
-          TransferFunction(
-              {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}})) {
+          TransferFunction({{.pos = 0.0f, .color = vec4(1, 0, 0, 1)},
+                            {.pos = 0.5f, .color = vec4(1, 1, 0, 1)},
+                            {.pos = 1.0f, .color = vec4(0, 1, 0, 1)}})) {
 
     addPort(dataFrame_);
     addPort(colors_);

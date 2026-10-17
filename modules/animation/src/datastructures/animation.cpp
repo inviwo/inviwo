@@ -90,7 +90,7 @@ Animation& Animation::operator=(const Animation& that) {
 }
 
 AnimationTimeState Animation::operator()(Seconds from, Seconds to, AnimationState state) const {
-    AnimationTimeState ts{to, state};
+    AnimationTimeState ts{.time = to, .state = state};
     for (const auto& track : priorityTracks_) {
         ts = (*track)(from, ts.time, ts.state);
     }

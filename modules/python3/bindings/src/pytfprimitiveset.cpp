@@ -98,11 +98,11 @@ void exposeTFPrimitiveSet(const pybind11::module& m) {
         .def(py::init())
         .def(py::init<double, vec4>(), py::arg("pos"), py::arg("colorAndOpacity"))
         .def(py::init([](double pos, double opacity, vec3 color) {
-                 return TFPrimitiveData{pos, vec4{color, opacity}};
+                 return TFPrimitiveData{.pos = pos, .color = vec4{color, opacity}};
              }),
              py::arg("pos"), py::arg("opacity") = 0.0, py::arg("color") = vec3{0, 0, 0})
         .def(py::init([](double pos, std::string_view color) {
-                 return TFPrimitiveData{pos, color::hex2rgba(color)};
+                 return TFPrimitiveData{.pos = pos, .color = color::hex2rgba(color)};
              }),
              py::arg("pos"), py::arg("colorAndAlpha"))
         .def(py::init([](const py::list& list) {

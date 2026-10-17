@@ -281,7 +281,7 @@ ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_
 
     // ensure positive extent and minimum extent of (1,1)
     upperRight = glm::max(upperRight, lowerLeft);
-    return {lowerLeft, glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
+    return {.pos = lowerLeft, .extent = glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
 }
 
 void ImagePlotProcessor::adjustRanges() {

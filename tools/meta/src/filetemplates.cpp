@@ -37,86 +37,86 @@ namespace inviwo::meta {
 
 FileTemplates::FileTemplates() {
     // clang-format off
-    templates["file"] = FileTemplate{"File",
-        File{"File header", "h", "file.h", "General header file", "HEADER_FILES"},
-        File{"File source", "cpp", "file.cpp", "General source file", "SOURCE_FILES"},
-        {},
-        {}
+    templates["file"] = FileTemplate{.name="File",
+        .header=File{.name="File header", .extension="h", .templateFile="file.h", .description="General header file", .cmakeGroup="HEADER_FILES"},
+        .source=File{.name="File source", .extension="cpp", .templateFile="file.cpp", .description="General source file", .cmakeGroup="SOURCE_FILES"},
+        .other={},
+        .registration={}
     };
 
-    templates["processor"] = FileTemplate{"Processor",
-        File{"Processor header", "h", "processor.h", "Processor header file", "HEADER_FILES"},
-        File{"Processor source", "cpp", "processor.cpp", "Processor source file", "SOURCE_FILES"},
-        {},
-        {"processor"}
+    templates["processor"] = FileTemplate{.name="Processor",
+        .header=File{.name="Processor header", .extension="h", .templateFile="processor.h", .description="Processor header file", .cmakeGroup="HEADER_FILES"},
+        .source=File{.name="Processor source", .extension="cpp", .templateFile="processor.cpp", .description="Processor source file", .cmakeGroup="SOURCE_FILES"},
+        .other={},
+        .registration={"processor"}
     };
 
-    templates["test"] = FileTemplate{"Test", 
-        {}, 
-        {},
-        File{"Unit Test", "cpp", "test.cpp", "Unit test file", "TEST_FILES"}, 
-        {}
+    templates["test"] = FileTemplate{.name="Test", 
+        .header={}, 
+        .source={},
+        .other=File{.name="Unit Test", .extension="cpp", .templateFile="test.cpp", .description="Unit test file", .cmakeGroup="TEST_FILES"}, 
+        .registration={}
     };
 
-    templates["testmain"] = FileTemplate{"Test Main",
-        {},
-        {},
-        File{"Unit Test Main", "cpp", "unittest-main.cpp", "Unit test main file", "TEST_FILES"},
-        {}
+    templates["testmain"] = FileTemplate{.name="Test Main",
+        .header={},
+        .source={},
+        .other=File{.name="Unit Test Main", .extension="cpp", .templateFile="unittest-main.cpp", .description="Unit test main file", .cmakeGroup="TEST_FILES"},
+        .registration={}
     };
 
-    templates["frag"] = FileTemplate{"Fragment",
-        {},
-        {},
-        File{"Fragment", "frag", "fragment.frag", "Fragment source file", "SHADER_FILES"},
-        {}
+    templates["frag"] = FileTemplate{.name="Fragment",
+        .header={},
+        .source={},
+        .other=File{.name="Fragment", .extension="frag", .templateFile="fragment.frag", .description="Fragment source file", .cmakeGroup="SHADER_FILES"},
+        .registration={}
     };
 
-    templates["vert"] = FileTemplate{"Vertex",
-        {},
-        {},
-        File{"Vertex", "vert", "vertex.vert", "Vertex source file", "SHADER_FILES"},
-        {}
+    templates["vert"] = FileTemplate{.name="Vertex",
+        .header={},
+        .source={},
+        .other=File{.name="Vertex", .extension="vert", .templateFile="vertex.vert", .description="Vertex source file", .cmakeGroup="SHADER_FILES"},
+        .registration={}
     };
 
-    templates["geom"] = FileTemplate{"Geometry",
-        {},
-        {},
-        File{"Geometry", "geom", "geometry.geom", "Geometry source file", "SHADER_FILES"},
-        {}
+    templates["geom"] = FileTemplate{.name="Geometry",
+        .header={},
+        .source={},
+        .other=File{.name="Geometry", .extension="geom", .templateFile="geometry.geom", .description="Geometry source file", .cmakeGroup="SHADER_FILES"},
+        .registration={}
     };
 
-    templates["module"] = FileTemplate{"Module",
-        File{"Module header", "h", "module.h", "Module header file", "HEADER_FILES"},
-        File{"Module source", "cpp", "module.cpp", "Module source file", "SOURCE_FILES"},
-        {},
-        {}
+    templates["module"] = FileTemplate{.name="Module",
+        .header=File{.name="Module header", .extension="h", .templateFile="module.h", .description="Module header file", .cmakeGroup="HEADER_FILES"},
+        .source=File{.name="Module source", .extension="cpp", .templateFile="module.cpp", .description="Module source file", .cmakeGroup="SOURCE_FILES"},
+        .other={},
+        .registration={}
     };
 
-    templates["api"] = FileTemplate{"API",
-        File{"Module API", "h", "moduledefine.h", "Module API define header", "HEADER_FILES"},
-        {},
-        {},
-        {}
+    templates["api"] = FileTemplate{.name="API",
+        .header=File{.name="Module API", .extension="h", .templateFile="moduledefine.h", .description="Module API define header", .cmakeGroup="HEADER_FILES"},
+        .source={},
+        .other={},
+        .registration={}
     };
 
-    templates["cmakelists"] = FileTemplate{"CMakeLists",
-        {},
-        {},
-        File{"CMakeLists", "txt", "CMakeLists.txt", "CMake project definition", {}},
-        {}
+    templates["cmakelists"] = FileTemplate{.name="CMakeLists",
+        .header={},
+        .source={},
+        .other=File{.name="CMakeLists", .extension="txt", .templateFile="CMakeLists.txt", .description="CMake project definition", .cmakeGroup={}},
+        .registration={}
     };
-    templates["readme"] = FileTemplate{"Readme",
-        {},
-        {},
-        File{"Readme", "md", "readme.md", "Description of the module, used by CMake", {}},
-        {}
+    templates["readme"] = FileTemplate{.name="Readme",
+        .header={},
+        .source={},
+        .other=File{.name="Readme", .extension="md", .templateFile="readme.md", .description="Description of the module, used by CMake", .cmakeGroup={}},
+        .registration={}
     };
-    templates["depends"] = FileTemplate{"Depends",
-        {},
-        {},
-        File{"Depends", "cmake", "depends.cmake", "List of dependencies to other modules", {}},
-        {}
+    templates["depends"] = FileTemplate{.name="Depends",
+        .header={},
+        .source={},
+        .other=File{.name="Depends", .extension="cmake", .templateFile="depends.cmake", .description="List of dependencies to other modules", .cmakeGroup={}},
+        .registration={}
     };
     // clang-format on
 }

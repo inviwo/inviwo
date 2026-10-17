@@ -117,9 +117,11 @@ int main(int argc, char* const* argv) {
 
     try {
         cmd.parse(argc, argv);
-        const inviwo::meta::Creator creator(
-            getInviwoPath(), getTemplatesPath(), {},
-            {verbose.getValue(), dryrun.getValue(), force.getValue(), std::cout});
+        const inviwo::meta::Creator creator(getInviwoPath(), getTemplatesPath(), {},
+                                            {.verbose = verbose.getValue(),
+                                             .dryrun = dryrun.getValue(),
+                                             .force = force.getValue(),
+                                             .log = std::cout});
 
         if (modules.isSet()) {
             for (const auto& item : modules.getValue()) {

@@ -37,7 +37,7 @@ namespace inviwo {
 
 TagModel::TagModel(const Tags& tags, QObject* parent) : QAbstractListModel(parent) {
     for (const auto& t : tags.tags_) {
-        tags_.push_back({t, utilqt::toQString(t.getString()), true});
+        tags_.push_back({.tag = t, .text = utilqt::toQString(t.getString()), .checked = true});
     }
 }
 

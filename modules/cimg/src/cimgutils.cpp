@@ -562,7 +562,11 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 
     auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
 
-    return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
+    return {.format = df,
+            .dimensions = size3_t{x, y, z},
+            .resolution = res,
+            .resolutionUnit = resolutionUnit,
+            .swizzleMask = swizzleMask};
 #else
     throw Exception("TIFF not available");
     return {};

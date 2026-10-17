@@ -92,10 +92,11 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                                                    std::string_view displayName, TFData port,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : TransferFunctionProperty(identifier, displayName,
-                               TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-                                                 {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-                               std::move(port), invalidationLevel, std::move(semantics)) {}
+    : TransferFunctionProperty(
+          identifier, displayName,
+          TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                            {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+          std::move(port), invalidationLevel, std::move(semantics)) {}
 
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : Property(rhs)

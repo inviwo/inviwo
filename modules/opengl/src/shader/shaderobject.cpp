@@ -266,12 +266,17 @@ void utilgl::parseShaderSource(
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
     const size_t lines = 0;
-    psm::State state{output, lnr, key, replacements, getSource, lines};
+    psm::State state{.output = output,
+                     .lnr = lnr,
+                     .key = key,
+                     .replacements = replacements,
+                     .getSource = getSource,
+                     .lines = lines};
     psm::Errors errors;
 
     sml::sm<psm::Psm> sm{state, errors};
     for (auto it = source.begin(); it != source.end(); ++it) {
-        sm.process_event(psm::Char{it, source.end()});
+        sm.process_event(psm::Char{.curr = it, .end = source.end()});
     }
     sm.process_event(psm::Eof{});
     if (errors.exception) {
@@ -564,10 +569,10 @@ void ShaderObject::addStandardFragmentOutDeclarations() {
 }
 
 void ShaderObject::addStandardVertexInDeclarations() {
-    addInDeclaration(InDeclaration{"in_Vertex", 0});
-    addInDeclaration(InDeclaration{"in_Normal", 1, "vec3"});
-    addInDeclaration(InDeclaration{"in_Color", 2});
-    addInDeclaration(InDeclaration{"in_TexCoord", 3, "vec3"});
+    addInDeclaration(InDeclaration{.name = "in_Vertex", .location = 0});
+    addInDeclaration(InDeclaration{.name = "in_Normal", .location = 1, .type = "vec3"});
+    addInDeclaration(InDeclaration{.name = "in_Color", .location = 2});
+    addInDeclaration(InDeclaration{.name = "in_TexCoord", .location = 3, .type = "vec3"});
 }
 
 void ShaderObject::parseSource(std::ostringstream& output) {
@@ -736,7 +741,8 @@ void ShaderObject::removeSegments(std::string_view name) {
 void ShaderObject::clearSegments() { shaderSegments_.clear(); }
 
 void ShaderObject::addOutDeclaration(std::string_view name, int location, std::string_view type) {
-    addOutDeclaration(OutDeclaration{std::string{name}, location, std::string{type}});
+    addOutDeclaration(
+        OutDeclaration{.name = std::string{name}, .location = location, .type = std::string{type}});
 }
 
 void ShaderObject::addOutDeclaration(const OutDeclaration& decl) {
@@ -757,7 +763,8 @@ void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
 void ShaderObject::ShaderObject::addInDeclaration(std::string_view name, int location,
                                                   std::string_view type) {
-    addInDeclaration(InDeclaration{std::string{name}, location, std::string{type}});
+    addInDeclaration(
+        InDeclaration{.name = std::string{name}, .location = location, .type = std::string{type}});
 }
 void ShaderObject::addInDeclaration(const InDeclaration& decl) {
     const auto it = util::find_if(
