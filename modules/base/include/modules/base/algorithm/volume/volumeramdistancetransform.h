@@ -120,7 +120,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
     omp_set_num_threads(static_cast<int>(std::thread::hardware_concurrency()));
 #endif
 
-    using int64 = glm::int64;
+    using glm::int64;
 
     const auto square = [](auto a) { return a * a; };
 

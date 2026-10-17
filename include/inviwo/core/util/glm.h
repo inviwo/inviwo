@@ -70,7 +70,7 @@
 
 namespace inviwo {
 
-using quat = glm::quat;
+using glm::quat;
 
 namespace util {
 
