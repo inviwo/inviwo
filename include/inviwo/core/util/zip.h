@@ -127,7 +127,7 @@ bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
 }
 
 template <typename... Ts>
-void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) {
+void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) noexcept(noexcept(std::swap(a.data, b.data))) {
     std::swap(a.data, b.data);
 }
 

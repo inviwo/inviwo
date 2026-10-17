@@ -179,7 +179,7 @@ public:
 
     void pop_back() { data_.pop_back(); }
 
-    void swap(DataSequence& other) { data_.swap(other.data_); }
+    void swap(DataSequence& other) noexcept { data_.swap(other.data_); }
 
     void swap(std::vector<std::pair<std::shared_ptr<const Data>, std::shared_ptr<Data>>>& other) {
         data_.swap(other);
