@@ -133,7 +133,7 @@ class KeyframeSequenceTyped : public BaseKeyframeSequence<Key>, public ValueKeyf
 public:
     using key_type = Key;
     using value_type = typename Key::value_type;
-    static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
+    static_assert(std::is_base_of_v<Keyframe, Key>, "Key has to derive from Keyframe");
 
     /*
      * Uses ConstantInterpolation<Key> unless DefaultInterpolationCreator is

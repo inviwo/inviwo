@@ -107,20 +107,19 @@ struct is_string : detail::is_string<T> {};
 
 template <typename T>
 class is_container {
-    using test_type = typename std::remove_const<T>::type;
+    using test_type = std::remove_const_t<T>;
 
-    template <typename A,
-              class = typename std::enable_if<
-                  std::is_same<decltype(std::declval<A>().begin()), typename A::iterator>::value &&
-                  std::is_same<decltype(std::declval<A>().end()), typename A::iterator>::value &&
-                  std::is_same<decltype(std::declval<const A>().begin()),
-                               typename A::const_iterator>::value &&
-                  std::is_same<decltype(std::declval<const A>().end()),
-                               typename A::const_iterator>::value &&
-                  std::is_same<decltype(*std::declval<typename A::iterator>()),
-                               typename A::value_type&>::value &&
-                  std::is_same<decltype(*std::declval<const typename A::iterator>()),
-                               const typename A::value_type&>::value>::type>
+    template <
+        typename A,
+        class = std::enable_if_t<
+            std::is_same_v<decltype(std::declval<A>().begin()), typename A::iterator> &&
+            std::is_same_v<decltype(std::declval<A>().end()), typename A::iterator> &&
+            std::is_same_v<decltype(std::declval<const A>().begin()), typename A::const_iterator> &&
+            std::is_same_v<decltype(std::declval<const A>().end()), typename A::const_iterator> &&
+            std::is_same_v<decltype(*std::declval<typename A::iterator>()),
+                           typename A::value_type&> &&
+            std::is_same_v<decltype(*std::declval<const typename A::iterator>()),
+                           const typename A::value_type&>>>
     static std::true_type test(int);
 
     template <class>

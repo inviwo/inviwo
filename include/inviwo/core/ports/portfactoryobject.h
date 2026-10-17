@@ -63,7 +63,7 @@ class InportFactoryObjectTemplate : public InportFactoryObject {
 public:
     InportFactoryObjectTemplate()
         : InportFactoryObject(PortTraits<T>::classIdentifier(), util::demangle(typeid(T).name())) {
-        static_assert(std::is_base_of<Inport, T>::value, "All inports must derive from Inport");
+        static_assert(std::is_base_of_v<Inport, T>, "All inports must derive from Inport");
     }
 
     virtual ~InportFactoryObjectTemplate() = default;
@@ -97,7 +97,7 @@ class OutportFactoryObjectTemplate : public OutportFactoryObject {
 public:
     OutportFactoryObjectTemplate()
         : OutportFactoryObject(PortTraits<T>::classIdentifier(), util::demangle(typeid(T).name())) {
-        static_assert(std::is_base_of<Outport, T>::value, "All outports must derive from Outport");
+        static_assert(std::is_base_of_v<Outport, T>, "All outports must derive from Outport");
     }
 
     virtual ~OutportFactoryObjectTemplate() = default;

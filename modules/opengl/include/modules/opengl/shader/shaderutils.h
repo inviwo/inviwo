@@ -196,15 +196,15 @@ void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property) {
 namespace detail {
 template <typename T>
 T getOptionValue(const OptionProperty<T>& prop)
-    requires(!std::is_enum<T>::value)
+    requires(!std::is_enum_v<T>)
 {
     return prop.get();
 }
 template <typename T>
-auto getOptionValue(const OptionProperty<T>& prop) -> typename std::underlying_type<T>::type
-    requires std::is_enum<T>::value
+auto getOptionValue(const OptionProperty<T>& prop) -> std::underlying_type_t<T>
+    requires std::is_enum_v<T>
 {
-    return static_cast<typename std::underlying_type<T>::type>(prop.get());
+    return static_cast<std::underlying_type_t<T>>(prop.get());
 }
 }  // namespace detail
 
@@ -222,13 +222,13 @@ void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::s
 
 template <typename T>
 void setShaderUniforms(Shader& shader, const T& property)
-    requires std::is_base_of<Property, T>::value
+    requires std::is_base_of_v<Property, T>
 {
     setShaderUniforms(shader, property, property.getIdentifier());
 }
 template <typename T>
 void setShaderUniforms(Shader& shader, const T& port)
-    requires std::is_base_of<Port, T>::value
+    requires std::is_base_of_v<Port, T>
 {
     setShaderUniforms(shader, port, port.getIdentifier() + "Parameters");
 }

@@ -62,18 +62,16 @@ template <typename F, typename TupleType>
 void for_each_in_tuple(F&& f, TupleType&& t) {
     detail::for_each_in_tuple_impl(
         std::forward<F>(f),
-        std::make_index_sequence<
-            std::tuple_size<typename std::remove_reference<TupleType>::type>::value>{},
+        std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<TupleType>>>{},
         std::forward<TupleType>(t));
 }
 template <typename F, typename TupleType1, typename TupleType2>
 void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
-    detail::for_each_in_tuple_impl(
-        std::forward<F>(f),
-        std::make_index_sequence<std::min(
-            std::tuple_size<typename std::remove_reference<TupleType1>::type>::value,
-            std::tuple_size<typename std::remove_reference<TupleType2>::type>::value)>{},
-        std::forward<TupleType1>(t1), std::forward<TupleType2>(t2));
+    detail::for_each_in_tuple_impl(std::forward<F>(f),
+                                   std::make_index_sequence<std::min(
+                                       std::tuple_size_v<std::remove_reference_t<TupleType1>>,
+                                       std::tuple_size_v<std::remove_reference_t<TupleType2>>)>{},
+                                   std::forward<TupleType1>(t1), std::forward<TupleType2>(t2));
 }
 
 /**

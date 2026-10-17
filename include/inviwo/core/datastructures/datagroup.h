@@ -97,16 +97,16 @@ private:
 namespace detail {
 template <typename Repr, typename T>
 std::shared_ptr<T> createGroupRepresentation()
-    requires(!std::is_abstract<T>::value && std::is_default_constructible<T>::value &&
-             std::is_base_of<Repr, T>::value)
+    requires(!std::is_abstract_v<T> && std::is_default_constructible_v<T> &&
+             std::is_base_of_v<Repr, T>)
 {
     return std::make_shared<T>();
 }
 
 template <typename Repr, typename T>
 std::shared_ptr<T> createGroupRepresentation()
-    requires(std::is_abstract<T>::value || !std::is_default_constructible<T>::value ||
-             !std::is_base_of<Repr, T>::value)
+    requires(std::is_abstract_v<T> || !std::is_default_constructible_v<T> ||
+             !std::is_base_of_v<Repr, T>)
 {
     return std::shared_ptr<T>();
 }
@@ -150,7 +150,7 @@ void DataGroup<Self, Repr>::clearRepresentations() {
 template <typename Self, typename Repr>
 template <typename T>
 T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
-    static_assert(std::is_base_of<Repr, T>::value,
+    static_assert(std::is_base_of_v<Repr, T>,
                   "Can only ask for representations that derive from the base representation");
 
     // check if a representation exists and return it

@@ -199,7 +199,7 @@ public:
 template <typename Prop, typename Key, typename Seq = KeyframeSequenceTyped<Key>>
 class PropertyTrack : public BaseTrack<Seq>, public BasePropertyTrack {
 public:
-    static_assert(std::is_same<Key, typename Seq::key_type>::value,
+    static_assert(std::is_same_v<Key, typename Seq::key_type>,
                   "The KeyframeSequence must match Keyframe 'Key'");
 
     explicit PropertyTrack(ProcessorNetwork* network);
@@ -319,7 +319,7 @@ inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(Second
 template <typename Prop, typename Key, typename Seq>
 inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const Prop* property,
                                                                           Seconds time) const {
-    if constexpr (std::is_constructible<Key, Seconds, typename Key::value_type>::value) {
+    if constexpr (std::is_constructible_v<Key, Seconds, typename Key::value_type>) {
         return std::make_unique<Key>(time, property->get());
     } else {
         return std::make_unique<Key>(time);
@@ -329,7 +329,7 @@ inline std::unique_ptr<Key> PropertyTrack<Prop, Key, Seq>::createKeyframe(const 
 template <typename Prop, typename Key, typename Seq>
 inline std::unique_ptr<Seq> PropertyTrack<Prop, Key, Seq>::createKeyframeSequence(
     std::vector<std::unique_ptr<Key>> keys, std::unique_ptr<Interpolation> interpolation) const {
-    if constexpr (std::is_same<Seq, KeyframeSequenceTyped<Key>>::value) {
+    if constexpr (std::is_same_v<Seq, KeyframeSequenceTyped<Key>>) {
         if (auto ip = dynamic_cast<InterpolationTyped<Key>*>(interpolation.get())) {
             interpolation.release();
             return std::make_unique<Seq>(std::move(keys),

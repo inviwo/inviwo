@@ -77,7 +77,7 @@ struct static_size_t<char[N]> {
 };
 
 template <typename T>
-constexpr size_t static_size = static_size_t<std::remove_cv_t<std::remove_reference_t<T>>>::size;
+constexpr size_t static_size = static_size_t<std::remove_cvref_t<T>>::size;
 
 }  // namespace detail
 

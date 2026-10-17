@@ -44,17 +44,17 @@ constexpr auto glmcomp(T& elem, size_t) -> T&
     return elem;
 }
 template <typename T>
-constexpr auto glmcomp(T& elem, size_t i) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type
+constexpr auto glmcomp(T& elem, size_t i)
+    -> std::conditional_t<std::is_const_v<T>, const typename T::value_type&,
+                          typename T::value_type&>
     requires(util::rank<T>::value == 1)
 {
     return elem[i];
 }
 template <typename T>
-constexpr auto glmcomp(T& elem, size_t i) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type
+constexpr auto glmcomp(T& elem, size_t i)
+    -> std::conditional_t<std::is_const_v<T>, const typename T::value_type&,
+                          typename T::value_type&>
     requires(util::rank<T>::value == 2)
 {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
@@ -74,17 +74,17 @@ constexpr auto glmcomp(T& elem, size_t, size_t) -> T&
     return elem;
 }
 template <typename T>
-constexpr auto glmcomp(T& elem, size_t i, size_t) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type
+constexpr auto glmcomp(T& elem, size_t i, size_t)
+    -> std::conditional_t<std::is_const_v<T>, const typename T::value_type&,
+                          typename T::value_type&>
     requires(util::rank<T>::value == 1)
 {
     return elem[i];
 }
 template <typename T>
-constexpr auto glmcomp(T& elem, size_t i, size_t j) ->
-    typename std::conditional<std::is_const<T>::value, const typename T::value_type&,
-                              typename T::value_type&>::type
+constexpr auto glmcomp(T& elem, size_t i, size_t j)
+    -> std::conditional_t<std::is_const_v<T>, const typename T::value_type&,
+                          typename T::value_type&>
     requires(util::rank<T>::value == 2)
 {
     return elem[i][j];

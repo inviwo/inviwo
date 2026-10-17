@@ -97,9 +97,8 @@ static double norm(const T& t) {
     return static_cast<double>(t);
 }
 
-template <
-    glm::length_t L, typename T, glm::qualifier Q,
-    typename F = typename std::conditional<std::is_same<T, float>::value, float, double>::type>
+template <glm::length_t L, typename T, glm::qualifier Q,
+          typename F = std::conditional_t<std::is_same_v<T, float>, float, double>>
 static double norm(const glm::vec<L, T, Q>& glm) {
     return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
 }

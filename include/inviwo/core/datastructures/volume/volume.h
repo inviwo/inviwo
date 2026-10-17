@@ -198,7 +198,7 @@ protected:
 template <typename Kind>
 const typename representation_traits<Volume, Kind>::type* Volume::getRep() const {
     static_assert(
-        !std::is_same<typename representation_traits<Volume, Kind>::type, std::nullptr_t>::value,
+        !std::is_same_v<typename representation_traits<Volume, Kind>::type, std::nullptr_t>,
         "No representation of specified kind found");
     return getRepresentation<typename representation_traits<Volume, Kind>::type>();
 }

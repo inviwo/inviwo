@@ -37,14 +37,14 @@ namespace inviwo::util {
 
 namespace detail_indirect {
 template <typename Tag, typename Iter>
-struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_category>::value> {};
+struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
 using require_t = typename require<Tag, Iter>::type;
 
 template <typename Iterator>
 struct is_const_iterator {
     using pointer = typename std::iterator_traits<Iterator>::pointer;
-    static constexpr bool value = std::is_const<typename std::remove_pointer<pointer>::type>::value;
+    static constexpr bool value = std::is_const_v<std::remove_pointer_t<pointer>>;
 };
 
 template <typename T>

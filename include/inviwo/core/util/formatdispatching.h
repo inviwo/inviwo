@@ -78,10 +78,10 @@ struct Filter<Predicate> {
 
 template <template <class> class Predicate, typename Head, typename... Tail>
 struct Filter<Predicate, Head, Tail...> {
-    using type = typename std::conditional<
-        Predicate<Head>::value,
-        typename Cons<Head, typename Filter<Predicate, Tail...>::type>::type,
-        typename Filter<Predicate, Tail...>::type>::type;
+    using type =
+        std::conditional_t<Predicate<Head>::value,
+                           typename Cons<Head, typename Filter<Predicate, Tail...>::type>::type,
+                           typename Filter<Predicate, Tail...>::type>;
 };
 
 template <template <class> class Predicate, typename... Args>
@@ -293,7 +293,7 @@ template <typename Result, template <class> class Predicate, typename Callable, 
 [[deprecated("Use singleDispatch")]] auto dispatch(DataFormatId format, Callable&& obj,
                                                    Args&&... args) -> Result {
     using Formats = DefaultDataFormats;
-    constexpr auto nFormats = std::tuple_size<Formats>::value;
+    constexpr auto nFormats = std::tuple_size_v<Formats>;
     using Functor = Result (*)(Callable&&, Args&&...);
     static constexpr auto table =
         util::build_array_t<nFormats>([]<size_t index> constexpr -> Functor {
@@ -487,11 +487,11 @@ namespace util {
  * VolumeType will then be for example VolumeRamPrecision<vec3>
  */
 template <typename T>
-using PrecisionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
+using PrecisionType = std::remove_pointer_t<std::remove_const_t<T>>;
 
 template <typename T>
 using PrecsionType [[deprecated("Use `PrecisionType` instead")]] =
-    typename std::remove_pointer<typename std::remove_const<T>::type>::type;
+    std::remove_pointer_t<std::remove_const_t<T>>;
 
 /**
  * Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable.
