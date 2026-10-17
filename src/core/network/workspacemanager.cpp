@@ -43,6 +43,7 @@
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 
+#include <algorithm>
 #include <memory_resource>
 #include <tuple>
 
@@ -104,7 +105,7 @@ private:
 
         for (TiXmlElement* child = root->FirstChildElement(); child;
              child = child->NextSiblingElement()) {
-            if (std::find(toMove.begin(), toMove.end(), child->Value()) != toMove.end()) {
+            if (std::ranges::find(toMove, child->Value()) != toMove.end()) {
                 newNode.LinkEndChild(child->Clone());
                 toBeDeleted.push_back(child);
             }

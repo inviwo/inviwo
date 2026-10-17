@@ -207,7 +207,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
 
         std::string copy(encoded_string);
 
-        copy.erase(std::remove(copy.begin(), copy.end(), '\n'), copy.end());
+        copy.erase(std::ranges::remove(copy, '\n').begin(), copy.end());
 
         return decode<std::string>(copy, false);
     }

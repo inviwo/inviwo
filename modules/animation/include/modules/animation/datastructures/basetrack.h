@@ -304,7 +304,7 @@ std::vector<Seconds> BaseTrack<Seq>::getAllTimes() const {
             result.push_back((*seq)[i].getTime());
         }
     }
-    std::sort(result.begin(), result.end());
+    std::ranges::sort(result);
     return result;
 }
 

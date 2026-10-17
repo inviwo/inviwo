@@ -194,7 +194,7 @@ void RBFVectorFieldGenerator2D::createSamples() {
 
     samples_.resize(seeds_.get());
 
-    std::generate(samples_.begin(), samples_.end(), [&]() {
+    std::ranges::generate(samples_, [&]() {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         return std::make_pair(dvec2(x, y), randomVector());

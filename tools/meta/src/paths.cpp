@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <inviwo/meta/paths.hpp>
 #include <inviwo/meta/cmake/cmakefile.hpp>
 
@@ -46,8 +47,8 @@ bool isInviwoDir(const std::filesystem::path& inviwoPath) {
                              path{"tools"} / path{"templates"},
                              path{"src"} / path{"core"}};
 
-    return std::all_of(dirs.begin(), dirs.end(),
-                       [&](const auto& dir) { return std::filesystem::exists(inviwoPath / dir); });
+    return std::ranges::all_of(
+        dirs, [&](const auto& dir) { return std::filesystem::exists(inviwoPath / dir); });
 }
 
 static std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
@@ -78,9 +79,10 @@ static std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
                 }
             }
         }
-        guesses.erase(std::remove_if(guesses.begin(), guesses.end(),
-                                     [](const auto& p) { return p == p.parent_path(); }),
-                      guesses.end());
+        guesses.erase(
+            std::ranges::remove_if(guesses, [](const auto& p) { return p == p.parent_path(); })
+                .begin(),
+            guesses.end());
         for (auto& p : guesses) {
             p = p.parent_path();
         }
@@ -101,9 +103,10 @@ std::optional<std::filesystem::path> findInviwoPath(std::vector<std::filesystem:
             }
         }
 
-        guesses.erase(std::remove_if(guesses.begin(), guesses.end(),
-                                     [](const auto& p) { return p == p.parent_path(); }),
-                      guesses.end());
+        guesses.erase(
+            std::ranges::remove_if(guesses, [](const auto& p) { return p == p.parent_path(); })
+                .begin(),
+            guesses.end());
 
         for (auto& p : guesses) {
             p = p.parent_path();

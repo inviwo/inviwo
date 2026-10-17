@@ -29,6 +29,7 @@
 
 #include <inviwo/core/io/isovaluecollectioniivwriter.h>
 
+#include <algorithm>
 #include <string>
 #include <memory_resource>
 
@@ -62,7 +63,7 @@ std::unique_ptr<std::vector<unsigned char>> IsoValueCollectionIIVWriter::writeDa
     serializer.write(xml);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
+    std::ranges::copy(xml, buffer->begin());
     return buffer;
 }
 

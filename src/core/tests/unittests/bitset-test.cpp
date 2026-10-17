@@ -175,8 +175,8 @@ TEST(bitset, minmax) {
 
     const auto b = BitSet(indices.begin(), indices.end());
 
-    EXPECT_EQ(*std::min_element(indices.begin(), indices.end()), b.min());
-    EXPECT_EQ(*std::max_element(indices.begin(), indices.end()), b.max());
+    EXPECT_EQ(*std::ranges::min_element(indices), b.min());
+    EXPECT_EQ(*std::ranges::max_element(indices), b.max());
 }
 
 TEST(bitset, serialization) {

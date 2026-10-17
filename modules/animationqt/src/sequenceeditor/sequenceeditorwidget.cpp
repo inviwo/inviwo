@@ -83,7 +83,7 @@ void SequenceEditorWidget::reorderKeyframes() {
     std::vector<std::pair<const Keyframe*, QWidget*>> widgets(keyframeEditorWidgets_.begin(),
                                                               keyframeEditorWidgets_.end());
 
-    std::stable_sort(widgets.begin(), widgets.end(), [](auto& a, auto& b) {
+    std::ranges::stable_sort(widgets, [](auto& a, auto& b) {
         return a.first->getTime().count() < b.first->getTime().count();
     });
 

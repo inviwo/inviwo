@@ -136,13 +136,13 @@ Document::PathComponent::PathComponent(int index)
 Document::PathComponent::PathComponent(std::string_view name)
     : strrep_(name)
     , matcher_{[name = std::string(name)](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(),
-                            [&](const auto& e) { return e->isNode() && e->name() == name; });
+        return std::ranges::find_if(
+            elements, [&](const auto& e) { return e->isNode() && e->name() == name; });
     }} {}
 
 Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
+        return std::ranges::find_if(elements, [&](const auto& e) {
             if (e->isText()) return false;
             for (const auto& attr : attributes) {
                 const auto it = e->attributes().find(attr.first);
@@ -158,7 +158,7 @@ Document::PathComponent::PathComponent(std::string_view name,
     : strrep_("attr")
     , matcher_{[name = std::string(name),
                 attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
+        return std::ranges::find_if(elements, [&](const auto& e) {
             if (e->isText()) return false;
             if (e->name() != name) return false;
             for (const auto& attr : attributes) {

@@ -168,8 +168,7 @@ void RandomSphereGenerator::process() {
             const auto pickingRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(numSpheres);
             auto& data = pickingRAM->getDataContainer();
             // fill in picking IDs
-            std::iota(data.begin(), data.end(),
-                      static_cast<uint32_t>(spherePicking_.getPickingId(0)));
+            std::ranges::iota(data, static_cast<uint32_t>(spherePicking_.getPickingId(0)));
 
             mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib),
                             std::make_shared<Buffer<uint32_t>>(pickingRAM));

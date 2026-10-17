@@ -142,7 +142,7 @@ void RBFVectorFieldGenerator3D::process() {
     const vec3 offset = vec3(-1);
 
     std::vector<std::pair<dvec3, dvec3>> samples(seeds_.get());
-    std::generate(samples.begin(), samples.end(), [&]() {
+    std::ranges::generate(samples, [&]() {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         const auto z = x_(mt_);

@@ -35,6 +35,8 @@
 
 #include <fmt/ostream.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format)
@@ -305,8 +307,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     std::vector<std::pair<size_t, std::type_index>> order;
     order.reserve(targets.size());
     for (const auto& elem : targets) order.emplace_back(elem.second->priority(), elem.first);
-    std::sort(order.begin(), order.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
+    std::ranges::sort(order, [](const auto& a, const auto& b) { return a.first < b.first; });
 
     for (const auto& item : order) {
         const auto sIt = representations_.find(item.second);
@@ -335,18 +336,17 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
 const DataFormatBase* Image::getDataFormat() const { return getColorLayer()->getDataFormat(); }
 
 dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
-    const auto it = std::min_element(representations_.begin(), representations_.end(),
-                                     [](const auto& a, const auto& b) {
-                                         if (a.second->isValid() && b.second->isValid()) {
-                                             return a.second->priority() < b.second->priority();
-                                         } else if (a.second->isValid()) {
-                                             return true;
-                                         } else if (b.second->isValid()) {
-                                             return false;
-                                         } else {
-                                             return a.second->priority() < b.second->priority();
-                                         }
-                                     });
+    const auto it = std::ranges::min_element(representations_, [](const auto& a, const auto& b) {
+        if (a.second->isValid() && b.second->isValid()) {
+            return a.second->priority() < b.second->priority();
+        } else if (a.second->isValid()) {
+            return true;
+        } else if (b.second->isValid()) {
+            return false;
+        } else {
+            return a.second->priority() < b.second->priority();
+        }
+    });
 
     if (it != representations_.end()) {
         it->second->update(false);

@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -137,8 +138,8 @@ static void print_node(const p::parse_tree::node& n, const std::string& s = "") 
     } else {
         if (n.has_content()) {
             auto content = n.string();
-            std::transform(content.begin(), content.end(), content.begin(),
-                           [](char c) { return c == '\n' ? '~' : c; });
+            std::ranges::transform(content, content.begin(),
+                                   [](char c) { return c == '\n' ? '~' : c; });
             std::cout << s << n.type << " \"" << content << "\"" << '\n';
         } else {
             std::cout << s << n.type << '\n';

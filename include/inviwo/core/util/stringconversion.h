@@ -477,14 +477,14 @@ private:
     static std::size_t hash(std::string_view str) {
         if (str.size() <= 128) {
             std::array<char, 128> stack;
-            std::copy(str.begin(), str.end(), stack.begin());
+            std::ranges::copy(str, stack.begin());
             std::transform(stack.begin(), stack.begin() + str.size(), stack.begin(),
                            [](char c) { return static_cast<char>(std::tolower(c)); });
             return hash_type{}(std::string_view(stack.data(), str.size()));
         } else {
             std::string copy(str);
-            std::transform(copy.begin(), copy.end(), copy.begin(),
-                           [](char c) { return static_cast<char>(std::tolower(c)); });
+            std::ranges::transform(copy, copy.begin(),
+                                   [](char c) { return static_cast<char>(std::tolower(c)); });
             return hash_type{}(copy);
         }
     }

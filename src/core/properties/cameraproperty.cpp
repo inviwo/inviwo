@@ -43,6 +43,7 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <algorithm>
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <limits>
@@ -63,7 +64,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                       auto opts = OptionPropertyState<std::string>{};
                       const auto keys = factory_->getKeyView();
                       for (const auto& key : keys) opts.options.emplace_back(key);
-                      const auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
+                      const auto it = std::ranges::find(keys, "PerspectiveCamera");
                       opts.selectedIndex = it != keys.end() ? std::distance(keys.begin(), it) : 0;
                       opts.help =
                           "The type of camera to use, defaults to a Perspective camera"_help;
@@ -356,9 +357,8 @@ void CameraProperty::invokeEvent(Event* event) {
 }
 
 Property* CameraProperty::getCameraProperty(const std::string& identifier) const {
-    const auto it =
-        std::find_if(cameraProperties_.begin(), cameraProperties_.end(),
-                     [&](auto property) { return property->getIdentifier() == identifier; });
+    const auto it = std::ranges::find_if(
+        cameraProperties_, [&](auto property) { return property->getIdentifier() == identifier; });
     if (it != cameraProperties_.end()) {
         return *it;
     } else {

@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <algorithm>
 #include <glm/gtx/component_wise.hpp>
 #include <utility>
 
@@ -88,7 +89,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
     std::vector<std::shared_ptr<Image>> unusedImages;
 
     for (auto it = cache_.begin(); it != cache_.end();) {
-        const auto dim = std::find(dimensions.begin(), dimensions.end(), it->first);
+        const auto dim = std::ranges::find(dimensions, it->first);
         if (dim == dimensions.end() || it->first == master_->getDimensions()) {
             unusedImages.push_back(std::move(it->second));
             it = cache_.erase(it);
@@ -135,10 +136,9 @@ std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
 }
 
 std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& dimensions) {
-    const auto it =
-        std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
-            return !util::contains(dimensions, elem.first);
-        });
+    const auto it = std::ranges::find_if(cache_, [&dimensions](const Cache::value_type& elem) {
+        return !util::contains(dimensions, elem.first);
+    });
 
     if (it != cache_.end()) {
         auto ptr = it->second;

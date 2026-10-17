@@ -66,7 +66,7 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2>& hull, bool useI
 
         std::vector<uint32_t> seq(hull.size());
         // create a sequence of increasing numbers
-        std::iota(seq.begin(), seq.end(), 0);
+        std::ranges::iota(seq, 0);
 
         indexBuffer->append(&seq);
 

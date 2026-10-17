@@ -242,14 +242,15 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
 
     // Check that all textures has the same dimensions
     const size2_t texDim = textureLayers.front()->getDimensions();
-    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
-                     [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
+    if (!std::ranges::all_of(textureLayers,
+                             [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
         throw Exception(SourceContext{}, "Textures have inconsistent sizes: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }
     const DataFormatBase* const dataformat = textureLayers.front()->getDataFormat();
-    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
-                     [&](const auto& layer) { return layer->getDataFormat() == dataformat; })) {
+    if (!std::ranges::all_of(textureLayers, [&](const auto& layer) {
+            return layer->getDataFormat() == dataformat;
+        })) {
         throw Exception(SourceContext{}, "Textures have inconsistent formats: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }

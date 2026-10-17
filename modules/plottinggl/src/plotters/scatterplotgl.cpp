@@ -589,8 +589,8 @@ void ScatterPlotGL::partitionData() {
         indices.assign(seq.begin(), seq.end());
     }
 
-    const auto lastFilteredIt = std::partition(indices.begin(), indices.end(),
-                                               [&](auto ind) { return filtered_.contains(ind); });
+    const auto lastFilteredIt =
+        std::ranges::partition(indices, [&](auto ind) { return filtered_.contains(ind); }).begin();
     const auto lastRegularIt = std::partition(lastFilteredIt, indices.end(), [&](auto ind) {
         return !selected_.contains(ind) && !highlighted_.contains(ind);
     });

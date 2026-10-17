@@ -340,8 +340,7 @@ inline void ShaderWidget::queryReloadFile() {
     }
 
     auto children = findChildren<QWidget*>();
-    const auto focus =
-        std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
+    const auto focus = std::ranges::any_of(children, [](auto w) { return w->hasFocus(); });
     if (focus && fileChangedInBackground_ && !reloadQueryInProgress_) {
         const util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
         const std::string msg =

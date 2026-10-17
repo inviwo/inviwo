@@ -138,9 +138,9 @@ public:
                 const std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
                 for (auto* prop : properties) {
                     const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
-                    if (std::none_of(
-                            std::begin(keepProperties), std::end(keepProperties),
-                            [prop](const auto& v) { return v == prop->getIdentifier(); })) {
+                    if (std::ranges::none_of(keepProperties, [prop](const auto& v) {
+                            return v == prop->getIdentifier();
+                        })) {
                         prop->setVisible(false);
                     }
                 }

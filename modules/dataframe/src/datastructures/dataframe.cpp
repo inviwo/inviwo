@@ -142,10 +142,11 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(std::string_view identifi
 }
 
 void DataFrame::dropColumn(std::string_view header) {
-    columns_.erase(std::remove_if(std::begin(columns_), std::end(columns_),
-                                  [&](std::shared_ptr<Column> col) -> bool {
-                                      return col->getHeader() == header;
-                                  }),
+    columns_.erase(std::ranges::remove_if(columns_,
+                                          [&](std::shared_ptr<Column> col) -> bool {
+                                              return col->getHeader() == header;
+                                          })
+                       .begin(),
                    std::end(columns_));
 }
 
@@ -179,7 +180,7 @@ void DataFrame::updateIndexBuffer() {
     const auto oldSize = indexVector.size();
     indexVector.resize(nrows);
     if (oldSize == 0) {
-        std::iota(indexVector.begin(), indexVector.end(), 0);
+        std::ranges::iota(indexVector, 0);
     } else if (nrows > oldSize) {
         std::iota(indexVector.begin() + oldSize, indexVector.end(), indexVector[oldSize - 1]);
     }

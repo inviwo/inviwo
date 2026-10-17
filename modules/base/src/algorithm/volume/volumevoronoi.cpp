@@ -160,9 +160,8 @@ std::shared_ptr<Volume> voronoiSegmentation(
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
     voronoiVolume->setWrapping(wrapping);
 
-    const auto [itMin, itMax] =
-        std::minmax_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                            [](const auto& a, const auto& b) { return a.first < b.first; });
+    const auto [itMin, itMax] = std::ranges::minmax_element(
+        seedPointsWithIndices, [](const auto& a, const auto& b) { return a.first < b.first; });
 
     voronoiVolume->dataMap.dataRange =
         dvec2{static_cast<double>(itMin->first), static_cast<double>(itMax->first)};
@@ -177,13 +176,12 @@ std::shared_ptr<Volume> voronoiSegmentation(
         seedPointsWithIndices.size()};
 
     const auto modelToDataMatrix = glm::inverse(dataToModelMatrix);
-    std::transform(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                   dataSeedPointsWithIndices.begin(),
-                   [&modelToDataMatrix](const std::pair<uint32_t, vec3>& pair) {
-                       return std::pair<uint32_t, vec3>{
-                           static_cast<unsigned short>(pair.first),
-                           vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
-                   });
+    std::ranges::transform(seedPointsWithIndices, dataSeedPointsWithIndices.begin(),
+                           [&modelToDataMatrix](const std::pair<uint32_t, vec3>& pair) {
+                               return std::pair<uint32_t, vec3>{
+                                   static_cast<unsigned short>(pair.first),
+                                   vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
+                           });
 
     if (weights.has_value()) {
         using Functor = void (*)(const size3_t, const mat4&, const mat4&,

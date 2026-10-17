@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwocommondefines.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 namespace {
@@ -195,8 +197,8 @@ const std::vector<std::string>& CommandLineParser::getArgs() const { return args
 const std::vector<std::string>& CommandLineParser::getIgnoredArgs() const { return ignoredArgs_; }
 
 void CommandLineParser::processCallbacks() {
-    std::sort(callbacks_.begin(), callbacks_.end(),
-              [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); });
+    std::ranges::sort(callbacks_,
+                      [](const auto& a, const auto& b) { return std::get<0>(a) < std::get<0>(b); });
     for (auto&& [prio, arg, callback] : callbacks_) {
         if (arg->isSet() && callback) {
             callback();
@@ -209,9 +211,8 @@ void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int
 }
 
 void CommandLineParser::remove(TCLAP::Arg* arg) {
-    const auto it =
-        std::find_if(std::begin(callbacks_), std::end(callbacks_),
-                     [arg](const auto& callback) { return std::get<1>(callback) == arg; });
+    const auto it = std::ranges::find_if(
+        callbacks_, [arg](const auto& callback) { return std::get<1>(callback) == arg; });
     if (it != callbacks_.end()) {
         callbacks_.erase(it);
     }

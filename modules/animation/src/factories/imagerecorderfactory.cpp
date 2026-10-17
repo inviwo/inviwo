@@ -38,6 +38,7 @@
 
 #include <fmt/format.h>
 
+#include <algorithm>
 #include <utility>
 
 namespace inviwo::animation {
@@ -160,8 +161,9 @@ BoolCompositeProperty* ImageRecorderFactory::options() {
         auto writerFactory = util::getDataWriterFactory(app_);
         const auto exts = writerFactory->getExtensionsForType<Layer>();
         std::vector<OptionPropertyOption<FileExtension>> opts;
-        std::transform(exts.begin(), exts.end(), std::back_inserter(opts),
-                       [](const auto& ext) { return OptionPropertyOption<FileExtension>{ext}; });
+        std::ranges::transform(exts, std::back_inserter(opts), [](const auto& ext) {
+            return OptionPropertyOption<FileExtension>{ext};
+        });
 
         writer_.replaceOptions(std::move(opts));
         writer_.setCurrentStateAsDefault();

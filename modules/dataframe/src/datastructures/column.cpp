@@ -40,6 +40,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 
+#include <algorithm>
 #include <sstream>
 #include <unordered_map>
 
@@ -157,7 +158,7 @@ std::optional<dvec2> CategoricalColumn::getCustomRange() const { return range_; 
 
 dvec2 CategoricalColumn::getDataRange() const {
     const auto& cont = buffer_->getRAMRepresentation()->getDataContainer();
-    auto&& [minIt, maxIt] = std::minmax_element(cont.begin(), cont.end());
+    auto&& [minIt, maxIt] = std::ranges::minmax_element(cont);
     return {*minIt, *maxIt};
 }
 

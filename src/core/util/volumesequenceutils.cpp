@@ -31,6 +31,8 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <algorithm>
+
 namespace inviwo::util {
 
 bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly) {
@@ -85,12 +87,12 @@ VolumeSequence sortSequence(const VolumeSequence& seq) {
         sorted.push_back(item);
     }
 
-    std::sort(sorted.begin(), sorted.end(),
-              [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
-                  const auto t1 = getTimestamp(a);
-                  const auto t2 = getTimestamp(b);
-                  return t1 < t2;
-              });
+    std::ranges::sort(
+        sorted, [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
+            const auto t1 = getTimestamp(a);
+            const auto t2 = getTimestamp(b);
+            return t1 < t2;
+        });
     return VolumeSequence{sorted};
 }
 
@@ -111,7 +113,7 @@ std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolum
         return std::make_pair(seq[i], seq[i2]);
     } else if (sorted) {
         // find first volume with timestamp greater than t
-        auto it = std::find_if(seq.begin(), seq.end(), [t](const std::shared_ptr<const Volume>& v) {
+        auto it = std::ranges::find_if(seq, [t](const std::shared_ptr<const Volume>& v) {
             const auto vt = getTimestamp(v);
             return t < vt;
         });

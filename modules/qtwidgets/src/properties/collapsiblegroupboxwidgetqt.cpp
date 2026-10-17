@@ -371,15 +371,13 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 }
 
 PropertyWidgetQt* CollapsibleGroupBoxWidgetQt::widgetForProperty(Property* property) const {
-    if (const auto it = std::find(properties_.begin(), properties_.end(), property);
-        it != properties_.end()) {
+    if (const auto it = std::ranges::find(properties_, property); it != properties_.end()) {
         return *(propertyWidgets_.begin() + std::distance(properties_.begin(), it));
     }
     return nullptr;
 }
 Property* CollapsibleGroupBoxWidgetQt::propertyForWidget(PropertyWidgetQt* widget) const {
-    if (const auto it = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
-        it != propertyWidgets_.end()) {
+    if (const auto it = std::ranges::find(propertyWidgets_, widget); it != propertyWidgets_.end()) {
         return *(properties_.begin() + std::distance(propertyWidgets_.begin(), it));
     }
     return nullptr;
@@ -513,9 +511,9 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
         setUpdatesEnabled(true);
     });
 
-    const auto pit = std::find(properties_.begin(), properties_.end(), prop);
-    const auto wit = std::find_if(propertyWidgets_.begin(), propertyWidgets_.end(),
-                                  [&](auto w) { return w->getProperty() == prop; });
+    const auto pit = std::ranges::find(properties_, prop);
+    const auto wit =
+        std::ranges::find_if(propertyWidgets_, [&](auto w) { return w->getProperty() == prop; });
 
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
         if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {

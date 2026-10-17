@@ -28,6 +28,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVector2D>
@@ -146,13 +147,12 @@ size_t LinkDialogPropertyGraphicsItem::getConnectionGraphicsItemCount() const {
 
 size_t LinkDialogPropertyGraphicsItem::getConnectionIndex(
     const DialogConnectionGraphicsItem* item) const {
-    return std::find(connections_.begin(), connections_.end(), item) - connections_.begin();
+    return std::ranges::find(connections_, item) - connections_.begin();
 }
 
 void LinkDialogPropertyGraphicsItem::removeConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
-    connections_.erase(std::remove(connections_.begin(), connections_.end(), cItem),
-                       connections_.end());
+    connections_.erase(std::ranges::remove(connections_, cItem).begin(), connections_.end());
 
     if (connections_.empty()) {
         LinkDialogTreeItem* item = this;

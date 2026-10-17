@@ -593,10 +593,9 @@ void ShaderObject::parseSource(std::ostringstream& output) {
         }
     };
 
-    std::sort(shaderSegments_.begin(), shaderSegments_.end(),
-              [](const ShaderSegment& a, const ShaderSegment& b) {
-                  return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
-              });
+    std::ranges::sort(shaderSegments_, [](const ShaderSegment& a, const ShaderSegment& b) {
+        return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
+    });
     std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
         replacements;
     for (const auto& segment : shaderSegments_) {
@@ -728,8 +727,9 @@ void ShaderObject::addSegment(ShaderSegment segment) {
 
 void ShaderObject::removeSegments(std::string_view name) {
     shaderSegments_.erase(
-        std::remove_if(shaderSegments_.begin(), shaderSegments_.end(),
-                       [&name](const ShaderSegment& segment) { return segment.name == name; }),
+        std::ranges::remove_if(
+            shaderSegments_, [&name](const ShaderSegment& segment) { return segment.name == name; })
+            .begin(),
         shaderSegments_.end());
 }
 

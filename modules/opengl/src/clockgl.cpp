@@ -57,7 +57,7 @@ void ClockGL::start() {
     if (!queries_.empty() && queries_.back().state == State::Started) {
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
     } else if (!queries_.empty() && queries_.front().state == State::Unused) {
-        std::rotate(queries_.begin(), queries_.begin() + 1, queries_.end());
+        std::ranges::rotate(queries_, queries_.begin() + 1);
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
         queries_.back().state = State::Started;
     } else {
@@ -145,8 +145,8 @@ void ClockGL::collectTiming() {
             }
         }
     }
-    std::stable_partition(queries_.begin(), queries_.end(),
-                          [](auto& query) { return query.state == State::Unused; });
+    std::ranges::stable_partition(queries_,
+                                  [](auto& query) { return query.state == State::Unused; });
 }
 
 double ClockGL::getElapsedMilliseconds(std::chrono::seconds timeout) {

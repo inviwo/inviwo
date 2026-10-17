@@ -92,7 +92,7 @@ void ShaderManager::unregisterShader(Shader* shader) {
 
 bool ShaderManager::isRegistered(Shader* shader) const {
     if (mainThread_ != std::this_thread::get_id()) return false;
-    return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
+    return std::ranges::find(shaders_, shader) != shaders_.end();
 }
 
 const std::vector<std::filesystem::path>& ShaderManager::getShaderSearchPaths() {

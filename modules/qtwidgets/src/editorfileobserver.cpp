@@ -136,7 +136,7 @@ void EditorFileObserver::queryReloadFile() {
 
 bool EditorFileObserver::widgetIsFocused() const {
     auto children = parent_->findChildren<QWidget*>();
-    return std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
+    return std::ranges::any_of(children, [](auto w) { return w->hasFocus(); });
 }
 
 }  // namespace utilqt

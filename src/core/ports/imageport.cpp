@@ -33,6 +33,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 std::string_view enumToStr(OutportDeterminesSize ods) {
@@ -126,18 +128,17 @@ bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 size2_t ImageOutport::getLargestReqDim() const {
     if (requestedDimensions_.empty()) return {1, 1};
 
-    return std::max_element(requestedDimensions_.begin(), requestedDimensions_.end(),
-                            [](const auto& a, const auto& b) {
-                                return a.second.x * a.second.y < b.second.x * b.second.y;
-                            })
+    return std::ranges::max_element(requestedDimensions_,
+                                    [](const auto& a, const auto& b) {
+                                        return a.second.x * a.second.y < b.second.x * b.second.y;
+                                    })
         ->second;
 }
 
 void ImageOutport::pruneCache() {
     std::vector<size2_t> registeredDimensions;
-    std::transform(requestedDimensions_.begin(), requestedDimensions_.end(),
-                   std::back_inserter(registeredDimensions),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(requestedDimensions_, std::back_inserter(registeredDimensions),
+                           [](const auto& item) { return item.second; });
     cache_.prune(registeredDimensions);
 }
 

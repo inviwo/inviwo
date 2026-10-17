@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <inviwo/meta/creator.hpp>
 #include <inviwo/meta/paths.hpp>
 #include <inviwo/meta/util.hpp>
@@ -272,7 +273,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
         const auto ext = std::regex(R"(^ext/)");
 
         return std::regex_search(p, test) || std::regex_search(p, ext) ||
-               std::any_of(filters.begin(), filters.end(), [&](const std::string& f) {
+               std::ranges::any_of(filters, [&](const std::string& f) {
                    return std::regex_search(p, std::regex(f));
                });
     };

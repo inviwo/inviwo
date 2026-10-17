@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -135,10 +136,10 @@ TEST(Marchingcubes, one) {
         std::vector<vec3> vals = {map(vert + vec3{0.5f, 0.0f, 0.0f}),
                                   map(vert + vec3{0.0f, 0.5f, 0.0f}),
                                   map(vert + vec3{0.0f, 0.0f, 0.5f})};
-        std::sort(vals.begin(), vals.end(), order);
+        std::ranges::sort(vals, order);
 
         std::vector<vec3> spos(pos);
-        std::sort(spos.begin(), spos.end(), order);
+        std::ranges::sort(spos, order);
 
         EXPECT_EQ(vals, spos);
 
@@ -167,10 +168,10 @@ TEST(Marchingcubes, one) {
         std::vector<vec3> vals = {map(vert + vec3{0.5f, 0.0f, 0.0f}),
                                   map(vert + vec3{0.0f, 0.5f, 0.0f}),
                                   map(vert + vec3{0.0f, 0.0f, 0.5f})};
-        std::sort(vals.begin(), vals.end(), order);
+        std::ranges::sort(vals, order);
 
         std::vector<vec3> spos(pos);
-        std::sort(spos.begin(), spos.end(), order);
+        std::ranges::sort(spos, order);
 
         EXPECT_EQ(vals, spos);
 
@@ -237,9 +238,9 @@ TEST(Marchingcubes, two) {
                         vertices.push_back(map(fv2 + vals[i]));
                     }
                 }
-                std::sort(vertices.begin(), vertices.end(), order);
+                std::ranges::sort(vertices, order);
                 std::vector<vec3> spos(pos);
-                std::sort(spos.begin(), spos.end(), order);
+                std::ranges::sort(spos, order);
 
                 EXPECT_EQ(vertices, spos);
 

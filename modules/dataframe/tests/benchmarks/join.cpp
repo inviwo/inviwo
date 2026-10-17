@@ -29,6 +29,7 @@
 
 #include <benchmark/benchmark.h>
 
+#include <algorithm>
 #include <string_view>
 #include <string>
 #include <array>
@@ -71,7 +72,7 @@ const std::vector<int> right_ = []() {
     std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> right;
     right.resize(lenRight);
-    std::generate(right.begin(), right.end(), [&]() { return distrib(gen); });
+    std::ranges::generate(right, [&]() { return distrib(gen); });
     return right;
 }();
 
@@ -231,7 +232,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
 
     const auto columnData = [&]() {
         std::vector<int> data(size);
-        std::generate(data.begin(), data.end(), [&]() { return distrib(gen); });
+        std::ranges::generate(data, [&]() { return distrib(gen); });
         return data;
     };
 

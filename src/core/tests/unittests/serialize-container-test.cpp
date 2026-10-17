@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -116,8 +117,7 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
                                      },
                                  .onMove =
                                      [&](Item*& i, size_t newIndex) {
-                                         if (const auto it =
-                                                 std::find(vector.begin(), vector.end(), i);
+                                         if (const auto it = std::ranges::find(vector, i);
                                              it != vector.end()) {
                                              Item* item = i;
                                              vector.erase(it);

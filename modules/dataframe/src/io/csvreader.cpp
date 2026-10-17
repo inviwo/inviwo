@@ -456,7 +456,7 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
                         }
                     });
         if (i > sampledRows) {
-            if (std::any_of(counts.begin(), counts.end(), [](const TypeCounts& type) {
+            if (std::ranges::any_of(counts, [](const TypeCounts& type) {
                     return type.integer == 0 && type.real == 0 && type.string == 0;
                 })) {
                 sampledRows *= 2;
@@ -620,10 +620,10 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
     };
 
     if (filterApplicable(filters_.includeRows) &&
-        std::none_of(filters_.includeRows.begin(), filters_.includeRows.end(), filterRow(true))) {
+        std::ranges::none_of(filters_.includeRows, filterRow(true))) {
         return true;
     }
-    if (std::any_of(filters_.excludeRows.begin(), filters_.excludeRows.end(), filterRow(false))) {
+    if (std::ranges::any_of(filters_.excludeRows, filterRow(false))) {
         return true;
     }
 
