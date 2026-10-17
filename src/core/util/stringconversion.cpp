@@ -313,7 +313,7 @@ std::string randomString(size_t length) {
 std::string dotSeperatedToPascalCase(std::string_view s) {
     std::stringstream ss;
     util::forEachStringPart(s, ".", [&](std::string_view elem) {
-        if (elem.size() > 0) ss << static_cast<char>(std::toupper(elem[0]));
+        if (!elem.empty()) ss << static_cast<char>(std::toupper(elem[0]));
         if (elem.size() > 1) ss << elem.substr(1);
     });
     return ss.str();

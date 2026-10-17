@@ -128,7 +128,7 @@ TFSelector::TFSelector()
         for (auto p : tfPresets_.getProperties()) {
             p->onChange([]() {});
         }
-        if (tfPresets_.size() > 0 && selectedTF_.size() > 0) {
+        if (!tfPresets_.empty() && !selectedTF_.empty()) {
             auto p = static_cast<TransferFunctionProperty*>(
                 tfPresets_.getPropertyByIdentifier(selectedTF_.getSelectedIdentifier()));
             tfOut_.set(p->get());
@@ -170,7 +170,7 @@ void TFSelector::updateOptions() {
     // update option property
     const NetworkLock lock(&selectedTF_);
 
-    if (tfPresets_.size()) {
+    if (!tfPresets_.empty()) {
         std::vector<OptionPropertyStringOption> tfOptions;
         for (auto p : tfPresets_.getProperties()) {
             tfOptions.emplace_back(p->getIdentifier(), p->getDisplayName());

@@ -88,7 +88,7 @@ void DemoController::setFileOptions() {
     updateWorkspace_ = true;
 
     // Select first element, call file callback.
-    if (demoFile_.getValues().size() > 0) {
+    if (!demoFile_.getValues().empty()) {
         demoFile_.set(0);
         onChangeSelection(Offset::Reload);
     }

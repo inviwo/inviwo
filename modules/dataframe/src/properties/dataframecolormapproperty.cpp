@@ -80,7 +80,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
     });
 
     selectedColorAxis.onChange([&]() {
-        if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() ||
+        if (selectedColorAxis.empty() || colormaps_.size() != selectedColorAxis.size() ||
             overrideColormap) {
             return;
         }
