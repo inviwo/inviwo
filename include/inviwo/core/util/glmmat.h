@@ -46,11 +46,11 @@
 
 namespace inviwo {
 
-using mat2 = glm::mat2;
-using mat3 = glm::mat3;
-using mat4 = glm::mat4;
-using dmat2 = glm::dmat2;
-using dmat3 = glm::dmat3;
-using dmat4 = glm::dmat4;
+using glm::mat2;
+using glm::mat3;
+using glm::mat4;
+using glm::dmat2;
+using glm::dmat3;
+using glm::dmat4;
 
 }  // namespace inviwo

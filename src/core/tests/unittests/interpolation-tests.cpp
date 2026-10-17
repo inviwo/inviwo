@@ -66,12 +66,12 @@ TEST(InterpolationTest, LinerInterpolationChar) {
 }
 
 TEST(InterpolationTest, LinerInterpolationCharVec) {
-    using u8vec3 = glm::u8vec3;
+    using glm::u8vec3;
     using Inter = Interpolation<u8vec3, double>;
 
     // helpers to print numberical values instead of chars incase of error
     const auto expect_eq = [](u8vec3 a, u8vec3 b, const std::string& msg = "") {
-        using u16vec3 = glm::u16vec3;
+        using glm::u16vec3;
         if (!msg.empty()) {
             EXPECT_EQ(u16vec3(a), u16vec3(b)) << msg;
         } else {
@@ -90,7 +90,7 @@ TEST(InterpolationTest, LinerInterpolationCharVec) {
 }
 
 TEST(InterpolationTest, LinerInterpolationShortVec) {
-    using u16vec3 = glm::u16vec3;
+    using glm::u16vec3;
     using Inter = Interpolation<u16vec3, double>;
 
     EXPECT_EQ(Inter::linear(u16vec3(0), u16vec3(255), 0.0), u16vec3(0));
@@ -101,7 +101,7 @@ TEST(InterpolationTest, LinerInterpolationShortVec) {
 }
 
 TEST(InterpolationTest, LinerInterpolationUInt32Vec) {
-    using u32vec3 = glm::u32vec3;
+    using glm::u32vec3;
     using Inter = Interpolation<u32vec3, double>;
 
     EXPECT_EQ(Inter::linear(u32vec3(0), u32vec3(255), 0.0), u32vec3(0));

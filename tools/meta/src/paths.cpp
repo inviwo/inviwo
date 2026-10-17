@@ -39,7 +39,7 @@
 namespace inviwo::meta {
 
 bool isInviwoDir(const std::filesystem::path& inviwoPath) {
-    using path = std::filesystem::path;
+    using std::filesystem::path;
     const std::array dirs = {path{"README.md"},
                              path{"CHANGELOG.md"},
                              path{"modules"} / path{"base"},
@@ -54,7 +54,7 @@ bool isInviwoDir(const std::filesystem::path& inviwoPath) {
 static std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
     std::vector<std::filesystem::path> guesses) {
 
-    using path = std::filesystem::path;
+    using std::filesystem::path;
 
     const std::string_view CMakeCache = "CMakeCache.txt";
     const std::string_view pattern = "INVIWOCOREMODULE_base";

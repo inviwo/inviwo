@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-using json = ::nlohmann::json;
+using ::nlohmann::json;
 
 template <typename T>
 concept JSONConvertable = requires(T& t, json& j) {
