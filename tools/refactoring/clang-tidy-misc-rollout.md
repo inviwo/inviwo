@@ -1,9 +1,14 @@
 # clang-tidy rollout — status & resume notes
 
-**Status:** `misc-*` complete. Now working through **all** enabled checks,
+**Status (latest):** the fixable-check queue is now **exhausted** — every check
+with `has_fix: true` has either been applied (one commit each), partially
+applied, or explicitly rejected (see "Progress since `bugprone-reserved-identifier`"
+and "Second batch" below). The older text in this header is historical:
+
+**Historical status:** `misc-*` complete. Then worked through **all** enabled checks,
 ordered smallest-diagnostic-count-first (see "All-checks rollout" section
-below for current progress and the exact resume point). 69 checks done so
-far (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
+below for current progress and the exact resume point). 69 checks done at
+that point (34 + a batch of 11 + a batch of 6 + 4 more + `readability-const-return-type`
 + `modernize-use-integer-sign-comparison` + `performance-inefficient-vector-operation`
 + `readability-qualified-auto` + `readability-make-member-function-const`
 + `modernize-use-equals-default` + `modernize-use-nullptr`
@@ -36,17 +41,67 @@ mismatched out-of-line `ValueKeyframe` ctor signature),
 `llvm::find_if` and adds `#include "llvm/ADT/STLExtras.h"`; Inviwo does not
 depend on LLVM. Use `modernize-use-ranges` (std::ranges) instead.
 
-**Remaining fixable checks (smallest first):** `modernize-use-ranges`,
-`readability-inconsistent-declaration-parameter-name`,
-`bugprone-crtp-constructor-accessibility`, `modernize-concat-nested-namespaces`,
-`modernize-use-designated-initializers`, `performance-unnecessary-value-param`,
-`modernize-use-using`, `readability-redundant-casting`,
-`modernize-use-constraints`, `readability-redundant-lambda-parameter-list`,
-`readability-redundant-qualified-alias`, `readability-trailing-comma`,
-`modernize-type-traits`, `readability-redundant-typename`. (`readability-enum-initial-value`
-and `modernize-avoid-bind` also show up in the JSON but are already done.)
-Note the diagnostic counts in the JSON are inflated by header re-parsing; the
-real number of changed files is usually small (e.g. 729 TUs -> 2 files).
+### Second batch (after `readability-redundant-inline-specifier`)
+
+All committed, one commit per check, each built clean with 17/17 ctest passing:
+
+- `modernize-use-ranges` (std::ranges; some hunks failed to compile and were
+  hand-fixed or reverted),
+  `readability-inconsistent-declaration-parameter-name`,
+  `modernize-concat-nested-namespaces`, `modernize-use-designated-initializers`.
+- `performance-unnecessary-value-param` (**`.cpp`-only subset**): the header
+  edits were garbled ("reference to reference" on already-`&` params,
+  declaration/definition mismatches) so all header changes were reverted, and
+  every `.cpp` whose out-of-line member or **free-function** definition no
+  longer matched its (reverted) header declaration was reverted too. Free
+  functions are the sneaky case: a const-ref definition is a different
+  overload, so it compiles and only fails at *link* time (undefined symbol) —
+  always do a full link, not just compile. Also reverted a test helper where
+  `const TouchDevice& = TouchDevice(...)` default arg dangled/changed behaviour
+  (caught by `PickingControllerTest`), and lambdas with `const const auto&&`
+  garbage. Fixed one `std::move(std::move(x))`. Ran
+  `bugprone-use-after-move` over the changed `.cpp` files: clean.
+- `modernize-use-using`: only 12 files really changed; replaced the
+  `using X = struct X {...}` / `using GLFWwindow = struct GLFWwindow;`
+  results by plain `struct X ...;` declarations.
+- `readability-redundant-casting` (**partial**): the fix strips
+  `static_cast<void (Class::*)(Args)>(&Class::overloaded)` casts used to select
+  an overload (Qt `connect`, pybind11 `.def`), leaving `(&Class::f)` which is
+  ambiguous/wrong. Reverted every file containing such a hunk; kept the genuine
+  numeric redundant casts (and removed the stray parentheses the fix leaves).
+- `modernize-use-constraints` (**partial**): `serializer.h`/`deserializer.h`
+  skipped — the fix adds `requires` to the out-of-line definitions but strips
+  the `enable_if` default arg from the declaration, so declaration and
+  definition no longer match.
+- `readability-redundant-lambda-parameter-list` (465 files), 
+  `readability-redundant-qualified-alias`, `readability-redundant-typename`
+  (111 files): applied as-is.
+- `modernize-type-traits`: applied, but the fix turned
+  `is_detected_exact_v = is_detected_exact<...>::value` into a **self-referential**
+  `is_detected_exact_v = is_detected_exact_v<...>`; hand-fixed in `detected.h`.
+  After any `*_v`/`*_t` rewrite grep the diff for a variable template that
+  now names itself.
+
+**Rejected, no commit:**
+- `bugprone-crtp-constructor-accessibility` (earlier in this batch).
+- `readability-trailing-comma`: not a pure style change here — the fix inserts
+  commas in constructor member-initializer lists, default arguments and
+  function-call argument lists (compile errors: "missing ',' between base or
+  member initializers", "unexpected end of default argument expression"),
+  and clang-format then explodes multi-line lists one element per line
+  (+9344/-6069 lines across 488 files). Reverted in full.
+
+**Remaining fixable checks:** none. (`readability-enum-initial-value` and
+`modernize-avoid-bind` show up in the JSON but are already done.) Note the
+diagnostic counts in the JSON are inflated by header re-parsing; the real
+number of changed files is usually small (e.g. 729 TUs -> 2 files; 12499
+`modernize-use-using` diagnostics -> 12 files).
+
+**Generic recipe for "fix breaks header/definition pairs" checks:** revert the
+header hunks, `git checkout --` the `.cpp` files reported with "out-of-line
+definition ... does not match any declaration", rebuild with `ninja -k 0`, and
+repeat; then do a full link and chase any `Undefined symbols` (free functions)
+the same way.
 
 ## Workflow v2 (2026-10-15 evening) — batch dry-run + scoped fixes
 
