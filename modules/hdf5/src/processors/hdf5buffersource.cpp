@@ -79,6 +79,7 @@ void HDF5ToBuffer::process() try {
         bufferMatches_ = util::getDataSets(*data);
 
         std::vector<OptionPropertyStringOption> bufferOptions;
+        bufferOptions.reserve(bufferMatches_.size());
         for (const auto& info : bufferMatches_) {
             bufferOptions.emplace_back(info.path.toString(), util::dataSetDescription(info),
                                        info.path.toString());

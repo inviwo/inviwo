@@ -75,8 +75,8 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
 
     layout_->addWidget(timeSpinner_);
 
-    if (auto propTrack = dynamic_cast<BasePropertyTrack*>(&parent->getTrack())) {
-        auto baseProperty = propTrack->getProperty();
+    if (auto* propTrack = dynamic_cast<BasePropertyTrack*>(&parent->getTrack())) {
+        auto* baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setPropertyFromKeyframe(property_.get(), &keyframe);
         property_->onChange([p = property_.get(), t = propTrack, k = &keyframe_]() {
@@ -87,12 +87,12 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
         auto propWidget = util::getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
+        if (auto* label = propertyWidget_->findChild<EditableLabelQt*>()) {
             label->setVisible(false);
         }
         layout_->addWidget(propertyWidget_);
 
-    } else if (auto ctrlKey = dynamic_cast<ControlKeyframe*>(&keyframe)) {
+    } else if (auto* ctrlKey = dynamic_cast<ControlKeyframe*>(&keyframe)) {
 
         actionWidget_ = new QComboBox();
         actionWidget_->addItems({"Pause", "Jump To"});

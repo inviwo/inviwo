@@ -176,7 +176,7 @@ private:
 
 template <class T>
 T* ModuleManager::getModuleByType() const {
-    for (auto& cont : inviwoModules_) {
+    for (const auto& cont : inviwoModules_) {
         if (auto* m = dynamic_cast<T*>(cont.getModule())) {
             return m;
         }

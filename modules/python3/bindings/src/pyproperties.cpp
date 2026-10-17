@@ -260,7 +260,7 @@ void exposeProperties(pybind11::module& m) {
             std::string str;
             fmt::format_to(std::back_inserter(str), "<TransferFunctionProperty: {} TF points",
                            tp.get().size());
-            for (auto& p : tp.get()) {
+            for (const auto& p : tp.get()) {
                 fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
                                color::rgba2hex(p.getColor()));
             }
@@ -318,7 +318,7 @@ void exposeProperties(pybind11::module& m) {
         .def("__repr__", [](const IsoValueProperty& ivp) {
             std::ostringstream oss;
             oss << "<IsoValueProperty:  " << ivp.get().size() << " isovalues";
-            for (auto& p : ivp.get()) {
+            for (const auto& p : ivp.get()) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";

@@ -303,6 +303,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
 
     auto& targets = targetImage->representations_;
     std::vector<std::pair<size_t, std::type_index>> order;
+    order.reserve(targets.size());
     for (const auto& elem : targets) order.emplace_back(elem.second->priority(), elem.first);
     std::sort(order.begin(), order.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });

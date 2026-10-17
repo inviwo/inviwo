@@ -91,7 +91,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     const ivec2 pos = CanvasProcessorWidget::getPosition();
     const auto space = utilqt::emToPx(this, utilqt::refSpaceEm());
 
-    auto splitter = new QSplitter();
+    auto* splitter = new QSplitter();
 
     canvas_->setEventPropagator(this);
     canvas_->setMinimumSize(16, 16);
@@ -100,7 +100,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
 
     splitter->addWidget(canvas_.get());
 
-    auto scrollArea = new QScrollArea();
+    auto* scrollArea = new QScrollArea();
     scrollArea->setWidgetResizable(true);
     scrollArea->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -113,7 +113,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setContentsMargins(0, space, 0, space);
 
-    auto app = p->getNetwork()->getApplication();
+    auto* app = p->getNetwork()->getApplication();
     frame_ = new PropertyListFrame(nullptr, app->getPropertyWidgetFactory());
     frame_->setContentsMargins(space, 0, 0, 0);
     scrollArea->setWidget(frame_);
@@ -126,7 +126,7 @@ CanvasWithPropertiesProcessorWidgetQt::CanvasWithPropertiesProcessorWidgetQt(Pro
 
     setCentralWidget(splitter);
 
-    if (auto mainWindow = utilqt::getApplicationMainWindow()) {
+    if (auto* mainWindow = utilqt::getApplicationMainWindow()) {
         // Move widget relative to main window to make sure that it is visible on screen.
         QPoint newPos =
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(dim), true);

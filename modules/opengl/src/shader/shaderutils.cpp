@@ -731,7 +731,8 @@ std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> toShad
     const std::vector<std::pair<ShaderType, std::string>>& items) {
 
     std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> res;
-    for (auto& item : items) {
+    res.reserve(items.size());
+    for (const auto& item : items) {
         res.emplace_back(item.first, utilgl::findShaderResource(item.second));
     }
     return res;

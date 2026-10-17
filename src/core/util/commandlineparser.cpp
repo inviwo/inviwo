@@ -152,7 +152,7 @@ std::filesystem::path CommandLineParser::getLogToFileFileName() const {
 std::vector<std::filesystem::path> CommandLineParser::getModuleSearchPaths() const {
     if (moduleSearchPaths_.isSet()) {
         std::vector<std::filesystem::path> paths;
-        for (auto& path : moduleSearchPaths_.getValue()) {
+        for (const auto& path : moduleSearchPaths_.getValue()) {
             paths.emplace_back(path);
         }
         return paths;

@@ -90,11 +90,11 @@ public:
         setVisible(keyframe_.isSelected());
         keyframe.addObserver(this);
 
-        auto outerLayout = new QVBoxLayout();
+        auto* outerLayout = new QVBoxLayout();
         outerLayout->setContentsMargins(0, 0, 0, 0);
         outerLayout->setSpacing(utilqt::refSpacePx(this));
 
-        auto layout = new QHBoxLayout();
+        auto* layout = new QHBoxLayout();
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(utilqt::refSpacePx(this));
 
@@ -124,17 +124,17 @@ public:
         auto propWidget = util::getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
+        if (auto* label = propertyWidget_->findChild<EditableLabelQt*>()) {
             // Do not repeat information (Track name in PropertySequenceEditor) for each property
             label->setVisible(false);
         }
-        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget_)) {
+        if (auto* collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget_)) {
             collapsibleWidget->initState();
-            if (auto cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
+            if (auto* cameraProperty = dynamic_cast<CameraProperty*>(property_.get())) {
                 // HACK: Only show relevant properties for the CameraTrack
                 // We should delegate this in case more properties need this
                 const std::vector<Property*> properties = cameraProperty->getPropertiesRecursive();
-                for (auto prop : properties) {
+                for (auto* prop : properties) {
                     const auto keepProperties = {"lookFrom", "lookTo", "lookUp"};
                     if (std::none_of(
                             std::begin(keepProperties), std::end(keepProperties),
@@ -182,7 +182,7 @@ public:
                     baseKeyframe_->setEaseIn(easeIn);
                 });
 
-            auto easingLayout = new QHBoxLayout();
+            auto* easingLayout = new QHBoxLayout();
             easingLayout->setContentsMargins(0, 0, 0, 0);
             easingLayout->setSpacing(utilqt::refSpacePx(this));
             easingLayout->addWidget(new QLabel("Ease Out"));
@@ -262,13 +262,13 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     const auto space = utilqt::refSpacePx(this);
     setContentsMargins(space, space, 0, space);
 
-    auto layout = new QVBoxLayout();
+    auto* layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(space);
 
     setLayout(layout);
 
-    auto label = new QLabel(utilqt::toQString(track_.getName()));
+    auto* label = new QLabel(utilqt::toQString(track_.getName()));
     auto font = label->font();
     font.setBold(true);
     label->setFont(font);
@@ -280,7 +280,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
 
     layout->addLayout(keyframesLayout_);
 
-    auto sublayout = new QGridLayout();
+    auto* sublayout = new QGridLayout();
     layout->addLayout(sublayout);
     sublayout->setContentsMargins(0, 0, 0, 0);
     sublayout->setSpacing(7);
@@ -289,7 +289,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence& sequence, Track
     sublayout->addWidget(interpolation_, 0, 1);
 
     auto& valseq = dynamic_cast<ValueKeyframeSequence&>(sequence);
-    for (auto interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
+    for (auto* interpObj : valseq.getSupportedInterpolations(manager.getInterpolationFactory())) {
         auto ip = interpObj->create(nullptr);
         interpolation_->addItem(utilqt::toQString(ip->getDisplayName()),
                                 QVariant(utilqt::toQString(ip->getClassIdentifier())));

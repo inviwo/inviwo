@@ -346,6 +346,7 @@ private:
     template <typename T>
     std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
         std::vector<T*> res;
+        res.reserve(v.size());
         for (auto& elem : v) res.push_back(elem.get());
         return res;
     }
@@ -471,7 +472,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationConverter(
     std::unique_ptr<RepresentationConverter<BaseRepr>> converter) {
 
-    if (auto metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
+    if (auto* metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
         if (auto factory = metaFactory->getConverterFactory<BaseRepr>()) {
             if (factory->registerObject(converter.get())) {
                 representationConvertersUnRegFunctors_.push_back(
@@ -486,7 +487,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationFactoryObject(
     std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation) {
 
-    if (auto metaFactory = util::getRepresentationMetaFactory(app_)) {
+    if (auto* metaFactory = util::getRepresentationMetaFactory(app_)) {
         if (auto factory = metaFactory->getRepresentationFactory<BaseRepr>()) {
             if (factory->registerObject(representation.get())) {
                 representationUnRegFunctors_.push_back(

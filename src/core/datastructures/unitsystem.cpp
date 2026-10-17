@@ -181,6 +181,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     auto groups = getUnitGroupsFor(unit, enabledGroups);
 
     std::vector<units::detail::unit_data> bases;
+    bases.reserve(groups.size());
     for (const auto& [base, descs] : groups) {
         bases.push_back(base);
     }
@@ -219,6 +220,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
 
     for (const auto& match : matches) {
         std::vector<size_t> groupSizes;
+        groupSizes.reserve(match.size());
         for (const auto& [base, pow] : match) {
             groupSizes.push_back(groups[base].size());
         }

@@ -263,7 +263,7 @@ Observable<T>::~Observable() {
 
 template <typename T>
 void Observable<T>::removeObservers() {
-    for (auto o : observers_) {
+    for (auto* o : observers_) {
         if (o) removeObservationHelper(o);
     }
     observers_.clear();

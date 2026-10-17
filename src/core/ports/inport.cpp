@@ -78,7 +78,7 @@ void Inport::propagateEvent(Event* event, Outport* target) {
         target->propagateEvent(event, this);
     } else {
         bool used = event->hasBeenUsed();
-        for (auto outport : getConnectedOutports()) {
+        for (auto* outport : getConnectedOutports()) {
             outport->propagateEvent(event, this);
             used |= event->markAsUnused();
         }

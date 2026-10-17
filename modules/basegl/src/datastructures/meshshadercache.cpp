@@ -85,6 +85,7 @@ MeshShaderCache::MeshShaderCache(std::vector<std::pair<ShaderType, std::string>>
 
 Shader& MeshShaderCache::getShader(const Mesh& mesh, std::optional<Mesh::MeshInfo> meshInfo) {
     std::vector<int> state;
+    state.reserve(stateFunctors_.size());
     for (const auto& functor : stateFunctors_) {
         state.push_back(functor.getState(mesh, meshInfo ? *meshInfo : mesh.getDefaultMeshInfo()));
     }

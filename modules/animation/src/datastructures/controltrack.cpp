@@ -72,7 +72,7 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
             return (*it)(from, to, state);
         }
     } else {  // case 2
-        auto& seq1 = *std::prev(it);
+        const auto& seq1 = *std::prev(it);
 
         if (to < seq1.getLastTime()) {  // case 2a
             return seq1(from, to, state);

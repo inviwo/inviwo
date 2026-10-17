@@ -282,12 +282,12 @@ struct fmt::formatter<::inviwo::Unit> {
     bool leadingSpace = false;
 
     constexpr auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
-        const auto it = ctx.begin();
-        const auto end = ctx.end();
+        const auto* const it = ctx.begin();
+        const auto* const end = ctx.end();
 
         const auto range = std::string_view(it, end - it);
         const auto endPos = range.find_first_of(":}");
-        const auto endIt =
+        const auto* const endIt =
             endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
         auto unitFormat = range.substr(0, endPos);
 

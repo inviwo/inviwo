@@ -88,13 +88,13 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwo
 
     auto cache = [](auto& self, LinkDialogPropertyGraphicsItem* item, auto& map) -> void {
         map[item->getItem()] = item;
-        for (auto i : item->getSubPropertyItemList()) {
+        for (auto* i : item->getSubPropertyItemList()) {
             self(self, i, map);
         }
     };
 
-    for (auto item : srcProcessor_->getPropertyItemList()) cache(cache, item, srcPropertyMap_);
-    for (auto item : dstProcessor_->getPropertyItemList()) cache(cache, item, dstPropertyMap_);
+    for (auto* item : srcProcessor_->getPropertyItemList()) cache(cache, item, srcPropertyMap_);
+    for (auto* item : dstProcessor_->getPropertyItemList()) cache(cache, item, dstPropertyMap_);
 
     // add links
     const auto links = network_->getLinksBetweenProcessors(srcProcessor, dstProcessor);
@@ -140,7 +140,7 @@ void LinkDialogGraphicsScene::Curve::update(QPointF start, QPointF end) {
 }
 
 void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    auto tempProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
+    auto* tempProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
 
     if (e->button() == Qt::LeftButton && !startProperty_ && tempProperty) {
         startProperty_ = tempProperty;
@@ -157,11 +157,11 @@ void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 void LinkDialogGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
     if ((e->buttons() & Qt::LeftButton) && curve_) {
         curve_.update(startProperty_->getConnectionPoint(), e->scenePos());
-        if (auto endProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos())) {
+        if (auto* endProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos())) {
             bool canlink = false;
             if (endProperty != startProperty_) {
-                auto sProp = startProperty_->getItem();
-                auto eProp = endProperty->getItem();
+                auto* sProp = startProperty_->getItem();
+                auto* eProp = endProperty->getItem();
 
                 canlink |= network_->canLink(sProp, eProp);
                 if (!(e->modifiers() & Qt::ShiftModifier)) {
@@ -187,10 +187,10 @@ void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     if (curve_) {
         curve_.clear();
 
-        auto endProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
+        auto* endProperty = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
         if (endProperty && (endProperty != startProperty_)) {
-            auto sProp = startProperty_->getItem();
-            auto eProp = endProperty->getItem();
+            auto* sProp = startProperty_->getItem();
+            auto* eProp = endProperty->getItem();
 
             const bool src2dst = network_->canLink(sProp, eProp);
             const bool dst2src = network_->canLink(eProp, sProp);
@@ -210,15 +210,15 @@ void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void LinkDialogGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    if (auto property = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos())) {
+    if (auto* property = getItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos())) {
         property->setExpanded(!property->isExpanded());
-        auto item = property->next();
+        auto* item = property->next();
         while (item) {
             item->updatePositions();
             item = item->next();
         }
         e->accept();
-    } else if (auto connection = getItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
+    } else if (auto* connection = getItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
         if (e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier) {
             makePropertyLinkBidirectional(connection, !isPropertyLinkBidirectional(connection));
         } else if (isPropertyLinkBidirectional(connection)) {
@@ -243,8 +243,8 @@ void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
         keyEvent->accept();
         const QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
 
-        for (auto& selectedGraphicsItem : selectedGraphicsItems) {
-            if (auto item =
+        for (const auto& selectedGraphicsItem : selectedGraphicsItems) {
+            if (auto* item =
                     qgraphicsitem_cast<DialogConnectionGraphicsItem*>(selectedGraphicsItem)) {
                 removePropertyLink(item);
             }
@@ -258,12 +258,12 @@ void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
 }
 
 void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
-    if (auto linkGraphicsItem = getItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
+    if (auto* linkGraphicsItem = getItemAt<DialogConnectionGraphicsItem>(e->scenePos())) {
         QMenu menu;
-        auto deleteAction = menu.addAction("Delete");
-        auto biDirectionAction = menu.addAction("Bidirectional");
+        auto* deleteAction = menu.addAction("Delete");
+        auto* biDirectionAction = menu.addAction("Bidirectional");
         biDirectionAction->setCheckable(true);
-        auto switchDirection = menu.addAction("Switch Direction");
+        auto* switchDirection = menu.addAction("Switch Direction");
 
         if (isPropertyLinkBidirectional(linkGraphicsItem)) {
             biDirectionAction->setChecked(true);
@@ -286,12 +286,12 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
 }
 
 void LinkDialogGraphicsScene::offsetItems(double yIncrement, bool scrollLeft) {
-    auto proc = scrollLeft ? srcProcessor_ : dstProcessor_;
+    auto* proc = scrollLeft ? srcProcessor_ : dstProcessor_;
 
     const auto tree =
         proc->mapToScene(proc->boundingRect() | proc->childrenBoundingRect()).boundingRect();
 
-    auto view = views().front();
+    auto* view = views().front();
     const auto vr = view->mapToScene(view->rect()).boundingRect();
 
     if (tree.top() + yIncrement > vr.center().y()) yIncrement = vr.center().y() - tree.top();
@@ -346,9 +346,9 @@ void LinkDialogGraphicsScene::toggleExpand() {
 }
 
 bool LinkDialogGraphicsScene::isPropertyExpanded(Property* property) const {
-    if (auto srcPropItem = util::map_find_or_null(srcPropertyMap_, property)) {
+    if (auto* srcPropItem = util::map_find_or_null(srcPropertyMap_, property)) {
         return srcPropItem->isExpanded();
-    } else if (auto dstPropItem = util::map_find_or_null(dstPropertyMap_, property)) {
+    } else if (auto* dstPropItem = util::map_find_or_null(dstPropertyMap_, property)) {
         return dstPropItem->isExpanded();
     }
     return false;
@@ -357,7 +357,7 @@ bool LinkDialogGraphicsScene::isPropertyExpanded(Property* property) const {
 void LinkDialogGraphicsScene::removeAllPropertyLinks() {
     const std::vector<DialogConnectionGraphicsItem*> tempList = connections_;
 
-    for (auto propertyLink : tempList) {
+    for (auto* propertyLink : tempList) {
         removePropertyLink(propertyLink);
     }
 }
@@ -414,7 +414,7 @@ void LinkDialogGraphicsScene::switchPropertyLinkDirection(
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem(
     LinkDialogPropertyGraphicsItem* outProperty, LinkDialogPropertyGraphicsItem* inProperty) const {
-    for (auto& elem : connections_) {
+    for (const auto& elem : connections_) {
         if ((elem->getStartProperty() == outProperty && elem->getEndProperty() == inProperty) ||
             (elem->getStartProperty() == inProperty && elem->getEndProperty() == outProperty))
             return elem;
@@ -433,26 +433,26 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
      * added hence the double checks with start1/end1 and start2/end2.
      */
 
-    const auto start1 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
+    auto* const start1 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         util::map_find_or_null(srcPropertyMap_, propertyLink.getSource()));
-    const auto end1 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
+    auto* const end1 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         util::map_find_or_null(dstPropertyMap_, propertyLink.getDestination()));
 
     if (start1 && end1) {
-        if (auto cItem = getConnectionGraphicsItem(start1, end1)) {
+        if (auto* cItem = getConnectionGraphicsItem(start1, end1)) {
             cItem->show();
             updateAll();
             return cItem;
         }
     }
 
-    const auto start2 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
+    auto* const start2 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         util::map_find_or_null(dstPropertyMap_, propertyLink.getSource()));
-    const auto end2 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
+    auto* const end2 = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         util::map_find_or_null(srcPropertyMap_, propertyLink.getDestination()));
 
     if (start2 && end2) {
-        if (auto cItem = getConnectionGraphicsItem(start2, end2)) {
+        if (auto* cItem = getConnectionGraphicsItem(start2, end2)) {
             cItem->show();
             updateAll();
             return cItem;
@@ -460,7 +460,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
     }
 
     if (start1 && end1) {
-        auto cItem = new DialogConnectionGraphicsItem(start1, end1, propertyLink);
+        auto* cItem = new DialogConnectionGraphicsItem(start1, end1, propertyLink);
         addItem(cItem);
         connections_.push_back(cItem);
         cItem->show();
@@ -469,7 +469,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
     }
 
     if (start2 && end2) {
-        auto cItem = new DialogConnectionGraphicsItem(start2, end2, propertyLink);
+        auto* cItem = new DialogConnectionGraphicsItem(start2, end2, propertyLink);
         addItem(cItem);
         connections_.push_back(cItem);
         cItem->show();
@@ -520,7 +520,7 @@ void LinkDialogGraphicsScene::onProcessorNetworkWillRemoveProcessor(Processor* p
 // Manage various tooltips.
 void LinkDialogGraphicsScene::helpEvent(QGraphicsSceneHelpEvent* e) {
     const QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
-    for (auto item : graphicsItems) {
+    for (auto* item : graphicsItems) {
         switch (item->type()) {
             case LinkDialogPropertyGraphicsItem::Type:
                 qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(item)->showToolTip(e);

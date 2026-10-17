@@ -187,8 +187,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     auto body = html.append("body");
     body.append(port->getInfo());
 
-    auto inport = dynamic_cast<const Inport*>(port);
-    auto outport = dynamic_cast<Outport*>(port);
+    const auto* inport = dynamic_cast<const Inport*>(port);
+    auto* outport = dynamic_cast<Outport*>(port);
     if (!outport && inport) {
         outport = inport->getConnectedOutport();
     }

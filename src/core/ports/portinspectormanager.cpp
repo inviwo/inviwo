@@ -56,7 +56,7 @@ PortInspector* PortInspectorManager::borrow(Outport* outport) {
     if (it != unusedInspectors_.end()) {
         return it->get();
     } else {
-        auto factory = app_->getPortInspectorFactory();
+        auto* factory = app_->getPortInspectorFactory();
         if (auto portInspector = factory->create(outport->getClassIdentifier())) {
             unusedInspectors_.push_back(std::move(portInspector));
             return unusedInspectors_.back().get();
@@ -74,34 +74,34 @@ std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* o
         unusedInspectors_.erase(it);
         return pi;
     } else {
-        auto factory = app_->getPortInspectorFactory();
+        auto* factory = app_->getPortInspectorFactory();
         return factory->create(outport->getClassIdentifier());
     }
 }
 
 bool PortInspectorManager::isPortInspectorSupported(const Outport* outport) {
-    auto factory = app_->getPortInspectorFactory();
+    auto* factory = app_->getPortInspectorFactory();
     return factory->hasKey(outport->getClassIdentifier());
 }
 
 void PortInspectorManager::insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
                                          Outport* outport, bool bidirectionalAutoLinks) {
-    for (auto& processor : portInspector->getProcessors()) {
+    for (const auto& processor : portInspector->getProcessors()) {
         network->addProcessor(processor);
     }
 
     // Connect the port to inspect to the inports of the inspector network
-    for (auto& inport : portInspector->getInports()) {
+    for (const auto& inport : portInspector->getInports()) {
         network->addConnection(outport, inport);
     }
 
     // Add connections to the network
-    for (auto& connection : portInspector->getConnections()) {
+    for (const auto& connection : portInspector->getConnections()) {
         network->addConnection(connection);
     }
 
     // Add links to the network
-    for (auto& link : portInspector->getPropertyLinks()) {
+    for (const auto& link : portInspector->getPropertyLinks()) {
         network->addLink(link);
     }
 
@@ -149,13 +149,13 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 
     try {
         if (auto portInspector = getPortInspector(outport)) {
-            auto network = app_->getProcessorNetwork();
+            auto* network = app_->getProcessorNetwork();
             const NetworkLock lock(network);
 
             // Setup the widget
             CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
             canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(true);
-            auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
+            auto* widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
                 ProcessorWidgetMetaData::classIdentifier);
             const auto size = app_->getSettingsByType<SystemSettings>()->portInspectorSize_.get();
             widgetMeta->setDimensions(ivec2(size, size));
@@ -165,14 +165,14 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             // Add processors to the network
             insertNetwork(portInspector.get(), network, outport, true);
 
-            auto processorWidget = canvasProcessor->getProcessorWidget();
+            auto* processorWidget = canvasProcessor->getProcessorWidget();
             if (!processorWidget) {
                 log::error("Problem using port inspector");
                 return nullptr;
             }
 
             std::vector<std::string> processorIds;
-            for (auto& p : portInspector->getProcessors()) {
+            for (const auto& p : portInspector->getProcessors()) {
                 processorIds.emplace_back(p->getIdentifier());
             }
             embeddedProcessors_[outport->getPath()] = std::move(processorIds);
@@ -192,7 +192,7 @@ void PortInspectorManager::removePortInspector(Outport* outport) {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     const auto portId = outport->getPath();
-    auto network = app_->getProcessorNetwork();
+    auto* network = app_->getProcessorNetwork();
     const NetworkLock lock(network);
     {
         const auto it = std::find_if(portInspectors_.begin(), portInspectors_.end(),
@@ -229,17 +229,17 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
     std::shared_ptr<const Image> image;
 
     try {
-        if (auto portInspector = borrow(outport)) {
-            if (auto canvasProcessor = portInspector->getCanvasProcessor()) {
+        if (auto* portInspector = borrow(outport)) {
+            if (auto* canvasProcessor = portInspector->getCanvasProcessor()) {
                 canvasProcessor->setEvaluateWhenHidden(true);
                 canvasProcessor->createMetaData<BoolMetaData>("PortInspector")->set(false);
-                auto widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
+                auto* widgetMeta = canvasProcessor->getMetaData<ProcessorWidgetMetaData>(
                     ProcessorWidgetMetaData::classIdentifier);
                 const auto size = app_->getSystemSettings().portInspectorSize_.get();
                 widgetMeta->setDimensions(ivec2(size, size));
                 widgetMeta->setVisible(false);
 
-                auto network = app_->getProcessorNetwork();
+                auto* network = app_->getProcessorNetwork();
                 {
                     // Add processors to the network
                     const NetworkLock lock(network);
@@ -271,7 +271,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
 void PortInspectorManager::clear() {
     RenderContext::getPtr()->activateDefaultRenderContext();
 
-    auto network = app_->getProcessorNetwork();
+    auto* network = app_->getProcessorNetwork();
     const NetworkLock lock(network);
     for (auto it = portInspectors_.begin(); it != portInspectors_.end(); ++it) {
         removePortInspector(it);
@@ -288,7 +288,7 @@ void PortInspectorManager::clear() {
 }
 
 void PortInspectorManager::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    for (auto& outport : processor->getOutports()) removePortInspector(outport);
+    for (const auto& outport : processor->getOutports()) removePortInspector(outport);
 }
 
 void PortInspectorManager::serialize(Serializer& s) const {

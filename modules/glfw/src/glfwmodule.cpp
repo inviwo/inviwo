@@ -89,7 +89,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     }
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
-    if (auto shared = CanvasGLFW::sharedContext()) {
+    if (auto* shared = CanvasGLFW::sharedContext()) {
         holder_ = RenderContext::getPtr()->setDefaultRenderContext(
             std::make_unique<GLFWContextHolder>(shared));
         RenderContext::getPtr()->activateDefaultRenderContext();

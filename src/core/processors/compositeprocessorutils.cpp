@@ -277,9 +277,9 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
         util::setSelected(subProcessors, true);
 
         // Connections
-        for (auto& c : subConnections) {
+        for (const auto& c : subConnections) {
             if (auto* sink = dynamic_cast<CompositeSinkBase*>(c.getInport()->getProcessor())) {
-                for (auto& con : connections) {
+                for (const auto& con : connections) {
                     if (con.getOutport() == &sink->getSuperOutport()) {
                         network.removeConnection(con);
                         network.addConnection(c.getOutport(), con.getInport());
@@ -287,7 +287,7 @@ void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
                 }
             } else if (auto* source =
                            dynamic_cast<CompositeSourceBase*>(c.getOutport()->getProcessor())) {
-                for (auto& con : connections) {
+                for (const auto& con : connections) {
                     if (con.getInport() == &source->getSuperInport()) {
                         network.removeConnection(con);
                         network.addConnection(con.getOutport(), c.getInport());

@@ -977,6 +977,7 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(const std::vector<std::stri
     IVW_ASSERT(ids.size() == values.size(), "Arguments has to have the same size");
 
     std::vector<OptionPropertyOption<T>> options;
+    options.reserve(ids.size());
     for (size_t i = 0; i < ids.size(); i++) {
         options.emplace_back(ids[i], displayNames[i], values[i]);
     }
@@ -988,6 +989,7 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(const std::vector<T>& value
     requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value)
 {
     std::vector<OptionPropertyOption<T>> options;
+    options.reserve(values.size());
     for (size_t i = 0; i < values.size(); i++) {
         options.emplace_back(values[i]);
     }

@@ -193,7 +193,7 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
     shader_.deactivate();
 
     if ((hoveredSplitter_ > -1) && (settings.getTriangleSize() > 0) &&
-        (static_cast<int>(pos.size()) > hoveredSplitter_)) {
+        (std::cmp_greater(pos.size(), hoveredSplitter_))) {
         triShader_.activate();
         triShader_.setUniform("position", pos[hoveredSplitter_]);
         triShader_.setUniform("trafo", mTri);

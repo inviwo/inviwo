@@ -66,7 +66,7 @@ std::filesystem::path getModulePath(const InviwoModule* module, ModulePath pathT
 }
 
 std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier) {
-    if (auto m = getModuleByIdentifier(app, identifier)) {
+    if (auto* m = getModuleByIdentifier(app, identifier)) {
         return m->getPath();
     } else {
         throw Exception(SourceContext{}, R"(Could not locate module "{}")", identifier);
@@ -79,7 +79,7 @@ std::filesystem::path getModulePath(std::string_view identifier) {
 std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier,
                                     ModulePath pathType) {
     std::filesystem::path path;
-    if (auto m = getModuleByIdentifier(app, identifier)) {
+    if (auto* m = getModuleByIdentifier(app, identifier)) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
             // if the result of getPath(pathType) is identical with getPath(),

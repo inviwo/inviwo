@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iterator>
+#include <utility>
 
 namespace inviwo {
 
@@ -253,7 +254,7 @@ void FilePatternProperty::updateFileList() {
                 // apply range selection, assume file names are sorted
                 if (rangeSelection_.isChecked()) {
                     const ivec2 indexRange(minIndex_.get(), maxIndex_.get());
-                    if (indexRange.y < static_cast<int>(fileList.size())) {
+                    if (std::cmp_less(indexRange.y, fileList.size())) {
                         // remove all files after the maximum index
                         fileList.erase(
                             fileList.begin() + std::max(static_cast<std::size_t>(indexRange.y + 1),

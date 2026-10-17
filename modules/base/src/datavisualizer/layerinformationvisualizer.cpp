@@ -59,7 +59,7 @@ Document LayerInformationVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> LayerInformationVisualizer::getSupportedFileExtensions() const {
-    auto rf = util::getDataReaderFactory(app_);
+    auto* rf = util::getDataReaderFactory(app_);
     auto exts = rf->getExtensionsForType<Layer>();
     return exts;
 }

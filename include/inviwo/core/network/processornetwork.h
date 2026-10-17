@@ -533,7 +533,7 @@ void ProcessorNetwork::forEachConnection(C callback) {
 
 template <typename C>
 void ProcessorNetwork::forEachLink(C callback) {
-    for (auto& item : links_) callback(item);
+    for (const auto& item : links_) callback(item);
 }
 
 inline void ProcessorNetwork::lock() { locked_++; }
