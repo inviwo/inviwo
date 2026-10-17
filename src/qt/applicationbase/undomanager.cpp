@@ -166,7 +166,7 @@ private:
                 return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
             });
 
-        std::for_each(files.begin() + std::min(files.size(), size_t{maxSaves}), files.end(),
+        std::for_each(files.begin() + std::min(files.size(), maxSaves), files.end(),
                       [](const std::filesystem::path& a) { std::filesystem::remove(a); });
     }
 

@@ -102,8 +102,7 @@ struct InviwoDefaults<unsigned short> {
 template <>
 struct InviwoDefaults<int> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Int"}, uvec2(1, 1), int{0},
-                                 int{-100},           int{100},    int{1}};
+        return InviwoDefaultData{StaticString{"Int"}, uvec2(1, 1), 0, -100, 100, 1};
     }
 };
 template <>
@@ -131,19 +130,13 @@ struct InviwoDefaults<size_t> {
 template <>
 struct InviwoDefaults<float> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Float"}, uvec2(1, 1), float{0.0f},
-                                 float{0.0f},           float{1.0f}, float{0.01f}};
+        return InviwoDefaultData{StaticString{"Float"}, uvec2(1, 1), 0.0f, 0.0f, 1.0f, 0.01f};
     }
 };
 template <>
 struct InviwoDefaults<double> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Double"},
-                                 uvec2(1, 1),
-                                 double{0.0},
-                                 double{0.0},
-                                 double{1.0},
-                                 double{0.01}};
+        return InviwoDefaultData{StaticString{"Double"}, uvec2(1, 1), 0.0, 0.0, 1.0, 0.01};
     }
 };
 

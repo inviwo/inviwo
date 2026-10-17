@@ -171,7 +171,7 @@ constexpr auto bigger() {
     } else if constexpr (std::is_same_v<char, T>) {
         return static_cast<short>(0);
     } else if constexpr (std::is_same_v<short, T>) {
-        return static_cast<int>(0);
+        return 0;
     } else if constexpr (std::is_same_v<int, T>) {
         const long long v{0};
         return v;
