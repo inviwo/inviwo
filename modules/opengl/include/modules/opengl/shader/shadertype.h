@@ -60,7 +60,7 @@ public:
     static ShaderType typeFromString(std::string_view str);
     static ShaderType typeFromFile(const std::filesystem::path& ext);
 
-    inline friend bool operator==(const ShaderType& lhs, const ShaderType& rhs) {
+    friend bool operator==(const ShaderType& lhs, const ShaderType& rhs) {
         return lhs.type_ == rhs.type_;
     }
 

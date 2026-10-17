@@ -107,7 +107,7 @@ public:
         return formats_[static_cast<size_t>(id)];
     }
 
-    inline static DataFormatId get(const GLFormat& glFormat) noexcept {
+    static DataFormatId get(const GLFormat& glFormat) noexcept {
         const auto it = std::find(formats_.begin(), formats_.end(), glFormat);
 
         if (it != formats_.end()) {
@@ -117,7 +117,7 @@ public:
         }
     }
 
-    inline static DataFormatId getDataFormat(GLenum type, GLuint channels) noexcept {
+    static DataFormatId getDataFormat(GLenum type, GLuint channels) noexcept {
 
         const auto it = std::find_if(formats_.begin(), formats_.end(), [&](const GLFormat& item) {
             return item.type == type && item.channels == channels;
@@ -129,7 +129,7 @@ public:
             return DataFormatId::NotSpecialized;
         }
     }
-    inline static const GLFormat& getGLFormat(GLenum type, GLuint channels) {
+    static const GLFormat& getGLFormat(GLenum type, GLuint channels) {
         const auto it = std::find_if(formats_.begin(), formats_.end(), [&](const GLFormat& item) {
             return item.type == type && item.channels == channels;
         });

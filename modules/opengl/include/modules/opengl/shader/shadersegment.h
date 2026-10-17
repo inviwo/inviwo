@@ -52,22 +52,22 @@ struct IVW_MODULE_OPENGL_API ShaderSegment {
         explicit constexpr Placeholder(std::string_view key, std::string_view name)
             : key{key}, name{name} {}
 
-        inline friend bool operator==(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator==(const Placeholder& lhs, const Placeholder& rhs) {
             return lhs.key == rhs.key;
         }
-        inline friend bool operator<(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator<(const Placeholder& lhs, const Placeholder& rhs) {
             return lhs.key < rhs.key;
         }
-        inline friend bool operator!=(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator!=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator==(lhs, rhs);
         }
-        inline friend bool operator>(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator>(const Placeholder& lhs, const Placeholder& rhs) {
             return operator<(rhs, lhs);
         }
-        inline friend bool operator<=(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator<=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator>(lhs, rhs);
         }
-        inline friend bool operator>=(const Placeholder& lhs, const Placeholder& rhs) {
+        friend bool operator>=(const Placeholder& lhs, const Placeholder& rhs) {
             return !operator<(lhs, rhs);
         }
 

@@ -505,7 +505,7 @@ public:
 private:
     class IVW_MODULE_DATAFRAME_API AddMany {
     public:
-        inline void operator()(std::string_view value) const {
+        void operator()(std::string_view value) const {
             const auto id = column_->addOrGetID(value);
             buffer_->getDataContainer().push_back(id);
         }
