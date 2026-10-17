@@ -41,7 +41,7 @@
 namespace inviwo {
 
 TransferFunctionXMLWriter::TransferFunctionXMLWriter() {
-    addExtension({"xml", "XML Transfer Function"});
+    addExtension({.extension = "xml", .description = "XML Transfer Function"});
 }
 
 TransferFunctionXMLWriter* TransferFunctionXMLWriter::clone() const {

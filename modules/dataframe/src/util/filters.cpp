@@ -41,24 +41,34 @@ namespace filters {
 ItemFilter stringMatch(int column, filters::StringComp op, std::string_view match) {
     switch (op) {
         case filters::StringComp::Equal:
-            return ItemFilter{[str = match](std::string_view item) { return item == str; }, column,
-                              false};
+            return ItemFilter{
+                .filter = [str = match](std::string_view item) { return item == str; },
+                .column = column,
+                .filterOnHeader = false};
         case filters::StringComp::NotEqual:
-            return ItemFilter{[str = match](std::string_view item) { return item != str; }, column,
-                              false};
+            return ItemFilter{
+                .filter = [str = match](std::string_view item) { return item != str; },
+                .column = column,
+                .filterOnHeader = false};
         case filters::StringComp::Regex:
-            return ItemFilter{[re = std::regex(std::string{match})](std::string_view item) {
-                                  return std::regex_match(item.begin(), item.end(), re);
-                              },
-                              column, false};
+            return ItemFilter{.filter =
+                                  [re = std::regex(std::string{match})](std::string_view item) {
+                                      return std::regex_match(item.begin(), item.end(), re);
+                                  },
+                              .column = column,
+                              .filterOnHeader = false};
         case filters::StringComp::RegexPartial:
-            return ItemFilter{[re = std::regex(std::string{match})](std::string_view item) {
-                                  return std::regex_search(item.begin(), item.end(), re);
-                              },
-                              column, false};
+            return ItemFilter{.filter =
+                                  [re = std::regex(std::string{match})](std::string_view item) {
+                                      return std::regex_search(item.begin(), item.end(), re);
+                                  },
+                              .column = column,
+                              .filterOnHeader = false};
         default:
-            return ItemFilter{[str = match](std::string_view item) { return item == str; }, column,
-                              false};
+            return ItemFilter{
+                .filter = [str = match](std::string_view item) { return item == str; },
+                .column = column,
+                .filterOnHeader = false};
     }
 }
 
@@ -105,9 +115,10 @@ static ItemFilter rangeComparison(int column, T min, T max) {
 
 ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
     const auto createFilter = [v = value, column](auto comp) {
-        return ItemFilter{std::function<bool(std::int64_t)>(
+        return ItemFilter{.filter = std::function<bool(std::int64_t)>(
                               [v, comp](std::int64_t value) { return comp(value, v); }),
-                          column, false};
+                          .column = column,
+                          .filterOnHeader = false};
     };
 
     switch (op) {
@@ -138,20 +149,22 @@ ItemFilter doubleRange(int column, double min, double max) {
 namespace csvfilters {
 
 RowFilter emptyLines(bool filterOnHeader) {
-    return RowFilter{[](std::string_view row, size_t) { return row.empty(); }, filterOnHeader};
+    return RowFilter{.filter = [](std::string_view row, size_t) { return row.empty(); },
+                     .filterOnHeader = filterOnHeader};
 }
 
 RowFilter rowBegin(std::string_view begin, bool filterOnHeader) {
-    return RowFilter{
-        [str = std::string{begin}](std::string_view row, size_t) { return row.starts_with(str); },
-        filterOnHeader};
+    return RowFilter{.filter = [str = std::string{begin}](std::string_view row,
+                                                          size_t) { return row.starts_with(str); },
+                     .filterOnHeader = filterOnHeader};
 }
 
 RowFilter lineRange(int min, int max, bool filterOnHeader) {
     return RowFilter{
-        [min = static_cast<size_t>(std::max(min, 0)), max = static_cast<size_t>(std::max(max, 0))](
-            std::string_view, size_t line) { return (line >= min) && (line <= max); },
-        filterOnHeader};
+        .filter = [min = static_cast<size_t>(std::max(min, 0)),
+                   max = static_cast<size_t>(std::max(max, 0))](
+                      std::string_view, size_t line) { return (line >= min) && (line <= max); },
+        .filterOnHeader = filterOnHeader};
 }
 
 }  // namespace csvfilters

@@ -118,7 +118,7 @@ AnimationTimeState AnimateSequence<Prop, Seq>::animate(Prop* prop, const Seq& se
     typename Prop::value_type v;
     seq(from, to, v);
     prop->set(v);
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 }  // namespace detail
@@ -408,7 +408,7 @@ void PropertyTrack<Prop, Key, Seq>::setProperty(Property* property) {
 template <typename Prop, typename Key, typename Seq>
 AnimationTimeState PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Seconds to,
                                                              AnimationState state) const {
-    if (!this->isEnabled() || this->empty()) return {to, state};
+    if (!this->isEnabled() || this->empty()) return {.time = to, .state = state};
 
     // 'it' will be the first seq. with a first time larger then 'to'.
     const auto it = std::upper_bound(this->begin(), this->end(), to,
@@ -434,7 +434,7 @@ AnimationTimeState PropertyTrack<Prop, Key, Seq>::operator()(Seconds from, Secon
             // we moved in an unmarked region, do nothing.
         }
     }
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 template <typename Prop, typename Key, typename Seq>

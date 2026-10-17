@@ -62,8 +62,8 @@ struct IVW_CORE_API LayerConfig {
     static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
     static constexpr auto defaultInterpolation = InterpolationType::Linear;
     static constexpr auto defaultWrapping = wrapping2d::clampAll;
-    static inline const auto defaultXAxis = Axis{"x", Unit{}};
-    static inline const auto defaultYAxis = Axis{"y", Unit{}};
+    static inline const auto defaultXAxis = Axis{.name = "x", .unit = Unit{}};
+    static inline const auto defaultYAxis = Axis{.name = "y", .unit = Unit{}};
     static inline const auto defaultValueAxis = Axis{};
     static glm::dvec2 defaultDataRange(const DataFormatBase* format = defaultFormat);
     static glm::dvec2 defaultValueRange(const DataFormatBase* format = defaultFormat);

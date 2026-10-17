@@ -64,7 +64,9 @@ double totalMass(std::span<const TFPrimitiveData> tf) {
 // A TF that is a single spike (triangle) centered at `center` with half-width `hw`.
 TF spikeTF(double center, double hw, vec4 color) {
     vec4 zero = vec4{vec3{color}, 0.0f};
-    return {{center - hw, zero}, {center, color}, {center + hw, zero}};
+    return {{.pos = center - hw, .color = zero},
+            {.pos = center, .color = color},
+            {.pos = center + hw, .color = zero}};
 }
 
 }  // namespace
@@ -74,9 +76,9 @@ TF spikeTF(double center, double hw, vec4 color) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, IdentityInterpolation) {
-    TF tf = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.8f}},
-             {0.5, vec4{0.0f, 1.0f, 0.0f, 1.0f}},
-             {1.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
+    TF tf = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.8f}},
+             {.pos = 0.5, .color = vec4{0.0f, 1.0f, 0.0f, 1.0f}},
+             {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
 
     auto result = algorithm::optimalTransportInterpolation(tf, tf, 0.5);
 
@@ -91,8 +93,10 @@ TEST(OptimalTransport, IdentityInterpolation) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, BoundaryT0ReturnsA) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     auto result = algorithm::optimalTransportInterpolation(a, b, 0.0);
 
@@ -105,8 +109,10 @@ TEST(OptimalTransport, BoundaryT0ReturnsA) {
 }
 
 TEST(OptimalTransport, BoundaryT1ReturnsB) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     auto result = algorithm::optimalTransportInterpolation(a, b, 1.0);
 
@@ -123,8 +129,10 @@ TEST(OptimalTransport, BoundaryT1ReturnsB) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, MassConservationUniform) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.5f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.5f}}};
 
     const double massA = totalMass(a);
     const double massB = totalMass(b);
@@ -217,14 +225,14 @@ TEST(OptimalTransport, SpikeTranslationMonotone) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, Symmetry) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {0.3, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.5, vec4{1.0f, 1.0f, 0.0f, 0.5f}},
-            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.5, vec4{0.0f, 0.0f, 1.0f, 0.8f}},
-            {0.7, vec4{0.0f, 1.0f, 1.0f, 1.0f}},
-            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 0.3, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.5, .color = vec4{1.0f, 1.0f, 0.0f, 0.5f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.5, .color = vec4{0.0f, 0.0f, 1.0f, 0.8f}},
+            {.pos = 0.7, .color = vec4{0.0f, 1.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     const double t = 0.3;
     auto resultAB = algorithm::optimalTransportInterpolation(a, b, t);
@@ -242,14 +250,16 @@ TEST(OptimalTransport, Symmetry) {
 
 TEST(OptimalTransport, EmptyAReturnsB) {
     TF a;
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
     ASSERT_EQ(result.size(), b.size());
 }
 
 TEST(OptimalTransport, EmptyBReturnsA) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b;
 
     const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
@@ -265,8 +275,8 @@ TEST(OptimalTransport, BothEmpty) {
 }
 
 TEST(OptimalTransport, SinglePointTF) {
-    TF a = {{0.5, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.5, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.5, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.5, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     // Single-point TFs have zero mass (need at least two points for area).
     // Should fall back to linear blend or handle gracefully.
@@ -279,8 +289,10 @@ TEST(OptimalTransport, SinglePointTF) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, ZeroAlphaFallback) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
 
@@ -293,14 +305,14 @@ TEST(OptimalTransport, ZeroAlphaFallback) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, NonNegativeAlpha) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {0.2, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.4, vec4{1.0f, 1.0f, 0.0f, 0.0f}},
-            {0.6, vec4{0.0f, 1.0f, 0.0f, 0.8f}},
-            {1.0, vec4{0.0f, 1.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.5, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
-            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 0.2, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.4, .color = vec4{1.0f, 1.0f, 0.0f, 0.0f}},
+            {.pos = 0.6, .color = vec4{0.0f, 1.0f, 0.0f, 0.8f}},
+            {.pos = 1.0, .color = vec4{0.0f, 1.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.5, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
         const auto result = algorithm::optimalTransportInterpolation(a, b, t);
@@ -316,8 +328,10 @@ TEST(OptimalTransport, NonNegativeAlpha) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, PositionsWithinDomain) {
-    TF a = {{0.1, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {0.4, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.6, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {0.9, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.1, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.4, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.6, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 0.9, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     for (const double t : {0.0, 0.25, 0.5, 0.75, 1.0}) {
         const auto result = algorithm::optimalTransportInterpolation(a, b, t);
@@ -333,14 +347,14 @@ TEST(OptimalTransport, PositionsWithinDomain) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, MonotonePositions) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {0.3, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.6, vec4{0.5f, 0.5f, 0.0f, 0.5f}},
-            {1.0, vec4{0.0f, 1.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.4, vec4{0.0f, 0.0f, 1.0f, 0.8f}},
-            {0.7, vec4{0.0f, 1.0f, 1.0f, 1.0f}},
-            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 0.3, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.6, .color = vec4{0.5f, 0.5f, 0.0f, 0.5f}},
+            {.pos = 1.0, .color = vec4{0.0f, 1.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.4, .color = vec4{0.0f, 0.0f, 1.0f, 0.8f}},
+            {.pos = 0.7, .color = vec4{0.0f, 1.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     for (const double t : {0.1, 0.25, 0.5, 0.75, 0.9}) {
         auto result = algorithm::optimalTransportInterpolation(a, b, t);
@@ -356,17 +370,19 @@ TEST(OptimalTransport, MonotonePositions) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, EMDIdenticalIsZero) {
-    TF tf = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-             {0.5, vec4{0.0f, 1.0f, 0.0f, 0.5f}},
-             {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF tf = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+             {.pos = 0.5, .color = vec4{0.0f, 1.0f, 0.0f, 0.5f}},
+             {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     const double d = algorithm::earthMoversDistance(tf, tf);
     EXPECT_NEAR(d, 0.0, 1e-10) << "Distance from a TF to itself should be zero";
 }
 
 TEST(OptimalTransport, EMDSymmetric) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {0.5, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.5, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.5, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.5, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     const double dAB = algorithm::earthMoversDistance(a, b);
     const double dBA = algorithm::earthMoversDistance(b, a);
@@ -408,7 +424,8 @@ TEST(OptimalTransport, EMDTranslatedSpikes) {
 }
 
 TEST(OptimalTransport, EMDEmptyInput) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
     TF b;
 
     const double d = algorithm::earthMoversDistance(a, b);
@@ -421,8 +438,10 @@ TEST(OptimalTransport, EMDEmptyInput) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, ColorInterpolation) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}, {1.0, vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}}};
 
     const auto result = algorithm::optimalTransportInterpolation(a, b, 0.5);
 
@@ -441,14 +460,14 @@ TEST(OptimalTransport, ColorInterpolation) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, ContinuityInT) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {0.2, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.4, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.6, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.8, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
-            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 0.2, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.4, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.6, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.8, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     const int steps = 20;
     double prevMass = totalMass(a);
@@ -471,13 +490,14 @@ TEST(OptimalTransport, ContinuityInT) {
 // -------------------------------------------------------------------
 
 TEST(OptimalTransport, UnsortedInput) {
-    TF a = {{0.5, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.0, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.2f}}};
-    TF aSorted = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                  {0.5, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-                  {1.0, vec4{1.0f, 0.0f, 0.0f, 0.2f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.8f}}, {1.0, vec4{0.0f, 0.0f, 1.0f, 0.8f}}};
+    TF a = {{.pos = 0.5, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.2f}}};
+    TF aSorted = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+                  {.pos = 0.5, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+                  {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.2f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.8f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.8f}}};
 
     auto result1 = algorithm::optimalTransportInterpolation(a, b, 0.5);
     auto result2 = algorithm::optimalTransportInterpolation(aSorted, b, 0.5);
@@ -491,14 +511,14 @@ TEST(OptimalTransport, UnsortedInput) {
 // Samples per segment parameter: more samples should not change mass.
 // -------------------------------------------------------------------
 TEST(OptimalTransport, SamplesPerSegmentMass) {
-    TF a = {{0.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {0.3, vec4{1.0f, 0.0f, 0.0f, 1.0f}},
-            {0.6, vec4{1.0f, 0.0f, 0.0f, 0.0f}},
-            {1.0, vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
-    TF b = {{0.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.4, vec4{0.0f, 0.0f, 1.0f, 0.0f}},
-            {0.7, vec4{0.0f, 0.0f, 1.0f, 1.0f}},
-            {1.0, vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
+    TF a = {{.pos = 0.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 0.3, .color = vec4{1.0f, 0.0f, 0.0f, 1.0f}},
+            {.pos = 0.6, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}},
+            {.pos = 1.0, .color = vec4{1.0f, 0.0f, 0.0f, 0.0f}}};
+    TF b = {{.pos = 0.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.4, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}},
+            {.pos = 0.7, .color = vec4{0.0f, 0.0f, 1.0f, 1.0f}},
+            {.pos = 1.0, .color = vec4{0.0f, 0.0f, 1.0f, 0.0f}}};
 
     auto result4 = algorithm::optimalTransportInterpolation(a, b, 0.5, 4);
     auto result32 = algorithm::optimalTransportInterpolation(a, b, 0.5, 32);
@@ -541,38 +561,44 @@ struct OTConf {
     }
 };
 
-const TransferFunction OTConf::tfSinglePeakLeft{{{0.1, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                 {0.2, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                 {0.3, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfSinglePeakLeft{
+    {{.pos = 0.1, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.2, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.3, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
-const TransferFunction OTConf::tfSinglePeakMid{{{0.3, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                {0.4, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                {0.5, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfSinglePeakMid{
+    {{.pos = 0.3, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.4, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.5, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
-const TransferFunction OTConf::tfSinglePeakRight{{{0.5, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                  {0.6, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                  {0.7, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfSinglePeakRight{
+    {{.pos = 0.5, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.6, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.7, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
-const TransferFunction OTConf::tfDoublePeakLeft{{{0.1, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                 {0.15, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                 {0.2, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                 {0.8, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                 {0.85, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                 {0.9, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfDoublePeakLeft{
+    {{.pos = 0.1, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.15, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.2, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.8, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.85, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.9, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
-const TransferFunction OTConf::tfDoublePeakMid{{{0.15, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                {0.2, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                {0.25, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                {0.75, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                {0.80, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                {0.85, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfDoublePeakMid{
+    {{.pos = 0.15, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.2, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.25, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.75, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.80, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.85, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
-const TransferFunction OTConf::tfDoublePeakRight{{{0.2, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                  {0.25, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                  {0.3, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                  {0.7, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
-                                                  {0.75, vec4{1.0f, 0.0f, 0.0f, 0.5f}},
-                                                  {0.8, vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
+const TransferFunction OTConf::tfDoublePeakRight{
+    {{.pos = 0.2, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.25, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.3, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.7, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+     {.pos = 0.75, .color = vec4{1.0f, 0.0f, 0.0f, 0.5f}},
+     {.pos = 0.8, .color = vec4{0.0f, 0.0f, 0.0f, 0.0f}}}};
 
 }  // namespace
 

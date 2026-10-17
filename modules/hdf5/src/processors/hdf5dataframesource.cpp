@@ -112,7 +112,7 @@ void HDF5ToDataFrame::process() try {
         const size_t rows = meta.dimensions[0];
 
         // Build a full-range selection for this 1-D dataset.
-        const std::vector<Selection> selection{{0, rows, 1}};
+        const std::vector<Selection> selection{{.start = 0, .count = rows, .stride = 1}};
 
         const auto buffer = getBufferAtPathAsType(*data + meta.path, selection, nullptr);
 

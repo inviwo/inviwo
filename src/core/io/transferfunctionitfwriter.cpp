@@ -40,7 +40,7 @@ namespace inviwo {
 constexpr int transferFunctionVersion = 1;
 
 TransferFunctionITFWriter::TransferFunctionITFWriter() {
-    addExtension({"itf", "Inviwo Transfer Function"});
+    addExtension({.extension = "itf", .description = "Inviwo Transfer Function"});
 }
 
 TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {

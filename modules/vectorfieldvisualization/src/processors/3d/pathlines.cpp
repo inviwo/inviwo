@@ -108,8 +108,9 @@ PathLinesDeprecated::PathLinesDeprecated()
     , linesStripsMesh_("linesStripsMesh")
     , pathLineProperties_("pathLineProperties", "Path Line Properties")
     , tf_("transferFunction", "Transfer Function",
-          TransferFunction{
-              {{0.0f, vec4(0, 0, 1, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0, vec4(1, 0, 0, 1)}}})
+          TransferFunction{{{.pos = 0.0f, .color = vec4(0, 0, 1, 1)},
+                            {.pos = 0.5f, .color = vec4(1, 1, 0, 1)},
+                            {.pos = 1.0, .color = vec4(1, 0, 0, 1)}}})
     , coloringMethod_("coloringMethod", "Color by",
                       {{"vel", "Velocity", ColoringMethod::Velocity},
                        {"time", "Timestamp", ColoringMethod::Timestamp},

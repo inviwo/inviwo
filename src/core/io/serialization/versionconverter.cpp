@@ -268,7 +268,7 @@ bool xml::changeTag(TxElement* node, const std::vector<Kind>& path, const std::s
         selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
     }
     // selector.back().name = oldName;
-    selector.insert(selector.end(), {oldName, {}});
+    selector.insert(selector.end(), {.name = oldName, .attributes = {}});
 
     bool res = false;
     xml::visitMatchingNodes(node, selector, [&res, &newName](TxElement* n) {
@@ -302,7 +302,7 @@ bool xml::changeAttribute(TxElement* node, const std::vector<Kind>& path,
     for (const auto& kind : path) {
         selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
     }
-    selector.back().attributes.push_back({attribute, oldValue});
+    selector.back().attributes.push_back({.name = attribute, .value = oldValue});
 
     bool res = false;
     xml::visitMatchingNodes(node, selector, [&res, &attribute, &newValue](TxElement* n) {
@@ -322,7 +322,7 @@ bool xml::changeAttributeRecursive(TxElement* node, const std::vector<Kind>& pat
     for (const auto& kind : path) {
         selector.insert(selector.end(), kind.getMatchers().begin(), kind.getMatchers().end());
     }
-    selector.back().attributes.push_back({attribute, oldValue});
+    selector.back().attributes.push_back({.name = attribute, .value = oldValue});
 
     bool res = false;
     xml::visitMatchingNodesRecursive(node, selector, [&res, &attribute, &newValue](TxElement* n) {
@@ -335,8 +335,8 @@ bool xml::changeAttributeRecursive(TxElement* node, const std::vector<Kind>& pat
 xml::Kind::Kind(std::string name, std::string list, std::string type)
     : name_(std::move(name)), list_(std::move(list)), type_(std::move(type)) {
 
-    const ElementMatcher m1 = {list_, {}};
-    const ElementMatcher m2 = {name_, {{"type", type_}}};
+    const ElementMatcher m1 = {.name = list_, .attributes = {}};
+    const ElementMatcher m2 = {.name = name_, .attributes = {{.name = "type", .value = type_}}};
 
     matchers_.push_back(m1);
     matchers_.push_back(m2);
@@ -344,7 +344,7 @@ xml::Kind::Kind(std::string name, std::string list, std::string type)
 
 xml::Kind xml::Kind::processor(const std::string& type) {
     Kind kind("Processor", "Processors", type);
-    const ElementMatcher m = {"ProcessorNetwork", {}};
+    const ElementMatcher m = {.name = "ProcessorNetwork", .attributes = {}};
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
 }
@@ -361,9 +361,9 @@ xml::Kind xml::Kind::property(const std::string& type) { return {"Property", "Pr
 
 xml::Kind xml::Kind::propertyLinkSource(const std::string& type, const std::string& identifier) {
     Kind kind("SourceProperty", "PropertyLink", type);
-    kind.matchers_.back().attributes.push_back({"identifier", identifier});
-    const ElementMatcher m = {"ProcessorNetwork", {}};
-    const ElementMatcher m2 = {"PropertyLinks", {}};
+    kind.matchers_.back().attributes.push_back({.name = "identifier", .value = identifier});
+    const ElementMatcher m = {.name = "ProcessorNetwork", .attributes = {}};
+    const ElementMatcher m2 = {.name = "PropertyLinks", .attributes = {}};
     kind.matchers_.insert(kind.matchers_.begin(), m2);
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
@@ -372,9 +372,9 @@ xml::Kind xml::Kind::propertyLinkSource(const std::string& type, const std::stri
 xml::Kind xml::Kind::propertyLinkDestination(const std::string& type,
                                              const std::string& identifier) {
     Kind kind("DestinationProperty", "PropertyLink", type);
-    kind.matchers_.back().attributes.push_back({"identifier", identifier});
-    const ElementMatcher m = {"ProcessorNetwork", {}};
-    const ElementMatcher m2 = {"PropertyLinks", {}};
+    kind.matchers_.back().attributes.push_back({.name = "identifier", .value = identifier});
+    const ElementMatcher m = {.name = "ProcessorNetwork", .attributes = {}};
+    const ElementMatcher m2 = {.name = "PropertyLinks", .attributes = {}};
     kind.matchers_.insert(kind.matchers_.begin(), m2);
     kind.matchers_.insert(kind.matchers_.begin(), m);
     return kind;
@@ -437,32 +437,39 @@ bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassI
     xml::visitMatchingNodesRecursive(
         root,
         {
-            {"ProcessorNetwork", {}},
-            {"Processors", {}},
-            {"Processor", {{"type", std::string{processorClassId}}}},
+            {.name = "ProcessorNetwork", .attributes = {}},
+            {.name = "Processors", .attributes = {}},
+            {.name = "Processor",
+             .attributes = {{.name = "type", .value = std::string{processorClassId}}}},
         },
         [&](TxElement* elem) {
             processorIds.push_back(elem->GetAttribute("identifier"));
 
             std::vector<xml::ElementMatcher> portGroupSelector;
-            portGroupSelector.push_back({"PortGroups", {}});
-            portGroupSelector.push_back({"PortGroup", {{"key", std::string(portIdentifier)}}});
+            portGroupSelector.push_back({.name = "PortGroups", .attributes = {}});
+            portGroupSelector.push_back(
+                {.name = "PortGroup",
+                 .attributes = {{.name = "key", .value = std::string(portIdentifier)}}});
             xml::visitMatchingNodes(elem, portGroupSelector, [&](TxElement* prop) {
                 prop->SetAttribute("key", newIdentifier);
                 res |= true;
             });
 
             std::vector<xml::ElementMatcher> inportSelector;
-            inportSelector.push_back({"InPorts", {}});
-            inportSelector.push_back({"InPort", {{"identifier", std::string(portIdentifier)}}});
+            inportSelector.push_back({.name = "InPorts", .attributes = {}});
+            inportSelector.push_back(
+                {.name = "InPort",
+                 .attributes = {{.name = "identifier", .value = std::string(portIdentifier)}}});
             xml::visitMatchingNodes(elem, inportSelector, [&](TxElement* prop) {
                 prop->SetAttribute("identifier", newIdentifier);
                 res |= true;
             });
 
             std::vector<xml::ElementMatcher> outportSelector;
-            outportSelector.push_back({"OutPorts", {}});
-            outportSelector.push_back({"OutPort", {{"identifier", std::string(portIdentifier)}}});
+            outportSelector.push_back({.name = "OutPorts", .attributes = {}});
+            outportSelector.push_back(
+                {.name = "OutPort",
+                 .attributes = {{.name = "identifier", .value = std::string(portIdentifier)}}});
             xml::visitMatchingNodes(elem, outportSelector, [&](TxElement* prop) {
                 prop->SetAttribute("identifier", newIdentifier);
                 res |= true;
@@ -474,9 +481,9 @@ bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassI
     xml::visitMatchingNodesRecursive(
         root,
         {
-            {"ProcessorNetwork", {}},
-            {"Connections", {}},
-            {"Connection", {}},
+            {.name = "ProcessorNetwork", .attributes = {}},
+            {.name = "Connections", .attributes = {}},
+            {.name = "Connection", .attributes = {}},
         },
         [&](TxElement* elem) {
             const auto src = elem->GetAttribute("src");
@@ -503,17 +510,20 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
     xml::visitMatchingNodesRecursive(
         root,
         {
-            {"ProcessorNetwork", {}},
-            {"Processors", {}},
-            {"Processor", {{"type", std::string{processorClassId}}}},
+            {.name = "ProcessorNetwork", .attributes = {}},
+            {.name = "Processors", .attributes = {}},
+            {.name = "Processor",
+             .attributes = {{.name = "type", .value = std::string{processorClassId}}}},
         },
         [&](TxElement* elem) {
             processorIds.push_back(elem->GetAttribute("identifier"));
 
             std::vector<xml::ElementMatcher> selector;
             for (const auto item : path) {
-                selector.push_back({"Properties", {}});
-                selector.push_back({"Property", {{"identifier", std::string(item)}}});
+                selector.push_back({.name = "Properties", .attributes = {}});
+                selector.push_back(
+                    {.name = "Property",
+                     .attributes = {{.name = "identifier", .value = std::string(item)}}});
             }
 
             xml::visitMatchingNodes(elem, selector, [&](TxElement* prop) {
@@ -531,9 +541,9 @@ bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorCl
     xml::visitMatchingNodesRecursive(
         root,
         {
-            {"ProcessorNetwork", {}},
-            {"PropertyLinks", {}},
-            {"PropertyLink", {}},
+            {.name = "ProcessorNetwork", .attributes = {}},
+            {.name = "PropertyLinks", .attributes = {}},
+            {.name = "PropertyLink", .attributes = {}},
         },
         [&](TxElement* elem) {
             const auto src = elem->GetAttribute("src");

@@ -530,17 +530,22 @@ void ProcessorNetworkConverter::updateTransferFunctions(TxElement* node) {
     if (key == "transferFunction") {
         node->SetValue("TransferFunction");
 
-        xml::visitMatchingNodes(node, {{"dataPoints", {}}},
+        xml::visitMatchingNodes(node, {{.name = "dataPoints", .attributes = {}}},
                                 [](TxElement* node) { node->SetValue("Points"); });
 
-        xml::visitMatchingNodes(node, {{"Points", {}}, {"point", {}}},
-                                [](TxElement* node) { node->SetValue("Point"); });
-
         xml::visitMatchingNodes(
-            node, {{"Points", {}}, {"Point", {}}, {"pos", {}}}, [](TxElement* posNode) {
-                const auto pos = posNode->Attribute("x").value_or(std::string_view{"0.0"});
-                posNode->SetAttribute("content", pos);
-            });
+            node, {{.name = "Points", .attributes = {}}, {.name = "point", .attributes = {}}},
+            [](TxElement* node) { node->SetValue("Point"); });
+
+        xml::visitMatchingNodes(node,
+                                {{.name = "Points", .attributes = {}},
+                                 {.name = "Point", .attributes = {}},
+                                 {.name = "pos", .attributes = {}}},
+                                [](TxElement* posNode) {
+                                    const auto pos =
+                                        posNode->Attribute("x").value_or(std::string_view{"0.0"});
+                                    posNode->SetAttribute("content", pos);
+                                });
     }
 }
 
@@ -658,7 +663,10 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                 TxElement cam("Camera");
 
                 xml::visitMatchingNodes(
-                    node, {{"Properties", {}}, {"Property", {}}}, [&](TxElement* subNode) {
+                    node,
+                    {{.name = "Properties", .attributes = {}},
+                     {.name = "Property", .attributes = {}}},
+                    [&](TxElement* subNode) {
                         const auto& name = subNode->GetAttribute("identifier");
 
                         if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
@@ -835,13 +843,18 @@ void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
 
 void ProcessorNetworkConverter::updateFileMode(TxElement* node) {
     xml::visitMatchingNodesRecursive(
-        node, {{"Property", {}}, {"fileMode", {{"content", "4"}}}},
+        node,
+        {{.name = "Property", .attributes = {}},
+         {.name = "fileMode", .attributes = {{.name = "content", .value = "4"}}}},
         [](TxElement* matchingNode) { matchingNode->SetAttribute("content", "2"); });
 }
 
 void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
     xml::visitMatchingNodesRecursive(
-        node, {"Property", {{"type", "org.inviwo.SimpleLightingProperty"}}}, [&](TxElement* prop) {
+        node,
+        {.name = "Property",
+         .attributes = {{.name = "type", .value = "org.inviwo.SimpleLightingProperty"}}},
+        [&](TxElement* prop) {
             if (auto* lightPosition =
                     xml::getElement(prop, "Properties/Property&identifier=lightPosition")) {
 

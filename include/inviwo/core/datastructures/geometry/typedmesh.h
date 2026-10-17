@@ -349,14 +349,14 @@ public:
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh*>(this))... {
 
         addVertices(vertices);
-        this->addIndices(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
+        this->addIndices(MeshInfo{.dt = dt, .ct = ct}, util::makeIndexBuffer(std::move(indices)));
     }
     TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex>& vertices,
               const std::vector<std::uint32_t>& indices)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh*>(this))... {
 
         addVertices(vertices);
-        this->addIndices(MeshInfo{dt, ct},
+        this->addIndices(MeshInfo{.dt = dt, .ct = ct},
                          util::makeIndexBuffer(std::vector<std::uint32_t>{indices}));
     }
 

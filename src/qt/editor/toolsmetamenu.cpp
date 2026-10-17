@@ -60,7 +60,9 @@ void addInviwoMetaAction(QMenu* menu) {
 
             try {
                 std::stringstream ss;
-                meta::Creator creator(filesystem::findBasePath(), {}, {}, {true, false, false, ss});
+                meta::Creator creator(
+                    filesystem::findBasePath(), {}, {},
+                    {.verbose = true, .dryrun = false, .force = false, .log = ss});
                 func(creator, std::filesystem::path{path});
 
                 log::report(LogLevel::Info, ss.str());

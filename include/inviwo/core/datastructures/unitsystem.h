@@ -198,13 +198,13 @@ struct Group {
     std::span<const UnitDesc> units;
 };
 
-constexpr std::array<Group, 7> groups = {{{"SI", si},
-                                          {"Derived", derived},
-                                          {"Extra", extra},
-                                          {"Time", time},
-                                          {"Temperature", temperature},
-                                          {"Atomic", atomic},
-                                          {"Astronomical", astronomical}}};
+constexpr std::array<Group, 7> groups = {{{.name = "SI", .units = si},
+                                          {.name = "Derived", .units = derived},
+                                          {.name = "Extra", .units = extra},
+                                          {.name = "Time", .units = time},
+                                          {.name = "Temperature", .units = temperature},
+                                          {.name = "Atomic", .units = atomic},
+                                          {.name = "Astronomical", .units = astronomical}}};
 
 using EnabledGroups = std::array<bool, groups.size()>;
 constexpr EnabledGroups allGroups = {true, true, true, true, true, true, true};

@@ -257,7 +257,7 @@ Document util::md2doc(std::string_view markdown) {
                               .syntax = nullptr};
 
     Document doc;
-    State state{{doc.handle()}};
+    State state{.handles = {doc.handle()}};
     md_parse(markdown.data(), static_cast<MD_SIZE>(markdown.size()), &parser,
              static_cast<void*>(&state));
 

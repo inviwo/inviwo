@@ -219,7 +219,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     try {
         const py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
         const auto p = proc.cast<ProcessorInfo>();
-        return {p, name, file};
+        return {.info = p, .name = name, .file = file};
     } catch (const std::exception& e) {
         throw Exception(SourceContext{},
                         "Failed to get ProcessorInfo for python processor: '{}'. File: {}\n{}",

@@ -110,7 +110,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
     , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
     , tf_("transferFunction", "Transfer Function",
-          TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
+          TransferFunction({{.pos = 0.0, .color = vec4(1.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}))
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 

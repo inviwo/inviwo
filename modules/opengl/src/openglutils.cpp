@@ -335,8 +335,8 @@ TexEnv::~TexEnv() {
 
 BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha)
     : GlBoolState(GL_BLEND, srcRGB != GL_NONE || srcAlpha != GL_NONE)
-    , curr_{{static_cast<GLint>(srcRGB), static_cast<GLint>(srcAlpha)},
-            {static_cast<GLint>(dstRGB), static_cast<GLint>(dstAlpha)}}
+    , curr_{.src = {.rgb = static_cast<GLint>(srcRGB), .alpha = static_cast<GLint>(srcAlpha)},
+            .dst = {.rgb = static_cast<GLint>(dstRGB), .alpha = static_cast<GLint>(dstAlpha)}}
     , old_{} {
     if (state_) {
         glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
@@ -382,7 +382,7 @@ BlendModeState::~BlendModeState() {
 BlendModeEquationState::BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB,
                                                GLenum dstAlpha, GLenum eqnRGB, GLenum eqnAlpha)
     : BlendModeState(srcRGB, srcAlpha, dstRGB, dstAlpha)
-    , curr_{static_cast<GLint>(eqnRGB), static_cast<GLint>(eqnAlpha)}
+    , curr_{.rgb = static_cast<GLint>(eqnRGB), .alpha = static_cast<GLint>(eqnAlpha)}
     , old_{} {
     if (state_) {
         glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.rgb);

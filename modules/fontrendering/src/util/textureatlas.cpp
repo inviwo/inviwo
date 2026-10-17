@@ -84,7 +84,10 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, const std::vector<std::
 
     std::vector<TexAtlasEntry> entries;
     for (auto&& item : util::zip(strings, bboxes)) {
-        entries.push_back({item.first(), ivec2{0}, item.second().glyphsExtent, color});
+        entries.push_back({.value = item.first(),
+                           .texPos = ivec2{0},
+                           .texExtent = item.second().glyphsExtent,
+                           .color = color});
     }
 
     fillAtlas(textRenderer, entries, bboxes);

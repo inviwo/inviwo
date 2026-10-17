@@ -58,7 +58,7 @@ OutputStream::OutputStream(OutputContext& format, Options opts)
      * of which frame timestamps are represented. For fixed-fps content,
      * timebase should be 1/frameRate and timestamp increments should be
      * identical to 1. */
-    stream->time_base = AVRational{1, opts.frameRate};
+    stream->time_base = AVRational{.num = 1, .den = opts.frameRate};
     encoder.ctx->time_base = stream->time_base;
 
     encoder.ctx->gop_size = 12; /* emit one intra frame every twelve frames at most */

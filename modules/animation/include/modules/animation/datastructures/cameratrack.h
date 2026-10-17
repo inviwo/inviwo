@@ -71,7 +71,7 @@ struct AnimateSequence<CameraProperty, CameraKeyframeSequence> {
     static AnimationTimeState animate(CameraProperty* prop, const CameraKeyframeSequence& seq,
                                       Seconds from, Seconds to, AnimationState state) {
         seq(from, to, prop->get());
-        return {to, state};
+        return {.time = to, .state = state};
     }
 };
 

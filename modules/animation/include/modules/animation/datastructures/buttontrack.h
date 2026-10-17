@@ -68,7 +68,7 @@ struct AnimateSequence<ButtonProperty, ButtonKeyframeSequence> {
         if (pressed) {
             prop->pressButton();
         }
-        return {to, state};
+        return {.time = to, .state = state};
     }
 };
 

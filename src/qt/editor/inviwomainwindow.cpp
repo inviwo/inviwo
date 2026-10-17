@@ -157,7 +157,7 @@ public:
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
         });
-        actions_.push_back({action, text, sig});
+        actions_.push_back({.action = action, .text = text, .connection = sig});
     }
 
     void add(QMenu* menu) {
@@ -166,7 +166,7 @@ public:
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
         });
-        menus_.push_back({menu, sig});
+        menus_.push_back({.menu = menu, .connection = sig});
     }
 
     void clear() {
@@ -505,10 +505,11 @@ void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::str
         }
 
         rendercontext::activateDefault();
-        util::exportAllFiles(
-            *app_->getProcessorNetwork(), path, fileName,
-            {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
-            Overwrite::Yes);
+        util::exportAllFiles(*app_->getProcessorNetwork(), path, fileName,
+                             {FileExtension{.extension = "png", .description = ""},
+                              FileExtension{.extension = "csv", .description = ""},
+                              FileExtension{.extension = "txt", .description = ""}},
+                             Overwrite::Yes);
     } catch (const Exception& e) {
         log::exception(e);
     } catch (const std::exception& e) {

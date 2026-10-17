@@ -53,7 +53,7 @@ AnimationTimeState CallbackKeyframe::operator()(Seconds from, Seconds to,
         // Animating backward, passing from right to left
         undo_();
     }
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
 }  // namespace inviwo::animation

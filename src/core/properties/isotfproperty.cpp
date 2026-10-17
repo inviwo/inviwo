@@ -65,24 +65,26 @@ IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displ
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName,
                              Document help, TFData port, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
-    : IsoTFProperty{identifier,
-                    displayName,
-                    std::move(help),
-                    {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}),
-                    std::move(port),
-                    invalidationLevel,
-                    std::move(semantics)} {}
+    : IsoTFProperty{
+          identifier,
+          displayName,
+          std::move(help),
+          {},
+          TransferFunction({{.pos = 0.0, .color = vec4(0.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}),
+          std::move(port),
+          invalidationLevel,
+          std::move(semantics)} {}
 
 IsoTFProperty::IsoTFProperty(std::string_view identifier, std::string_view displayName, TFData port,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : IsoTFProperty{identifier,
-                    displayName,
-                    {},
-                    TransferFunction({{0.0, vec4(0.0f)}, {1.0, vec4(1.0f)}}),
-                    std::move(port),
-                    invalidationLevel,
-                    std::move(semantics)} {}
+    : IsoTFProperty{
+          identifier,
+          displayName,
+          {},
+          TransferFunction({{.pos = 0.0, .color = vec4(0.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}),
+          std::move(port),
+          invalidationLevel,
+          std::move(semantics)} {}
 
 IsoTFProperty::IsoTFProperty(const IsoTFProperty& rhs)
     : CompositeProperty{rhs}

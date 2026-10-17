@@ -91,8 +91,8 @@ TFComponent::TFComponent(std::string_view identifier, std::string_view name, Doc
     , tf{identifier,
          name,
          std::move(help),
-         TransferFunction(
-             {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+         TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                           {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
          &volume,
          InvalidationLevel::InvalidResources} {}
 

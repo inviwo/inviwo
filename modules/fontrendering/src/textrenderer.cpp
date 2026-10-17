@@ -341,7 +341,8 @@ void TextRenderer::renderToTexture(const TextTextureObject& texObject, std::stri
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t& origin,
                                    const size2_t& size, std::string_view str, const vec4& color,
                                    bool clearTexture) {
-    renderToTexture({texture, computeBoundingBox(str)}, origin, size, str, color, clearTexture);
+    renderToTexture({.texture = texture, .bbox = computeBoundingBox(str)}, origin, size, str, color,
+                    clearTexture);
 }
 
 std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState, utilgl::ActivateFBO>
@@ -501,7 +502,8 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache& fc,
     const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
     const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
 
-    GlyphEntry glyphEntry = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+    GlyphEntry glyphEntry = {
+        .advance = advance, .size = bitmapSize, .bearing = bitmapPos, .texAtlasPos = ivec2(-1)};
 
     const ivec2 glyphExtent(glyphEntry.size + 2 * glyphMargin_);
     const ivec2 texDims(fc.glyphTex->getDimensions());
@@ -590,7 +592,8 @@ void TextRenderer::createDefaultGlyphAtlas() {
         const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
         const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
 
-        fc.glyphMap[c] = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+        fc.glyphMap[c] = {
+            .advance = advance, .size = bitmapSize, .bearing = bitmapPos, .texAtlasPos = ivec2(-1)};
     }
 
     fc.glyphTex = createAtlasTexture(fc);
@@ -740,8 +743,9 @@ TextTextureObject createTextTextureObject(TextRenderer& textRenderer, std::strin
             std::array<GLenum, 2>{{GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER}});
         tex->initialize(nullptr);
     }
-    textRenderer.renderToTexture({tex, bbox}, size2_t(0u), bbox.glyphsExtent, text, fontColor);
-    return {tex, bbox};
+    textRenderer.renderToTexture({.texture = tex, .bbox = bbox}, size2_t(0u), bbox.glyphsExtent,
+                                 text, fontColor);
+    return {.texture = tex, .bbox = bbox};
 }
 
 std::shared_ptr<Texture2D> createTextTexture(TextRenderer& textRenderer, std::string text,

@@ -106,7 +106,7 @@ void parseColorMapsNode(TransferFunction& tf, TxElement* node) {
 }  // namespace
 
 TransferFunctionXMLReader::TransferFunctionXMLReader() {
-    addExtension({"xml", "XML Transfer Function"});
+    addExtension({.extension = "xml", .description = "XML Transfer Function"});
 }
 
 TransferFunctionXMLReader* TransferFunctionXMLReader::clone() const {

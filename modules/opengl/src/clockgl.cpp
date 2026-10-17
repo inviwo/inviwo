@@ -61,7 +61,7 @@ void ClockGL::start() {
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
         queries_.back().state = State::Started;
     } else {
-        queries_.push_back({{0, 0}, State::Started});
+        queries_.push_back({.ids = {0, 0}, .state = State::Started});
         glGenQueries(2, queries_.back().ids.data());
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
     }

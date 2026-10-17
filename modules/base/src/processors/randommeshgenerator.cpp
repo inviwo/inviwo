@@ -174,14 +174,17 @@ void RandomMeshGenerator::process() {
         boxes_.clear();
         boxPicking_.resize(numberOfBoxes_);
         for (int i = 0; i < numberOfBoxes_.get(); i++) {
-            boxes_.push_back({randVec3(0, 6.28f), randPos(), randSize(), randColor()});
+            boxes_.push_back({.rotation = randVec3(0, 6.28f),
+                              .position = randPos(),
+                              .scale = randSize(),
+                              .color = randColor()});
         }
     }
     if (numberOfSpheres_.isModified() || dirty) {
         spheres_.clear();
         spherePicking_.resize(numberOfSpheres_);
         for (int i = 0; i < numberOfSpheres_.get(); i++) {
-            spheres_.push_back({randPos(), randScale(), randColor()});
+            spheres_.push_back({.center = randPos(), .radius = randScale(), .color = randColor()});
         }
     }
     if (numberOfCylinders_.isModified() || dirty) {
@@ -189,8 +192,10 @@ void RandomMeshGenerator::process() {
         cylinderPicking_.resize(numberOfCylinders_);
         for (int i = 0; i < numberOfCylinders_.get(); i++) {
             const auto r = randPos();
-            cylinders_.push_back(
-                {r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
+            cylinders_.push_back({.start = r,
+                                  .end = r + 10.0f * randScale() * randDir(),
+                                  .radius = randScale(),
+                                  .color = randColor()});
         }
     }
     if (numberOfCones_.isModified() || dirty) {
@@ -198,7 +203,10 @@ void RandomMeshGenerator::process() {
         conePicking_.resize(numberOfCones_);
         for (int i = 0; i < numberOfCones_.get(); i++) {
             const auto r = randPos();
-            cones_.push_back({r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
+            cones_.push_back({.start = r,
+                              .end = r + 10.0f * randScale() * randDir(),
+                              .radius = randScale(),
+                              .color = randColor()});
         }
     }
     if (numberOfToruses_.isModified() || dirty) {
@@ -207,7 +215,11 @@ void RandomMeshGenerator::process() {
         for (int i = 0; i < numberOfToruses_.get(); i++) {
             const auto r2 = size_.get() * rand(0.1f, 0.5f);
             const auto r1 = size_.get() * rand(0.1f + r2, 1.0f + r2);
-            toruses_.push_back({randPos(), randDir(), r2, r1, randColor()});
+            toruses_.push_back({.center = randPos(),
+                                .up = randDir(),
+                                .radius1 = r2,
+                                .radius2 = r1,
+                                .color = randColor()});
         }
     }
 

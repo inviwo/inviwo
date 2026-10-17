@@ -792,7 +792,8 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
                            {BufferType::NormalAttrib, norm},
                            {BufferType::ColorAttrib, col},
                            {BufferType::PickingAttrib, pick}},
-        Mesh::IndexVector{{Mesh::MeshInfo{DrawType::Triangles, ConnectivityType::None}, inds}});
+        Mesh::IndexVector{
+            {Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::None}, inds}});
 
     mesh->setModelMatrix(basisAndOffset);
 

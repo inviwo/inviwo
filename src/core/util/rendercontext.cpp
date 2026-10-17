@@ -101,8 +101,9 @@ void RenderContext::clearContext() {
 void RenderContext::registerContext(Canvas::ContextID id, std::string_view name,
                                     std::unique_ptr<ContextHolder> context) {
     const std::unique_lock<std::mutex> lock(mutex_);
-    contextRegistry_[id] =
-        ContextInfo{std::string(name), std::this_thread::get_id(), std::move(context)};
+    contextRegistry_[id] = ContextInfo{.name = std::string(name),
+                                       .threadId = std::this_thread::get_id(),
+                                       .context = std::move(context)};
 }
 
 void RenderContext::unRegisterContext(Canvas::ContextID id) {

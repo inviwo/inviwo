@@ -117,11 +117,21 @@ auto BackgroundComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     const auto comp = fmt::format(composite, "bg"_a = getName());
     if (background_.isConnected()) {
-        return {{fmt::format(uniforms, "bg"_a = getName()), placeholder::uniform, 900},
-                {fmt::format(setup, "bg"_a = getName(), "comp"_a = comp), placeholder::setup, 900},
-                {fmt::format(first, "bg"_a = getName(), "comp"_a = comp), placeholder::first, 900},
-                {fmt::format(loop, "bg"_a = getName(), "comp"_a = comp), placeholder::loop, 900},
-                {fmt::format(post, "bg"_a = getName(), "comp"_a = comp), placeholder::post, 900}};
+        return {{.snippet = fmt::format(uniforms, "bg"_a = getName()),
+                 .placeholder = placeholder::uniform,
+                 .priority = 900},
+                {.snippet = fmt::format(setup, "bg"_a = getName(), "comp"_a = comp),
+                 .placeholder = placeholder::setup,
+                 .priority = 900},
+                {.snippet = fmt::format(first, "bg"_a = getName(), "comp"_a = comp),
+                 .placeholder = placeholder::first,
+                 .priority = 900},
+                {.snippet = fmt::format(loop, "bg"_a = getName(), "comp"_a = comp),
+                 .placeholder = placeholder::loop,
+                 .priority = 900},
+                {.snippet = fmt::format(post, "bg"_a = getName(), "comp"_a = comp),
+                 .placeholder = placeholder::post,
+                 .priority = 900}};
     } else {
         return {};
     }

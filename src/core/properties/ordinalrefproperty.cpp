@@ -68,13 +68,13 @@ template class IVW_CORE_TMPL_INST OrdinalRefProperty<glm::dquat>;
 template class IVW_CORE_TMPL_INST OrdinalRefProperty<glm::fquat>;
 
 OrdinalRefPropertyState<vec4> util::ordinalRefColor(InvalidationLevel invalidationLevel) {
-    return {vec4{0.0f},
-            ConstraintBehavior::Immutable,
-            vec4{1.0f},
-            ConstraintBehavior::Immutable,
-            vec4{0.01f},
-            invalidationLevel,
-            PropertySemantics::Color};
+    return {.min = vec4{0.0f},
+            .minConstraint = ConstraintBehavior::Immutable,
+            .max = vec4{1.0f},
+            .maxConstraint = ConstraintBehavior::Immutable,
+            .increment = vec4{0.01f},
+            .invalidationLevel = invalidationLevel,
+            .semantics = PropertySemantics::Color};
 }
 
 }  // namespace inviwo
