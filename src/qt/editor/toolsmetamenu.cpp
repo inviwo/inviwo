@@ -72,7 +72,7 @@ void addInviwoMetaAction(QMenu* menu) {
 
     {
         auto action = menu->addAction("Add &File...");
-        menu->connect(action, &QAction::triggered, [&]() {
+        QMenu::connect(action, &QAction::triggered, [&]() {
             create("File", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createFile(path);
             });
@@ -80,7 +80,7 @@ void addInviwoMetaAction(QMenu* menu) {
     }
     {
         auto action = menu->addAction("Add &Processor...");
-        menu->connect(action, &QAction::triggered, [&]() {
+        QMenu::connect(action, &QAction::triggered, [&]() {
             create("Processor", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createProcessor(path);
             });
@@ -88,7 +88,7 @@ void addInviwoMetaAction(QMenu* menu) {
     }
     {
         auto action = menu->addAction("Add &Unit Test...");
-        menu->connect(action, &QAction::triggered, [&]() {
+        QMenu::connect(action, &QAction::triggered, [&]() {
             create("Test", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createTest(path);
             });
@@ -96,7 +96,7 @@ void addInviwoMetaAction(QMenu* menu) {
     }
     {
         auto action = menu->addAction("Add &Module...");
-        menu->connect(action, &QAction::triggered, [&]() {
+        QMenu::connect(action, &QAction::triggered, [&]() {
             create("Module", [](meta::Creator& creator, const std::filesystem::path& path) {
                 bool ok = false;
                 const QString text = QInputDialog::getText(

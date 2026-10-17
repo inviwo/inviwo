@@ -274,7 +274,7 @@ void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
         helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp,
         [&app]() { app.processFront(); }, Qt::QueuedConnection);
 
-    app.setProcessEventsCallback([]() { QApplication::instance()->processEvents(); });
+    app.setProcessEventsCallback([]() { QCoreApplication::processEvents(); });
 }
 
 void utilqt::configureAssertionHandler(InviwoApplication& app) {
@@ -299,7 +299,7 @@ void utilqt::configurePoolResizeWait(InviwoApplication& app, QWidget* window) {
                     break;
                 }
                 case InviwoApplication::LongWait::Update: {
-                    QApplication::instance()->processEvents();
+                    QCoreApplication::processEvents();
                     break;
                 }
                 case InviwoApplication::LongWait::End: {
