@@ -23,5 +23,6 @@ var searchData=
   ['inviwo_3a_3autil_3a_3ahasramrepresentation_20',['hasRAMrepresentation',['../conceptinviwo_1_1util_1_1hasRAMrepresentation.html',1,'inviwo::util']]],
   ['inviwo_3a_3autil_3a_3arangeofvec_21',['RangeOfVec',['../conceptinviwo_1_1util_1_1RangeOfVec.html',1,'inviwo::util']]],
   ['inviwo_3a_3autil_3a_3avec2d_22',['Vec2D',['../conceptinviwo_1_1util_1_1Vec2D.html',1,'inviwo::util']]],
-  ['inviwo_3a_3awcharrange_23',['WCharRange',['../conceptinviwo_1_1WCharRange.html',1,'inviwo']]]
+  ['inviwo_3a_3avec2ordinalproperty_23',['Vec2OrdinalProperty',['../conceptinviwo_1_1Vec2OrdinalProperty.html',1,'inviwo']]],
+  ['inviwo_3a_3awcharrange_24',['WCharRange',['../conceptinviwo_1_1WCharRange.html',1,'inviwo']]]
 ];

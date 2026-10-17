@@ -30,6 +30,7 @@ var concepts =
       [ "Settable", "conceptinviwo_1_1Settable.html", null ],
       [ "Gettable", "conceptinviwo_1_1Gettable.html", null ],
       [ "isMatrix", "conceptinviwo_1_1isMatrix.html", null ],
+      [ "Vec2OrdinalProperty", "conceptinviwo_1_1Vec2OrdinalProperty.html", null ],
       [ "TypeListLike", "conceptinviwo_1_1TypeListLike.html", null ],
       [ "CharRange", "conceptinviwo_1_1CharRange.html", null ],
       [ "WCharRange", "conceptinviwo_1_1WCharRange.html", null ],

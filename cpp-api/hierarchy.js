@@ -478,6 +478,7 @@ var hierarchy =
         [ "inviwo::DatVolumeReader", "classinviwo_1_1DatVolumeReader.html", null ],
         [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
         [ "inviwo::MPVMVolumeReader", "classinviwo_1_1MPVMVolumeReader.html", null ],
+        [ "inviwo::NiftiVolumeReader", "classinviwo_1_1NiftiVolumeReader.html", null ],
         [ "inviwo::NrrdVolumeReader", "classinviwo_1_1NrrdVolumeReader.html", null ],
         [ "inviwo::PVMVolumeReader", "classinviwo_1_1PVMVolumeReader.html", null ],
         [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
@@ -2751,7 +2752,9 @@ var hierarchy =
         [ "inviwo::TransferfunctionToIsoTFConverter", "classinviwo_1_1TransferfunctionToIsoTFConverter.html", null ]
       ] ],
       [ "inviwo::TemplatePropertyConverter< SrcProperty, DstProperty >", "classinviwo_1_1TemplatePropertyConverter.html", [
-        [ "inviwo::OrdinalPropertyConverter< SrcProperty, DstProperty >", "classinviwo_1_1OrdinalPropertyConverter.html", null ]
+        [ "inviwo::MinMaxToOrdinalPropertyConverter< SrcProperty, DstProperty >", "classinviwo_1_1MinMaxToOrdinalPropertyConverter.html", null ],
+        [ "inviwo::OrdinalPropertyConverter< SrcProperty, DstProperty >", "classinviwo_1_1OrdinalPropertyConverter.html", null ],
+        [ "inviwo::OrdinalToMinMaxPropertyConverter< SrcProperty, DstProperty >", "classinviwo_1_1OrdinalToMinMaxPropertyConverter.html", null ]
       ] ]
     ] ],
     [ "inviwo::PropertyConverterManager", "classinviwo_1_1PropertyConverterManager.html", null ],
