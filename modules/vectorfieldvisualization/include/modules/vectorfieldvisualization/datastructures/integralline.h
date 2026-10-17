@@ -205,7 +205,7 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
     }
 
     double x = (d - distPrev) / (distNext - distPrev);
-    using TV = typename util::same_extent<T, double>::type;
+    using TV = util::same_extent<T, double>::type;
 
     return static_cast<T>(
         Interpolation<TV, double>::linear(static_cast<TV>(*prevMD), static_cast<TV>(*nextMD), x));

@@ -85,13 +85,13 @@ class OrdinalPropertyConverter : public TemplatePropertyConverter<SrcProperty, D
 protected:
     virtual void convertimpl(const SrcProperty* src, DstProperty* dst) const override {
         if (dst->isLinkingMinBound()) {
-            dst->setMinValue(static_cast<typename DstProperty::value_type>(src->getMinValue()));
+            dst->setMinValue(static_cast<DstProperty::value_type>(src->getMinValue()));
         }
         if (dst->isLinkingMaxBound()) {
-            dst->setMaxValue(static_cast<typename DstProperty::value_type>(src->getMaxValue()));
+            dst->setMaxValue(static_cast<DstProperty::value_type>(src->getMaxValue()));
         }
-        dst->setIncrement(static_cast<typename DstProperty::value_type>(src->getIncrement()));
-        dst->set(static_cast<typename DstProperty::value_type>(src->get()));
+        dst->setIncrement(static_cast<DstProperty::value_type>(src->getIncrement()));
+        dst->set(static_cast<DstProperty::value_type>(src->get()));
     }
 };
 

@@ -65,7 +65,7 @@ public:
      * Various types used within this class
      */
 
-    using SampleType = typename SpatialSampler::type;
+    using SampleType = SpatialSampler::type;
     static constexpr auto SampleDim = util::extent_v<SampleType>;
 
     using SpatialVector = Vector<Sampler::SpatialDimensions, double>;
@@ -129,7 +129,7 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::IntegralLineTracer(
           properties.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer())) {}
 
 template <typename SpatialSampler, bool TimeDependent>
-typename IntegralLineTracer<SpatialSampler, TimeDependent>::Result
+IntegralLineTracer<SpatialSampler, TimeDependent>::Result
 IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector& pIn) const {
     const SpatialVector p = seedTransform(pIn);
     Result res;

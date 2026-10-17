@@ -231,7 +231,7 @@ private:
 
     struct Animator {
         explicit Animator(Camera& camera);
-        using ms = typename Timer::Milliseconds;
+        using ms = Timer::Milliseconds;
         Animation animation;
         Camera* camera;
         Timer timer;
@@ -246,7 +246,7 @@ private:
 
         enum class Mode : std::uint8_t { Continuous, Swing };
 
-        using ms = typename Timer::Milliseconds;
+        using ms = Timer::Milliseconds;
         CameraWidget* widget;
         BoolCompositeProperty props;
         IntProperty fps;

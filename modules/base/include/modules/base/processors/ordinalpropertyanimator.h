@@ -215,7 +215,7 @@ void OrdinalAnimationProperty<T>::update() {
 
 template <typename T>
 void OrdinalAnimationProperty<T>::setLimits() {
-    using P = typename util::value_type<T>::type;
+    using P = util::value_type<T>::type;
 
     T max = value_.getMaxValue();
 

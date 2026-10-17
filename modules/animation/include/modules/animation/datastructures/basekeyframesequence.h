@@ -52,7 +52,7 @@ template <std::derived_from<Keyframe> Key>
 class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {
 public:
     using key_type = Key;
-    using value_type = typename Key::value_type;
+    using value_type = Key::value_type;
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::const_iterator>;

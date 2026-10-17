@@ -442,7 +442,7 @@ inline void PoolProcessor::callDone(
 
 template <typename Job, typename Done>
 void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
-    using Result = typename pool::detail::JobTraits<Job>::Result;
+    using Result = pool::detail::JobTraits<Job>::Result;
 
     if constexpr (std::is_same_v<Result, void>) {
         static_assert(std::is_invocable_v<Done>, "The 'Done' functor should callable");
@@ -495,7 +495,7 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
 
 template <typename Job, typename Done>
 void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
-    using Result = typename pool::detail::JobTraits<Job>::Result;
+    using Result = pool::detail::JobTraits<Job>::Result;
 
     if constexpr (std::is_same_v<Result, void>) {
         static_assert(std::is_invocable_v<Done>, "The 'Done' functor should be callable");

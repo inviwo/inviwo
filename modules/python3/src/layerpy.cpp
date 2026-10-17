@@ -161,7 +161,7 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
 
     const auto data = source->dispatch<pybind11::array>([](auto lr) {
         using ValueType = util::PrecisionValueType<decltype(lr)>;
-        using CompType = typename util::value_type<ValueType>::type;
+        using CompType = util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = lr->getDimensions();

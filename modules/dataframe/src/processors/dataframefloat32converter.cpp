@@ -87,7 +87,7 @@ void DataFrameFloat32Converter::process() {
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Floats>([dataframe, srcCol](auto typedBuf) {
                     using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
-                    using T = typename util::same_extent<ValueType, float>::type;
+                    using T = util::same_extent<ValueType, float>::type;
 
                     auto dst = util::transform(typedBuf->getDataContainer(),
                                                [](const auto& v) { return static_cast<T>(v); });

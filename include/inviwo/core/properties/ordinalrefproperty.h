@@ -120,7 +120,7 @@ template <typename T>
 class OrdinalRefProperty : public Property {
 public:
     using value_type = T;
-    using component_type = typename util::value_type<T>::type;
+    using component_type = util::value_type<T>::type;
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, Document help = {},

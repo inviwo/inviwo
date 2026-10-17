@@ -138,7 +138,7 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
         }
 
         info.visit([&]<typename Type>(Type& self) {
-            using T = typename Type::ElemType;
+            using T = Type::ElemType;
             const auto size = df.getNumberOfRows();
             auto buffer = std::make_shared<Buffer<T>>(size);
             buffers.emplace_back(info.bufferType, buffer);

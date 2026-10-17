@@ -105,7 +105,7 @@ struct MemPtr {
 
 template <typename T, typename MP, typename... MPs>
 struct Guard {
-    using Cls = typename MP::Cls&;
+    using Cls = MP::Cls&;
     Guard(T val = T{}) : value_{std::move(val)} {}
     void check(Cls& obj, const T& value) {
         if (value_ != value) {

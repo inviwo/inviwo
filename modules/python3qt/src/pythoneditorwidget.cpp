@@ -469,7 +469,7 @@ void PythonEditorWidget::updateWindowTitle() {
 
 void PythonEditorWidget::getState(UnorderedStringMap<QVariant>& state) const {
     InviwoDockWidget::getState(state);
-    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+    state.insert_range(std::to_array<UnorderedStringMap<QVariant>::value_type>({
         {"appendLog", appendLog_->isChecked()},
         {"lastScript", utilqt::toQString(scriptFileName_)},
         {"source", pythonCode_->toPlainText()},

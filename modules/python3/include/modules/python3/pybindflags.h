@@ -52,7 +52,7 @@ template <typename E>
 void exposeFlags(pybind11::module& m, std::string_view name) {
     namespace py = pybind11;
 
-    using Iter = typename flags::flags<E>::iterator;
+    using Iter = flags::flags<E>::iterator;
 
     py::classh<Iter>(m, fmt::format("{}Iterator", name).c_str())
         .def(py::init<Iter>())

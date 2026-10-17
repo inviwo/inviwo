@@ -60,7 +60,7 @@ struct RegisterOrdinalPropertyForMetaData {
                     }
                 }
 
-                using value_type = typename util::glmtype<T>::type;
+                using value_type = util::glmtype<T>::type;
 
                 T min = T{0} + std::numeric_limits<value_type>::lowest();
                 T max = T{0} + std::numeric_limits<value_type>::max();

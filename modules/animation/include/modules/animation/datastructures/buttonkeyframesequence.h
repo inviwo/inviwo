@@ -49,7 +49,7 @@ namespace inviwo::animation {
 class IVW_MODULE_ANIMATION_API ButtonKeyframeSequence
     : public BaseKeyframeSequence<ButtonKeyframe> {
 public:
-    using key_type = typename BaseKeyframeSequence<ButtonKeyframe>::key_type;
+    using key_type = BaseKeyframeSequence<ButtonKeyframe>::key_type;
     ButtonKeyframeSequence() = default;
     explicit ButtonKeyframeSequence(std::vector<std::unique_ptr<ButtonKeyframe>> keyframes);
     ButtonKeyframeSequence(const ButtonKeyframeSequence& rhs) = default;

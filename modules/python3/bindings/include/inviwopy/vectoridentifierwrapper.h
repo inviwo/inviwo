@@ -49,7 +49,7 @@ namespace inviwo {
 template <typename It, bool Deref = true>
 class VectorIdentifierWrapper {
 
-    using value_type = typename std::iterator_traits<It>::value_type;
+    using value_type = std::iterator_traits<It>::value_type;
 
     static decltype(auto) id(const value_type& elem) {
         if constexpr (Deref) {

@@ -114,8 +114,7 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         using RangeAt = std::tuple_element_t<I, Ranges_>;
 
         using IterVariant =
-            typename detail::concat_iter_variant_helper<Ranges_,
-                                                        std::index_sequence_for<Rs...>>::type;
+            detail::concat_iter_variant_helper<Ranges_, std::index_sequence_for<Rs...>>::type;
 
         Parent* parent_ = nullptr;
         IterVariant current_{};

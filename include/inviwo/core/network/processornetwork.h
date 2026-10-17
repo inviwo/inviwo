@@ -118,7 +118,7 @@ public:
      * @tparam T the processor type to add
      * @param args  Additional arguments to pass to the processor constructor.
      */
-    template <typename T, class = typename std::enable_if_t<std::is_base_of_v<Processor, T>, void>,
+    template <typename T, class = std::enable_if_t<std::is_base_of_v<Processor, T>, void>,
               typename... Args>
     std::shared_ptr<T> emplaceProcessor(Args&&... args) {
         auto processor = [&] {

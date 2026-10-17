@@ -215,12 +215,12 @@ auto find(T& cont, const V& elem) {
 }
 
 template <typename T, typename Pred>
-auto find_if(T& cont, Pred pred) -> typename T::iterator {
+auto find_if(T& cont, Pred pred) -> T::iterator {
     return std::ranges::find_if(cont, pred);
 }
 
 template <typename T, typename Pred>
-auto find_if(const T& cont, Pred pred) -> typename T::const_iterator {
+auto find_if(const T& cont, Pred pred) -> T::const_iterator {
     return std::ranges::find_if(cont, pred);
 }
 
@@ -255,7 +255,7 @@ bool contains_if(const T& cont, Pred pred) {
 }
 
 template <typename T, typename P>
-auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
+auto find_if_or_null(T& cont, P pred) -> T::value_type {
     const auto it = std::ranges::find_if(cont, pred);
     if (it != std::ranges::end(cont)) {
         return *it;
@@ -265,7 +265,7 @@ auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
 }
 
 template <typename T, typename V>
-auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
+auto find_or_null(T& cont, const V& elem) -> T::value_type {
     auto it = std::ranges::find(cont, elem);
     if (it != std::ranges::end(cont)) {
         return *it;
@@ -275,7 +275,7 @@ auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto find_or_null(T& cont, const V& elem, Callable f) -> typename T::value_type {
+auto find_or_null(T& cont, const V& elem, Callable f) -> T::value_type {
     auto it = std::ranges::find(cont, elem);
     if (it != std::ranges::end(cont)) {
         return f(*it);
@@ -294,7 +294,7 @@ bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_t
 }
 
 template <typename T, typename V>
-auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
+auto map_find_or_null(T& cont, const V& elem) -> T::mapped_type {
     const auto it = cont.find(elem);
     if (it != end(cont)) {
         return it->second;
@@ -304,8 +304,8 @@ auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto map_find_or_null(T& cont, const V& elem, Callable f) ->
-    typename std::invoke_result_t<Callable, typename T::mapped_type> {
+auto map_find_or_null(T& cont, const V& elem, Callable f)
+    -> std::invoke_result_t<Callable, typename T::mapped_type> {
     const auto it = cont.find(elem);
     if (it != end(cont)) {
         return f(it->second);

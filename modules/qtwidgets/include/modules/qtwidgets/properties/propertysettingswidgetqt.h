@@ -393,7 +393,7 @@ void OrdinalLikePropertySettingsWidgetQt<Prop>::closeEvent(QCloseEvent* event) {
 template <typename T>
 class MinMaxPropertySettingsWidgetQt : public QDialog, public PropertyWidget {
 public:
-    using BT = typename util::value_type<T>::type;
+    using BT = util::value_type<T>::type;
     MinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget);
     virtual ~MinMaxPropertySettingsWidgetQt();
 
@@ -482,7 +482,7 @@ template <typename T>
 void MinMaxPropertySettingsWidgetQt<T>::apply() {
     const NetworkLock lock(property_);
 
-    using range_type = typename MinMaxProperty<T>::value_type;
+    using range_type = MinMaxProperty<T>::value_type;
 
     // order of values stored in setting_:
     // "Component", "Min Bound", "Start","End", "Max Bound", "MinSeparation", "Increment"

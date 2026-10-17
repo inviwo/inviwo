@@ -88,7 +88,7 @@ IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpola
  *  @see KeyFrame
  *  @see KeyFrameSequence
  */
-template <typename Key, typename Result = typename Key::value_type>
+template <typename Key, typename Result = Key::value_type>
 class InterpolationTyped : public Interpolation {
 public:
     using key_type = Key;

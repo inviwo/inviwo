@@ -61,10 +61,10 @@ struct IVW_CORE_API nonesuch {
 };
 
 template <template <class...> class Op, class... Args>
-using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+using is_detected = detail::detector<nonesuch, void, Op, Args...>::value_t;
 
 template <template <class...> class Op, class... Args>
-using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
+using detected_t = detail::detector<nonesuch, void, Op, Args...>::type;
 
 template <class Default, template <class...> class Op, class... Args>
 using detected_or = detail::detector<Default, void, Op, Args...>;
@@ -73,7 +73,7 @@ template <template <class...> class Op, class... Args>
 constexpr bool is_detected_v = is_detected<Op, Args...>::value;
 
 template <class Default, template <class...> class Op, class... Args>
-using detected_or_t = typename detected_or<Default, Op, Args...>::type;
+using detected_or_t = detected_or<Default, Op, Args...>::type;
 
 template <class Expected, template <class...> class Op, class... Args>
 using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;

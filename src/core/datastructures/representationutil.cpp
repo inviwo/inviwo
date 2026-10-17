@@ -53,7 +53,7 @@ class BufferRAMFactoryObject
     : public RepresentationFactoryObjectTemplate<BufferRepresentation, BufferRAM> {
 public:
     virtual std::unique_ptr<BufferRepresentation> create(
-        const typename BufferRepresentation::ReprOwner* buffer) {
+        const BufferRepresentation::ReprOwner* buffer) {
         return dispatching::singleDispatch<std::unique_ptr<BufferRepresentation>,
                                            dispatching::filter::All>(
             buffer->getDataFormat()->getId(),
@@ -76,7 +76,7 @@ class LayerRAMFactoryObject
     : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerRAM> {
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
-        const typename LayerRepresentation::ReprOwner* layer) {
+        const LayerRepresentation::ReprOwner* layer) {
         return dispatching::singleDispatch<std::unique_ptr<LayerRepresentation>,
                                            dispatching::filter::All>(
             layer->getDataFormat()->getId(),
@@ -92,7 +92,7 @@ class VolumeRAMFactoryObject
     : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumeRAM> {
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
-        const typename VolumeRepresentation::ReprOwner* volume) {
+        const VolumeRepresentation::ReprOwner* volume) {
         return dispatching::singleDispatch<std::unique_ptr<VolumeRepresentation>,
                                            dispatching::filter::All>(
             volume->getDataFormat()->getId(),

@@ -46,6 +46,6 @@ struct representation_traits {
 };
 
 template <typename DataType, typename Kind>
-using representation_traits_t = typename representation_traits<DataType, Kind>::type;
+using representation_traits_t = representation_traits<DataType, Kind>::type;
 
 }  // namespace inviwo

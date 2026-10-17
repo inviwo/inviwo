@@ -79,8 +79,8 @@ public:
      * Try to create a representation of the requested type, if that type was not found, return a
      * representation of the default type.
      */
-    std::unique_ptr<Representation> createOrDefault(
-        BaseReprId id, const typename Representation::ReprOwner* owner) {
+    std::unique_ptr<Representation> createOrDefault(BaseReprId id,
+                                                    const Representation::ReprOwner* owner) {
         if (auto repr = this->create(id, owner)) {
             return repr;
         } else {

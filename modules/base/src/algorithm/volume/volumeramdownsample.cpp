@@ -99,7 +99,7 @@ std::shared_ptr<VolumeRAM> volumeAveragedDownsample(const VolumeRAM* volume, siz
             using ValueType = util::PrecisionValueType<decltype(srcVol)>;
 
             // use a double type to perform the summation
-            using P = typename util::same_extent<ValueType, double>::type;
+            using P = util::same_extent<ValueType, double>::type;
 
             // calculate new size
             const size3_t srcDims{srcVol->getDimensions()};

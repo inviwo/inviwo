@@ -55,16 +55,16 @@ constexpr To glm_convert(From x) {
     } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 1) {
         // Scalar to Vector conversion
         To res(typename To::value_type(0));
-        res[0] = static_cast<typename To::value_type>(x);
+        res[0] = static_cast<To::value_type>(x);
         return res;
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 0) {
         // Vector to Scalar conversion
         return static_cast<To>(x[0]);
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 1) {
         // Vector to Vector conversion
-        To res(static_cast<typename To::value_type>(0));
+        To res(static_cast<To::value_type>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
-        for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i]);
+        for (size_t i = 0; i < max; ++i) res[i] = static_cast<To::value_type>(x[i]);
         return res;
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 0) {
         // Mat to Scalar conversion
@@ -72,19 +72,19 @@ constexpr To glm_convert(From x) {
     } else if constexpr (util::rank<From>::value == 0 && util::rank<To>::value == 2) {
         // Scalar to Mat conversion
         To res(typename To::value_type(0));
-        res[0][0] = static_cast<typename To::value_type>(x);
+        res[0][0] = static_cast<To::value_type>(x);
         return res;
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
         // Mat to Vector conversion
-        To res(static_cast<typename To::value_type>(0));
+        To res(static_cast<To::value_type>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
-        for (size_t i = 0; i < max; ++i) res[i] = static_cast<typename To::value_type>(x[i][0]);
+        for (size_t i = 0; i < max; ++i) res[i] = static_cast<To::value_type>(x[i][0]);
         return res;
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
         // Vector to Mat conversion
-        To res(static_cast<typename To::value_type>(0));
+        To res(static_cast<To::value_type>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
-        for (size_t i = 0; i < max; ++i) res[i][0] = static_cast<typename To::value_type>(x[i]);
+        for (size_t i = 0; i < max; ++i) res[i][0] = static_cast<To::value_type>(x[i]);
         return res;
     }
 }
@@ -158,10 +158,10 @@ struct growImpl<T, true> {
 
 template <typename T>
 struct grow {
-    using type = typename growImpl<T, std::is_signed_v<T>>::type;
+    using type = growImpl<T, std::is_signed_v<T>>::type;
 };
 template <typename T>
-using grow_t = typename grow<T>::type;
+using grow_t = grow<T>::type;
 
 template <typename T>
 constexpr auto bigger() {
@@ -306,7 +306,7 @@ constexpr To glm_convert_normalized(From x) {
     } else if constexpr (!std::is_same_v<To, From> && util::rank_v<From> == 1 &&
                          util::rank_v<To> == 1) {
         // 12 Vector to Vector
-        using T = typename To::value_type;
+        using T = To::value_type;
         To res(static_cast<T>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) res[i] = glm_convert_normalized<T>(x[i]);
@@ -322,7 +322,7 @@ constexpr To glm_convert_normalized(From x) {
         return res;
     } else if constexpr (util::rank<From>::value == 2 && util::rank<To>::value == 1) {
         // Mat to Vector conversion
-        To res(static_cast<typename To::value_type>(0));
+        To res(static_cast<To::value_type>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) {
             res[i] = glm_convert_normalized<typename To::value_type>(x[i][0]);
@@ -330,7 +330,7 @@ constexpr To glm_convert_normalized(From x) {
         return res;
     } else if constexpr (util::rank<From>::value == 1 && util::rank<To>::value == 2) {
         // Vector to Mat conversion
-        To res(static_cast<typename To::value_type>(0));
+        To res(static_cast<To::value_type>(0));
         const size_t max = std::min(util::extent<To, 0>::value, util::extent<From, 0>::value);
         for (size_t i = 0; i < max; ++i) {
             res[i][0] = glm_convert_normalized<typename To::value_type>(x[i]);

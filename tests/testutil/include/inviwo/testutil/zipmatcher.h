@@ -46,8 +46,8 @@ class ZipPairMatcherImpl : public ::testing::MatcherInterface<PairType> {
 
 public:
     using RawPairType = GTEST_REMOVE_REFERENCE_AND_CONST_(PairType);
-    using FirstType = typename RawPairType::first_type;
-    using SecondType = typename RawPairType::second_type;
+    using FirstType = RawPairType::first_type;
+    using SecondType = RawPairType::second_type;
 
     template <typename FirstMatcher, typename SecondMatcher>
     ZipPairMatcherImpl(FirstMatcher first_matcher, SecondMatcher second_matcher)

@@ -47,10 +47,8 @@ namespace inviwo {
 void exposePropertyOwner(pybind11::module& m) {
     namespace py = pybind11;
 
-    using PropertyVecWrapper =
-        VectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>(
-        m, "PropertyVecWrapper");
+    using PropertyVecWrapper = VectorIdentifierWrapper<std::vector<Property*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Property*>::const_iterator>(m, "PropertyVecWrapper");
 
     py::classh<PropertyOwner>(m, "PropertyOwner", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(

@@ -143,8 +143,7 @@ Animation& WorkspaceAnimations::add(Animation anim) {
     return *animations_.back();
 }
 
-void WorkspaceAnimations::addInternal(
-    typename std::vector<std::unique_ptr<Animation>>::iterator aniIt) {
+void WorkspaceAnimations::addInternal(std::vector<std::unique_ptr<Animation>>::iterator aniIt) {
     (*aniIt)->AnimationObservable::addObserver(this);
     for (auto& track : **aniIt) {
         for (size_t seqi = 0; seqi < track.size(); seqi++) {

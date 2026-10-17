@@ -62,7 +62,7 @@ template <typename Iter>
 struct IterRangeGenerator : iter_range<Iter> {
     explicit IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {}
     using iter_range<Iter>::iter_range;
-    typename Iter::value_type next() {
+    Iter::value_type next() {
         if (this->first != this->second) {
             return *(this->first++);
         } else {
@@ -85,7 +85,7 @@ pybind11::classh<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind
 template <typename Port>
 pybind11::classh<Port, Outport> exposeOutport(pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
-    using T = typename Port::type;
+    using T = Port::type;
 
     return pybind11::classh<Port, Outport>(m, StrBuffer{"{}Outport", name}.c_str())
         .def(py::init<std::string, Document>(), py::arg("identifier"), py::arg("help") = Document{})

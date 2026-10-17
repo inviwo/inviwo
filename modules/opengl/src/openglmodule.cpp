@@ -75,7 +75,7 @@ class BufferGLFactoryObject
     : public RepresentationFactoryObjectTemplate<BufferRepresentation, BufferGL> {
 public:
     virtual std::unique_ptr<BufferRepresentation> create(
-        const typename BufferRepresentation::ReprOwner* buffer) {
+        const BufferRepresentation::ReprOwner* buffer) {
         return std::make_unique<BufferGL>(buffer->getSize(), buffer->getDataFormat(),
                                           buffer->getBufferUsage(), buffer->getBufferTarget());
     }
@@ -85,7 +85,7 @@ class LayerGLFactoryObject
     : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerGL> {
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
-        const typename LayerRepresentation::ReprOwner* layer) {
+        const LayerRepresentation::ReprOwner* layer) {
 
         auto layerGL = std::make_unique<LayerGL>(layer->getDimensions(), layer->getLayerType(),
                                                  layer->getDataFormat(), layer->getSwizzleMask(),
@@ -99,7 +99,7 @@ class VolumeGLFactoryObject
     : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumeGL> {
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
-        const typename VolumeRepresentation::ReprOwner* volume) {
+        const VolumeRepresentation::ReprOwner* volume) {
         auto volumeGL = std::make_unique<VolumeGL>(
             volume->getDimensions(), volume->getDataFormat(), volume->getSwizzleMask(),
             volume->getInterpolation(), volume->getWrapping(), true);

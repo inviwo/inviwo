@@ -150,6 +150,6 @@ private:
 };
 
 template <typename C>
-using DispatcherHandle = typename Dispatcher<C>::Handle;
+using DispatcherHandle = Dispatcher<C>::Handle;
 
 }  // namespace inviwo

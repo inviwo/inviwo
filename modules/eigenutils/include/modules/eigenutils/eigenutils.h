@@ -71,7 +71,7 @@ template <typename T, unsigned Rows, unsigned Cols>
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m)
     requires(Rows >= 2 && Rows <= 4 && Cols >= 2 && Cols <= 4)
 {
-    using GlmMatrix = typename util::glmtype<T, Cols, Rows>::type;
+    using GlmMatrix = util::glmtype<T, Cols, Rows>::type;
     GlmMatrix outm;
     for (size_t row = 0; row < Rows; row++) {
         for (size_t col = 0; col < Cols; col++) {
@@ -85,7 +85,7 @@ template <typename T, unsigned Rows, unsigned Cols>
 auto eigen2glm(const Eigen::Matrix<T, Rows, Cols>& m)
     requires(Rows >= 2 && Rows <= 4 && Cols == 1)
 {
-    using GlmVector = typename util::glmtype<T, Rows, 1>::type;
+    using GlmVector = util::glmtype<T, Rows, 1>::type;
     GlmVector outv;
     for (size_t row = 0; row < Rows; row++) {
         outv[row] = m(row);
@@ -97,7 +97,7 @@ template <typename T, unsigned Rows, unsigned Cols>
 auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m)
     requires(Cols >= 2 && Cols <= 4 && Rows == 1)
 {
-    using GlmVector = typename util::glmtype<T, Cols, 1>::type;
+    using GlmVector = util::glmtype<T, Cols, 1>::type;
     GlmVector outv;
     for (size_t row = 0; row < Cols; row++) {
         outv[row] = m(row);
@@ -107,7 +107,7 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m)
 
 template <typename T>
 std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::string name = "") {
-    using Type = typename T::value_type;
+    using Type = T::value_type;
     if (!T::IsRowMajor) {
         using RowMajorM =
             Eigen::Matrix<Type, T::RowsAtCompileTime, T::ColsAtCompileTime, Eigen::RowMajor>;

@@ -137,7 +137,7 @@ struct wrap<Wrapper, List<Ts...>> {
 }  // namespace detail
 
 template <template <typename> typename Wrapper, typename List>
-using wrap = typename detail::wrap<Wrapper, List>::type;
+using wrap = detail::wrap<Wrapper, List>::type;
 
 }  // namespace util
 

@@ -137,7 +137,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
     const auto proj = [&](const auto& d1) {
         using GT = std::decay_t<decltype(d1)>;
-        using T = typename GT::value_type;
+        using T = GT::value_type;
         const glm::tvec4<T> tmp = model * glm::tvec4<T>(d1, 1.0);
         return glm::tvec3<T>(tmp) / tmp.w;
     };

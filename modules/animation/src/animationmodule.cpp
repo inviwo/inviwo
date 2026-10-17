@@ -123,14 +123,14 @@ AnimationModule::AnimationModule(InviwoApplication* app)
                              uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
     util::for_each_type<Types>{}([&]<typename T> {
         using PropertyType = OrdinalProperty<T>;
-        using ValueType = typename PropertyType::value_type;
+        using ValueType = PropertyType::value_type;
         propertyHelper<PropertyType>();
         interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
     });
     util::for_each_type<Types>{}([&]<typename T> {
         using PropertyType = OrdinalRefProperty<T>;
-        using ValueType = typename PropertyType::value_type;
+        using ValueType = PropertyType::value_type;
         propertyHelper<PropertyType>();
         interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
@@ -140,7 +140,7 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
     util::for_each_type<ScalarTypes>{}([&]<typename T> {
         using PropertyType = MinMaxProperty<T>;
-        using ValueType = typename PropertyType::value_type;
+        using ValueType = PropertyType::value_type;
         propertyHelper<PropertyType>();
         interpolationHelper<PropertyType, LinearInterpolation<ValueKeyframe<ValueType>>>();
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
@@ -150,13 +150,13 @@ AnimationModule::AnimationModule(InviwoApplication* app)
     util::for_each_type<std::tuple<BoolProperty, FileProperty, StringProperty>>{}(
         [&]<typename PropertyType> {
             propertyHelper<PropertyType>();
-            using ValueType = typename PropertyType::value_type;
+            using ValueType = PropertyType::value_type;
             interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
         });
 
     const auto optionReghelper = [&]<typename T> {
         using PropertyType = OptionProperty<T>;
-        using ValueType = typename PropertyType::value_type;
+        using ValueType = PropertyType::value_type;
         propertyHelper<PropertyType>();
         interpolationHelper<PropertyType, ConstantInterpolation<ValueKeyframe<ValueType>>>();
     };

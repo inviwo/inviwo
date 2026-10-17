@@ -123,7 +123,7 @@ TEST(ShaderObject, parseSource) {
         return std::nullopt;
     };
 
-    using Placeholder = typename ShaderSegment::Placeholder;
+    using Placeholder = ShaderSegment::Placeholder;
     const std::unordered_map<Placeholder, std::vector<ShaderSegment>> replacements{
         {Placeholder("MAGIC_REPLACEMENT", "REPLACEMENT"),
          {ShaderSegment{.placeholder = Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"},

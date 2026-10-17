@@ -96,7 +96,7 @@ struct Error {};
 
 // Events
 struct Char {
-    using It = typename std::string_view::const_iterator;
+    using It = std::string_view::const_iterator;
 
     It curr;
     It end;
@@ -112,8 +112,7 @@ struct State {
     std::ostream& output;
     LineNumberResolver& lnr;
     std::string_view key;
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource;
     size_t lines = 0;
     size_t column = 0;
@@ -171,7 +170,7 @@ struct Psm {
         };
 
         const auto replace = [](Char c, State& s) {
-            using Placeholder = typename ShaderSegment::Placeholder;
+            using Placeholder = ShaderSegment::Placeholder;
             const auto lineEnd = std::find(c.curr, c.end, '\n');
 
             const std::string_view line{&*c.curr, static_cast<size_t>(lineEnd - c.curr)};
@@ -261,8 +260,7 @@ struct Psm {
 
 void utilgl::parseShaderSource(
     std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements,
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
     const size_t lines = 0;
@@ -446,8 +444,7 @@ std::string ShaderObject::getPreprocessed() const {
     std::ostringstream output;
     LineNumberResolver lnr;
 
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     for (const auto& segment : shaderSegments_) {
         replacements[segment.placeholder].push_back(segment);
     }
@@ -601,8 +598,7 @@ void ShaderObject::parseSource(std::ostringstream& output) {
     std::ranges::sort(shaderSegments_, [](const ShaderSegment& a, const ShaderSegment& b) {
         return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
     });
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     for (const auto& segment : shaderSegments_) {
         replacements[segment.placeholder].push_back(segment);
     }

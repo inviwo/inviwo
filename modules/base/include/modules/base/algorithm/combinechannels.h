@@ -117,7 +117,7 @@ std::shared_ptr<T> combineChannels(const std::array<DataInport<T>, 4>& sources,
 
     auto commonFormat = DataFormatBase::get(type, activePorts.size(), precision);
 
-    using Config = typename T::Config;
+    using Config = T::Config;
     auto data =
         std::make_shared<T>(*activePorts.front().first->getData(), noData,
                             Config{.format = commonFormat,

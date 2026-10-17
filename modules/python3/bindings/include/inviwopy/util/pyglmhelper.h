@@ -86,8 +86,8 @@ void matxx(pybind11::module& m, std::string_view prefix, std::string_view name,
     static_assert(std::is_trivially_copyable_v<Mat>, "has to be trivially_copyable");
     static_assert(pybind11::detail::is_pod_struct<Mat>::value, "has to be pod");
 
-    using ColumnVector = typename Mat::col_type;
-    using RowVector = typename Mat::row_type;
+    using ColumnVector = Mat::col_type;
+    using RowVector = Mat::row_type;
 
     const auto classname = [&] {
         if constexpr (Cols != Rows) {

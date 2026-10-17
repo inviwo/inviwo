@@ -331,18 +331,17 @@ public:
      *              }});
      * ```
      */
-    template <typename C, typename T = typename C::value_type, typename... Funcs>
+    template <typename C, typename T = C::value_type, typename... Funcs>
         requires deserializer::IndexableFunctions<T, deserializer::IndexFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IndexFunctions<Funcs...> f);
 
-    template <typename C, typename T = typename C::value_type, typename... Funcs>
+    template <typename C, typename T = C::value_type, typename... Funcs>
         requires deserializer::IdentifiableFunctions<T, deserializer::IdentifierFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IdentifierFunctions<Funcs...> f);
 
-    template <typename C, typename K = typename C::key_type, typename T = typename C::mapped_type,
-              typename... Funcs>
+    template <typename C, typename K = C::key_type, typename T = C::mapped_type, typename... Funcs>
         requires deserializer::MappableFunctions<K, T, deserializer::MapFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::MapFunctions<Funcs...> f);
