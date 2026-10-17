@@ -193,11 +193,11 @@ UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), this);
     undoAction_->setShortcut(QKeySequence::Undo);
-    undoAction_->connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
+    QAction::connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
 
     redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), this);
     redoAction_->setShortcut(QKeySequence::Redo);
-    redoAction_->connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
+    QAction::connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
 
     clearHandle_ = manager_->onClear([&]() {
         clear();

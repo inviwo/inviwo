@@ -94,7 +94,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
         auto* modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
         for (const auto& pfo : processors) {
             auto* action = modMenu->addAction(utilqt::toQString(pfo->getDisplayName()));
-            docsMenu->connect(action, &QAction::triggered, [pfo, factory]() {
+            QMenu::connect(action, &QAction::triggered, [pfo, factory]() {
                 const auto processor = factory->createShared(pfo->getClassIdentifier());
                 const auto& inports = processor->getInports();
                 const auto& outports = processor->getOutports();
