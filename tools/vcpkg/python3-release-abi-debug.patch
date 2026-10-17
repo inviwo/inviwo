@@ -1,0 +1,99 @@
+diff --git a/Include/internal/pycore_importdl.h b/Include/internal/pycore_importdl.h
+index 525a16f..3ba9229 100644
+--- a/Include/internal/pycore_importdl.h
++++ b/Include/internal/pycore_importdl.h
+@@ -107,7 +107,7 @@ extern int _PyImport_RunModInitFunc(
+ #include <windows.h>
+ typedef FARPROC dl_funcptr;
+ 
+-#ifdef _DEBUG
++#ifdef Py_DEBUG
+ #  define PYD_DEBUG_SUFFIX "_d"
+ #else
+ #  define PYD_DEBUG_SUFFIX ""
+diff --git a/PC/pyconfig.h b/PC/pyconfig.h
+index 710a737..f84f549 100644
+--- a/PC/pyconfig.h
++++ b/PC/pyconfig.h
+@@ -324,21 +324,21 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
+                         This is relevant when using build-system generator (e.g CMake) where
+                         the linking is explicitly handled */
+ #                       if defined(Py_GIL_DISABLED)
+-#                       if defined(_DEBUG)
++#                       if defined(Py_DEBUG)
+ #                               pragma comment(lib,"python314t_d.lib")
+ #                       elif defined(Py_LIMITED_API)
+ #                               pragma comment(lib,"python3t.lib")
+ #                       else
+ #                               pragma comment(lib,"python314t.lib")
+-#                       endif /* _DEBUG */
++#                       endif /* Py_DEBUG */
+ #                       else /* Py_GIL_DISABLED */
+-#                       if defined(_DEBUG)
++#                       if defined(Py_DEBUG)
+ #                               pragma comment(lib,"python314_d.lib")
+ #                       elif defined(Py_LIMITED_API)
+ #                               pragma comment(lib,"python3.lib")
+ #                       else
+ #                               pragma comment(lib,"python314.lib")
+-#                       endif /* _DEBUG */
++#                       endif /* Py_DEBUG */
+ #                       endif /* Py_GIL_DISABLED */
+ #               endif /* _MSC_VER && !Py_NO_LINK_LIB */
+ #       endif /* Py_BUILD_CORE */
+@@ -381,9 +381,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
+ #       define ALIGNOF_MAX_ALIGN_T 8
+ #endif
+ 
+-#ifdef _DEBUG
+-#       define Py_DEBUG
+-#endif
++/* vcpkg: _DEBUG (debug CRT) does not imply Py_DEBUG, the debug build uses the release ABI */
+ 
+ 
+ #ifdef MS_WIN32
+diff --git a/PCbuild/python.props b/PCbuild/python.props
+index ea3aeae..ee6a87f 100644
+--- a/PCbuild/python.props
++++ b/PCbuild/python.props
+@@ -92,8 +92,7 @@
+   </PropertyGroup>
+ 
+   <PropertyGroup>
+-    <!-- Suffix for all binaries when building for debug -->
+-    <PyDebugExt Condition="'$(PyDebugExt)' == '' and $(Configuration) == 'Debug'">_d</PyDebugExt>
++    <!-- vcpkg: no '_d' suffix, the debug build uses the release ABI -->
+ 
+     <!-- Suffix for versions/keys when building with test markers -->
+     <PyTestExt Condition="$(UseTestMarker) == 'true'">-test</PyTestExt>
+diff --git a/Python/dynload_win.c b/Python/dynload_win.c
+index 6324063..de9b0a7 100644
+--- a/Python/dynload_win.c
++++ b/Python/dynload_win.c
+@@ -108,7 +108,7 @@ static char *GetPythonImport (HINSTANCE hModule)
+                 char *pch;
+ 
+                 /* Don't claim that python3.dll is a Python DLL. */
+-#ifdef _DEBUG
++#ifdef Py_DEBUG
+                 if (strcmp(import_name, "python3_d.dll") == 0) {
+ #else
+                 if (strcmp(import_name, "python3.dll") == 0) {
+@@ -120,7 +120,7 @@ static char *GetPythonImport (HINSTANCE hModule)
+                 /* Ensure python prefix is followed only
+                    by numbers to the end of the basename */
+                 pch = import_name + 6;
+-#ifdef _DEBUG
++#ifdef Py_DEBUG
+                 while (*pch && pch[0] != '_' && pch[1] != 'd' && pch[2] != '.') {
+ #else
+                 while (*pch && *pch != '.') {
+@@ -300,7 +300,7 @@ dl_funcptr _PyImport_FindSharedFuncptrWindows(const char *prefix,
+             char buffer[256];
+ 
+             PyOS_snprintf(buffer, sizeof(buffer),
+-#ifdef _DEBUG
++#ifdef Py_DEBUG
+                           "python%d%d_d.dll",
+ #else
+                           "python%d%d.dll",
