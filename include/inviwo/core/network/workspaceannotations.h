@@ -106,8 +106,8 @@ public:
     virtual InviwoApplication* getInviwoApplication() override;
 
     using ModifiedDispatcher = Dispatcher<void()>;
-    using ModifiedCallback = typename ModifiedDispatcher::Callback;
-    using ModifiedHandle = typename ModifiedDispatcher::Handle;
+    using ModifiedCallback = ModifiedDispatcher::Callback;
+    using ModifiedHandle = ModifiedDispatcher::Handle;
 
     ModifiedHandle onModified(const ModifiedCallback& callback);
 

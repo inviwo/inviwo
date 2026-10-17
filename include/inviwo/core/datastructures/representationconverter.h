@@ -82,7 +82,7 @@ public:
 template <typename BaseRepr, typename From, typename To>
 class RepresentationConverterType : public RepresentationConverter<BaseRepr> {
 public:
-    using ConverterID = typename RepresentationConverter<BaseRepr>::ConverterID;
+    using ConverterID = RepresentationConverter<BaseRepr>::ConverterID;
     virtual ConverterID getConverterID() const override;
 
     virtual std::shared_ptr<BaseRepr> createFrom(
@@ -111,7 +111,7 @@ public:
 template <typename BaseRepr>
 class RepresentationConverterPackage {
 public:
-    using ConverterID = typename RepresentationConverter<BaseRepr>::ConverterID;
+    using ConverterID = RepresentationConverter<BaseRepr>::ConverterID;
     using ConverterList = std::vector<const RepresentationConverter<BaseRepr>*>;
 
     size_t steps() const;

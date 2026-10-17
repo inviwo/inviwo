@@ -132,7 +132,7 @@ template <typename Key>
 class KeyframeSequenceTyped : public BaseKeyframeSequence<Key>, public ValueKeyframeSequence {
 public:
     using key_type = Key;
-    using value_type = typename Key::value_type;
+    using value_type = Key::value_type;
     static_assert(std::is_base_of_v<Keyframe, Key>, "Key has to derive from Keyframe");
 
     /*

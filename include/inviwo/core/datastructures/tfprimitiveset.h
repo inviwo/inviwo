@@ -92,11 +92,9 @@ class IVW_CORE_API TFPrimitiveSet : public Serializable,
 public:
     using transform_t = TFPrimitive& (*)(TFPrimitive*);
     using const_transform_t = const TFPrimitive& (*)(const TFPrimitive*);
-    using iterator =
-        util::TransformIterator<transform_t, typename std::vector<TFPrimitive*>::iterator>;
+    using iterator = util::TransformIterator<transform_t, std::vector<TFPrimitive*>::iterator>;
     using const_iterator =
-        util::TransformIterator<const_transform_t,
-                                typename std::vector<TFPrimitive*>::const_iterator>;
+        util::TransformIterator<const_transform_t, std::vector<TFPrimitive*>::const_iterator>;
 
     explicit TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
                             PrimitiveSetMode mode = PrimitiveSetMode::Relative);

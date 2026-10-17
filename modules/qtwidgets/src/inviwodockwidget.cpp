@@ -105,7 +105,7 @@ void InviwoDockWidget::setContents(QLayout* layout) {
 }
 
 void InviwoDockWidget::getState(UnorderedStringMap<QVariant>& state) const {
-    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+    state.insert_range(std::to_array<UnorderedStringMap<QVariant>::value_type>({
         {"sticky", isSticky()},
         {"floating", isFloating()},
         {"pos", pos()},

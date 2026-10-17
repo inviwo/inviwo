@@ -60,7 +60,7 @@ constexpr auto glmcomp(T& elem, size_t i)
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
 }
 template <typename T>
-constexpr auto glmcomp(const T& elem, size_t i) -> const typename T::value_type&
+constexpr auto glmcomp(const T& elem, size_t i) -> const T::value_type&
     requires(util::rank<T>::value == 2)
 {
     return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
@@ -90,7 +90,7 @@ constexpr auto glmcomp(T& elem, size_t i, size_t j)
     return elem[i][j];
 }
 template <typename T>
-constexpr auto glmcomp(const T& elem, size_t i, size_t j) -> const typename T::value_type&
+constexpr auto glmcomp(const T& elem, size_t i, size_t j) -> const T::value_type&
     requires(util::rank<T>::value == 2)
 {
     return elem[i][j];

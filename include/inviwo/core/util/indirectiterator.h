@@ -39,11 +39,11 @@ namespace detail_indirect {
 template <typename Tag, typename Iter>
 struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
-using require_t = typename require<Tag, Iter>::type;
+using require_t = require<Tag, Iter>::type;
 
 template <typename Iterator>
 struct is_const_iterator {
-    using pointer = typename std::iterator_traits<Iterator>::pointer;
+    using pointer = std::iterator_traits<Iterator>::pointer;
     static constexpr bool value = std::is_const_v<std::remove_pointer_t<pointer>>;
 };
 
@@ -63,7 +63,7 @@ struct add_const_to_reference<T&&> {
 };
 
 template <typename T>
-using add_const_to_reference_t = typename add_const_to_reference<T>::type;
+using add_const_to_reference_t = add_const_to_reference<T>::type;
 
 // a utility to get a raw pointer as a const or mutable
 template <bool asConst>
@@ -132,21 +132,21 @@ struct asPointer<false> {
  */
 template <typename Iter, bool PropagateConst = true>
 struct IndirectIterator {
-    using difference_type = typename std::iterator_traits<Iter>::difference_type;
-    using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
+    using difference_type = std::iterator_traits<Iter>::difference_type;
+    using iterator_category = std::iterator_traits<Iter>::iterator_category;
 
-    using base_value = typename std::iterator_traits<Iter>::value_type;
+    using base_value = std::iterator_traits<Iter>::value_type;
     using value_type = std::remove_reference_t<decltype(*std::declval<base_value>())>;
 
     static constexpr bool is_const =
         std::conditional_t<PropagateConst, detail_indirect::is_const_iterator<Iter>,
                            std::false_type>::value;
 
-    using base_pointer = typename std::iterator_traits<Iter>::pointer;
+    using base_pointer = std::iterator_traits<Iter>::pointer;
     using pointer =
         decltype(detail_indirect::asPointer<is_const>::get(*std::declval<base_pointer>()));
 
-    using base_reference = typename std::iterator_traits<Iter>::reference;
+    using base_reference = std::iterator_traits<Iter>::reference;
     using reference = std::conditional_t<
         is_const,
         detail_indirect::add_const_to_reference_t<decltype(*std::declval<base_reference>())>,

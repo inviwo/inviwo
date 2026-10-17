@@ -149,7 +149,7 @@ private:
     SourceContext context_;
     Callback message_;
 
-    typename Clock::duration logIfAtLeast_;
+    Clock::duration logIfAtLeast_;
     LogLevel logLevel_ = LogLevel::Info;
 };
 

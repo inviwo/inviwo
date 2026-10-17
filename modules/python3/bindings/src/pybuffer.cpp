@@ -58,7 +58,7 @@ struct BufferRAMHelper {
     template <typename DataFormat>
     auto operator()(pybind11::module& m) {
         namespace py = pybind11;
-        using T = typename DataFormat::type;
+        using T = DataFormat::type;
 
         std::string className = fmt::format("Buffer{}", DataFormat::str());
         py::classh<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.c_str())

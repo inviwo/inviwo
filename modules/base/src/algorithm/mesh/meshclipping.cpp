@@ -521,7 +521,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                 [&clippedMesh, bufferType, &posBuffer](auto inRam) -> detail::InterpolateFunctor {
                     using PB = util::PrecisionType<decltype(inRam)>;
                     using ValueType = util::PrecisionValueType<decltype(inRam)>;
-                    using T = typename util::same_extent<ValueType, float>::type;
+                    using T = util::same_extent<ValueType, float>::type;
 
                     static const auto mix = [](const PB& buffer,
                                                const std::vector<uint32_t>& indices,

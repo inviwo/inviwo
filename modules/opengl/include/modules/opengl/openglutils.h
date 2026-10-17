@@ -460,8 +460,8 @@ T passThrough(T x) {
  */
 template <typename Policy>
 struct SimpleState {
-    using value_type = typename Policy::value_type;
-    using setter_type = typename Policy::setter_type;
+    using value_type = Policy::value_type;
+    using setter_type = Policy::setter_type;
 
     SimpleState() = delete;
     SimpleState(const SimpleState&) = delete;

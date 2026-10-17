@@ -524,11 +524,11 @@ void exposeEvents(pybind11::module& m) {
         .def_property_readonly_static("chash",
                                       [](const py::object&) { return ContextMenuEvent::chash(); });
 
-    py::classh<typename ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
-    py::classh<typename ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
+    py::classh<ViewEvent::FlipUp>(m, "ViewEventFlipUp").def(py::init<>());
+    py::classh<ViewEvent::FitData>(m, "ViewEventFitData").def(py::init<>());
 
     py::classh<ViewEvent, Event>(m, "ViewEvent")
-        .def(py::init<typename ViewEvent::Action>())
+        .def(py::init<ViewEvent::Action>())
         .def_property_readonly("action", &ViewEvent::getAction)
         .def_property_readonly_static("chash",
                                       [](const py::object&) { return ViewEvent::chash(); });

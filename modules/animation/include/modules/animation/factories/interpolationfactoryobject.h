@@ -83,8 +83,8 @@ template <typename InterpTyped>
 class InterpolationFactoryObjectTemplate
     : public InterpolationFactoryObjectKeyframe<typename InterpTyped::key_type> {
 public:
-    using key_type = typename InterpTyped::key_type;
-    using result_type = typename InterpTyped::result_type;
+    using key_type = InterpTyped::key_type;
+    using result_type = InterpTyped::result_type;
     // Requires a static classIdentifier() method on InterpolationType
     InterpolationFactoryObjectTemplate()
         : InterpolationFactoryObjectKeyframe<key_type>(InterpTyped::classIdentifier()) {}

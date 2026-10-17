@@ -223,7 +223,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
         [&](auto refLayerPrecision) {
             using ValueType = util::PrecisionValueType<decltype(refLayerPrecision)>;
-            using PrimitiveType = typename DataFormat<ValueType>::primitive;
+            using PrimitiveType = DataFormat<ValueType>::primitive;
 
             const size2_t layerDims = refLayerPrecision->getDimensions();
             const size_t sliceOffset = glm::compMul(layerDims);

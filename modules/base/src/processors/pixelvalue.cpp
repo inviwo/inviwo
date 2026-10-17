@@ -232,7 +232,7 @@ void PixelValue::mouseMoveEvent(Event* theEvent) {
                 ->getRepresentation<LayerRAM>()
                 ->dispatch<void, dispatching::filter::All>([&](const auto layer) {
                     using ValueType = util::PrecisionValueType<decltype(layer)>;
-                    using Comp = typename util::value_type<ValueType>::type;
+                    using Comp = util::value_type<ValueType>::type;
                     const auto data = layer->getDataTyped();
                     const auto im = util::IndexMapper2D(dims);
 

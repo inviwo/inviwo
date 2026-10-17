@@ -214,14 +214,11 @@ void exposeProcessors(pybind11::module& m) {
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
 
-    using InportVecWrapper = VectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>(
-        m, "InportVectorWrapper");
+    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Inport*>::const_iterator>(m, "InportVectorWrapper");
 
-    using OutportVecWrapper =
-        VectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>(
-        m, "OutportVectorWrapper");
+    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Outport*>::const_iterator>(m, "OutportVectorWrapper");
 
     py::classh<Processor, PropertyOwner, MetaDataOwner, ProcessorTrampoline>(
         m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})

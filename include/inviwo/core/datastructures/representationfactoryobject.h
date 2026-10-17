@@ -64,7 +64,7 @@ public:
 
     ReprId getClassIdentifier() const { return classIdentifier_; }
 
-    virtual std::unique_ptr<Representation> create(const typename Representation::ReprOwner*) = 0;
+    virtual std::unique_ptr<Representation> create(const Representation::ReprOwner*) = 0;
 
 private:
     ReprId classIdentifier_;

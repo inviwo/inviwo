@@ -108,8 +108,8 @@ private:
 template <typename InportType, typename OutportType>
 struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportType::type;
-        using outtype = typename InportType::type;
+        using intype = InportType::type;
+        using outtype = InportType::type;
         static_assert(std::is_same_v<intype, outtype>, "type mismatch");
         const auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
         const auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),

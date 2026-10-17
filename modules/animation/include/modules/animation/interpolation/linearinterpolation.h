@@ -50,7 +50,7 @@ namespace animation {
  * Easing is controlled per keyframe via BaseKeyframe::getEasing() / BaseKeyframe::setEasing().
  * The easing of the outgoing keyframe (the one before the current time) is used for each interval.
  */
-template <typename Key, typename Result = typename Key::value_type>
+template <typename Key, typename Result = Key::value_type>
 class LinearInterpolation : public InterpolationTyped<Key, Result> {
 public:
     explicit LinearInterpolation(InviwoApplication* app = nullptr);
@@ -116,8 +116,8 @@ template <typename Key, typename Result>
 void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
                                                   Seconds /*from*/, Seconds to, Result& out) const {
 
-    using VT = typename Key::value_type;
-    using DT = typename util::same_extent<VT, double>::type;
+    using VT = Key::value_type;
+    using DT = util::same_extent<VT, double>::type;
 
     const auto it =
         std::upper_bound(keys.begin(), keys.end(), to,

@@ -105,8 +105,8 @@ private:
 template <typename InportType, typename OutportType>
 struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportType::type;
-        using outtype = typename InportType::type;
+        using intype = InportType::type;
+        using outtype = InportType::type;
         static_assert(std::is_same_v<intype, outtype>, "type mismatch");
         const auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
         const auto cid = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),

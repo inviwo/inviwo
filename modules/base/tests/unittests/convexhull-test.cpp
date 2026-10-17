@@ -63,7 +63,7 @@ std::array<T, N> getPointSet(T extent) {
     std::array<T, N> points{};
     for (size_t i = 0; i < N; i++) {
         for (size_t j = 0; j < util::extent<T>::value; ++j) {
-            points[i][j] = static_cast<typename T::value_type>(rand()) % extent[j];
+            points[i][j] = static_cast<T::value_type>(rand()) % extent[j];
         }
     }
     return points;

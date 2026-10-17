@@ -56,7 +56,7 @@ namespace inviwo {
 class IVW_CORE_API BitSet : public Serializable {
 public:
     template <typename T>
-    using iterator_category = typename std::iterator_traits<T>::iterator_category;
+    using iterator_category = std::iterator_traits<T>::iterator_category;
     template <class T>
     using is_iterator = util::is_detected<iterator_category, T>;
 

@@ -197,7 +197,7 @@ struct get_iterator {
     using type = decltype(std::begin(std::declval<std::add_lvalue_reference_t<T>>()));
 };
 template <typename T>
-using get_iterator_t = typename get_iterator<T>::type;
+using get_iterator_t = get_iterator<T>::type;
 
 template <typename T>
 struct iterator_tools;
@@ -218,16 +218,16 @@ struct require
     : std::enable_if<
           std::is_base_of_v<Tag, typename iterator_tools<IterTuple>::iterator_category>> {};
 template <typename Tag, typename IterTuple>
-using require_t = typename require<Tag, IterTuple>::type;
+using require_t = require<Tag, IterTuple>::type;
 
 template <typename Iterables>
 struct zipIterator {
-    using Iterators = typename detailzip::iterator_tools<Iterables>::iterators;
-    using difference_type = typename detailzip::iterator_tools<Iterables>::difference_type;
-    using iterator_category = typename detailzip::iterator_tools<Iterables>::iterator_category;
-    using value_type = typename detailzip::iterator_tools<Iterables>::value_type;
-    using pointer = typename detailzip::iterator_tools<Iterables>::pointer;
-    using reference = typename detailzip::iterator_tools<Iterables>::reference;
+    using Iterators = detailzip::iterator_tools<Iterables>::iterators;
+    using difference_type = detailzip::iterator_tools<Iterables>::difference_type;
+    using iterator_category = detailzip::iterator_tools<Iterables>::iterator_category;
+    using value_type = detailzip::iterator_tools<Iterables>::value_type;
+    using pointer = detailzip::iterator_tools<Iterables>::pointer;
+    using reference = detailzip::iterator_tools<Iterables>::reference;
 
     static_assert(std::is_base_of_v<std::input_iterator_tag, iterator_category>,
                   "All iterators have to be at least input iterators");
@@ -359,7 +359,7 @@ struct zipper {
     using iterator = zipIterator<Iterables>;
     using const_iterator = zipIterator<Iterables>;
 
-    using value_type = typename zipIterator<Iterables>::value_type;
+    using value_type = zipIterator<Iterables>::value_type;
 
     template <typename... T>
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
@@ -494,7 +494,7 @@ struct sequence {
         T inc_{};
     };
 
-    using value_type = typename iterator::value_type;
+    using value_type = iterator::value_type;
     using const_iterator = iterator;
 
     iterator begin() const { return iterator(begin_, end_, inc_); }

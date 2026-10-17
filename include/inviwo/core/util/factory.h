@@ -164,7 +164,7 @@ struct FactoryKeyType<std::string_view> {
     using type = std::string;
 };
 template <typename K>
-using factoryKeyType = typename FactoryKeyType<K>::type;
+using factoryKeyType = FactoryKeyType<K>::type;
 
 /**
  * Standard setup of Factory using factory objects to create an instance.

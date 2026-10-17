@@ -191,7 +191,7 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
 
     const auto data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
-        using CompType = typename util::value_type<ValueType>::type;
+        using CompType = util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = vr->getDimensions();

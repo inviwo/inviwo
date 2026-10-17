@@ -102,7 +102,7 @@ public:
     std::shared_ptr<const Buffer<typename Base::type>> getVertices() const { return Base::buffer_; }
     std::shared_ptr<Buffer<typename Base::type>> getEditableVertices() { return Base::buffer_; }
 
-    void setVertexPosition(size_t index, typename Base::type pos) {
+    void setVertexPosition(size_t index, Base::type pos) {
         getEditableVertices()->getEditableRAMRepresentation()->set(index, pos);
     }
 };
@@ -163,7 +163,7 @@ public:
     }
     std::shared_ptr<Buffer<typename Base::type>> getEditableTexCoords() { return Base::buffer_; }
 
-    void setVertexTexCoord(size_t index, typename Base::type texCoord) {
+    void setVertexTexCoord(size_t index, Base::type texCoord) {
         getEditableTexCoords()->getEditableRAMRepresentation()->set(index, texCoord);
     }
 };
@@ -442,7 +442,7 @@ public:
      * @param v the new value
      */
     template <typename BT>
-    void setVertex(size_t index, const typename BT::type& v) {
+    void setVertex(size_t index, const BT::type& v) {
         getTypedDataContainer<BT>()[index] = v;
     }
 
@@ -532,13 +532,13 @@ struct helper {
         helper<F, I - 1>::addVerticesImpl(f, vertices);
     }
 
-    static void addVertexImplVertex(F& f, const typename F::Vertex& v) {
+    static void addVertexImplVertex(F& f, const F::Vertex& v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
         f.template getTypedEditableRAMRepresentation<BT>()->add(std::get<I - 1>(v));
 
         helper<F, I - 1>::addVertexImplVertex(f, v);
     }
-    static void setVertexImplVertex(F& f, size_t index, const typename F::Vertex& v) {
+    static void setVertexImplVertex(F& f, size_t index, const F::Vertex& v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
         f.template getTypedDataContainer<BT>()[index] = std::get<I - 1>(v);
 
@@ -549,8 +549,8 @@ struct helper {
 template <typename F>
 struct helper<F, 0> {
     static void addVerticesImpl(F&, const std::vector<typename F::Vertex>&) {}
-    static void addVertexImplVertex(F&, const typename F::Vertex&) {}
-    static void setVertexImplVertex(F&, size_t, const typename F::Vertex&) {}
+    static void addVertexImplVertex(F&, const F::Vertex&) {}
+    static void setVertexImplVertex(F&, size_t, const F::Vertex&) {}
 };
 
 }  // namespace detail

@@ -83,7 +83,7 @@ template <typename T, typename valueType = typename util::value_type<T>::type,
           typename = typename std::enable_if<std::is_same<valueType, bool>::value>::type>
 static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, unsigned char>::type> {
-    using T2 = typename util::same_extent<T, unsigned char>::type;
+    using T2 = util::same_extent<T, unsigned char>::type;
     return convert<T2>(data, size, min, max);
 }
 
@@ -92,7 +92,7 @@ template <typename T, typename valueType = typename util::value_type<T>::type,
                                              std::is_integral<valueType>::value>::type>
 static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
-    using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
+    using T2 = util::same_extent<T, std::make_unsigned_t<valueType>>::type;
     return convert<T2>(data, size, min, max);
 }
 
@@ -166,7 +166,7 @@ static void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr w
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
-        using T2 = typename util::same_extent<T, glm::uint16>::type;
+        using T2 = util::same_extent<T, glm::uint16>::type;
         auto newData = convert<T2>(data, glm::compMul(size), T{0}, T{1});
         writePNG(newData.data());
     } else {
@@ -178,7 +178,7 @@ static void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr w
         png_set_swap(png_ptr);
 
         if (bit_depth > 16) {
-            using T2 = typename util::same_extent<T, glm::uint16>::type;
+            using T2 = util::same_extent<T, glm::uint16>::type;
             auto newData = convert<T2>(data, glm::compMul(size), DataFormat<T>::lowest(),
                                        DataFormat<T>::max());
             writePNG(newData.data());

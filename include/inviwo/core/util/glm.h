@@ -146,7 +146,7 @@ namespace util {
 // Type1 and and Type2 models glm vec 2 types.
 template <typename Type1, typename Type2>
 Type1 invertY(Type1 vec, Type2 dim) {
-    using T = typename Type1::value_type;
+    using T = Type1::value_type;
     return Type1(vec.x, static_cast<T>(dim.y) - 1 - vec.y);
 }
 
@@ -265,7 +265,7 @@ struct almostEqual<glm::mat<C, R, T, Q>> {
  * // | 3.16 3.16 3.16 |
  * @endcode
  */
-template <typename M, typename T = typename M::value_type>
+template <typename M, typename T = M::value_type>
 M filled(T v) {
     return M{T(0)} + v;
 }
@@ -338,7 +338,7 @@ struct std::tuple_size<glm::vec<L, T, Q>> : std::integral_constant<std::size_t, 
 
 template <std::size_t N, glm::length_t L, typename T, glm::qualifier Q>
 struct std::tuple_element<N, glm::vec<L, T, Q>> {
-    using type = typename glm::vec<L, T, Q>::value_type;
+    using type = glm::vec<L, T, Q>::value_type;
 };
 
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
@@ -346,5 +346,5 @@ struct std::tuple_size<glm::mat<C, R, T, Q>> : std::integral_constant<std::size_
 
 template <std::size_t N, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct std::tuple_element<N, glm::mat<C, R, T, Q>> {
-    using type = typename glm::mat<C, R, T, Q>::col_type;
+    using type = glm::mat<C, R, T, Q>::col_type;
 };

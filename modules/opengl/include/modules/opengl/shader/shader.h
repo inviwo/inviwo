@@ -134,8 +134,8 @@ public:
 
     GLuint getID() const { return program_.id; }
 
-    using iterator = typename std::vector<ShaderObject>::iterator;
-    using const_iterator = typename std::vector<ShaderObject>::const_iterator;
+    using iterator = std::vector<ShaderObject>::iterator;
+    using const_iterator = std::vector<ShaderObject>::const_iterator;
 
     iterator begin();
     iterator end();

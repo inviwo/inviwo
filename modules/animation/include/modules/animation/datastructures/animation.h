@@ -67,9 +67,9 @@ class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public TrackObserver,
                                            public PropertyOwnerObserver {
 public:
-    using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::iterator>;
+    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Track>>::iterator>;
     using const_iterator =
-        util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::const_iterator>;
+        util::IndirectIterator<std::vector<std::unique_ptr<Track>>::const_iterator>;
     /**
      * Creates an empty Animation.
      * AnimationManager is required only for the Property-based adding convenience functions:

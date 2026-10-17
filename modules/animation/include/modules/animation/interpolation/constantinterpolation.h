@@ -52,7 +52,7 @@ namespace inviwo::animation {
  * Returns left keyframe value until reaching right keyframe.
  *
  */
-template <typename Key, typename Result = typename Key::value_type>
+template <typename Key, typename Result = Key::value_type>
 class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
     explicit ConstantInterpolation(InviwoApplication* app = nullptr);
@@ -87,7 +87,7 @@ ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() 
 
 template <typename Key, typename Result>
 std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
-    using V = typename Key::value_type;
+    using V = Key::value_type;
     if constexpr (std::is_enum_v<V>) {
         static const std::string identifier =
             fmt::format("org.inviwo.animation.constantinterpolation.enum.{}", util::enumName<V>());

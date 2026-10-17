@@ -140,7 +140,7 @@ private:
 
     DataReaderFactory* rf_;
 
-    typename Conf::Outport outport_;
+    Conf::Outport outport_;
 
     OptionProperty<InputType> inputType_;
     FileProperty file_;
@@ -152,7 +152,7 @@ private:
     OptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
-    typename Conf::Info information_;
+    Conf::Info information_;
 
     bool deserialized_ = false;
 };

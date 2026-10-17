@@ -86,7 +86,7 @@ struct Filter<Predicate, Head, Tail...> {
 
 template <template <class> class Predicate, typename... Args>
 struct Filter<Predicate, std::tuple<Args...>> {
-    using type = typename Filter<Predicate, Args...>::type;
+    using type = Filter<Predicate, Args...>::type;
 };
 
 std::string IVW_CORE_API predicateNameHelper(const char* name);
@@ -129,7 +129,7 @@ auto singleDispatch(DataFormatId format, Callable&& obj, Args&&... args) -> Resu
             using Format = std::tuple_element_t<index, Formats>;
             if constexpr (Predicate<Format>::value) {
                 return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
-                    using T = typename Format::type;
+                    using T = Format::type;
                     return innerObj.template operator()<T>(std::forward<Args>(innerArgs)...);
                 };
             } else {
@@ -185,10 +185,10 @@ auto doubleDispatch(DataFormatId format1, DataFormatId format2, Callable&& obj, 
 
     static constexpr auto table = util::build_array_t<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
-        using T1 = typename Format1::type;
+        using T1 = Format1::type;
         return util::build_array_t<nFormats>([]<size_t index2>() constexpr -> Functor {
             using Format2 = std::tuple_element_t<index2, Formats>;
-            using T2 = typename Format2::type;
+            using T2 = Format2::type;
             if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value) {
                 return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
                     return innerObj.template operator()<T1, T2>(std::forward<Args>(innerArgs)...);
@@ -251,13 +251,13 @@ auto tripleDispatch(DataFormatId format1, DataFormatId format2, DataFormatId for
 
     static constexpr auto table = util::build_array_t<nFormats>([]<size_t index1>() constexpr {
         using Format1 = std::tuple_element_t<index1, Formats>;
-        using T1 = typename Format1::type;
+        using T1 = Format1::type;
         return util::build_array_t<nFormats>([]<size_t index2>() constexpr {
             using Format2 = std::tuple_element_t<index2, Formats>;
-            using T2 = typename Format2::type;
+            using T2 = Format2::type;
             return util::build_array_t<nFormats>([]<size_t index3>() constexpr -> Functor {
                 using Format3 = std::tuple_element_t<index3, Formats>;
-                using T3 = typename Format3::type;
+                using T3 = Format3::type;
                 if constexpr (Predicate1<Format1>::value && Predicate2<Format2>::value &&
                               Predicate3<Format3>::value) {
                     return [](Callable&& innerObj, Args&&... innerArgs) -> Result {
@@ -505,11 +505,10 @@ using PrecsionType [[deprecated("Use `PrecisionType` instead")]] =
  * ValueType will then be for example vec3
  */
 template <typename T>
-using PrecisionValueType = typename PrecisionType<T>::type;
+using PrecisionValueType = PrecisionType<T>::type;
 
 template <typename T>
-using PrecsionValueType [[deprecated("Use `PrecisionValueType` instead")]] =
-    typename PrecisionType<T>::type;
+using PrecsionValueType [[deprecated("Use `PrecisionValueType` instead")]] = PrecisionType<T>::type;
 
 }  // namespace util
 

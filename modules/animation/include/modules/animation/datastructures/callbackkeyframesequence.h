@@ -52,7 +52,7 @@ namespace inviwo::animation {
 class IVW_MODULE_ANIMATION_API CallbackKeyframeSequence
     : public BaseKeyframeSequence<CallbackKeyframe> {
 public:
-    using key_type = typename BaseKeyframeSequence<CallbackKeyframe>::key_type;
+    using key_type = BaseKeyframeSequence<CallbackKeyframe>::key_type;
     CallbackKeyframeSequence() = default;
     CallbackKeyframeSequence(const CallbackKeyframeSequence& rhs) = default;
     CallbackKeyframeSequence(CallbackKeyframeSequence&& rhs) = default;

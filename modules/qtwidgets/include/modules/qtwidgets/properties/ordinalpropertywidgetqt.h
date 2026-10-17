@@ -105,8 +105,8 @@ enum class OrdinalPropertyWidgetQtSemantics { Default, Spherical, SpinBox, Spher
 template <typename Prop, OrdinalPropertyWidgetQtSemantics Sem>
 class OrdinalLikePropertyWidgetQt final : public PropertyWidgetQt {
 public:
-    using T = typename Prop::value_type;
-    using BT = typename util::value_type<T>::type;
+    using T = Prop::value_type;
+    using BT = util::value_type<T>::type;
 
     explicit OrdinalLikePropertyWidgetQt(Prop* property);
     virtual ~OrdinalLikePropertyWidgetQt() = default;

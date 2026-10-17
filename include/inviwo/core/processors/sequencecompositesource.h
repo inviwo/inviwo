@@ -87,8 +87,8 @@ public:
  */
 template <typename InportSequenceType, typename OutportType>
 class SequenceCompositeSource : public SequenceCompositeSourceBase {
-    using OutportData = typename OutportType::type;
-    using InportSequenceData = typename InportSequenceType::type;
+    using OutportData = OutportType::type;
+    using InportSequenceData = InportSequenceType::type;
 
 public:
     SequenceCompositeSource();
