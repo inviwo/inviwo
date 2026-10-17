@@ -154,7 +154,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         colorLayerCopyCount_ = colorLayersGL_.size();
     }
 
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    TextureUnit colorUnit;
+    TextureUnit depthUnit;
+    TextureUnit pickingUnit;
     source->getColorLayerGL()->bindTexture(colorUnit.getEnum());
     if (source->getDepthLayerGL()) {
         source->getDepthLayerGL()->bindTexture(depthUnit.getEnum());
@@ -198,7 +200,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
                            ? glm::scale(glm::vec3(1.0f, targetRatio / sourceRatio, 1.0f))
                            : glm::scale(glm::vec3(sourceRatio / targetRatio, 1.0f, 1.0f));
 
-    GLint prog;
+    GLint prog = 0;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
 
     shader_->activate();

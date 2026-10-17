@@ -120,7 +120,7 @@ const std::vector<TouchPoint>& TouchEvent::touchPoints() const { return touchPoi
 
 std::vector<TouchPoint>& TouchEvent::touchPoints() { return touchPoints_; }
 
-void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
+void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = std::move(val); }
 
 uvec2 TouchEvent::canvasSize() const {
     if (touchPoints_.empty()) {

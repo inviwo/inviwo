@@ -387,7 +387,7 @@ const std::string& ShaderObject::getFileName() const { return resource_->key(); 
 
 void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
     IVW_ASSERT(resource, "Should never be null");
-    resource_ = resource;
+    resource_ = std::move(resource);
     callbacks_.invoke(this);
 }
 
@@ -682,7 +682,7 @@ void ShaderObject::removeShaderDefine(std::string_view name) {
 }
 
 bool ShaderObject::hasShaderDefine(std::string_view name) const {
-    return shaderDefines_.find(name) != shaderDefines_.end();
+    return shaderDefines_.contains(name);
 }
 
 void ShaderObject::clearShaderDefines() { shaderDefines_.clear(); }
@@ -716,7 +716,7 @@ void ShaderObject::removeShaderExtension(std::string_view extName) {
 }
 
 bool ShaderObject::hasShaderExtension(std::string_view extName) const {
-    return shaderExtensions_.find(extName) != shaderExtensions_.end();
+    return shaderExtensions_.contains(extName);
 }
 
 void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }

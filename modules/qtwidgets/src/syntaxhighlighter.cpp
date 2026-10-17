@@ -93,7 +93,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
 
         while (startIndex >= 0) {
             const auto endMatch = rule.end.match(text, currPos);
-            int commentLength;
+            int commentLength = 0;
 
             if (endMatch.hasMatch()) {
                 commentLength = static_cast<int>(endMatch.capturedEnd()) - startIndex;
@@ -124,7 +124,9 @@ void SyntaxHighlighter::addMultBlockPattern(QTextCharFormat format, std::string_
     });
 }
 
-void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) { defaultFormat_ = format; }
+void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) {
+    defaultFormat_ = std::move(format);
+}
 
 void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view pattern) {
     rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});

@@ -153,7 +153,7 @@ void ModuleContainer::load(bool runtimeReload) {
             throw Exception(SourceContext{}, "Unable to write temporary file {} since: {}", tmpFile,
                             ec.message());
         }
-        tmpFile_ = tmpFile;
+        tmpFile_ = std::move(tmpFile);
     }
 
     filesystem::setWorkingDirectory(filesystem::getInviwoBinDir());

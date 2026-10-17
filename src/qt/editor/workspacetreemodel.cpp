@@ -139,7 +139,7 @@ TreeItem::TreeItem(const std::filesystem::path& filename, InviwoApplication* app
     connect(
         infoLoader_.get(), &WorkspaceInfoLoader::workspaceInfoLoaded, this,
         [this, onChange](WorkspaceInfo info) {
-            info_ = info;
+            info_ = std::move(info);
             onChange(this);
         },
         Qt::QueuedConnection);

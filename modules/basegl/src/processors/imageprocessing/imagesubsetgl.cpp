@@ -144,7 +144,9 @@ void ImageSubsetGL::process() {
 
         TextureUnit::setZeroUnit();
 
-        TextureUnit colorUnit, depthUnit, pickingUnit;
+        TextureUnit colorUnit;
+        TextureUnit depthUnit;
+        TextureUnit pickingUnit;
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
         shader_.activate();

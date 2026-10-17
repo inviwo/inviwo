@@ -190,7 +190,8 @@ T IntegralLine::getMetaDataAtDistance(std::string md, double d) const {
         return metaData.front();
     }
 
-    double distPrev = 0, distNext = 0;
+    double distPrev = 0;
+    double distNext = 0;
     auto next = positions_.begin();
     auto prev = next;
     auto nextMD = metaData.begin();

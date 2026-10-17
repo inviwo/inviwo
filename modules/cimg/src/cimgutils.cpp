@@ -169,7 +169,7 @@ static auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true,
 namespace {
 DataFormatId findScalarFormat(const std::filesystem::path& filePath) {
     const auto fileExtension = toLower(filePath.extension().string());
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         return extToBaseTypeMap_[fileExtension];
     } else {
         return DataFormatId::Float32;
@@ -323,7 +323,7 @@ static auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view
     const DataFormatBase* inFormat = DataFormat<T>::get();
     // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
     const DataFormatBase* outFormat = DataFloat32::get();
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
     } else if ((fileExtension == ".tif") || (fileExtension == ".tiff") ||
                (fileExtension == ".raw")) {
@@ -499,7 +499,9 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     }
     TIFFSetDirectory(tif, 0);
 
-    std::uint16_t samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
+    std::uint16_t samplesPerPixel = 1;
+    std::uint16_t bitsPerSample = 8;
+    std::uint16_t sampleFormat = 1;
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample)) {
         bitsPerSample = 8;
     }
@@ -527,7 +529,9 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     }
     const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
-    std::uint32_t x = 0, y = 0, z = 0;
+    std::uint32_t x = 0;
+    std::uint32_t y = 0;
+    std::uint32_t z = 0;
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
     // count the images

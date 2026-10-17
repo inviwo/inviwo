@@ -226,10 +226,10 @@ void StreamRibbonsDeprecated::process() {
                 const vec3 p0 = vec3(*position) - vort;
                 const vec3 p1 = vec3(*position) + vort;
 
-                float d;
                 switch (coloringMethod_.get()) {
                     case ColoringMethod::Vorticity:
-                        d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
+                        const auto d =
+                            glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;
@@ -244,7 +244,8 @@ void StreamRibbonsDeprecated::process() {
                         }
                     default: [[fallthrough]];
                     case ColoringMethod::Velocity:
-                        d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
+                        const auto d =
+                            glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;

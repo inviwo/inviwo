@@ -42,7 +42,7 @@ void ImageCache::setMaster(std::shared_ptr<const Image> master) {
     if (master_ && master && master_->getDataFormat() != master->getDataFormat()) {
         cache_.clear();
     }
-    master_ = master;
+    master_ = std::move(master);
     valid_ = false;
 }
 
@@ -117,9 +117,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
 
 void ImageCache::setInvalid() const { valid_ = false; }
 
-bool ImageCache::hasImage(const size2_t dimensions) {
-    return cache_.find(dimensions) != cache_.end();
-}
+bool ImageCache::hasImage(const size2_t dimensions) { return cache_.contains(dimensions); }
 
 void ImageCache::addImage(std::shared_ptr<Image> image) { cache_[image->getDimensions()] = image; }
 

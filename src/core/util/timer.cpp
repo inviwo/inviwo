@@ -227,7 +227,9 @@ void Delay::cancel() { controlblock_.reset(); }
 void Delay::setDefaultDelay(Milliseconds delay) { defaultDelay_ = delay; }
 auto Delay::getDefaultDelay() const -> Milliseconds { return defaultDelay_; }
 
-void Delay::setDefaultCallback(std::function<void()> callback) { defaultCallback_ = callback; }
+void Delay::setDefaultCallback(std::function<void()> callback) {
+    defaultCallback_ = std::move(callback);
+}
 std::function<void()> Delay::getDefaultCallback() const { return defaultCallback_; }
 
 namespace util {

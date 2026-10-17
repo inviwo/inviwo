@@ -299,7 +299,7 @@ void Shader::linkShader(bool notifyRebuild) {
 }
 
 bool Shader::checkLinkStatus() const {
-    GLint res;
+    GLint res = 0;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
     return res != 0;
 }
@@ -358,17 +358,17 @@ std::string Shader::processLog(std::string log) const {
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
         const auto lline = toLower(line);
-        if (lline.find("vertex") != std::string::npos)
+        if (lline.contains("vertex"))
             type = ShaderType::Vertex;
-        else if (lline.find("geometry") != std::string::npos)
+        else if (lline.contains("geometry"))
             type = ShaderType::Geometry;
-        else if (lline.find("fragment") != std::string::npos)
+        else if (lline.contains("fragment"))
             type = ShaderType::Fragment;
-        else if (lline.find("tessellation control") != std::string::npos)
+        else if (lline.contains("tessellation control"))
             type = ShaderType::TessellationControl;
-        else if (lline.find("tessellation evaluation") != std::string::npos)
+        else if (lline.contains("tessellation evaluation"))
             type = ShaderType::TessellationEvaluation;
-        else if (lline.find("compute") != std::string::npos)
+        else if (lline.contains("compute"))
             type = ShaderType::Compute;
 
         const int origLineNumber = utilgl::getLogLineNumber(line);

@@ -138,7 +138,7 @@ std::vector<PropertyLink> LinkEvaluator::getLinksBetweenProcessors(Processor* p1
 }
 
 std::vector<ConvertibleLink>& LinkEvaluator::getTriggeredLinksForProperty(Property* property) {
-    if (transientLinkCache_.find(property) != transientLinkCache_.end()) {
+    if (transientLinkCache_.contains(property)) {
         return transientLinkCache_[property];
     } else {
         return addToTransientCache(property);
@@ -147,9 +147,8 @@ std::vector<ConvertibleLink>& LinkEvaluator::getTriggeredLinksForProperty(Proper
 
 std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) {
     // check if link connectivity has been computed and cached already
-    const auto& list = (transientLinkCache_.find(property) != transientLinkCache_.end())
-                           ? transientLinkCache_[property]
-                           : addToTransientCache(property);
+    const auto& list = (transientLinkCache_.contains(property)) ? transientLinkCache_[property]
+                                                                : addToTransientCache(property);
 
     return util::transform(list, [](const ConvertibleLink& link) { return link.dst; });
 }

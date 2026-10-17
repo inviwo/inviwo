@@ -88,7 +88,7 @@ void createProcessorDocMenu(InviwoApplication* app, QMenu* docsMenu) {
     for (const size_t i : order) {
         const auto& m = modules[i];
 
-        auto& processors = m->getProcessors();
+        const auto& processors = m->getProcessors();
         if (processors.empty()) continue;
 
         auto modMenu = docsMenu->addMenu(utilqt::toQString(m->getIdentifier()));
@@ -156,7 +156,7 @@ void createRegressionActions(QWidget* parent, InviwoApplication* app, QMenu* men
 
         QObject::connect(
             action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app]() {
-                bool ok;
+                bool ok = false;
                 const auto name = QInputDialog::getText(
                     parent, "Create Regression Test", "Regression test name", QLineEdit::Normal, "",
                     &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);

@@ -41,14 +41,14 @@ class IVW_MODULE_GLFW_API GLFWException : public Exception {
 public:
     explicit GLFWException(const std::string& message = "",
                            SourceContext context = SourceContext());
-    virtual ~GLFWException() throw() {}
+    virtual ~GLFWException() noexcept {}
 };
 
 class IVW_MODULE_GLFW_API GLFWInitException : public ModuleInitException {
 public:
     explicit GLFWInitException(const std::string& message = "",
                                SourceContext context = SourceContext());
-    virtual ~GLFWInitException() throw() {}
+    virtual ~GLFWInitException() noexcept {}
 };
 
 }  // namespace inviwo

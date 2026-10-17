@@ -230,7 +230,7 @@ constexpr std::array<bool, 256> urlEscapeMap = []() {
     const std::string_view urlValid = "~-_.+!*(),%#@?=;:/,+$";
     for (int i = 0; i < 256; ++i) {
         const char c = static_cast<char>(i);
-        map[i] = !isalnum(c) && urlValid.find(c) == std::string_view::npos;
+        map[i] = !isalnum(c) && !urlValid.contains(c);
     }
     return map;
 }();
@@ -258,14 +258,14 @@ std::string util::urlEncode(std::string_view text) {
 }
 
 void util::htmlEncodeTo(std::string_view data, StrBuffer& strBuffer) {
-    for (size_t pos = 0; pos != data.size(); ++pos) {
-        switch (data[pos]) {
+    for (char pos : data) {
+        switch (pos) {
             case '&':  strBuffer.append("&amp;"); break;
             case '\"': strBuffer.append("&quot;"); break;
             case '\'': strBuffer.append("&apos;"); break;
             case '<':  strBuffer.append("&lt;"); break;
             case '>':  strBuffer.append("&gt;"); break;
-            default:   strBuffer.buff.push_back(data[pos]); break;
+            default:   strBuffer.buff.push_back(pos); break;
         }
     }
 }
@@ -381,7 +381,7 @@ std::string trim(std::string s) { return ltrim(rtrim(s)); }
 
 std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
-    size_t pos;
+    size_t pos = 0;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
         newString.erase(pos, strToRemove.length());
     }

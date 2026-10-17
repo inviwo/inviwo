@@ -76,7 +76,7 @@ public:
     };
 
     const std::vector<ProcessorShim>& getProcessorList() const;
-    const std::map<std::string, int> getProcessorCounts() const;
+    std::map<std::string, int> getProcessorCounts() const;
 
     static const QImage& getMissingImage();
 

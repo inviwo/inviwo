@@ -129,7 +129,7 @@ MetaDataType<T>* MetaDataType<T>::clone() const {
 
 template <typename T>
 void MetaDataType<T>::set(T value) {
-    value_ = value;
+    value_ = std::move(value);
 }
 
 template <typename T>

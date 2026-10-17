@@ -79,9 +79,9 @@ std::string_view InvalidationTrack::getClassIdentifier() const { return classIde
 AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationState state) const {
     if (!isEnabled() || empty()) return {to, state};
 
-    for (auto it = begin(); it != end(); ++it) {
-        if (it->getFirstTime() <= to && it->getLastTime() >= to) {
-            const auto [processorId, propertyPath] = util::splitByFirst(it->path, ".");
+    for (const auto& it : *this) {
+        if (it.getFirstTime() <= to && it.getLastTime() >= to) {
+            const auto [processorId, propertyPath] = util::splitByFirst(it.path, ".");
             if (auto processor = network->getProcessorByIdentifier(processorId)) {
                 if (propertyPath.empty()) {
                     processor->invalidate(InvalidationLevel::InvalidOutput);

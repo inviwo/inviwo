@@ -348,7 +348,7 @@ void ScatterPlotGL::setSortingData(const Column* col) {
 }
 
 void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
-    indexColumn_ = indexcol;
+    indexColumn_ = std::move(indexcol);
 
     if (indexColumn_) {
         const auto numValues = static_cast<std::uint32_t>(indexColumn_->getSize());

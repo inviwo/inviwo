@@ -281,7 +281,7 @@ bool Element::isChecked() const { return checked_; }
 void Element::setAction(const std::function<void()>& action) { action_ = action; }
 
 void Element::setPickingEventAction(std::function<void(PickingEvent* e)> pickingAction) {
-    pickingAction_ = pickingAction;
+    pickingAction_ = std::move(pickingAction);
 }
 
 void Element::triggerAction() {

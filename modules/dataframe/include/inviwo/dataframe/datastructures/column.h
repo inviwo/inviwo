@@ -74,7 +74,7 @@ public:
     explicit InvalidConversion(const std::string& message = "",
                                SourceContext context = SourceContext())
         : Exception(message, context) {}
-    virtual ~InvalidConversion() throw() {}
+    virtual ~InvalidConversion() noexcept {}
 };
 
 enum class ColumnType { Index, Ordinal, Categorical };

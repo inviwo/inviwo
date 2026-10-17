@@ -84,7 +84,7 @@ std::unique_ptr<QMenu> ButtonPropertyWidgetQt::getContextMenu() {
 
     auto renameAction = menu->addAction(tr("&Rename"));
     connect(renameAction, &QAction::triggered, this, [this]() {
-        bool ok;
+        bool ok = false;
         const auto displayname = utilqt::toQString(property_->getDisplayName());
         const auto name = utilqt::fromQString(QInputDialog::getText(
             nullptr, "Rename", "Name of Property", QLineEdit::Normal, displayname, &ok));

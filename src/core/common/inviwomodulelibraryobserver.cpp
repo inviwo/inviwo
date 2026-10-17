@@ -55,7 +55,7 @@ void InviwoModuleLibraryObserver::observe(const std::filesystem::path& file) {
     // and they will not have been created when InviwoApplication
     // constructor is called.
     if (!observer_) observer_ = std::make_unique<Observer>(*this, app_);
-    if (observing_.count(file) != 0) return;
+    if (observing_.contains(file)) return;
     const auto dir = file.parent_path();
     if (!observer_->isObserved(dir)) observer_->startFileObservation(dir);
 

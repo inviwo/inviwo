@@ -355,7 +355,7 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, std::optional
     if (texture != currTexture_) {
         // attach new texture as a render target, no depth texture
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
-        currTexture_ = texture;
+        currTexture_ = std::move(texture);
     }
     if (clearColor) {
         const utilgl::ClearColor clear{*clearColor};
@@ -572,7 +572,7 @@ TextRenderer::FontCache& TextRenderer::getFontCache() {
 }
 
 void TextRenderer::createDefaultGlyphAtlas() {
-    if (glyphAtlas_.find(getFontTuple()) != glyphAtlas_.end()) {
+    if (glyphAtlas_.contains(getFontTuple())) {
         // glyph atlas already exists
         return;
     }
