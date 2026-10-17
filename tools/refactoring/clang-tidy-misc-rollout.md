@@ -17,6 +17,37 @@ aliases of already-done checks that need no further action, see below).
 **Branch:** `feature/more-conv-warnings`
 **Last commit:** see `git log --oneline -1` on that branch.
 
+### Progress since `bugprone-reserved-identifier` (2026-10-16)
+
+Committed, one commit per check: `modernize-min-max-use-initializer-list`,
+`readability-redundant-parentheses` (reverted Boost.SML `/ (action)` table
+hunks — intentional style), `google-readability-casting`,
+`google-readability-braces-around-statements`,
+`cppcoreguidelines-pro-type-member-init` (reverted hot-path zero-inits in
+`marchingcubesopt.cpp`/`stringconversion.h`/safecstr benchmark; `IndexMapper3D`
+has no default ctor), `modernize-use-auto`, `cppcoreguidelines-noexcept-swap`
+(zip proxy swap made conditionally noexcept), `readability-container-size-empty`,
+`readability-static-accessed-through-instance` (partial: reverted all 98
+hunks that emit `inviwo::Type::fn()`), `modernize-pass-by-value` (fixed
+mismatched out-of-line `ValueKeyframe` ctor signature),
+`readability-redundant-inline-specifier`.
+
+**Rejected, no commit:** `llvm-use-ranges` — rewrites `std::find_if` etc. to
+`llvm::find_if` and adds `#include "llvm/ADT/STLExtras.h"`; Inviwo does not
+depend on LLVM. Use `modernize-use-ranges` (std::ranges) instead.
+
+**Remaining fixable checks (smallest first):** `modernize-use-ranges`,
+`readability-inconsistent-declaration-parameter-name`,
+`bugprone-crtp-constructor-accessibility`, `modernize-concat-nested-namespaces`,
+`modernize-use-designated-initializers`, `performance-unnecessary-value-param`,
+`modernize-use-using`, `readability-redundant-casting`,
+`modernize-use-constraints`, `readability-redundant-lambda-parameter-list`,
+`readability-redundant-qualified-alias`, `readability-trailing-comma`,
+`modernize-type-traits`, `readability-redundant-typename`. (`readability-enum-initial-value`
+and `modernize-avoid-bind` also show up in the JSON but are already done.)
+Note the diagnostic counts in the JSON are inflated by header re-parsing; the
+real number of changed files is usually small (e.g. 729 TUs -> 2 files).
+
 ## Workflow v2 (2026-10-15 evening) — batch dry-run + scoped fixes
 
 The original per-check workflow (`/tmp/tidy-check.sh`, see "v1" section below)
