@@ -76,7 +76,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     // Otherwise there will be no suggestions.
     connect(this, &QLineEdit::textChanged,
             [fsModel](const QString& path) { fsModel->index(path); });
-    QCompleter* completer = new QCompleter(fsModel, this);
+    auto* completer = new QCompleter(fsModel, this);
     completer->setCompletionMode(QCompleter::PopupCompletion);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     setCompleter(completer);

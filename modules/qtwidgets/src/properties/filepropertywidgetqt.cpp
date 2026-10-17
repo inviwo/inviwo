@@ -72,7 +72,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     setFocusProxy(lineEdit_);
     setAcceptDrops(true);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));

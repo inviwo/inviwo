@@ -90,8 +90,8 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::filesystem::path&
                                   format->getString());
     }
 
-    const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
-    const unsigned char* dataPtr = static_cast<const unsigned char*>(vr->getData());
+    const auto* vr = data->getRepresentation<VolumeRAM>();
+    const auto* dataPtr = static_cast<const unsigned char*>(vr->getData());
 
     const size3_t dim = vr->getDimensions();
     const dmat3 basis = data->getBasis();

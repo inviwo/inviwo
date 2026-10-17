@@ -241,7 +241,7 @@ void PathLinesDeprecated::process() {
         for (size_t ii = 0; ii < size; ii++) {
             const vec3 pos(*position);
             const vec3 v(*velocity);
-            const float t = static_cast<float>(*timestamp);
+            const auto t = static_cast<float>(*timestamp);
 
             const float l = glm::length(v);
             const float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);

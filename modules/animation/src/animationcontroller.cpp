@@ -312,8 +312,8 @@ void AnimationController::tick() {
 
     // Get active time window for playing
     // init with sub-window, overwrite with full window if necessary
-    Seconds firstTime = Seconds(playWindow.get()[0]);
-    Seconds lastTime = Seconds(playWindow.get()[1]);
+    auto firstTime = Seconds(playWindow.get()[0]);
+    auto lastTime = Seconds(playWindow.get()[1]);
     if (playWindowMode.get() == 0) {
         // Full animation window
         firstTime = animation_->getFirstTime();

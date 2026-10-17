@@ -351,7 +351,7 @@ KDNode<N, T, P>::~KDNode() {
 }
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P>* KDNode<N, T, P>::clone() {
-    KDNode<N, T, P>* newNode = new KDNode<N, T, P>(pos_, data_, 0);
+    auto* newNode = new KDNode<N, T, P>(pos_, data_, 0);
     newNode->dimmension_ = dimmension_;
     if (leftChild_) {
         newNode->leftChild_ = leftChild_->clone();

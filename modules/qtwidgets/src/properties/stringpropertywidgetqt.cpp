@@ -60,7 +60,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
     setFocusPolicy(lineEdit_->focusPolicy());
     setFocusProxy(lineEdit_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));

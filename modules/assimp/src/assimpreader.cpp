@@ -350,7 +350,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         }
 
         // fill not existing color channels with padding data
-        for (size_t l = size_t{m->GetNumColorChannels()}; l < color_channels; ++l) {
+        for (auto l = size_t{m->GetNumColorChannels()}; l < color_channels; ++l) {
             for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
                 crep[l]->add(padding_color);
             }
@@ -364,7 +364,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
             }
         }
 
-        for (size_t l = size_t{m->GetNumUVChannels()}; l < texture_channels; ++l) {
+        for (auto l = size_t{m->GetNumUVChannels()}; l < texture_channels; ++l) {
             for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
                 trep[l]->add(vec3(0.0, 0.0, 0.0));
             }

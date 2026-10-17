@@ -321,7 +321,7 @@ void PropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
 
         event->accept();
 
-        QDrag* drag = new QDrag(this);
+        auto* drag = new QDrag(this);
         auto mimeData = getPropertyMimeData();
         // Displayed while dragging property
         mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));

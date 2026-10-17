@@ -106,12 +106,12 @@ OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(
     setFocusPolicy(min_->focusPolicy());
     setFocusProxy(min_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 
-    QHBoxLayout* textLayout = new QHBoxLayout();
-    QWidget* textWidget = new QWidget();
+    auto* textLayout = new QHBoxLayout();
+    auto* textWidget = new QWidget();
     textWidget->setLayout(textLayout);
     textLayout->setContentsMargins(0, 0, 0, 0);
 

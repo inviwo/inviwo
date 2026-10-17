@@ -341,7 +341,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     std::uniform_int_distribution<int> ry(0, static_cast<int>(dims.y));
     std::uniform_real_distribution<float> rand(0, 1);
 
-    float minDist = static_cast<float>(dims.x);
+    auto minDist = static_cast<float>(dims.x);
     minDist /= static_cast<float>(poissonDotsAlongX);  // min pixel distance between samples
     const auto minDist2 = minDist * minDist;
     const size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));

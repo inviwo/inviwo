@@ -66,7 +66,7 @@ StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty*
     , label_(new EditableLabelQt(this, property_))
     , textEdit_(new MultilineTextEdit) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);
@@ -112,7 +112,7 @@ MultiFileStringPropertyWidgetQt::MultiFileStringPropertyWidgetQt(MultiFileProper
     , label_(new EditableLabelQt(this, property_))
     , textEdit_(new MultilineTextEdit) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);

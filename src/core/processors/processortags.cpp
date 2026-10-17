@@ -96,7 +96,7 @@ int Tags::getMatches(const Tags& input) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Tags& obj) {
-    for (std::vector<Tag>::const_iterator it = obj.tags_.begin(); it != obj.tags_.end(); ++it) {
+    for (auto it = obj.tags_.begin(); it != obj.tags_.end(); ++it) {
         os << *it;
         if (std::distance(it, obj.tags_.end()) > 1) {
             os << ", ";

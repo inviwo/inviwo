@@ -583,7 +583,7 @@ static void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* ind
         const auto interpolate = [&](auto a, auto b) {
             const auto v0 = values[a];
             const auto v1 = values[b];
-            const float t = static_cast<float>(v0 / (v0 - v1));
+            const auto t = static_cast<float>(v0 / (v0 - v1));
             return pos[a] + t * (pos[b] - pos[a]);
         };
         const vec3 p0 = interpolate(t.e0a, t.e0b);

@@ -109,7 +109,7 @@ bool PythonScript::run(std::function<void(pybind11::dict)> callback) {
 
     const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
-    const py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     return run(global, callback);
 }
 
@@ -119,7 +119,7 @@ bool PythonScript::run(std::unordered_map<std::string, pybind11::object> locals,
 
     const pybind11::gil_scoped_acquire guard{};
     // Copy the dict to get a clean slate every time we run the script
-    const py::dict global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto global = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
     for (auto& item : locals) {
         global[py::str(item.first)] = item.second;
     }

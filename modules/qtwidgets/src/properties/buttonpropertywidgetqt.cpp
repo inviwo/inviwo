@@ -50,7 +50,7 @@ class Property;
 ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
     : PropertyWidgetQt(property), property_(property), button_(new QPushButton()) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
 

@@ -94,9 +94,9 @@ ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     setFloating(true);
     setSticky(false);
 
-    QMainWindow* mainWindow = new QMainWindow();
+    auto* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("ShaderWidgetToolBar");
     mainWindow->addToolBar(toolBar);
     toolBar->setFloatable(false);

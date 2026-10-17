@@ -61,7 +61,7 @@ EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string_view text
     , propertyWidget_(parent)
     , shortenText_(shortenText) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
 

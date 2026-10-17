@@ -51,7 +51,7 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
 
     setObjectName("ButtonGroupPropertyWidgetQt");
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
 

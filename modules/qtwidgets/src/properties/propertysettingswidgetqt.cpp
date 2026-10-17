@@ -41,7 +41,7 @@ SinglePropertySetting::SinglePropertySetting(QWidget* widget, std::string label)
     : label_(new QLabel(QString::fromStdString(label), widget)), widget_(widget) {}
 
 QLineEdit* SinglePropertySetting::addField() {
-    QLineEdit* ext = new QLineEdit(widget_);
+    auto* ext = new QLineEdit(widget_);
     ext->setValidator(new QDoubleValidator(widget_));
     additionalFields_.push_back(ext);
     return ext;

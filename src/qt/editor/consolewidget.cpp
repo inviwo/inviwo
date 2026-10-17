@@ -243,7 +243,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setDefaultSectionSize(1);
     tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
-    QHBoxLayout* statusBar = new QHBoxLayout();
+    auto* statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
 
     const auto makeIcon = [](const QString& file, bool checkable = false) {
@@ -362,14 +362,14 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->addAction(filterAction);
     tableView_->addAction(clearFilter);
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    auto* layout = new QVBoxLayout();
     layout->addWidget(tableView_);
     layout->addLayout(statusBar);
 
     const auto space = utilqt::emToPx(this, 3 / 9.0);
     layout->setContentsMargins(space, 0, 0, space);
 
-    QWidget* w = new QWidget();
+    auto* w = new QWidget();
     w->setLayout(layout);
     setWidget(w);
 

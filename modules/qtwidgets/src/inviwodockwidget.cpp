@@ -99,7 +99,7 @@ void InviwoDockWidget::setContents(QLayout* layout) {
         delete oldWidget;
     }
 
-    QWidget* centralWidget = new QWidget();
+    auto* centralWidget = new QWidget();
     centralWidget->setLayout(layout);
     setWidget(centralWidget);
 }

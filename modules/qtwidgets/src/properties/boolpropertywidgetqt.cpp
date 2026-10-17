@@ -55,7 +55,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
     , label_{new EditableLabelQt(this, property_, false)} {
 
     // create widget layout
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 

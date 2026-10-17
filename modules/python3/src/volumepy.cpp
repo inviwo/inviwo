@@ -189,7 +189,7 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeSrc) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    const pybind11::array data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
+    const auto data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
         using CompType = typename util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;

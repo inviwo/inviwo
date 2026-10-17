@@ -106,7 +106,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     auto* centralWidget = new QMainWindow();
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("HelpWidgetToolBar");
     centralWidget->addToolBar(toolBar);
     toolBar->setFloatable(false);
