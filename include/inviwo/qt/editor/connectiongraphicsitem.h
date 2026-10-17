@@ -146,9 +146,9 @@ public:
     // Override
     virtual QPointF getStartPoint() const override;
     virtual QPointF getEndPoint() const override;
-    void setStartPoint(QPointF endPoint);
+    void setStartPoint(QPointF startPoint);
 
-    void reactToPortHover(ProcessorOutportGraphicsItem* inport);
+    void reactToPortHover(ProcessorOutportGraphicsItem* outport);
     ProcessorInportGraphicsItem* getInportGraphicsItem() const;
 
     // override for qgraphicsitem_cast (refer qt documentation)

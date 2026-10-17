@@ -223,7 +223,7 @@ public:
     void setUniform(std::string_view name, const mat4& value) const;
     void setUniform(std::string_view name, std::span<const mat4> values) const;
 
-    void setUniform(std::string_view name, const TextureUnit& value) const;
+    void setUniform(std::string_view name, const TextureUnit& texUnit) const;
 
     void setUniformWarningLevel(UniformWarning level);
 

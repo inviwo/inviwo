@@ -59,7 +59,7 @@ public:
              std::string_view contentType);
 
     void addNameFilter(std::string_view filter);
-    void addNameFilter(FileExtension ext);
+    void addNameFilter(FileExtension filter);
     void addNameFilters(const std::vector<FileExtension>& filters);
     void clearNameFilters();
     const std::vector<FileExtension>& getNameFilters() const;
@@ -184,7 +184,7 @@ public:
 
     FileProperty(const FileProperty& rhs) = default;
 
-    FileProperty& operator=(const std::filesystem::path& value);
+    FileProperty& operator=(const std::filesystem::path& file);
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;
 

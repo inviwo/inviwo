@@ -123,7 +123,7 @@ protected:
     virtual void process() override;
     virtual void initializeResources() override;
 
-    void updateViewports(ivec2 size, bool force = false);
+    void updateViewports(ivec2 dim, bool force = false);
     void onStatusChange();
 
 private:

@@ -118,7 +118,7 @@ protected:
     virtual void onTFPrimitiveAdded(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveRemoved(const TFPrimitiveSet& set, TFPrimitive& p) override;
     virtual void onTFPrimitiveChanged(const TFPrimitiveSet& set, const TFPrimitive& p) override;
-    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode type) override;
+    virtual void onTFModeChanged(const TFPrimitiveSet& set, PrimitiveSetMode mode) override;
     virtual void onTFBeginBulkUpdate(const TFPrimitiveSet& set) override;
     virtual void onTFEndBulkUpdate(const TFPrimitiveSet& set) override;
 
@@ -131,7 +131,7 @@ protected:
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
-    void removeControlPoint(TFEditorPrimitive* p);
+    void removeControlPoint(TFEditorPrimitive* item);
 
     TFEditorPrimitive* getTFPrimitiveItemAt(const QPointF& pos) const;
 

@@ -108,9 +108,9 @@ private:
 
     QModelIndex getIndex(TreeItem* item, int column = 0) const;
     void updateCategory(TreeItem* item, std::vector<std::unique_ptr<TreeItem>> children);
-    void addEntry(TreeItem* root, std::unique_ptr<TreeItem> child);
+    void addEntry(TreeItem* parent, std::unique_ptr<TreeItem> child);
 
-    TreeItem* getCategory(std::string_view name) const;
+    TreeItem* getCategory(std::string_view caption) const;
 
     TreeItem* getItem(const QModelIndex& index) const;
     InviwoApplication* app_;

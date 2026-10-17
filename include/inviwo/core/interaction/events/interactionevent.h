@@ -66,7 +66,7 @@ public:
      * string at the position of the event. This function is usually called by the originating
      * event canvas, and not any regular user code.
      */
-    void setToolTipCallback(ToolTipCallback callback);
+    void setToolTipCallback(ToolTipCallback tooltip);
     const ToolTipCallback& getToolTipCallback() const;
 
     /**

@@ -65,15 +65,15 @@ class IVW_MODULE_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidg
 
 public:
     explicit CollapsibleGroupBoxWidgetQt(CompositeProperty* property, bool isCheckable = false);
-    explicit CollapsibleGroupBoxWidgetQt(Processor* property, bool isCheckable = false);
-    explicit CollapsibleGroupBoxWidgetQt(Settings* property, bool isCheckable = false);
+    explicit CollapsibleGroupBoxWidgetQt(Processor* processor, bool isCheckable = false);
+    explicit CollapsibleGroupBoxWidgetQt(Settings* settings, bool isCheckable = false);
     CollapsibleGroupBoxWidgetQt(Property* property, PropertyOwner* owner,
                                 std::string_view displayName = "", bool isCheckable = false);
 
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
 
-    void addProperty(Property* tmpProperty);
+    void addProperty(Property* prop);
     const std::vector<Property*>& getProperties() const;
     const std::vector<PropertyWidgetQt*>& getPropertyWidgets() const;
 
@@ -121,7 +121,7 @@ protected:
     virtual void onSetVisible(Property* property, bool visible) override;
 
     virtual void setVisible(bool visible) override;
-    virtual void setCollapsed(bool value);
+    virtual void setCollapsed(bool collapse);
     virtual void setChecked(bool checked);
 
     /**

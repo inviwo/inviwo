@@ -130,7 +130,7 @@ public:
     virtual bool operator()(Event*) override;
 
     MouseButtons buttons() const;
-    void setButtons(MouseButtons key);
+    void setButtons(MouseButtons buttons);
 
     MouseStates states() const;
     void setStates(MouseStates states);
@@ -209,7 +209,7 @@ public:
     virtual bool operator()(Event*) override;
 
     GestureTypes types() const;
-    void setTypes(GestureTypes key);
+    void setTypes(GestureTypes types);
 
     GestureStates states() const;
     void setStates(GestureState states);

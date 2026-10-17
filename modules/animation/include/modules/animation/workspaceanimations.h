@@ -157,7 +157,7 @@ private:
                                     Animation* newAnim) override;
 
     // Add observers and fire onChanged_
-    void addInternal(typename std::vector<std::unique_ptr<Animation>>::iterator animation);
+    void addInternal(typename std::vector<std::unique_ptr<Animation>>::iterator aniIt);
 
     // AnimationObserver overloads
     virtual void onTrackAdded(Track*) override;

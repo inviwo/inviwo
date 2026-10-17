@@ -84,7 +84,7 @@ public:
     void setReloadCallback(InviwoApplication* app, std::function<void(ModuleContainer&)> callback);
 
 private:
-    static bool isLoaded(const std::filesystem::path& file);
+    static bool isLoaded(const std::filesystem::path& path);
     static std::filesystem::path getTmpDir();
 
     std::filesystem::path libFile_;

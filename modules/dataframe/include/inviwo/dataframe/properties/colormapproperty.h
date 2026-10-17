@@ -76,7 +76,7 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.ColormapProperty"};
 
     ColormapProperty(std::string_view identifier, std::string_view displayName,
-                     ColormapType type = ColormapType::Continuous,
+                     ColormapType selectedCategory = ColormapType::Continuous,
                      colorbrewer::Family family = colorbrewer::Family::Blues,
                      size_t numColors = getMinNumberOfColorsForFamily(colorbrewer::Family::Blues),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,

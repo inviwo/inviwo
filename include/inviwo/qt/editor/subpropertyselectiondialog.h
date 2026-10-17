@@ -67,7 +67,7 @@ public:
     virtual ~SubPropertySelectionDialog() = default;
 
 protected:
-    SubPropertySelectionDialog(Processor* processor, ProcessorNetwork& subNetwork,
+    SubPropertySelectionDialog(Processor* processor, ProcessorNetwork& net,
                                CompositeProcessorTreeModel* superModel, QWidget* parent);
     virtual void onProcessorNetworkWillRemoveProcessor(Processor*) override;
 

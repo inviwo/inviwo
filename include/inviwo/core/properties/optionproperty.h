@@ -295,7 +295,7 @@ public:
     const T& getOptionValue(size_t index) const;
     const OptionPropertyOption<T>& getOptions(size_t index) const;
 
-    virtual bool setSelectedIndex(size_t index) override;
+    virtual bool setSelectedIndex(size_t option) override;
     virtual bool setSelectedIdentifier(std::string_view identifier) override;
     virtual bool setSelectedDisplayName(std::string_view name) override;
 

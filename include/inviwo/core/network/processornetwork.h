@@ -148,7 +148,7 @@ public:
      * @see addProcessor()
      */
     std::shared_ptr<Processor> removeProcessor(Processor* processor);
-    std::shared_ptr<Processor> removeProcessor(std::string_view processor);
+    std::shared_ptr<Processor> removeProcessor(std::string_view identifier);
     ///@}
 
     /**
@@ -206,7 +206,7 @@ public:
      * @param[in] destPort The inport.
      * @see removeConnection()
      */
-    void addConnection(Outport* sourcePort, Inport* destPort);
+    void addConnection(Outport* src, Inport* dst);
 
     /**
      * @brief Add a PortConnection to the ProcessorNetwork.
@@ -221,7 +221,7 @@ public:
     /**
      * Check if sourcePort can be connected to destPort
      */
-    static bool canConnect(const Outport* sourcePort, const Inport* destPort);
+    static bool canConnect(const Outport* src, const Inport* dst);
 
     /**
      * @brief Removes a PortConnection from the ProcessorNetwork.
@@ -232,7 +232,7 @@ public:
      * @param[in] destPort The inport.
      * @see addConnection()
      */
-    void removeConnection(Outport* sourcePort, Inport* destPort);
+    void removeConnection(Outport* src, Inport* dst);
 
     /**
      * @brief Removes a PortConnection from the ProcessorNetwork.
@@ -252,7 +252,7 @@ public:
      * @return Weather the two port are connected
      * @see addConnection()
      */
-    bool isConnected(Outport* sourcePort, Inport* destPort) const;
+    bool isConnected(Outport* src, Inport* dst) const;
 
     /**
      * @brief Checks whether two port are connected.
@@ -301,7 +301,7 @@ public:
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
      */
-    void addLink(Property* source, Property* destination);
+    void addLink(Property* src, Property* dst);
 
     /**
      * @brief Create and add Property Link to the network.
@@ -314,7 +314,7 @@ public:
     /**
      * @brief Check if source can be linked to destination
      */
-    bool canLink(const Property* source, const Property* destination) const;
+    bool canLink(const Property* src, const Property* dst) const;
 
     /**
      * Remove and delete Property Link from the network
@@ -322,7 +322,7 @@ public:
      * @param[in] source Property at which link starts
      * @param[in] destination Property at which link ends
      */
-    void removeLink(Property* source, Property* destination);
+    void removeLink(Property* src, Property* dst);
 
     /**
      * Remove and delete Property Link from the network
@@ -338,7 +338,7 @@ public:
      * @param[in] destination Property at which link ends
      * @return True if link exists otherwise returns false
      */
-    bool isLinked(Property* source, Property* destination) const;
+    bool isLinked(Property* src, Property* dst) const;
 
     /**
      * Check whether Property Link exists
@@ -376,7 +376,7 @@ public:
      * @param[in] destination Property at which link ends
      * @return void
      */
-    bool isLinkedBidirectional(Property* source, Property* destination) const;
+    bool isLinkedBidirectional(Property* src, Property* dst) const;
 
     std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink> getLinksBetweenProcessors(Processor* p1, Processor* p2);
@@ -458,7 +458,7 @@ public:
      * @brief Accept a NetworkVisitor, the visitor will visit each Processor of the Network in an
      * undefined order. The Visitor will then visit each processors Properties and so on.
      */
-    void accept(NetworkVisitor& visor);
+    void accept(NetworkVisitor& visitor);
 
     int runningBackgroundJobs() const { return backgoundJobs_; }
 

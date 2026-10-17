@@ -47,7 +47,7 @@ public:
 
 private:
     bool registerFile(const std::filesystem::path& filename);
-    virtual void fileChanged(const std::filesystem::path& filename) override;
+    virtual void fileChanged(const std::filesystem::path& changed) override;
 
     InviwoApplication* app_;
     std::filesystem::path directory_;

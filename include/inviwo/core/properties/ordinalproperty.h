@@ -222,7 +222,7 @@ public:
     ConstraintBehavior getMaxConstraintBehaviour() const;
 
     const T& getIncrement() const;
-    void setIncrement(const T& value);
+    void setIncrement(const T& newInc);
 
     void set(const OrdinalProperty* srcProperty);
     virtual void set(const Property* src) override;

@@ -88,7 +88,7 @@ public:
     std::string_view currentProcessorCId() const;
 
 protected:
-    virtual QVariant loadResource(int type, const QUrl& name) override;
+    virtual QVariant loadResource(int type, const QUrl& resourceUrl) override;
 
 private:
     InviwoApplication* app_;

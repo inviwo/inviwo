@@ -88,7 +88,7 @@ public:
     virtual std::string_view getClassIdentifier() const = 0;
 
     virtual void updateFrom(const Camera& source);
-    virtual void configureProperties(CameraProperty& cameraProperty, bool attach);
+    virtual void configureProperties(CameraProperty& cp, bool attach);
 
     const dvec3& getLookFrom() const;
     virtual void setLookFrom(dvec3 val);

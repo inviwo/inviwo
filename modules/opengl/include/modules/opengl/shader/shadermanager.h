@@ -70,7 +70,7 @@ public:
     void addShaderSearchPath(const std::filesystem::path& path);
     const std::vector<std::filesystem::path>& getShaderSearchPaths();
 
-    void addShaderResource(std::string key, std::string resource);
+    void addShaderResource(std::string key, std::string src);
     void addShaderResource(std::unique_ptr<ShaderResource> resource);
     void addShaderResource(std::shared_ptr<ShaderResource> resource);
     std::shared_ptr<ShaderResource> getShaderResource(std::string_view key);

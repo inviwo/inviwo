@@ -60,7 +60,7 @@ public:
     static constexpr std::string_view classIdentifier{"SkewedPerspectiveCamera"};
 
     virtual void updateFrom(const Camera& source) override;
-    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
+    virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
     double getFovy() const;
     void setFovy(double val);

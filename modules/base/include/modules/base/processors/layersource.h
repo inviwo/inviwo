@@ -51,8 +51,8 @@ public:
     explicit LayerSource(InviwoApplication* app, const std::filesystem::path& filePath = "");
     virtual ~LayerSource() = default;
 
-    virtual void dataLoaded(std::shared_ptr<Layer> layer) override;
-    virtual void dataDeserialized(std::shared_ptr<Layer> layer) override;
+    virtual void dataLoaded(std::shared_ptr<Layer> data) override;
+    virtual void dataDeserialized(std::shared_ptr<Layer> data) override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
