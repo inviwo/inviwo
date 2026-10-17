@@ -41,23 +41,31 @@ namespace inviwo {
 
 using namespace util;
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-static T minv() {
+template <typename T>
+static T minv()
+    requires std::is_floating_point<T>::value
+{
     return T{0.0};
 }
 
-template <typename T, typename std::enable_if<!std::is_floating_point<T>::value, int>::type = 0>
-static T minv() {
+template <typename T>
+static T minv()
+    requires(!std::is_floating_point<T>::value)
+{
     return std::numeric_limits<T>::lowest();
 }
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-static T maxv() {
+template <typename T>
+static T maxv()
+    requires std::is_floating_point<T>::value
+{
     return T{1.0};
 }
 
-template <typename T, typename std::enable_if<!std::is_floating_point<T>::value, int>::type = 0>
-static T maxv() {
+template <typename T>
+static T maxv()
+    requires(!std::is_floating_point<T>::value)
+{
     return std::numeric_limits<T>::max();
 }
 

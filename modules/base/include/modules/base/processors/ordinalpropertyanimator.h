@@ -141,15 +141,19 @@ std::string_view OrdinalAnimationProperty<T>::getClassIdentifier() const {
 }
 
 namespace detail {
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-T pbc(const T& val, const T& min, const T& max) {
+template <typename T>
+T pbc(const T& val, const T& min, const T& max)
+    requires(util::rank<T>::value == 1)
+{
     const auto minmask = glm::lessThan(val, min);
     const auto maxmask = glm::greaterThanEqual(val, max);
     const auto range = max - min;
     return val + T{minmask} * range - T{maxmask} * range;
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-T pbc(const T& val, const T& min, const T& max) {
+template <typename T>
+T pbc(const T& val, const T& min, const T& max)
+    requires(util::rank<T>::value == 0)
+{
     if (val < min) {
         return val + (max - min);
     } else if (val >= max) {
@@ -159,15 +163,19 @@ T pbc(const T& val, const T& min, const T& max) {
     }
 }
 
-template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-T mirror(const T& val, const T& min, const T& max) {
+template <typename T>
+T mirror(const T& val, const T& min, const T& max)
+    requires(util::rank<T>::value == 1)
+{
     const auto minmask = glm::lessThan(val, min);
     const auto maxmask = glm::greaterThanEqual(val, max);
     const auto mask = minmask || maxmask;
     return T{-1} * T{mask} + (T{1} - T{mask});
 }
-template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
-T mirror(const T& val, const T& min, const T& max) {
+template <typename T>
+T mirror(const T& val, const T& min, const T& max)
+    requires(util::rank<T>::value == 0)
+{
     if (val < min || val > max) {
         return T{-1};
     } else {

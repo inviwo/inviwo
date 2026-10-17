@@ -79,26 +79,28 @@ static std::vector<Result> convert(const T* data, const size_t size, const T min
     return newData;
 }
 
-template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<std::is_same<valueType, bool>::value>::type>
+template <typename T, typename valueType = typename util::value_type<T>::type>
 static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
-    -> std::vector<typename util::same_extent<T, unsigned char>::type> {
+    -> std::vector<typename util::same_extent<T, unsigned char>::type>
+    requires std::is_same<valueType, bool>::value
+{
     using T2 = typename util::same_extent<T, unsigned char>::type;
     return convert<T2>(data, size, min, max);
 }
 
-template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_same<valueType, bool>::value &&
-                                             std::is_integral<valueType>::value>::type>
+template <typename T, typename valueType = typename util::value_type<T>::type>
 static auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
-    -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
+    -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type>
+    requires(!std::is_same<valueType, bool>::value && std::is_integral<valueType>::value)
+{
     using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
     return convert<T2>(data, size, min, max);
 }
 
-template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_integral<valueType>::value>::type>
-static auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
+template <typename T, typename valueType = typename util::value_type<T>::type>
+static auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T>
+    requires(!std::is_integral<valueType>::value)
+{
     return {};
 }
 

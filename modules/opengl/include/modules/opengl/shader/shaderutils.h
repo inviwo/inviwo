@@ -194,12 +194,16 @@ void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property) {
 }
 
 namespace detail {
-template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-T getOptionValue(const OptionProperty<T>& prop) {
+template <typename T>
+T getOptionValue(const OptionProperty<T>& prop)
+    requires(!std::is_enum<T>::value)
+{
     return prop.get();
 }
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-auto getOptionValue(const OptionProperty<T>& prop) -> typename std::underlying_type<T>::type {
+template <typename T>
+auto getOptionValue(const OptionProperty<T>& prop) -> typename std::underlying_type<T>::type
+    requires std::is_enum<T>::value
+{
     return static_cast<typename std::underlying_type<T>::type>(prop.get());
 }
 }  // namespace detail
@@ -216,12 +220,16 @@ void setShaderUniforms(Shader& shader, const MinMaxProperty<T>& property, std::s
     shader.setUniform(name, property.get());
 }
 
-template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
-void setShaderUniforms(Shader& shader, const T& property) {
+template <typename T>
+void setShaderUniforms(Shader& shader, const T& property)
+    requires std::is_base_of<Property, T>::value
+{
     setShaderUniforms(shader, property, property.getIdentifier());
 }
-template <typename T, typename std::enable_if<std::is_base_of<Port, T>::value, int>::type = 0>
-void setShaderUniforms(Shader& shader, const T& port) {
+template <typename T>
+void setShaderUniforms(Shader& shader, const T& port)
+    requires std::is_base_of<Port, T>::value
+{
     setShaderUniforms(shader, port, port.getIdentifier() + "Parameters");
 }
 

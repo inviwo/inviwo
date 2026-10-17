@@ -80,8 +80,10 @@ IVW_MODULE_PLOTTING_API std::ostream& operator<<(std::ostream& os, RegresionResu
  * @return values below the percentage given by the percentiles.
  * @throw Exception if any percentile is less than 0 or larger than 1
  */
-template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
-std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
+template <typename T>
+std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles)
+    requires(!util::is_floating_point<T>::value)
+{
     std::sort(data.begin(), data.end());
     std::vector<T> result;
     result.reserve(percentiles.size());
@@ -98,8 +100,10 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
 }
 
 // Float/double types have special values
-template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
-std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
+template <typename T>
+std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles)
+    requires util::is_floating_point<T>::value
+{
     const auto noNaN =
         std::partition(data.begin(), data.end(), [](const auto& a) { return glm::isnan(a); });
     std::sort(noNaN, data.end());

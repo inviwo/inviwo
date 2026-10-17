@@ -45,19 +45,22 @@
 #include <utility>
 
 template <size_t n, typename... T>
-static typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&,
-                                                                      const std::tuple<T...>&) {}
+static void print_tuple(std::ostream&, const std::tuple<T...>&)
+    requires(n >= sizeof...(T))
+{}
 
 template <size_t n, typename... T>
-static typename std::enable_if<(n > 0 && n < sizeof...(T))>::type print_tuple(
-    std::ostream& os, const std::tuple<T...>& tup) {
+static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+    requires(n > 0 && n < sizeof...(T))
+{
     os << ", " << std::get<n>(tup);
     print_tuple<n + 1>(os, tup);
 }
 
 template <size_t n, typename... T>
-static typename std::enable_if<(n == 0)>::type print_tuple(std::ostream& os,
-                                                           const std::tuple<T...>& tup) {
+static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+    requires(n == 0)
+{
     os << std::get<n>(tup);
     print_tuple<n + 1>(os, tup);
 }
