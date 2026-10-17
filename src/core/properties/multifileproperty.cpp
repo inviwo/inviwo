@@ -36,6 +36,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/docutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
@@ -46,7 +48,7 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
     , files_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
@@ -59,7 +61,8 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : MultiFileProperty(identifier, displayName, {}, value, AcceptMode::Open,
-                        FileMode::ExistingFiles, contentType, invalidationLevel, semantics) {}
+                        FileMode::ExistingFiles, contentType, invalidationLevel,
+                        std::move(semantics)) {}
 
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::filesystem::path>& value) {
     set(value);

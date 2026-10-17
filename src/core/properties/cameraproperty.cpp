@@ -48,6 +48,7 @@
 
 #include <limits>
 #include <numbers>
+#include <utility>
 
 namespace inviwo {
 
@@ -57,7 +58,8 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                Document help, std::function<std::optional<dmat4>()> getBoundingBox,
                                dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics)}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
     , cameraType_("cameraType", "Camera Type",
                   [&]() {

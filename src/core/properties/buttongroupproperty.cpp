@@ -30,6 +30,8 @@
 #include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/util/zip.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view ButtonGroupProperty::getClassIdentifier() const { return classIdentifier; }
@@ -38,7 +40,7 @@ ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::strin
                                          Document help, std::vector<Button> buttons,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
-    : Property(identifier, displayName, {}, invalidationLevel, semantics)
+    : Property(identifier, displayName, {}, invalidationLevel, std::move(semantics))
     , buttons_{std::move(buttons)}
     , partialHelp_{std::move(help)} {
     setValid();  // the initial state for a button should be valid
@@ -70,20 +72,20 @@ ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::strin
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : ButtonGroupProperty(identifier, displayName, Document{}, std::vector<Button>{},
-                          invalidationLevel, semantics) {}
+                          invalidationLevel, std::move(semantics)) {}
 
 ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                                          Document help, InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : ButtonGroupProperty(identifier, displayName, std::move(help), std::vector<Button>{},
-                          invalidationLevel, semantics) {}
+                          invalidationLevel, std::move(semantics)) {}
 
 ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
                                          std::vector<Button> buttons,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : ButtonGroupProperty(identifier, displayName, Document{}, std::move(buttons),
-                          invalidationLevel, semantics) {}
+                          invalidationLevel, std::move(semantics)) {}
 
 ButtonGroupProperty::ButtonGroupProperty(const ButtonGroupProperty& rhs)
     : Property(rhs), buttons_{}, partialHelp_{rhs.partialHelp_} {

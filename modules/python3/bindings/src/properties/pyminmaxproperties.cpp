@@ -43,6 +43,7 @@
 
 #include <fmt/format.h>
 #include <glm/gtx/io.hpp>
+#include <utility>
 
 namespace py = pybind11;
 
@@ -62,7 +63,8 @@ struct MinMaxHelper {
                              const T& rangeMax, const T& increment, const T& minSeparation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, std::move(help), valueMin, valueMax, rangeMin,
-                                  rangeMax, increment, minSeparation, invalidationLevel, semantics);
+                                  rangeMax, increment, minSeparation, invalidationLevel,
+                                  std::move(semantics));
                  }),
                  py::arg("identifier"), py::arg("name"), py::arg("help"),
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),
@@ -77,7 +79,8 @@ struct MinMaxHelper {
                              const T& increment, const T& minSeparation,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
-                                  increment, minSeparation, invalidationLevel, semantics);
+                                  increment, minSeparation, invalidationLevel,
+                                  std::move(semantics));
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),

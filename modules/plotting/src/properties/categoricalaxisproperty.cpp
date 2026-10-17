@@ -59,7 +59,7 @@ std::string_view CategoricalAxisProperty::getClassIdentifier() const { return cl
 CategoricalAxisProperty::CategoricalAxisProperty(
     std::string_view identifier, std::string_view displayName, std::vector<std::string> categories,
     Orientation orientation, InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , visible_{"visible", "Visible", true}
     , color_{"color", "Color",
              util::ordinalColor(vec4{0.0f, 0.0f, 0.0f, 1.0f}).set("Color of the axis"_help)}

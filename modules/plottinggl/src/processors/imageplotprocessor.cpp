@@ -167,7 +167,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     rangeMode_.onChange([this]() { adjustRanges(); });
 
     customRanges_.readonlyDependsOn(
-        rangeMode_, [](auto p) { return p.getSelectedValue() != AxisRangeMode::Custom; });
+        rangeMode_, [](const auto& p) { return p.getSelectedValue() != AxisRangeMode::Custom; });
     customRanges_.setReadOnly(rangeMode_.getSelectedValue() != AxisRangeMode::Custom);
 
     viewManager_.push_back(viewport_);

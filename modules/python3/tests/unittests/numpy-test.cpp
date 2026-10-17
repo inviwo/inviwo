@@ -87,7 +87,7 @@ TEST(Python3Scripts, SimpleBufferTest) {
     bool status = false;
     script.run({{"intBuffer", pybind11::cast(static_cast<BufferBase*>(&intBuffer),
                                              pybind11::return_value_policy::reference)}},
-               [&](pybind11::dict dict) {
+               [&](const pybind11::dict& dict) {
                    status = true;
 
                    EXPECT_EQ(1, pybind11::cast<int>(dict["a"])) << "Simple buffer test: read value";
@@ -108,7 +108,7 @@ protected:
     virtual void SetUp() {}
     virtual void TearDown() {}
 
-    static void testBuffer(std::string numbers, size_t components) {
+    static void testBuffer(const std::string& numbers, size_t components) {
         std::stringstream src;
         src << "import numpy as np" << '\n';
         src << "a = np.array(" << numbers << " , dtype = np." << GetParam() << " )" << '\n';
@@ -116,7 +116,7 @@ protected:
         PythonScript s;
         s.setSource(src.str());
         bool status = false;
-        s.run([&](pybind11::dict dict) {
+        s.run([&](const pybind11::dict& dict) {
             ASSERT_TRUE(dict.contains("a"));
 
             const auto ob = dict["a"];
@@ -142,7 +142,7 @@ protected:
         EXPECT_TRUE(status);
     }
 
-    static void testLayer(std::string numbers, std::string shape, size_t components) {
+    static void testLayer(const std::string& numbers, const std::string& shape, size_t components) {
         std::stringstream src;
         src << "import numpy as np" << '\n';
         src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << '\n';
@@ -151,7 +151,7 @@ protected:
         PythonScript s;
         s.setSource(src.str());
         bool status = false;
-        s.run([&](pybind11::dict dict) {
+        s.run([&](const pybind11::dict& dict) {
             ASSERT_TRUE(dict.contains("a"));
 
             const auto ob = dict["a"];
@@ -178,7 +178,8 @@ protected:
 
         EXPECT_TRUE(status);
     }
-    static void testVolume(std::string numbers, std::string shape, size_t components) {
+    static void testVolume(const std::string& numbers, const std::string& shape,
+                           size_t components) {
 
         std::stringstream src;
         src << "import numpy as np" << '\n';
@@ -188,7 +189,7 @@ protected:
         PythonScript s;
         s.setSource(src.str());
         bool status = false;
-        s.run([&](pybind11::dict dict) {
+        s.run([&](const pybind11::dict& dict) {
             ASSERT_TRUE(dict.contains("a"));
 
             const auto ob = dict["a"];

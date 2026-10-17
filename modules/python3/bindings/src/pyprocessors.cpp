@@ -168,9 +168,10 @@ void exposeProcessors(pybind11::module& m) {
     py::classh<ProcessorFactory>(m, "ProcessorFactory")
         .def("hasKey", &ProcessorFactory::hasKey)
         .def_property_readonly("keys", &ProcessorFactory::getKeys)
-        .def("create", [](ProcessorFactory* pf, std::string key) { return pf->createShared(key); })
         .def("create",
-             [](ProcessorFactory* pf, std::string key, ivec2 pos) {
+             [](ProcessorFactory* pf, const std::string& key) { return pf->createShared(key); })
+        .def("create",
+             [](ProcessorFactory* pf, const std::string& key, ivec2 pos) {
                  auto p = pf->createShared(key);
                  if (!p) {
                      throw py::key_error("failed to create processor of type '" + key + "'");

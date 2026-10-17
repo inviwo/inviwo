@@ -30,6 +30,8 @@
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace inviwo {
 
 MouseInteractionEvent::MouseInteractionEvent(MouseButtons buttonState, KeyModifiers modifiers,
@@ -81,7 +83,7 @@ void MouseInteractionEvent::setMouseCursor(MouseCursor cursor) const {
 }
 
 void MouseInteractionEvent::setMouseCursorCallback(MouseCursorCallback callback) {
-    mousecursor_ = callback;
+    mousecursor_ = std::move(callback);
 }
 auto MouseInteractionEvent::getMouseCursorCallback() const -> const MouseCursorCallback& {
     return mousecursor_;

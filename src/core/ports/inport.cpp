@@ -35,6 +35,8 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/network/networkutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 Inport::Inport(std::string_view identifier, Document help)
@@ -115,32 +117,32 @@ void Inport::callOnChangeIfChanged() const {
 }
 
 const BaseCallBack* Inport::onChange(std::function<void()> lambda) {
-    return onChangeCallback_.addLambdaCallback(lambda);
+    return onChangeCallback_.addLambdaCallback(std::move(lambda));
 }
 
 std::shared_ptr<std::function<void()>> Inport::onChangeScoped(std::function<void()> lambda) {
-    return onChangeCallback_.addLambdaCallbackRaii(lambda);
+    return onChangeCallback_.addLambdaCallbackRaii(std::move(lambda));
 }
 
 void Inport::removeOnChange(const BaseCallBack* callback) { onChangeCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
-    return onConnectCallback_.addLambdaCallback(lambda);
+    return onConnectCallback_.addLambdaCallback(std::move(lambda));
 }
 void Inport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
-    return onDisconnectCallback_.addLambdaCallback(lambda);
+    return onDisconnectCallback_.addLambdaCallback(std::move(lambda));
 }
 void Inport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
 }
 
 std::shared_ptr<std::function<void()>> Inport::onConnectScoped(std::function<void()> lambda) {
-    return onConnectCallback_.addLambdaCallbackRaii(lambda);
+    return onConnectCallback_.addLambdaCallbackRaii(std::move(lambda));
 }
 std::shared_ptr<std::function<void()>> Inport::onDisconnectScoped(std::function<void()> lambda) {
-    return onDisconnectCallback_.addLambdaCallbackRaii(lambda);
+    return onDisconnectCallback_.addLambdaCallbackRaii(std::move(lambda));
 }
 
 std::shared_ptr<std::function<void(Outport*)>> Inport::onConnectScoped(

@@ -50,6 +50,7 @@
 #include <fmt/format.h>
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace inviwo {
 
@@ -59,7 +60,7 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
                                                std::string_view displayName, dvec2 range,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, std::move(semantics))
     , header_{"header", "Header"}
     , type_{"type", "Type"}
     , range_("range", "Range", range.x, range.y, -DataFloat64::max(), DataFloat64::max(), 0.0, 0.0,

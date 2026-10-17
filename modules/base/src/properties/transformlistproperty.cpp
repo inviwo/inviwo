@@ -51,6 +51,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace inviwo {
 
@@ -71,7 +72,8 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
                   std::make_unique<transform::PortTransformProperty>("port", "Inport Matrix"));
               return v;
           }(),
-          0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel, semantics) {}
+          0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel,
+          std::move(semantics)) {}
 
 std::string_view TransformationList::getClassIdentifier() const { return classIdentifier; }
 TransformationList* TransformationList::clone() const { return new TransformationList(*this); }
@@ -135,7 +137,7 @@ namespace transform {
 TransformProperty::TransformProperty(std::string_view identifier, std::string_view displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics) {}
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics)) {}
 
 std::string_view TranslateProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -144,7 +146,7 @@ TranslateProperty::TranslateProperty(std::string_view identifier, std::string_vi
                                      const dvec3& maxValue, const dvec3& increment,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , translate("translate_", "Translate", value, {minValue, ConstraintBehavior::Ignore},
                 {maxValue, ConstraintBehavior::Ignore}, increment) {
     translate.setSemantics(PropertySemantics::SpinBox);
@@ -167,7 +169,7 @@ RotateProperty::RotateProperty(std::string_view identifier, std::string_view dis
                                const double minAngle, const double maxAngle, const double increment,
                                AngleMeasure angleMeasure, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
-    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , mode("mode", "Angle Measure",
            {{"rad", "Radians", AngleMeasure::Radians}, {"deg", "Degrees", AngleMeasure::Degrees}})
     , axis("axis", "Axis", glm::normalize(axisValue), dvec3{-1.0}, dvec3{1.0})
@@ -216,7 +218,7 @@ ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displ
                              const dvec3& value, const dvec3& minValue, const dvec3& maxValue,
                              const dvec3& increment, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
-    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , scale("scale", "Scale", value, {minValue, ConstraintBehavior::Ignore},
             {maxValue, ConstraintBehavior::Ignore}, increment) {
     scale.setSemantics(PropertySemantics::SpinBox);
@@ -239,7 +241,7 @@ CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
                                                  const dmat4& increment,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
-    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , matrix("matrix", "Matrix", value, {minValue, ConstraintBehavior::Ignore},
              {maxValue, ConstraintBehavior::Ignore}, increment) {
     matrix.setSemantics(PropertySemantics::SpinBox);
@@ -271,7 +273,7 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
                                              std::string_view displayName,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : TransformProperty(identifier, displayName, invalidationLevel, semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , port{"inport"}
     , matrix{"matrix",
              "Matrix",

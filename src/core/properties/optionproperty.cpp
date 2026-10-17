@@ -31,12 +31,14 @@
 
 #include <fmt/base.h>
 
+#include <utility>
+
 namespace inviwo {
 
 BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
                                        Document help, InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {}
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics)) {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
 

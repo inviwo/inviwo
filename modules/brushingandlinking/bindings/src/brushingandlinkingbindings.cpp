@@ -124,7 +124,7 @@ static void exposeBnL(py::module& m) {
              py::arg("identifier"))
         .def(py::init<std::string_view, std::vector<BrushingTargetsInvalidationLevel>>(),
              py::arg("identifier"), py::arg("invalidationLevels"))
-        .def(py::init([](std::string_view identifier, Document help) {
+        .def(py::init([](std::string_view identifier, const Document& help) {
                  return std::make_shared<BrushingAndLinkingInport>(identifier, help);
              }),
              py::arg("identifier"), py::arg("help"))

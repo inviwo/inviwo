@@ -73,7 +73,7 @@ void exposeBitset(const pybind11::module& m) {
     py::classh<BitSet>(m, "BitSet")
         .def(py::init<>())
         .def(py::init<const std::vector<bool>&>())
-        .def(py::init([](py::list list) {
+        .def(py::init([](const py::list& list) {
             BitSet s{};
             for (auto&& i : list) {
                 s.add(i.cast<uint32_t>());

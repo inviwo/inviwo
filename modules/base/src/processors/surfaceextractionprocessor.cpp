@@ -149,7 +149,7 @@ auto updateIsosurfaceColors(const std::vector<TFPrimitiveData>& isoValues,
 
 void SurfaceExtraction::process() {
     const auto computeSurface = [this](const std::vector<TFPrimitiveData>& isoValues,
-                                       std::shared_ptr<const Volume> vol) {
+                                       const std::shared_ptr<const Volume>& vol) {
         return [vol, method = method_.get(), isoValues, isoValueMode = isoValues_.get().getMode(),
                 invert = invertIso_.get(),
                 enclose = encloseSurface_.get()](pool::Progress progress) -> std::shared_ptr<Mesh> {

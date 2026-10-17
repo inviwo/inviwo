@@ -49,7 +49,7 @@ void SingleFileObserver::start() {
 void SingleFileObserver::stop() { stopFileObservation(filename_); }
 
 const BaseCallBack* SingleFileObserver::onChange(std::function<void()> callback) {
-    return onChangeCallbacks_.addLambdaCallback(callback);
+    return onChangeCallbacks_.addLambdaCallback(std::move(callback));
 }
 
 void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {

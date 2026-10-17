@@ -567,7 +567,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             expandCollapse.addFile(":/svgicons/treelist-collapse.svg", QSize(), QIcon::Normal,
                                    QIcon::On);
 
-            const auto createToolButton = [&](auto text, QIcon icon, auto callback) {
+            const auto createToolButton = [&](auto text, const QIcon& icon, auto callback) {
                 auto* btn = new QToolButton();
                 btn->setToolTip(text);
                 btn->setIcon(icon);

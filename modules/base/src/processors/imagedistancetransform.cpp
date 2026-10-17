@@ -136,7 +136,7 @@ void ImageDistanceTransform::process() {
     };
 
     outport_.clear();
-    dispatchOne(calc, [this](std::shared_ptr<Image> result) {
+    dispatchOne(calc, [this](const std::shared_ptr<Image>& result) {
         imageCache_.add(result);
         outport_.setData(result);
         newResults();

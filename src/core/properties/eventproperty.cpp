@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/eventproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view EventProperty::getClassIdentifier() const { return classIdentifier; }
@@ -36,7 +38,7 @@ std::string_view EventProperty::getClassIdentifier() const { return classIdentif
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, std::unique_ptr<EventMatcher> matcher,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , matcher_{std::move(matcher)}
     , action_{std::move(action)} {}
 
@@ -44,7 +46,7 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
                              Action action, std::unique_ptr<EventMatcher> matcher,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : EventProperty(identifier, displayName, Document{}, std::move(action), std::move(matcher),
-                    invalidationLevel, semantics) {}
+                    invalidationLevel, std::move(semantics)) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, IvwKey key, KeyStates states,
@@ -53,7 +55,7 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
     : EventProperty(
           identifier, displayName, std::move(help), std::move(action),
           std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
-          invalidationLevel, semantics) {}
+          invalidationLevel, std::move(semantics)) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
@@ -62,7 +64,7 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
     : EventProperty(
           identifier, displayName, Document{}, std::move(action),
           std::make_unique<KeyboardEventMatcher>(key, states, modifiers, modifierMatching),
-          invalidationLevel, semantics) {}
+          invalidationLevel, std::move(semantics)) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Document help, Action action, MouseButtons buttons, MouseStates states,
@@ -71,7 +73,7 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
     : EventProperty(
           identifier, displayName, std::move(help), std::move(action),
           std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
-          invalidationLevel, semantics) {}
+          invalidationLevel, std::move(semantics)) {}
 
 EventProperty::EventProperty(std::string_view identifier, std::string_view displayName,
                              Action action, MouseButtons buttons, MouseStates states,
@@ -80,7 +82,7 @@ EventProperty::EventProperty(std::string_view identifier, std::string_view displ
     : EventProperty(
           identifier, displayName, Document{}, std::move(action),
           std::make_unique<MouseEventMatcher>(buttons, states, modifiers, modifierMatching),
-          invalidationLevel, semantics) {}
+          invalidationLevel, std::move(semantics)) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)

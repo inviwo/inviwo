@@ -38,6 +38,7 @@
 #include <algorithm>
 
 #include <glm/common.hpp>
+#include <utility>
 
 namespace inviwo {
 class BufferBase;
@@ -66,7 +67,7 @@ void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<Bu
     if (it != metaData_.end()) {
         throw Exception(SourceContext{}, "Meta data with name already exists: {}", name);
     }
-    metaData_[name] = buffer;
+    metaData_[name] = std::move(buffer);
 }
 
 void IntegralLine::reverse() {

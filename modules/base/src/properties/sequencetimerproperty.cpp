@@ -41,6 +41,7 @@
 
 #include <chrono>
 #include <functional>
+#include <utility>
 
 namespace inviwo {
 class Event;
@@ -51,7 +52,7 @@ SequenceTimerProperty::SequenceTimerProperty(std::string_view identifier,
                                              std::string_view displayName,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false, InvalidationLevel::Valid)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)

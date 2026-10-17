@@ -47,6 +47,7 @@
 
 namespace inviwo {
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/attributes>
 // Allow overriding virtual functions from Python
@@ -122,7 +123,7 @@ public:
 
     bool write(const T* data, const std::filesystem::path& filePath,
                std::optional<FileExtension> ext = std::nullopt) {
-        return factory->writeDataForTypeAndExtension<T>(data, filePath, ext);
+        return factory->writeDataForTypeAndExtension<T>(data, filePath, std::move(ext));
     }
 
 private:

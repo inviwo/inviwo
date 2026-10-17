@@ -37,6 +37,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <modules/fontrendering/properties/fontproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 class FontSettings;
 
@@ -47,7 +49,8 @@ std::string_view PlotTextProperty::getClassIdentifier() const { return classIden
 PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view displayName,
                                    Document help, bool checked, InvalidationLevel invalidationLevel,
                                    PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, help, checked, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, std::move(help), checked, invalidationLevel,
+                            std::move(semantics))
     , title_("title", "Title", "")
     , color_("color", "Color",
              util::ordinalColor(vec4(vec3(0.0f), 1.0f))
@@ -75,7 +78,7 @@ PlotTextProperty::PlotTextProperty(std::string_view identifier, std::string_view
                                    PropertySemantics semantics)
     : PlotTextProperty(identifier, displayName,
                        "Font and alignment settings for text elements of an axis"_help, checked,
-                       invalidationLevel, semantics) {}
+                       invalidationLevel, std::move(semantics)) {}
 
 PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     : BoolCompositeProperty(rhs)

@@ -80,7 +80,8 @@
 namespace inviwo {
 
 namespace {
-pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
+pybind11::object prompt(const std::string& title, const std::string& message,
+                        const std::string& defaultResponse = "") {
 
     bool ok = false;
     const QString text = QInputDialog::getText(

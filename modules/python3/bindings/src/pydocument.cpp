@@ -42,6 +42,7 @@
 #include <modules/python3/polymorphictypehooks.h>
 
 #include <functional>
+#include <utility>
 
 namespace inviwo {
 
@@ -128,7 +129,7 @@ void exposeDocument(pybind11::module& m) {
              [](Document& d,
                 std::function<void(Document::Element*, std::vector<Document::Element*>&)> before,
                 std::function<void(Document::Element*, std::vector<Document::Element*>&)> after)
-                 -> void { d.visit(before, after); });
+                 -> void { d.visit(std::move(before), std::move(after)); });
 
     m.def("md2doc", &util::md2doc);
     m.def("unindentMd2doc", &util::unindentMd2doc);

@@ -30,6 +30,8 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/util/raiiutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view ButtonProperty::getClassIdentifier() const { return classIdentifier; }
@@ -37,7 +39,7 @@ std::string_view ButtonProperty::getClassIdentifier() const { return classIdenti
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
                                Document help, std::function<void()> callback,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics)) {
     setValid();  // the initial state for a button should be valid
     if (callback) {
         onChange(std::move(callback));
@@ -46,18 +48,20 @@ ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view dis
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : ButtonProperty(identifier, displayName, Document{}, {}, invalidationLevel, semantics) {}
+    : ButtonProperty(identifier, displayName, Document{}, {}, invalidationLevel,
+                     std::move(semantics)) {}
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
                                Document help, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
-    : ButtonProperty(identifier, displayName, std::move(help), {}, invalidationLevel, semantics) {}
+    : ButtonProperty(identifier, displayName, std::move(help), {}, invalidationLevel,
+                     std::move(semantics)) {}
 
 ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view displayName,
                                std::function<void()> callback, InvalidationLevel invalidationLevel,
                                PropertySemantics semantics)
     : ButtonProperty(identifier, displayName, Document{}, std::move(callback), invalidationLevel,
-                     semantics) {}
+                     std::move(semantics)) {}
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 

@@ -168,7 +168,7 @@ BrushingAndLinkingInport::getInvalidationLevels() const {
 
 void BrushingAndLinkingInport::setInvalidationLevels(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
-    manager_.setInvalidationLevels(invalidationLevels);
+    manager_.setInvalidationLevels(std::move(invalidationLevels));
 }
 
 BrushingAndLinkingManager& BrushingAndLinkingInport::getManager() { return manager_; }
@@ -296,7 +296,7 @@ BrushingAndLinkingOutport::getInvalidationLevels() const {
 
 void BrushingAndLinkingOutport::setInvalidationLevels(
     std::vector<BrushingTargetsInvalidationLevel> invalidationLevels) {
-    manager_.setInvalidationLevels(invalidationLevels);
+    manager_.setInvalidationLevels(std::move(invalidationLevels));
 }
 
 void BrushingAndLinkingOutport::serialize(Serializer& s) const {
