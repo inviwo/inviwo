@@ -54,7 +54,7 @@ size2_t ImageRAM::getDimensions() const { return colorLayersRAM_.front()->getDim
 
 bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     const ImageRAM* source = this;
-    ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
+    auto* target = dynamic_cast<ImageRAM*>(targetRep);
 
     if (!target) return false;
 

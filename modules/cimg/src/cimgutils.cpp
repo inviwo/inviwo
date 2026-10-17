@@ -527,7 +527,7 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit)) {
         resUnit = 2;
     }
-    const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
+    const auto resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
     std::uint32_t x = 0;
     std::uint32_t y = 0;

@@ -110,14 +110,14 @@ PythonEditorWidget::PythonEditorWidget(
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("PythonEditorWidgetToolBar");
     mainWindow_->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     setWidget(mainWindow_);
 
-    QSplitter* splitter = new QSplitter(nullptr);
+    auto* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
 
     auto settings = app->getSettingsByType<PythonSyntaxHighlight>();

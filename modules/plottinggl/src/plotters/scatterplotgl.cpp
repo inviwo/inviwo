@@ -540,7 +540,7 @@ void ScatterPlotGL::renderAxis(const size2_t& dims) {
 }
 
 void ScatterPlotGL::objectPicked(PickingEvent* p) {
-    const uint32_t id = static_cast<uint32_t>(p->getPickedId());
+    const auto id = static_cast<uint32_t>(p->getPickedId());
 
     // Show tooltip for current item
     if (properties_.tooltip_ && (p->getHoverState() == PickingHoverState::Move ||

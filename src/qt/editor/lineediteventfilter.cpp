@@ -53,7 +53,7 @@ bool LineEditEventFilter::eventFilter(QObject* obj, QEvent* e) {
                     widget_->setFocus(Qt::ShortcutFocusReason);
                     if (focusAndDown_) {
                         // move cursor down one row
-                        QKeyEvent* keydown =
+                        auto* keydown =
                             new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
                         QCoreApplication::postEvent(widget_, keydown);
                     }

@@ -264,7 +264,7 @@ auto annotationMatcher = [](auto getter) {
     return [getter](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
         const QVariant variant = utilqt::getData(i, Role::Annotations);
         if (variant.isValid()) {
-            const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+            const auto info = qvariant_cast<WorkspaceInfo>(variant);
             return contains(std::invoke(getter, *info.annotations), str);
         } else {
             return false;
@@ -299,7 +299,7 @@ public:
                  [](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
                      const QVariant variant = utilqt::getData(i, Role::Annotations);
                      if (variant.isValid()) {
-                         const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+                         const auto info = qvariant_cast<WorkspaceInfo>(variant);
                          for (const auto& item : info.annotations->getProcessorList()) {
                              if (contains(item.type, str) || contains(item.identifier, str) ||
                                  contains(item.displayName, str)) {
@@ -491,8 +491,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                             const QVariant variant =
                                 utilqt::getData(detailsIndex_, Role::Annotations);
                             if (variant.isValid()) {
-                                const WorkspaceInfo workspaceInfo =
-                                    qvariant_cast<WorkspaceInfo>(variant);
+                                const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
                                 const auto doc =
                                     createDetailsDocument(info, *workspaceInfo.annotations);
                                 details_->setHtml(utilqt::toQString(doc));
@@ -963,7 +962,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     const QFileInfo info(utilqt::getData(index, Role::FilePath).toString());
     const QVariant variant = utilqt::getData(index, Role::Annotations);
     if (variant.isValid()) {
-        const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
+        const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
         const auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
         details_->setHtml(utilqt::toQString(doc));
     } else {

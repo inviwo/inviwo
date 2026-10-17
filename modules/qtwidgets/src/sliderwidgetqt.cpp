@@ -75,7 +75,7 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     , minCB_{ConstraintBehavior::Editable}
     , maxCB_{ConstraintBehavior::Editable} {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
 
     slider_->setOrientation(Qt::Horizontal);
     slider_->setPageStep(1);
@@ -201,7 +201,7 @@ void BaseSliderWidgetQt::updateOutOfBounds() {
 
 bool BaseSliderWidgetQt::eventFilter(QObject* watched, QEvent* event) {
     if (watched == slider_ && event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent* me = static_cast<QMouseEvent*>(event);
+        auto* me = static_cast<QMouseEvent*>(event);
         if (me->button() == Qt::LeftButton && !slider_->isSliderDown() && isEnabled()) {
             const auto newPos = slider_->minimum() + static_cast<double>(me->pos().x()) *
                                                          (slider_->maximum() - slider_->minimum()) /

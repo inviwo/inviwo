@@ -49,7 +49,7 @@ Common functions used in MarchingCubes and MarchingTetrahedron
 namespace marching {
 template <typename T>
 double getValue(const T* src, size3_t pos, size3_t dim, double iso, bool invert) {
-    const double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
+    const auto v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
     return invert ? v - iso : -(v - iso);
 }
 

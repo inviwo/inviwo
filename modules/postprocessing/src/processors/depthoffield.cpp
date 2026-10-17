@@ -291,7 +291,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
             lightField_ = std::make_shared<Volume>(dimLightField, DataFormat<vec4>::get());
             lightFieldDepth_ = std::make_shared<Volume>(dimLightField, DataFormat<float>::get());
         }
-        float* lightFieldDepthData = static_cast<float*>(
+        auto* lightFieldDepthData = static_cast<float*>(
             lightFieldDepth_->getEditableRepresentation<VolumeRAM>()->getData());
         std::fill(lightFieldDepthData,
                   lightFieldDepthData + dimLightField.x * dimLightField.y * dimLightField.z, -1.f);
@@ -305,7 +305,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
         if (!haltonImg_ || haltonImg_->getDimensions().x != simViewCountApprox_.get()) {
             haltonImg_ = std::make_shared<Image>(size2_t(simViewCountApprox_.get(), 1),
                                                  DataFormat<float>::get());
-            float* haltonData = static_cast<float*>(
+            auto* haltonData = static_cast<float*>(
                 haltonImg_->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
             std::copy(haltonX_.begin(), haltonX_.end(), haltonData);
         }
@@ -330,7 +330,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
 
     // Update focus depth and aperture ranges based on the depths in the scene, ignoring
     // background points and including the current value.
-    const float* inputDepthData = static_cast<const float*>(
+    const auto* inputDepthData = static_cast<const float*>(
         img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
     const auto minmax = std::accumulate(
         inputDepthData, inputDepthData + dim.x * dim.y, std::make_pair(1.0f, 0.0f),
@@ -460,8 +460,8 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
                                        double focusDepth, size2_t dim, vec2 cameraPos) {
     const LayerRAM* inColor = img->getRepresentation<ImageRAM>()->getColorLayerRAM();
     const LayerRAM* inDepth = img->getRepresentation<ImageRAM>()->getDepthLayerRAM();
-    VolumeRAM* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
-    VolumeRAM* lightFieldDepth = lightFieldDepth_->getEditableRepresentation<VolumeRAM>();
+    auto* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
+    auto* lightFieldDepth = lightFieldDepth_->getEditableRepresentation<VolumeRAM>();
 
     for (size_t x = 0; x < dim.x; x++) {
         for (size_t y = 0; y < dim.y; y++) {

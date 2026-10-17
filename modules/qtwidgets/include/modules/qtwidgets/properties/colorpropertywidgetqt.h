@@ -110,7 +110,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
     setFocusPolicy(colorLineEdit_->focusPolicy());
     setFocusProxy(colorLineEdit_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(getSpacing());
     setLayout(hLayout);
@@ -131,11 +131,11 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
             [&]() { ordinalProperty_->set(colorLineEdit_->getColor<T>()); });
 
     {
-        QWidget* widget = new QWidget(this);
+        auto* widget = new QWidget(this);
         QSizePolicy policy = widget->sizePolicy();
         policy.setHorizontalStretch(3);
         widget->setSizePolicy(policy);
-        QHBoxLayout* widgetLayout = new QHBoxLayout();
+        auto* widgetLayout = new QHBoxLayout();
         widget->setLayout(widgetLayout);
         widgetLayout->setContentsMargins(0, 0, 0, 0);
         widgetLayout->setSpacing(getSpacing());

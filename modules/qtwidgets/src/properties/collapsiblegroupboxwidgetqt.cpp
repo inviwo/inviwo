@@ -186,7 +186,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
 
     updateFocusPolicy();
 
-    QHBoxLayout* heading = new QHBoxLayout();
+    auto* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(getSpacing());
     heading->addWidget(btnCollapse_);
@@ -195,7 +195,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     heading->addWidget(checkBox_);
     heading->addWidget(resetButton_);
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    auto* layout = new QVBoxLayout();
     setSpacingAndMargins(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);

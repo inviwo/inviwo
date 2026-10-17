@@ -48,7 +48,7 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget(bool intMode)
     , minCB_{ConstraintBehavior::Editable}
     , maxCB_{ConstraintBehavior::Editable} {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
 
     setFocusPolicy(editor_->focusPolicy());
     setFocusProxy(editor_);

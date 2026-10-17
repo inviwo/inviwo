@@ -77,7 +77,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     setFocusPolicy(radius_->focusPolicy());
     setFocusProxy(radius_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
@@ -143,12 +143,12 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     radius_->setMaxValue(glm::length(property_->getMaxValue()),
                          property_->getMaxConstraintBehaviour());
 
-    QWidget* groupBox = new QWidget(this);
+    auto* groupBox = new QWidget(this);
     auto sp = groupBox->sizePolicy();
     sp.setHorizontalStretch(3);
     groupBox->setSizePolicy(sp);
 
-    QGridLayout* layout = new QGridLayout();
+    auto* layout = new QGridLayout();
     groupBox->setLayout(layout);
 
     layout->setContentsMargins(0, 0, 0, 0);

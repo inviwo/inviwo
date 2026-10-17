@@ -91,9 +91,8 @@ TEST(VolumeVoronoi, Voronoi_OneSeedPoint_WholeVolumeHasSameIndex) {
 
         seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
-    const VolumeRAMPrecision<unsigned short>* ramtyped =
-        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
-            volumeVoronoi->getRepresentation<VolumeRAM>());
+    const auto* ramtyped = dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+        volumeVoronoi->getRepresentation<VolumeRAM>());
 
     EXPECT_TRUE(ramtyped != nullptr);
 
@@ -141,9 +140,8 @@ TEST(VolumeVoronoi, Voronoi_TwoSeedPoints_PartitionsVolumeInTwo) {
 
         seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
-    const VolumeRAMPrecision<unsigned short>* ramtyped =
-        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
-            volumeVoronoi->getRepresentation<VolumeRAM>());
+    const auto* ramtyped = dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+        volumeVoronoi->getRepresentation<VolumeRAM>());
 
     EXPECT_TRUE(ramtyped != nullptr);
 
@@ -178,9 +176,8 @@ TEST(VolumeVoronoi, WeightedVoronoi_TwoSeedPointsWithWeights_PartitionsVolumeInT
 
         seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::vector<float>{1.0, 2.0});
 
-    const VolumeRAMPrecision<unsigned short>* ramtyped =
-        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
-            volumeVoronoi->getRepresentation<VolumeRAM>());
+    const auto* ramtyped = dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+        volumeVoronoi->getRepresentation<VolumeRAM>());
 
     EXPECT_TRUE(ramtyped != nullptr);
 
@@ -215,9 +212,8 @@ TEST(VolumeVoronoi, Voronoi_ThreeSeedPoints_PartitionsVolumeInThree) {
 
         seedPoints, /*wrapping*/ clamp3D, /*weights*/ std::nullopt);
 
-    const VolumeRAMPrecision<unsigned short>* ramtyped =
-        dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
-            volumeVoronoi->getRepresentation<VolumeRAM>());
+    const auto* ramtyped = dynamic_cast<const VolumeRAMPrecision<unsigned short>*>(
+        volumeVoronoi->getRepresentation<VolumeRAM>());
 
     EXPECT_TRUE(ramtyped != nullptr);
 

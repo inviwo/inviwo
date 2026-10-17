@@ -58,7 +58,7 @@ IsoValuePropertyWidgetQt::IsoValuePropertyWidgetQt(IsoValueProperty* property)
     setFocusPolicy(btnOpenTF_->focusPolicy());
     setFocusProxy(btnOpenTF_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
     hLayout->addWidget(label_);

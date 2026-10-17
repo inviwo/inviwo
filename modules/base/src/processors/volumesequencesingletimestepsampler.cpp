@@ -114,8 +114,8 @@ void VolumeSequenceSingleTimestepSamplerProcessor::process() {
         }
 
         const auto newRange = util::getTimestampRange(*seq);
-        const float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
-                                           (timestamp_.getMaxValue() - timestamp_.getMinValue()));
+        const auto t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
+                                          (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
         timestamp_.setMinValue(newRange.first);
         timestamp_.setMaxValue(newRange.second);

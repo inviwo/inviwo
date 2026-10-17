@@ -158,7 +158,7 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
     std::shared_ptr<const LayerRAM> source) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    const pybind11::array data = source->dispatch<pybind11::array>([](auto lr) {
+    const auto data = source->dispatch<pybind11::array>([](auto lr) {
         using ValueType = util::PrecisionValueType<decltype(lr)>;
         using CompType = typename util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;

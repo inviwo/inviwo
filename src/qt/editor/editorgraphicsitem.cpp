@@ -128,7 +128,7 @@ void addLayersTable(Document::DocumentHandle& body,
     p.append("b", "Port Inspector", {{"style", "color:white;"}});
     auto t = p.append("table");
     auto tableRow = t.append("tr");
-    const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+    const auto perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
     size_t rowCount = 0;
     for (const auto& [name, layer] : layers) {
         if (rowCount >= perRow) {
