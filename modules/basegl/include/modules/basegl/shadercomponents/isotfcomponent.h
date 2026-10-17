@@ -127,7 +127,7 @@ public:
     std::array<IsoTFProperty, N> isoTFs;
 
 private:
-    VolumeInport* volume_;
+    VolumeInport* volume_{};
 };
 
 }  // namespace inviwo

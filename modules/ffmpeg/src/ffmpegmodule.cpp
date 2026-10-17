@@ -44,7 +44,7 @@ namespace {
 void ffmpeg_log_callback(void* ptr, int level, const char* fmt, va_list vl) {
     if (level > AV_LOG_WARNING) return;
 
-    std::array<char, 1024> line;
+    std::array<char, 1024> line{};
     std::string dynamicLine;
     static int print_prefix = 1;
     std::string_view message;

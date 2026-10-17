@@ -51,7 +51,7 @@ public:
         std::string name;
         std::string shortcut;
         std::string description;
-        bool global;
+        bool global{};
         std::function<bool(std::string_view, const std::any&, const Ts&...)> match;
         std::function<std::any(std::string_view)> onToken = nullptr;
     };

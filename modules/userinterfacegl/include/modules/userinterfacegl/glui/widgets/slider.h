@@ -90,7 +90,7 @@ private:
 
     Texture2DArray* uiTextures_;
     Texture2DArray* grooveTextures_;
-    std::array<int, 9> uiTextureMap_;
+    std::array<int, 9> uiTextureMap_{};
 
     int value_;
     int min_;

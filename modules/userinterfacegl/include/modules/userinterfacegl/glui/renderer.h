@@ -138,7 +138,7 @@ protected:
     vec4 colorHover_;
     vec4 colorDisabled_;
 
-    double scaling_;
+    double scaling_{};
 };
 
 }  // namespace glui

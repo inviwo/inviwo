@@ -55,7 +55,7 @@ public:
     virtual void update(bool) override = 0;
 
 protected:
-    Mesh* owner_;
+    Mesh* owner_{};
 };
 
 }  // namespace inviwo

@@ -135,7 +135,7 @@ private:
     Curve curve_;
 
     LinkDialogPropertyGraphicsItem* startProperty_;
-    LinkDialogPropertyGraphicsItem* endProperty_;
+    LinkDialogPropertyGraphicsItem* endProperty_{};
 
     LinkDialogProcessorGraphicsItem* srcProcessor_;
     LinkDialogProcessorGraphicsItem* dstProcessor_;

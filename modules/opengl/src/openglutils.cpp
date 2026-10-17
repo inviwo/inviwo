@@ -61,7 +61,7 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
             default:                  return static_cast<GLint>(GL_ZERO);
         }
     };
-    std::array<GLint, 4> swizzleMaskGL;
+    std::array<GLint, 4> swizzleMaskGL{};
     std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
     return swizzleMaskGL;
 }

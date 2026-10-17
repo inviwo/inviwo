@@ -59,7 +59,7 @@ private:
     const int handleWidth_ = utilqt::emToPx(this, 1.2);
 
     QPoint basePoint_;
-    int length_;
+    int length_{};
     QRect handleRect_;
     QRect grooveRect_;
     QTransform painterTransform_;

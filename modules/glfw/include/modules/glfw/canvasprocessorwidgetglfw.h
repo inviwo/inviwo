@@ -63,7 +63,7 @@ private:
     virtual void updateOnTop(bool) override;
 
     std::unique_ptr<CanvasGLFW> canvas_;
-    ivec2 screenDimensions_;
+    ivec2 screenDimensions_{};
 };
 
 }  // namespace inviwo

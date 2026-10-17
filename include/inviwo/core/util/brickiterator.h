@@ -171,9 +171,9 @@ public:
     }
 
 private:
-    size3_t current_;
-    size3_t start_;
-    size3_t extent_;
+    size3_t current_{};
+    size3_t start_{};
+    size3_t extent_{};
     util::IndexMapper3D im_;
     Iter iterator_;
 };

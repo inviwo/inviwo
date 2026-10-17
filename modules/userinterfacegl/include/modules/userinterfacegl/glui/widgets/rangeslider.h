@@ -108,7 +108,7 @@ private:
     Texture2DArray* uiTextures_;
     Texture2DArray* centerTextures_;
     Texture2DArray* grooveTextures_;
-    std::array<int, 9> uiTextureMap_;
+    std::array<int, 9> uiTextureMap_{};
 
     bool showGroove_ = true;
     bool flipped_ = false;

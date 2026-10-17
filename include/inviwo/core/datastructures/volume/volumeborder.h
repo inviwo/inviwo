@@ -44,8 +44,8 @@ public:
 
     size3_t llf;
     size3_t urb;
-    size_t numVoxels;
-    bool hasBorder;
+    size_t numVoxels{};
+    bool hasBorder{};
 };
 
 }  // namespace inviwo

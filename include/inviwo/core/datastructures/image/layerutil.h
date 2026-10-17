@@ -54,7 +54,7 @@ glm::vec<4, T> applySwizzleMask(const glm::vec<4, T>& value, const SwizzleMask& 
         }
     };
 
-    glm::vec<4, T> result;
+    glm::vec<4, T> result{};
     for (size_t i = 0; i < 4; ++i) {
         result[i] = swizzle(swizzlemask[i]);
     }

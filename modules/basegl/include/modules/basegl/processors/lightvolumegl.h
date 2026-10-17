@@ -73,10 +73,10 @@ protected:
     struct PropagationParameters {
         FrameBufferObject fbo;
         Texture3D tex;
-        mat4 axisPermutation;
-        mat4 axisPermutationINV;
-        mat4 axisPermutationLight;
-        vec4 permutedLightDirection;
+        mat4 axisPermutation{};
+        mat4 axisPermutationINV{};
+        mat4 axisPermutationLight{};
+        vec4 permutedLightDirection{};
 
         PropagationParameters(vec4 borderColor)
             : fbo{}, tex{makeTex(size3_t{1}, DataUInt8::id(), borderColor)} {}

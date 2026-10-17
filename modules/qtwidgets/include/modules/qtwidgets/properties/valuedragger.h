@@ -77,7 +77,7 @@ private:
     double delta_ = 0.0;
     double currentValue_ = 0.0;
 
-    double increment_;
+    double increment_{};
 };
 
 }  // namespace inviwo

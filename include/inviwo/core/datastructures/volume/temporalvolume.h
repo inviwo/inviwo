@@ -213,7 +213,7 @@ public:
     struct Frame {
         std::shared_ptr<const Volume> a;  //!< frame at or before the requested time
         std::shared_ptr<const Volume> b;  //!< frame at or after the requested time
-        double t;                         //!< blend factor in [0, 1]; 0 == pure a, 1 == pure b
+        double t{};                       //!< blend factor in [0, 1]; 0 == pure a, 1 == pure b
     };
 
     /**

@@ -95,7 +95,7 @@ private:
     ivec2 value_;
     int minSeparation_;
     std::function<std::string(int, int)> formatTooltip_;
-    int lastPos_;
+    int lastPos_{};
 };
 
 }  // namespace inviwo

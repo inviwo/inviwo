@@ -45,7 +45,7 @@ public:
     unsigned int getID() const;
 
 private:
-    unsigned int id_;
+    unsigned int id_{};
 };
 
 }  // namespace inviwo
