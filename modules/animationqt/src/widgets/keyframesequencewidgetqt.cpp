@@ -92,8 +92,8 @@ void KeyframeSequenceWidgetQt::paint(QPainter* painter,
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
     isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
-    QLinearGradient Gradient(0, -trackHeight / 2 + trackHeightNudge, 0,
-                             trackHeight / 2 - trackHeightNudge);
+    QLinearGradient Gradient(0.0, -trackHeight / 2.0 + trackHeightNudge, 0.0,
+                             trackHeight / 2.0 - trackHeightNudge);
     Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(192, 192, 192));
     Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(66, 66, 66));
     const QBrush brush = QBrush(Gradient);

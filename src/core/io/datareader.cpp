@@ -57,6 +57,15 @@ std::ifstream DataReader::open(const std::filesystem::path& path, std::ios_base:
     }
 }
 
+filesystem::FileHandle DataReader::fopen(const std::filesystem::path& path, const char* mode) {
+    checkExists(path);
+    if (auto file = filesystem::FileHandle{path, mode}) {
+        return file;
+    } else {
+        throw FileException(SourceContext{}, "Could not open file: {}", path);
+    }
+}
+
 std::filesystem::path DataReader::downloadAndCacheIfUrl(const std::filesystem::path& url) {
     return net::downloadAndCacheIfUrl(url);
 }
@@ -64,13 +73,13 @@ std::filesystem::path DataReader::downloadAndCacheIfUrl(const std::filesystem::p
 std::ifstream DataReader::openAndCacheIfUrl(const std::filesystem::path& path,
                                             std::ios_base::openmode mode) {
     const auto localPath = net::downloadAndCacheIfUrl(path);
+    return open(localPath, mode);
+}
 
-    checkExists(localPath);
-    if (auto file = std::ifstream(localPath, mode)) {
-        return file;
-    } else {
-        throw FileException(SourceContext{}, "Could not open file: {}", path);
-    }
+filesystem::FileHandle DataReader::fopenAndCacheIfUrl(const std::filesystem::path& path,
+                                                      const char* mode) {
+    const auto localPath = net::downloadAndCacheIfUrl(path);
+    return fopen(localPath, mode);
 }
 
 std::string DataReader::readFileContents(const std::filesystem::path& path) {

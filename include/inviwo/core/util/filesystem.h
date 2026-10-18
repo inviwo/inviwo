@@ -45,6 +45,31 @@ namespace inviwo {
 
 namespace filesystem {
 
+class IVW_CORE_API FileHandle {
+public:
+    FileHandle() = default;
+    explicit FileHandle(FILE* file);
+    FileHandle(const std::filesystem::path& path, const char* mode);
+    FileHandle(const FileHandle&) = delete;
+    FileHandle& operator=(const FileHandle&) = delete;
+
+    FileHandle(FileHandle&& rhs) noexcept;
+    FileHandle& operator=(FileHandle&& rhs) noexcept;
+
+    ~FileHandle();
+
+    FILE* get() const noexcept;
+    operator FILE*() const noexcept;
+    explicit operator bool() const noexcept;
+
+    // Gives up ownership without closing.
+    FILE* release() noexcept;
+    void reset(FILE* file = nullptr) noexcept;
+
+private:
+    FILE* file_ = nullptr;
+};
+
 /**
  * Creates and returns a FILE pointer for the given file name (utf-8 encoded). The call
  * `auto f = filesystem::fopen(filename, mode);` is functionally equivalent to the

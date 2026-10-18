@@ -42,6 +42,10 @@
 
 namespace inviwo {
 
+namespace filesystem {
+class FileHandle;
+}  // namespace filesystem
+
 class MetaDataOwner;
 
 /**
@@ -121,9 +125,12 @@ protected:
      */
     static std::ifstream open(const std::filesystem::path& path,
                               std::ios_base::openmode mode = std::ios_base::in);
-
     static std::ifstream openAndCacheIfUrl(const std::filesystem::path& path,
                                            std::ios_base::openmode mode = std::ios_base::in);
+
+    static filesystem::FileHandle fopen(const std::filesystem::path& path, const char* mode);
+    static filesystem::FileHandle fopenAndCacheIfUrl(const std::filesystem::path& path,
+                                                     const char* mode);
 
     static std::filesystem::path downloadAndCacheIfUrl(const std::filesystem::path& url);
 

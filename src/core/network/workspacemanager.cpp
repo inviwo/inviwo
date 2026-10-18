@@ -283,11 +283,10 @@ void WorkspaceManager::save(const std::filesystem::path& path,
 void WorkspaceManager::load(const std::filesystem::path& path,
                             const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
 
-    FILE* file = filesystem::fopen(path, "rb");
+    auto file = filesystem::FileHandle{path, "rb"};
     if (!file) {
         throw AbortException(SourceContext{}, "Could not open workspace file: {}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
     const long length = [&]() {
         std::fseek(file, 0, SEEK_END);

@@ -75,11 +75,10 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
                                std::stop_token stop) {
     const auto filePath = net::downloadAndCacheIfUrl(path);
 
-    FILE* file = filesystem::fopen(filePath, "rb");
+    auto file = filesystem::FileHandle{filePath, "rb"};
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
     std::fseek(file, static_cast<long>(offset), SEEK_SET);
 

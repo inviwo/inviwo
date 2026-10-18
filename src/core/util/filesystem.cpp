@@ -91,6 +91,32 @@ namespace inviwo {
 
 namespace filesystem {
 
+FileHandle::FileHandle(FILE* file) : file_{file} {}
+
+FileHandle::FileHandle(const std::filesystem::path& path, const char* mode)
+    : file_{filesystem::fopen(path, mode)} {}
+
+FileHandle::FileHandle(FileHandle&& rhs) noexcept : file_{std::exchange(rhs.file_, nullptr)} {}
+FileHandle& FileHandle::operator=(FileHandle&& rhs) noexcept {
+    if (this != &rhs) {
+        reset(std::exchange(rhs.file_, nullptr));
+    }
+    return *this;
+}
+
+FileHandle::~FileHandle() { reset(); }
+
+FILE* FileHandle::get() const noexcept { return file_; }
+FileHandle::operator FILE*() const noexcept { return file_; }
+FileHandle::operator bool() const noexcept { return file_ != nullptr; }
+
+FILE* FileHandle::release() noexcept { return std::exchange(file_, nullptr); }
+
+void FileHandle::reset(FILE* file) noexcept {
+    if (file_) std::fclose(file_);
+    file_ = file;
+}
+
 FILE* fopen(const fs::path& filename, const char* mode) {
 #if defined(_WIN32)
     return _wfopen(filename.c_str(), util::toWstring(mode).c_str());
@@ -683,33 +709,33 @@ const fs::path& getPath(PathType pathType) {
         util::make_array<NumberOfPathTypes>([](auto index) {
             auto result = findBasePath();
             switch (static_cast<PathType>(index)) {
-                case PathType::Data:              result /= "data"; break;
+                case PathType::Data: result /= "data"; break;
 
-                case PathType::Volumes:           result /= "data/volumes"; break;
+                case PathType::Volumes: result /= "data/volumes"; break;
 
-                case PathType::Workspaces:        result /= "data/workspaces"; break;
+                case PathType::Workspaces: result /= "data/workspaces"; break;
 
-                case PathType::PortInspectors:    result /= "data/workspaces/portinspectors"; break;
+                case PathType::PortInspectors: result /= "data/workspaces/portinspectors"; break;
 
-                case PathType::Scripts:           result /= "data/scripts"; break;
+                case PathType::Scripts: result /= "data/scripts"; break;
 
-                case PathType::Images:            result /= "data/images"; break;
+                case PathType::Images: result /= "data/images"; break;
 
-                case PathType::Databases:         result /= "data/databases"; break;
+                case PathType::Databases: result /= "data/databases"; break;
 
-                case PathType::Resources:         result /= "resources"; break;
+                case PathType::Resources: result /= "resources"; break;
 
                 case PathType::TransferFunctions: result /= "data/transferfunctions"; break;
 
-                case PathType::Settings:          result = getInviwoUserSettingsPath(); break;
+                case PathType::Settings: result = getInviwoUserSettingsPath(); break;
 
-                case PathType::Cache:             result = getInviwoUserSettingsPath() / "cache"; break;
+                case PathType::Cache: result = getInviwoUserSettingsPath() / "cache"; break;
 
-                case PathType::Modules:           result = getInviwoUserSettingsPath() / "modules"; break;
-                case PathType::Help:              result /= "data/help"; break;
+                case PathType::Modules: result = getInviwoUserSettingsPath() / "modules"; break;
+                case PathType::Help: result /= "data/help"; break;
 
-                case PathType::Tests:             result /= "tests"; break;
-                default:                          break;
+                case PathType::Tests: result /= "tests"; break;
+                default: break;
             }
             return result.lexically_normal();
         });

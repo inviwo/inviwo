@@ -72,6 +72,22 @@ std::ofstream DataWriter::open(const std::filesystem::path& path,
     return f;
 }
 
+filesystem::FileHandle DataWriter::fopen(const std::filesystem::path& path,
+                                         const char* mode) const {
+    checkOverwrite(path);
+
+    if (!std::filesystem::is_directory(path.parent_path())) {
+        std::filesystem::create_directories(path.parent_path());
+    }
+
+    auto f = filesystem::FileHandle{path, mode};
+    if (!f) {
+        throw FileException(SourceContext{}, "Could not open file {}", path);
+    }
+
+    return f;
+}
+
 void DataWriter::checkOverwrite(const std::filesystem::path& path) const {
     checkOverwrite(path, overwrite_);
 }

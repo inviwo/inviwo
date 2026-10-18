@@ -80,8 +80,8 @@ void KeyframeWidgetQt::paint(QPainter* painter,
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
     isSelected() ? pen.setColor(QColor(66, 66, 132)) : pen.setColor(QColor(66, 66, 66));
-    QRadialGradient Gradient(QPointF(0, 0), trackHeight / 2 - trackHeightNudge,
-                             QPointF(0, -trackHeight / 4));
+    QRadialGradient Gradient(QPointF(0.0, 0.0), trackHeight / 2.0 - trackHeightNudge,
+                             QPointF(0.0, -trackHeight / 4.0));
     Gradient.setColorAt(0, isSelected() ? QColor(63, 184, 255) : QColor(220, 220, 220));
     Gradient.setColorAt(1, isSelected() ? QColor(66, 66, 132) : QColor(128, 128, 128));
     const QBrush brush = QBrush(Gradient);

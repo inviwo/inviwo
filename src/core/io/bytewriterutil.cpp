@@ -46,11 +46,10 @@ namespace inviwo {
 namespace {
 
 void writeUncompressedBytes(const std::filesystem::path& path, const void* source, size_t bytes) {
-    FILE* file = filesystem::fopen(path, "wb");
+    auto file = filesystem::FileHandle{path, "wb"};
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }
-    const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
     if (std::fwrite(source, bytes, 1, file) != 1) {
         throw DataReaderException(SourceContext{}, "Could not write to file: {:?g}", path);
