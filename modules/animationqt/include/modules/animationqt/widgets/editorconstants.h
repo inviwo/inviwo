@@ -39,10 +39,10 @@
 namespace inviwo::animation {
 
 constexpr double trackHeight = 31.0;
-constexpr int trackHeightNudge = 2;
+constexpr double trackHeightNudge = 2.0;
 constexpr int timelineHeight = 25;
-constexpr int keyframeWidth = 15;
-constexpr int keyframeHeight = trackHeight;
+constexpr double keyframeWidth = 15.0;
+constexpr double keyframeHeight = trackHeight;
 constexpr int widthPerSecond = 96;
 
 enum class ItemTypes { Keyframe, KeyframeSequence, ControlTrack, PropertyTrack };
