@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <ostream>
 
@@ -84,83 +85,83 @@ std::string_view enumToStr(Wrapping type) {
                     static_cast<int>(type));
 }
 
-std::istream& operator>>(std::istream& ss, ImageChannel& channel) {
-    char c{0};
-    ss >> c;
+std::optional<ImageChannel> charToImageChannel(char c) {
     switch (c) {
-        case 'r': channel = ImageChannel::Red; break;
-        case 'g': channel = ImageChannel::Green; break;
-        case 'b': channel = ImageChannel::Blue; break;
-        case 'a': channel = ImageChannel::Alpha; break;
-        case '0': channel = ImageChannel::Zero; break;
-        case '1': channel = ImageChannel::One; break;
-        default:  ss.setstate(std::ios_base::failbit); break;
+        case 'r': return ImageChannel::Red;
+        case 'g': return ImageChannel::Green;
+        case 'b': return ImageChannel::Blue;
+        case 'a': return ImageChannel::Alpha;
+        case '0': return ImageChannel::Zero;
+        case '1': return ImageChannel::One;
+        default: return std::nullopt;
     }
-    return ss;
 }
 
-std::istream& operator>>(std::istream& ss, SwizzleMask& mask) {
-    for (auto& c : mask) {
-        ss >> c;
-        if (!ss) return ss;
+std::optional<SwizzleMask> strToSwizzleMask(std::string_view str) {
+    SwizzleMask swizzleMask{};
+    for (auto&& [m, c] : std::views::zip(swizzleMask, str)) {
+        if (auto channel = charToImageChannel(c)) {
+            m = *channel;
+        } else {
+            return std::nullopt;
+        }
     }
-    return ss;
+    return swizzleMask;
 }
 
-std::istream& operator>>(std::istream& ss, InterpolationType& interpolation) {
-    std::string str;
-    ss >> str;
-    str = toLower(str);
-
-    if (str == toLower(fmt::to_string(InterpolationType::Nearest))) {
-        interpolation = InterpolationType::Nearest;
-    } else if (str == toLower(fmt::to_string(InterpolationType::Linear))) {
-        interpolation = InterpolationType::Linear;
-    } else {
-        ss.setstate(std::ios_base::failbit);
+std::optional<ImageType> strToImageType(std::string_view str) {
+    for (auto e : {ImageType::ColorOnly, ImageType::ColorDepth, ImageType::ColorPicking,
+                   ImageType::ColorDepthPicking}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
     }
-
-    return ss;
+    return std::nullopt;
 }
 
-std::istream& operator>>(std::istream& ss, Wrapping& wrapping) {
-    std::string str;
-    ss >> str;
-    str = toLower(str);
-
-    if (str == toLower(fmt::to_string(Wrapping::Mirror))) {
-        wrapping = Wrapping::Mirror;
-    } else if (str == toLower(fmt::to_string(Wrapping::Repeat))) {
-        wrapping = Wrapping::Repeat;
-    } else if (str == toLower(fmt::to_string(Wrapping::Clamp))) {
-        wrapping = Wrapping::Clamp;
-    } else {
-        ss.setstate(std::ios_base::failbit);
+std::optional<LayerType> strToLayerType(std::string_view str) {
+    for (auto e : {LayerType::Color, LayerType::Depth, LayerType::Picking}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
     }
-
-    return ss;
+    return std::nullopt;
 }
 
-std::istream& operator>>(std::istream& ss, Wrapping1D& wrapping) {
-    for (auto& w : wrapping) {
-        ss >> w;
-        if (!ss) return ss;
+std::optional<InterpolationType> strToInterpolationType(std::string_view str) {
+    for (auto e : {InterpolationType::Linear, InterpolationType::Nearest}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
     }
-    return ss;
+    return std::nullopt;
 }
-std::istream& operator>>(std::istream& ss, Wrapping2D& wrapping) {
-    for (auto& w : wrapping) {
-        ss >> w;
-        if (!ss) return ss;
+std::optional<Wrapping> strToWrapping(std::string_view str) {
+    for (auto e : {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
     }
-    return ss;
+    return std::nullopt;
 }
-std::istream& operator>>(std::istream& ss, Wrapping3D& wrapping) {
-    for (auto& w : wrapping) {
-        ss >> w;
-        if (!ss) return ss;
+
+namespace {
+template <size_t N>
+std::optional<std::array<Wrapping, N>> strToWrappings(std::string_view str) {
+    std::array<Wrapping, N> wrappings;
+    for (auto&& [wrapping, part] : std::views::zip(wrappings, util::splitIntoArray<N>(str))) {
+        if (auto w = strToWrapping(part)) {
+            wrapping = *w;
+        } else {
+            return std::nullopt;
+        }
     }
-    return ss;
+    return wrappings;
 }
+}  // namespace
+
+std::optional<Wrapping1D> strToWrapping1D(std::string_view str) { return strToWrappings<1>(str); }
+std::optional<Wrapping2D> strToWrapping2D(std::string_view str) { return strToWrappings<2>(str); }
+std::optional<Wrapping3D> strToWrapping3D(std::string_view str) { return strToWrappings<3>(str); }
 
 }  // namespace inviwo
