@@ -201,7 +201,7 @@ Example</h1>
 <div class="line"> </div>
 <div class="line">            const auto data1 = ram1.getView();</div>
 <div class="line">            const auto data2 = ram2.getView();</div>
-<div class="line">            auto dest = sum-&gt;getView();</div>
+<div class="line">            const auto dest = sum-&gt;getView();</div>
 <div class="line"> </div>
 <div class="line">            for (size_t i = 0; data1.size(); ++i) {</div>
 <div class="line">                dest[i] = static_cast&lt;double&gt;(data1[i]) + static_cast&lt;double&gt;(data2[i]);</div>
@@ -342,7 +342,7 @@ Example</h1>
 <div class="line"> </div>
 <div class="line">            <span class="keyword">const</span> <span class="keyword">auto</span> data1 = ram1.getView();</div>
 <div class="line">            <span class="keyword">const</span> <span class="keyword">auto</span> data2 = ram2.getView();</div>
-<div class="line">            <span class="keyword">auto</span> dest = sum-&gt;getView();</div>
+<div class="line">            <span class="keyword">const</span> <span class="keyword">auto</span> dest = sum-&gt;getView();</div>
 <div class="line"> </div>
 <div class="line">            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; data1.size(); ++i) {</div>
 <div class="line">                dest[i] = <span class="keyword">static_cast&lt;</span>T3<span class="keyword">&gt;</span>(data1[i]) + <span class="keyword">static_cast&lt;</span>T3<span class="keyword">&gt;</span>(data2[i]);</div>

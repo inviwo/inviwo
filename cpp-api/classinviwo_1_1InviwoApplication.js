@@ -27,7 +27,7 @@ var classinviwo_1_1InviwoApplication =
     [ "getRepresentationConverterMetaFactory", "classinviwo_1_1InviwoApplication.html#a4722d9367be45849103c38150c997400", null ],
     [ "getRepresentationFactory", "classinviwo_1_1InviwoApplication.html#ac141987b8eb3dcb0b5e276d1ea8041db", null ],
     [ "getRepresentationMetaFactory", "classinviwo_1_1InviwoApplication.html#a0220bbf9e01cd18ae5b9284963a3c363", null ],
-    [ "getResourceManager", "classinviwo_1_1InviwoApplication.html#a425bb3fd4a768be0c58afd987a81a509", null ],
+    [ "getResourceManager", "classinviwo_1_1InviwoApplication.html#a52c0dc87829d08c7e229da564b822473", null ],
     [ "registerModules", "classinviwo_1_1InviwoApplication.html#a093316c6b5f1880f059aea9339281c20", null ],
     [ "registerModules", "classinviwo_1_1InviwoApplication.html#a4d9e61b6e200ce7637e7f51dd28b1982", null ],
     [ "resizePool", "classinviwo_1_1InviwoApplication.html#a3970f722202ce8fcc13a9dc84f5635bd", null ],

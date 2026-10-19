@@ -271,6 +271,15 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 template&lt;typename... Ts&gt; </td></tr>
 <tr class="memitem:a42a4a1ea0cf3fba39671427ae07ae201"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>bind</b> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, Ts &amp;... elements)</td></tr>
 <tr class="separator:a42a4a1ea0cf3fba39671427ae07ae201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad088456149933fd07b3aff2543391de0" id="r_ad088456149933fd07b3aff2543391de0"><td class="memItemLeft" align="right" valign="top"><a id="ad088456149933fd07b3aff2543391de0" name="ad088456149933fd07b3aff2543391de0"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1TextureBase.html">TextureBase</a> &amp;texture, std::string_view samplerID)</td></tr>
+<tr class="separator:ad088456149933fd07b3aff2543391de0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add4efb31f302772c28f4348c0734aa01" id="r_add4efb31f302772c28f4348c0734aa01"><td class="memItemLeft" align="right" valign="top"><a id="add4efb31f302772c28f4348c0734aa01" name="add4efb31f302772c28f4348c0734aa01"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1IsoTFProperty.html">IsoTFProperty</a> &amp;property)</td></tr>
+<tr class="separator:add4efb31f302772c28f4348c0734aa01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a3d2a5723502e350d21f2507121ae19" id="r_a2a3d2a5723502e350d21f2507121ae19"><td class="memItemLeft" align="right" valign="top"><a id="a2a3d2a5723502e350d21f2507121ae19" name="a2a3d2a5723502e350d21f2507121ae19"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> &amp;tf)</td></tr>
+<tr class="separator:a2a3d2a5723502e350d21f2507121ae19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb177a59b711b2216129a8484409a8dc" id="r_afb177a59b711b2216129a8484409a8dc"><td class="memItemLeft" align="right" valign="top"><a id="afb177a59b711b2216129a8484409a8dc" name="afb177a59b711b2216129a8484409a8dc"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1Image.html">Image</a> &amp;image, std::string_view id, ImageType type)</td></tr>
 <tr class="separator:afb177a59b711b2216129a8484409a8dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -289,21 +298,12 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:ac426bf493815776befab910555040fa8" id="r_ac426bf493815776befab910555040fa8"><td class="memItemLeft" align="right" valign="top"><a id="ac426bf493815776befab910555040fa8" name="ac426bf493815776befab910555040fa8"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1DataOutport.html">LayerOutport</a> &amp;outport)</td></tr>
 <tr class="separator:ac426bf493815776befab910555040fa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a390060b0f9d250db981ebc2a778ec175" id="r_a390060b0f9d250db981ebc2a778ec175"><td class="memItemLeft" align="right" valign="top"><a id="a390060b0f9d250db981ebc2a778ec175" name="a390060b0f9d250db981ebc2a778ec175"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1TextureBase.html">TextureBase</a> &amp;texture, std::string_view samplerID)</td></tr>
-<tr class="separator:a390060b0f9d250db981ebc2a778ec175"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affc7263142cf3a28f3c5feffd1a754f9" id="r_affc7263142cf3a28f3c5feffd1a754f9"><td class="memItemLeft" align="right" valign="top"><a id="affc7263142cf3a28f3c5feffd1a754f9" name="affc7263142cf3a28f3c5feffd1a754f9"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume, std::string_view samplerID)</td></tr>
 <tr class="separator:affc7263142cf3a28f3c5feffd1a754f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a137eaf6368e9a58eb402799566b9a97e" id="r_a137eaf6368e9a58eb402799566b9a97e"><td class="memItemLeft" align="right" valign="top"><a id="a137eaf6368e9a58eb402799566b9a97e" name="a137eaf6368e9a58eb402799566b9a97e"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, const <a class="el" href="classinviwo_1_1DataInport.html">VolumeInport</a> &amp;volume)</td></tr>
 <tr class="separator:a137eaf6368e9a58eb402799566b9a97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46bf840cf69ea3b7605e5c33fb2fa042" id="r_a46bf840cf69ea3b7605e5c33fb2fa042"><td class="memItemLeft" align="right" valign="top"><a id="a46bf840cf69ea3b7605e5c33fb2fa042" name="a46bf840cf69ea3b7605e5c33fb2fa042"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1IsoTFProperty.html">IsoTFProperty</a> &amp;property)</td></tr>
-<tr class="separator:a46bf840cf69ea3b7605e5c33fb2fa042"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedd74f323a75dfc21aebaa7b68baeb85" id="r_aedd74f323a75dfc21aebaa7b68baeb85"><td class="memItemLeft" align="right" valign="top"><a id="aedd74f323a75dfc21aebaa7b68baeb85" name="aedd74f323a75dfc21aebaa7b68baeb85"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindAndSetUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a> &amp;tf)</td></tr>
-<tr class="separator:aedd74f323a75dfc21aebaa7b68baeb85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac83556d06e79642ecd60d6ad870af77" id="r_aac83556d06e79642ecd60d6ad870af77"><td class="memItemLeft" align="right" valign="top"><a id="aac83556d06e79642ecd60d6ad870af77" name="aac83556d06e79642ecd60d6ad870af77"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>bindColorTexture</b> (const <a class="el" href="classinviwo_1_1Image.html">Image</a> &amp;image, const <a class="el" href="classinviwo_1_1TextureUnit.html">TextureUnit</a> &amp;texUnit)</td></tr>
 <tr class="separator:aac83556d06e79642ecd60d6ad870af77"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -544,14 +544,49 @@ IVW_MODULE_OPENGL_API bool&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a219ff443aaba1404d17cb887789ca390" id="r_a219ff443aaba1404d17cb887789ca390"><td class="memItemLeft" align="right" valign="top"><a id="a219ff443aaba1404d17cb887789ca390" name="a219ff443aaba1404d17cb887789ca390"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderDefines</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; RaycastingProperty::GradientComputation &gt; &amp;property, bool voxelClassification=false)</td></tr>
 <tr class="separator:a219ff443aaba1404d17cb887789ca390"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad32aae4c7b36ea43224ecebc08e0b527" id="r_ad32aae4c7b36ea43224ecebc08e0b527"><td class="memItemLeft" align="right" valign="top"><a id="ad32aae4c7b36ea43224ecebc08e0b527" name="ad32aae4c7b36ea43224ecebc08e0b527"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, std::string_view name)</td></tr>
-<tr class="separator:ad32aae4c7b36ea43224ecebc08e0b527"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b7c15efc97bf79897b266caa62a145a" id="r_a3b7c15efc97bf79897b266caa62a145a"><td class="memItemLeft" align="right" valign="top"><a id="a3b7c15efc97bf79897b266caa62a145a" name="a3b7c15efc97bf79897b266caa62a145a"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:a3b7c15efc97bf79897b266caa62a145a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0989204ab71fccc9fc50b3dce9a975a" id="r_ad0989204ab71fccc9fc50b3dce9a975a"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0989204ab71fccc9fc50b3dce9a975a">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMapper, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, std::string_view name)</td></tr>
-<tr class="separator:ad0989204ab71fccc9fc50b3dce9a975a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2757af081d79334e2d5053eabd51b8b7" id="r_a2757af081d79334e2d5053eabd51b8b7"><td class="memItemLeft" align="right" valign="top"><a id="a2757af081d79334e2d5053eabd51b8b7" name="a2757af081d79334e2d5053eabd51b8b7"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera, std::string_view name)</td></tr>
+<tr class="separator:a2757af081d79334e2d5053eabd51b8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21fdd909e51b1d4bc5a9813f6bf7390c" id="r_a21fdd909e51b1d4bc5a9813f6bf7390c"><td class="memItemLeft" align="right" valign="top"><a id="a21fdd909e51b1d4bc5a9813f6bf7390c" name="a21fdd909e51b1d4bc5a9813f6bf7390c"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:a21fdd909e51b1d4bc5a9813f6bf7390c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66491eac1f5bdcda8edc94ec739635f4" id="r_a66491eac1f5bdcda8edc94ec739635f4"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66491eac1f5bdcda8edc94ec739635f4">setShaderUniforms</a> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMapper, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format, std::string_view name)</td></tr>
+<tr class="separator:a66491eac1f5bdcda8edc94ec739635f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04e49a1abc40cc01440f79ec1dc370f3" id="r_a04e49a1abc40cc01440f79ec1dc370f3"><td class="memItemLeft" align="right" valign="top"><a id="a04e49a1abc40cc01440f79ec1dc370f3" name="a04e49a1abc40cc01440f79ec1dc370f3"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> &amp;property)</td></tr>
+<tr class="separator:a04e49a1abc40cc01440f79ec1dc370f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ab19faf772034c94d6904521b382140" id="r_a2ab19faf772034c94d6904521b382140"><td class="memItemLeft" align="right" valign="top"><a id="a2ab19faf772034c94d6904521b382140" name="a2ab19faf772034c94d6904521b382140"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:a2ab19faf772034c94d6904521b382140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1190695ccc6d18e367a659ffd25382a" id="r_ad1190695ccc6d18e367a659ffd25382a"><td class="memItemLeft" align="right" valign="top"><a id="ad1190695ccc6d18e367a659ffd25382a" name="ad1190695ccc6d18e367a659ffd25382a"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1LightingState.html">LightingState</a> &amp;state, std::string_view name)</td></tr>
+<tr class="separator:ad1190695ccc6d18e367a659ffd25382a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac689eeefb6e079d1b3f081135803ea14" id="r_ac689eeefb6e079d1b3f081135803ea14"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac689eeefb6e079d1b3f081135803ea14">setShaderUniforms</a> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;map, std::string_view name)</td></tr>
+<tr class="separator:ac689eeefb6e079d1b3f081135803ea14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e028c01048c538005b093e5932dd7d7" id="r_a6e028c01048c538005b093e5932dd7d7"><td class="memItemLeft" align="right" valign="top"><a id="a6e028c01048c538005b093e5932dd7d7" name="a6e028c01048c538005b093e5932dd7d7"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1RaycastingProperty.html">RaycastingProperty</a> &amp;property)</td></tr>
+<tr class="separator:a6e028c01048c538005b093e5932dd7d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26aa4061a60162bb3e598c64535a868d" id="r_a26aa4061a60162bb3e598c64535a868d"><td class="memItemLeft" align="right" valign="top"><a id="a26aa4061a60162bb3e598c64535a868d" name="a26aa4061a60162bb3e598c64535a868d"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1RaycastingProperty.html">RaycastingProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:a26aa4061a60162bb3e598c64535a868d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8762d346f62ef965cbeaa190b4dafc" id="r_aff8762d346f62ef965cbeaa190b4dafc"><td class="memItemLeft" align="right" valign="top"><a id="aff8762d346f62ef965cbeaa190b4dafc" name="aff8762d346f62ef965cbeaa190b4dafc"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1SelectionColorState.html">SelectionColorState</a> &amp;state, std::string_view name)</td></tr>
+<tr class="separator:aff8762d346f62ef965cbeaa190b4dafc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75206e6ecdfe8e364321a5c0ec4f5bdb" id="r_a75206e6ecdfe8e364321a5c0ec4f5bdb"><td class="memItemLeft" align="right" valign="top"><a id="a75206e6ecdfe8e364321a5c0ec4f5bdb" name="a75206e6ecdfe8e364321a5c0ec4f5bdb"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SimpleRaycastingProperty.html">SimpleRaycastingProperty</a> &amp;property)</td></tr>
+<tr class="separator:a75206e6ecdfe8e364321a5c0ec4f5bdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b0227408534d019d43ff2679258f64" id="r_ac0b0227408534d019d43ff2679258f64"><td class="memItemLeft" align="right" valign="top"><a id="ac0b0227408534d019d43ff2679258f64" name="ac0b0227408534d019d43ff2679258f64"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SimpleRaycastingProperty.html">SimpleRaycastingProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:ac0b0227408534d019d43ff2679258f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1793a9418328ff1a6062ca2032485e2" id="r_aa1793a9418328ff1a6062ca2032485e2"><td class="memItemLeft" align="right" valign="top"><a id="aa1793a9418328ff1a6062ca2032485e2" name="aa1793a9418328ff1a6062ca2032485e2"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;object, std::string_view name)</td></tr>
+<tr class="separator:aa1793a9418328ff1a6062ca2032485e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6cee8a5db159e78b72b1ee13945863f" id="r_ad6cee8a5db159e78b72b1ee13945863f"><td class="memItemLeft" align="right" valign="top"><a id="ad6cee8a5db159e78b72b1ee13945863f" name="ad6cee8a5db159e78b72b1ee13945863f"></a>
+IVW_MODULE_BASEGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1StipplingProperty.html">StipplingProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:ad6cee8a5db159e78b72b1ee13945863f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e5a5bf064770b9e76f3d356aa6e200c" id="r_a0e5a5bf064770b9e76f3d356aa6e200c"><td class="memItemLeft" align="right" valign="top"><a id="a0e5a5bf064770b9e76f3d356aa6e200c" name="a0e5a5bf064770b9e76f3d356aa6e200c"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1VolumeIndicatorProperty.html">VolumeIndicatorProperty</a> &amp;property, std::string_view name)</td></tr>
+<tr class="separator:a0e5a5bf064770b9e76f3d356aa6e200c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c61fd525c39ddc92a7ff1d49cc03e11" id="r_a0c61fd525c39ddc92a7ff1d49cc03e11"><td class="memItemLeft" align="right" valign="top"><a id="a0c61fd525c39ddc92a7ff1d49cc03e11" name="a0c61fd525c39ddc92a7ff1d49cc03e11"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Image.html">Image</a> &amp;image, std::string_view samplerID)</td></tr>
 <tr class="separator:a0c61fd525c39ddc92a7ff1d49cc03e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -567,12 +602,6 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a4c4599e15c6615a7aad19e6852e85a48" id="r_a4c4599e15c6615a7aad19e6852e85a48"><td class="memItemLeft" align="right" valign="top"><a id="a4c4599e15c6615a7aad19e6852e85a48" name="a4c4599e15c6615a7aad19e6852e85a48"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1IsoTFProperty.html">IsoTFProperty</a> &amp;property, std::string_view name)</td></tr>
 <tr class="separator:a4c4599e15c6615a7aad19e6852e85a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a325b903be59b0ec4677a78f972c86d15" id="r_a325b903be59b0ec4677a78f972c86d15"><td class="memItemLeft" align="right" valign="top"><a id="a325b903be59b0ec4677a78f972c86d15" name="a325b903be59b0ec4677a78f972c86d15"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> &amp;property)</td></tr>
-<tr class="separator:a325b903be59b0ec4677a78f972c86d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9326a4f4675c2499c09723cf380bb39c" id="r_a9326a4f4675c2499c09723cf380bb39c"><td class="memItemLeft" align="right" valign="top"><a id="a9326a4f4675c2499c09723cf380bb39c" name="a9326a4f4675c2499c09723cf380bb39c"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1IsoValueProperty.html">IsoValueProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:a9326a4f4675c2499c09723cf380bb39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7078d733c744adeeaa67f36b3910579" id="r_af7078d733c744adeeaa67f36b3910579"><td class="memItemLeft" align="right" valign="top"><a id="af7078d733c744adeeaa67f36b3910579" name="af7078d733c744adeeaa67f36b3910579"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;layer, std::string_view samplerID)</td></tr>
 <tr class="separator:af7078d733c744adeeaa67f36b3910579"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -582,9 +611,6 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:aead3c736039d22e5c271b03fe75c12fa" id="r_aead3c736039d22e5c271b03fe75c12fa"><td class="memItemLeft" align="right" valign="top"><a id="aead3c736039d22e5c271b03fe75c12fa" name="aead3c736039d22e5c271b03fe75c12fa"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1DataOutport.html">LayerOutport</a> &amp;outport, std::string_view samplerID=&quot;&quot;)</td></tr>
 <tr class="separator:aead3c736039d22e5c271b03fe75c12fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1dffb030da06b2540affd860d01cb461" id="r_a1dffb030da06b2540affd860d01cb461"><td class="memItemLeft" align="right" valign="top"><a id="a1dffb030da06b2540affd860d01cb461" name="a1dffb030da06b2540affd860d01cb461"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1LightingState.html">LightingState</a> &amp;state, std::string_view name)</td></tr>
-<tr class="separator:a1dffb030da06b2540affd860d01cb461"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60834a15b256786f136d7d4a8484cc7e" id="r_a60834a15b256786f136d7d4a8484cc7e"><td class="memTemplParams" colspan="2"><a id="a60834a15b256786f136d7d4a8484cc7e" name="a60834a15b256786f136d7d4a8484cc7e"></a>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a60834a15b256786f136d7d4a8484cc7e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1MinMaxProperty.html">MinMaxProperty</a>&lt; T &gt; &amp;property, std::string_view name)</td></tr>
@@ -601,38 +627,15 @@ template&lt;typename T &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a75523d0e4b9f78e19b2c657e02fc5ec6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1OrdinalProperty.html">OrdinalProperty</a>&lt; T &gt; &amp;property, std::string_view name)</td></tr>
 <tr class="separator:a75523d0e4b9f78e19b2c657e02fc5ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74da414d1d373950b127ce0d9cf44466" id="r_a74da414d1d373950b127ce0d9cf44466"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74da414d1d373950b127ce0d9cf44466">setShaderUniforms</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1utilgl_1_1RangeConversionMap.html">RangeConversionMap</a> &amp;map, std::string_view name)</td></tr>
-<tr class="separator:a74da414d1d373950b127ce0d9cf44466"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6704a05e550af10168ae0168072a807d" id="r_a6704a05e550af10168ae0168072a807d"><td class="memItemLeft" align="right" valign="top"><a id="a6704a05e550af10168ae0168072a807d" name="a6704a05e550af10168ae0168072a807d"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1RaycastingProperty.html">RaycastingProperty</a> &amp;property)</td></tr>
-<tr class="separator:a6704a05e550af10168ae0168072a807d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0af49f73f35d09fe9f0b775f89651492" id="r_a0af49f73f35d09fe9f0b775f89651492"><td class="memItemLeft" align="right" valign="top"><a id="a0af49f73f35d09fe9f0b775f89651492" name="a0af49f73f35d09fe9f0b775f89651492"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1RaycastingProperty.html">RaycastingProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:a0af49f73f35d09fe9f0b775f89651492"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0db273b94ecc502d5d786b7442d06cf9" id="r_a0db273b94ecc502d5d786b7442d06cf9"><td class="memItemLeft" align="right" valign="top"><a id="a0db273b94ecc502d5d786b7442d06cf9" name="a0db273b94ecc502d5d786b7442d06cf9"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SelectionColorProperty.html">SelectionColorProperty</a> &amp;property)</td></tr>
 <tr class="separator:a0db273b94ecc502d5d786b7442d06cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b09bfe67648f1a018484fb77807e68c" id="r_a7b09bfe67648f1a018484fb77807e68c"><td class="memItemLeft" align="right" valign="top"><a id="a7b09bfe67648f1a018484fb77807e68c" name="a7b09bfe67648f1a018484fb77807e68c"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SelectionColorProperty.html">SelectionColorProperty</a> &amp;property, std::string_view name)</td></tr>
 <tr class="separator:a7b09bfe67648f1a018484fb77807e68c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90f8a967431cef7d3ba8e082c8fbf789" id="r_a90f8a967431cef7d3ba8e082c8fbf789"><td class="memItemLeft" align="right" valign="top"><a id="a90f8a967431cef7d3ba8e082c8fbf789" name="a90f8a967431cef7d3ba8e082c8fbf789"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="structinviwo_1_1SelectionColorState.html">SelectionColorState</a> &amp;state, std::string_view name)</td></tr>
-<tr class="separator:a90f8a967431cef7d3ba8e082c8fbf789"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfb42312532c76f87f5d9b900fbff4b2" id="r_abfb42312532c76f87f5d9b900fbff4b2"><td class="memItemLeft" align="right" valign="top"><a id="abfb42312532c76f87f5d9b900fbff4b2" name="abfb42312532c76f87f5d9b900fbff4b2"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SimpleLightingProperty.html">SimpleLightingProperty</a> &amp;property, std::string_view name)</td></tr>
 <tr class="separator:abfb42312532c76f87f5d9b900fbff4b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab82f1ba8ddb2d9fc28762aef292c6ef3" id="r_ab82f1ba8ddb2d9fc28762aef292c6ef3"><td class="memItemLeft" align="right" valign="top"><a id="ab82f1ba8ddb2d9fc28762aef292c6ef3" name="ab82f1ba8ddb2d9fc28762aef292c6ef3"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SimpleRaycastingProperty.html">SimpleRaycastingProperty</a> &amp;property)</td></tr>
-<tr class="separator:ab82f1ba8ddb2d9fc28762aef292c6ef3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26f771e11e4a5bf890079bc465e503d6" id="r_a26f771e11e4a5bf890079bc465e503d6"><td class="memItemLeft" align="right" valign="top"><a id="a26f771e11e4a5bf890079bc465e503d6" name="a26f771e11e4a5bf890079bc465e503d6"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SimpleRaycastingProperty.html">SimpleRaycastingProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:a26f771e11e4a5bf890079bc465e503d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2193fb56dbbdc6a19ef103c02d2815ea" id="r_a2193fb56dbbdc6a19ef103c02d2815ea"><td class="memItemLeft" align="right" valign="top"><a id="a2193fb56dbbdc6a19ef103c02d2815ea" name="a2193fb56dbbdc6a19ef103c02d2815ea"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1SpatialEntity.html">SpatialEntity</a> &amp;object, std::string_view name)</td></tr>
-<tr class="separator:a2193fb56dbbdc6a19ef103c02d2815ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd28df14060b2680d6321ae97dc9816f" id="r_abd28df14060b2680d6321ae97dc9816f"><td class="memItemLeft" align="right" valign="top"><a id="abd28df14060b2680d6321ae97dc9816f" name="abd28df14060b2680d6321ae97dc9816f"></a>
-IVW_MODULE_BASEGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1StipplingProperty.html">StipplingProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:abd28df14060b2680d6321ae97dc9816f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0d46d17c2260da7d478887a8283f14b" id="r_aa0d46d17c2260da7d478887a8283f14b"><td class="memTemplParams" colspan="2"><a id="aa0d46d17c2260da7d478887a8283f14b" name="aa0d46d17c2260da7d478887a8283f14b"></a>
 template&lt;typename T , typename std::enable_if&lt; std::is_base_of&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a>, T &gt;::value, int &gt;::type  = 0&gt; </td></tr>
 <tr class="memitem:aa0d46d17c2260da7d478887a8283f14b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const T &amp;property)</td></tr>
@@ -648,9 +651,6 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a7762c35b2c0bc9f2c46d3a6ae2e27789" id="r_a7762c35b2c0bc9f2c46d3a6ae2e27789"><td class="memItemLeft" align="right" valign="top"><a id="a7762c35b2c0bc9f2c46d3a6ae2e27789" name="a7762c35b2c0bc9f2c46d3a6ae2e27789"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume, std::string_view samplerID)</td></tr>
 <tr class="separator:a7762c35b2c0bc9f2c46d3a6ae2e27789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0895babdfb00205ca0ad2b61e5b76e5d" id="r_a0895babdfb00205ca0ad2b61e5b76e5d"><td class="memItemLeft" align="right" valign="top"><a id="a0895babdfb00205ca0ad2b61e5b76e5d" name="a0895babdfb00205ca0ad2b61e5b76e5d"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1VolumeIndicatorProperty.html">VolumeIndicatorProperty</a> &amp;property, std::string_view name)</td></tr>
-<tr class="separator:a0895babdfb00205ca0ad2b61e5b76e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66a1fff7ce2795e08a34527413479be2" id="r_a66a1fff7ce2795e08a34527413479be2"><td class="memItemLeft" align="right" valign="top"><a id="a66a1fff7ce2795e08a34527413479be2" name="a66a1fff7ce2795e08a34527413479be2"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>setShaderUniforms</b> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, const <a class="el" href="classinviwo_1_1DataInport.html">VolumeInport</a> &amp;port, std::string_view samplerID)</td></tr>
 <tr class="separator:a66a1fff7ce2795e08a34527413479be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -703,9 +703,9 @@ IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a47d1aad11a29d307fa1372e1a150e6e4" id="r_a47d1aad11a29d307fa1372e1a150e6e4"><td class="memItemLeft" align="right" valign="top"><a id="a47d1aad11a29d307fa1372e1a150e6e4" name="a47d1aad11a29d307fa1372e1a150e6e4"></a>
 IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>unbindTextures</b> (const <a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> &amp;outport)</td></tr>
 <tr class="separator:a47d1aad11a29d307fa1372e1a150e6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add9919fa7af22dffa71df9ba29990264" id="r_add9919fa7af22dffa71df9ba29990264"><td class="memItemLeft" align="right" valign="top"><a id="add9919fa7af22dffa71df9ba29990264" name="add9919fa7af22dffa71df9ba29990264"></a>
-IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>updateAndActivateTarget</b> (<a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> &amp;targetOutport, <a class="el" href="classinviwo_1_1BaseImageInport.html">ImageInport</a> &amp;sourceInport)</td></tr>
-<tr class="separator:add9919fa7af22dffa71df9ba29990264"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3ab2517ad561fd71ea7b95101ca5394" id="r_af3ab2517ad561fd71ea7b95101ca5394"><td class="memItemLeft" align="right" valign="top"><a id="af3ab2517ad561fd71ea7b95101ca5394" name="af3ab2517ad561fd71ea7b95101ca5394"></a>
+IVW_MODULE_OPENGL_API void&#160;</td><td class="memItemRight" valign="bottom"><b>updateAndActivateTarget</b> (<a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> &amp;targetOutport, const <a class="el" href="classinviwo_1_1BaseImageInport.html">ImageInport</a> &amp;sourceInport)</td></tr>
+<tr class="separator:af3ab2517ad561fd71ea7b95101ca5394"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7818ff26d54458b7a3fb47568a57c10" id="r_aa7818ff26d54458b7a3fb47568a57c10"><td class="memItemLeft" align="right" valign="top"><a id="aa7818ff26d54458b7a3fb47568a57c10" name="aa7818ff26d54458b7a3fb47568a57c10"></a>
 IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"><b>validateLineWidth</b> (GLfloat width)</td></tr>
 <tr class="separator:aa7818ff26d54458b7a3fb47568a57c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -792,7 +792,7 @@ IVW_MODULE_OPENGL_API GLfloat&#160;</td><td class="memItemRight" valign="bottom"
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>struct containing the parameters for the data range mapping for <code>format</code> </dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ad0989204ab71fccc9fc50b3dce9a975a">setShaderUniforms(Shader&amp;, const DataMapper&amp;, const DataFormatBase*, std::string_view)</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>setShaderUniforms(Shader&amp;, const DataMapper&amp;, const DataFormatBase*, std::string_view) </dd></dl>
 
 </div>
 </div>
@@ -1119,8 +1119,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ad0989204ab71fccc9fc50b3dce9a975a" name="ad0989204ab71fccc9fc50b3dce9a975a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0989204ab71fccc9fc50b3dce9a975a">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[1/2]</span></h2>
+<a id="a66491eac1f5bdcda8edc94ec739635f4" name="a66491eac1f5bdcda8edc94ec739635f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66491eac1f5bdcda8edc94ec739635f4">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1128,7 +1128,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_OPENGL_API void inviwo::utilgl::setShaderUniforms </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em>, </span></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1152,8 +1152,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a74da414d1d373950b127ce0d9cf44466" name="a74da414d1d373950b127ce0d9cf44466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74da414d1d373950b127ce0d9cf44466">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[2/2]</span></h2>
+<a id="ac689eeefb6e079d1b3f081135803ea14" name="ac689eeefb6e079d1b3f081135803ea14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac689eeefb6e079d1b3f081135803ea14">&#9670;&#160;</a></span>setShaderUniforms() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1161,7 +1161,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">IVW_MODULE_OPENGL_API void inviwo::utilgl::setShaderUniforms </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em>, </span></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>

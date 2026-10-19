@@ -270,8 +270,8 @@ $(function(){initNavTree('D_1_2a_2inviwo_2inviwo_2inviwo_2include_2inviwo_2core_
 <div class="line"> </div>
 <div class="line"><span class="keyword">template</span> &lt;StringRange A, StringRange B, <span class="keyword">typename</span> Transform&gt;</div>
 <div class="line"><span class="keyword">constexpr</span> <span class="keyword">auto</span> stringCompare(A&amp;&amp; a, B&amp;&amp; b, Transform transform) {</div>
-<div class="line">    <span class="keyword">auto</span> ra = codePoints(std::forward&lt;A&gt;(a));</div>
-<div class="line">    <span class="keyword">auto</span> rb = codePoints(std::forward&lt;B&gt;(b));</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> ra = codePoints(std::forward&lt;A&gt;(a));</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> rb = codePoints(std::forward&lt;B&gt;(b));</div>
 <div class="line">    <span class="keywordflow">return</span> std::lexicographical_compare_three_way(</div>
 <div class="line">        ra.begin(), ra.end(), rb.begin(), rb.end(),</div>
 <div class="line">        [&amp;](<span class="keywordtype">char32_t</span> x, <span class="keywordtype">char32_t</span> y) { return transform(x) &lt;=&gt; transform(y); });</div>

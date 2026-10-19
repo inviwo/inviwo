@@ -353,6 +353,9 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">inviwo::animation::Animation::Animation </td>
@@ -365,6 +368,11 @@ std::unordered_set&lt; <a class="el" href="classinviwo_1_1ObservableInterface.ht
           <td class="paramtype">std::string_view</td>          <td class="paramname"><span class="paramname"><em>name</em><span class="paramdefsep"> = </span><span class="paramdefval">&quot;Animation&quot;</span></span>&#160;)</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Creates an empty <a class="el" href="classinviwo_1_1animation_1_1Animation.html" title="Animation data structure, owns a list of tracks. Each Track usually represents a value to be animated...">Animation</a>. <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> is required only for the Property-based adding convenience functions: <a class="el" href="#aac62308e77dac1a6b4c2ef9fc680449b">add(Property* property)</a> <a class="el" href="#a239999f8afe95d3b029c0b6a6c8c362c">addKeyframe(Property* property, Seconds time)</a> <a class="el" href="#a28925834383d39c5d247923b805b46ca">addKeyframeSequence(Property* property, Seconds time)</a> Trying to use these functions with an invalid <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> will throw Exceptions.</p>
 <dl class="section note"><dt>Note</dt><dd>nullptr to <a class="el" href="classinviwo_1_1animation_1_1AnimationManager.html">AnimationManager</a> should mainly be used for unit testing and the likes. </dd></dl>

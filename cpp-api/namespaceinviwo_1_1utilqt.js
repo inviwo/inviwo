@@ -14,7 +14,7 @@ var namespaceinviwo_1_1utilqt =
     [ "fromLocalQString", "namespaceinviwo_1_1utilqt.html#aeddec5366e9c6d9bd9445ac846432408", null ],
     [ "fromQString", "namespaceinviwo_1_1utilqt.html#a717ceef4640ba5f545b9a9683de486b2", null ],
     [ "generatePreview", "namespaceinviwo_1_1utilqt.html#a29bdcb20eceda58d17346a1fe2df6755", null ],
-    [ "generatePreview", "namespaceinviwo_1_1utilqt.html#aa9365361b68923637d43f1fc60f4df26", null ],
+    [ "generatePreview", "namespaceinviwo_1_1utilqt.html#a6c51a7a6523a1ff7997f9e983bcc6c13", null ],
     [ "generateProcessorPreview", "namespaceinviwo_1_1utilqt.html#aec2117726a598e6a02c2cf13429f29fd", null ],
     [ "getApplicationMainWindow", "namespaceinviwo_1_1utilqt.html#a583ab1296d218f71ed78d739424f5fab", null ],
     [ "getCurrentStdLocale", "namespaceinviwo_1_1utilqt.html#a73e1a57c35c71d21d9ce81582395f687", null ],

@@ -572,16 +572,16 @@ Creating a bounding box with Adjacency information</h2>
 <div class="line">                       {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color},</div>
 <div class="line">                       {vec3(0.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), color}});</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> inds1 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> inds1 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
 <div class="line">    inds1-&gt;add({3, 0, 1, 2, 3, 0, 1});</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> inds2 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> inds2 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
 <div class="line">    inds2-&gt;add({7, 4, 5, 6, 7, 4, 5});</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> inds3 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> inds3 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
 <div class="line">    inds3-&gt;add({3, 0, 4, 7, 3, 0, 4});</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> inds4 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> inds4 = mesh-&gt;addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);</div>
 <div class="line">    inds4-&gt;add({2, 1, 5, 6, 2, 1, 2});</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">return</span> mesh;</div>
@@ -598,14 +598,14 @@ Creating camera frustum</h2>
 <div class="line">    <span class="keyword">auto</span>&amp; vertVector = mesh-&gt;getTypedDataContainer&lt;buffertraits::PositionsBuffer&gt;();</div>
 <div class="line">    <span class="keyword">auto</span>&amp; colorVector = mesh-&gt;getTypedDataContainer&lt;buffertraits::ColorsBuffer&gt;();</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> off = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">int</span><span class="keyword">&gt;</span>(vertVector.size());</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> off = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">int</span><span class="keyword">&gt;</span>(vertVector.size());</div>
 <div class="line">    vertVector.insert(vertVector.end(), vertices.begin(), vertices.end());</div>
 <div class="line">    colorVector.insert(colorVector.end(), 8, color);</div>
 <div class="line"> </div>
 <div class="line">    mesh-&gt;setModelMatrix(glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">auto</span> ib = std::make_shared&lt;IndexBufferRAM&gt;();</div>
-<div class="line">    <span class="keyword">auto</span> indices = std::make_shared&lt;IndexBuffer&gt;(ib);</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> ib = std::make_shared&lt;IndexBufferRAM&gt;();</div>
+<div class="line">    <span class="keyword">const</span> <span class="keyword">auto</span> indices = std::make_shared&lt;IndexBuffer&gt;(ib);</div>
 <div class="line">    ib-&gt;add({off + 0, off + 1, off + 1, off + 3, off + 3, off + 2, off + 2, off + 0});  <span class="comment">// front</span></div>
 <div class="line">    ib-&gt;add({off + 4, off + 5, off + 5, off + 7, off + 7, off + 6, off + 6, off + 4});  <span class="comment">// back</span></div>
 <div class="line">    ib-&gt;add({off + 0, off + 4, off + 1, off + 5, off + 2, off + 6, off + 3, off + 7});  <span class="comment">// sides</span></div>

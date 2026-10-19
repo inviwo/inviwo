@@ -41,6 +41,6 @@ var namespaceinviwo_1_1utilgl =
     [ "mapFromValueToGLOutput", "namespaceinviwo_1_1utilgl.html#ab351f9645f49307051507867b7a0b091", null ],
     [ "planeRect", "namespaceinviwo_1_1utilgl.html#a01ba6d71bea79602047826daf38988ae", null ],
     [ "setOpenGLErrorChecking", "namespaceinviwo_1_1utilgl.html#a45350d813d19f58296da7852a554a4f4", null ],
-    [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#ad0989204ab71fccc9fc50b3dce9a975a", null ],
-    [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#a74da414d1d373950b127ce0d9cf44466", null ]
+    [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#a66491eac1f5bdcda8edc94ec739635f4", null ],
+    [ "setShaderUniforms", "namespaceinviwo_1_1utilgl.html#ac689eeefb6e079d1b3f081135803ea14", null ]
 ];
