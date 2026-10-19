@@ -43,11 +43,11 @@ std::string demangle(const char* name) {
 #if defined(__clang__) || defined(__GNUC__)
     struct handle {
         char* p;
-        handle(char* ptr) : p(ptr) {}
+        explicit handle(char* ptr) : p(ptr) {}
         ~handle() { std::free(p); }
     };
     int status = -4;
-    handle result(abi::__cxa_demangle(name, nullptr, nullptr, &status));
+    const handle result(abi::__cxa_demangle(name, nullptr, nullptr, &status));
     return {status == 0 ? result.p : name};
 #else
     std::string str{name};

@@ -97,7 +97,7 @@ TouchState mapTouchState(const QEventPoint& point) {
     }
 }
 
-TouchDevice::DeviceType mapDeviceType(QTouchEvent* touch) {
+TouchDevice::DeviceType mapDeviceType(const QTouchEvent* touch) {
     switch (touch->device()->type()) {
         case QPointingDevice::DeviceType::TouchScreen: return TouchDevice::DeviceType::TouchScreen;
         case QPointingDevice::DeviceType::TouchPad:    return TouchDevice::DeviceType::TouchPad;
@@ -109,7 +109,7 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
     //! Links QPointingDevice to inviwo::TouchDevice
     static std::map<const QInputDevice*, TouchDevice> devices_;
 
-    auto deviceIt = devices_.find(touch->device());
+    const auto deviceIt = devices_.find(touch->device());
     if (deviceIt != devices_.end()) {
         return &(deviceIt->second);
     } else {
@@ -229,8 +229,8 @@ bool InteractionEventMapperQt::mapMouseMoveEvent(QMouseEvent* e) {
 bool InteractionEventMapperQt::mapWheelEvent(QWheelEvent* e) {
     if (e->source() != Qt::MouseEventNotSynthesized) return true;
     rendercontext::activateDefault();
-    QPoint numPixels = e->pixelDelta();
-    QPoint numDegrees = e->angleDelta() / 8 / 15;
+    const QPoint numPixels = e->pixelDelta();
+    const QPoint numDegrees = e->angleDelta() / 8 / 15;
 
     dvec2 numSteps{0.0};
     if (!numPixels.isNull()) {

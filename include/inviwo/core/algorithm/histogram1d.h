@@ -76,14 +76,14 @@ namespace detail {
  */
 template <typename T>
 std::pair<size_t, double> optimalBinCount(DataMapper dataMap, size_t bins) {
-    auto intRangeBins = [&](size_t irange) -> std::pair<size_t, double> {
+    const auto intRangeBins = [&](size_t irange) -> std::pair<size_t, double> {
         const size_t m = (irange + bins) / bins;
         const auto numBins =
             static_cast<size_t>(std::ceil(static_cast<double>(irange) / static_cast<double>(m)));
         const auto effectiveRange = static_cast<double>((numBins - 1) * m);
         return {numBins, effectiveRange};
     };
-    auto isNonFractional = [](double v) { return std::abs(v - std::round(v)) < 1.0e-12; };
+    const auto isNonFractional = [](double v) { return std::abs(v - std::round(v)) < 1.0e-12; };
 
     const auto range = (dataMap.dataRange.y - dataMap.dataRange.x);
     if (range / static_cast<double>(bins) > 100.0) {  // case 1
@@ -192,7 +192,7 @@ std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const Data
     const dvec2 effectiveDataRange{dataMap.dataRange.x, dataMap.dataRange.x + effectiveRange};
     const dvec2 effectiveValueRange{dataMap.valueRange.x,
                                     dataMap.mapFromDataToValue(effectiveDataRange.y)};
-    DataMapper histogramDataMap{effectiveDataRange, effectiveValueRange, dataMap.valueAxis};
+    const DataMapper histogramDataMap{effectiveDataRange, effectiveValueRange, dataMap.valueAxis};
 
     for (size_t channel = 0; channel < extent; ++channel) {
         const auto maxBinCount = *std::ranges::max_element(hists[channel]);

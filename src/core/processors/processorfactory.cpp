@@ -40,8 +40,9 @@ namespace inviwo {
 ProcessorFactory::ProcessorFactory(InviwoApplication* app) : app_{app} {}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
-    auto moduleId = [&]() {
-        auto optId = util::getProcessorModuleIdentifier(processor->getClassIdentifier(), *app_);
+    const auto moduleId = [&]() {
+        const auto optId =
+            util::getProcessorModuleIdentifier(processor->getClassIdentifier(), *app_);
         return optId.value_or(std::string_view("Unknown"));
     };
 
@@ -86,7 +87,7 @@ std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key) 
 }
 std::shared_ptr<Processor> ProcessorFactory::createShared(std::string_view key,
                                                           InviwoApplication* app) const {
-    auto it = this->map_.find(key);
+    const auto it = this->map_.find(key);
     if (it != end(this->map_)) {
         return it->second->create(app);
     } else {

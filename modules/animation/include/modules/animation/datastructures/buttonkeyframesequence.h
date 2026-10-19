@@ -53,7 +53,7 @@ class IVW_MODULE_ANIMATION_API ButtonKeyframeSequence
 public:
     using key_type = typename BaseKeyframeSequence<ButtonKeyframe>::key_type;
     ButtonKeyframeSequence() = default;
-    ButtonKeyframeSequence(std::vector<std::unique_ptr<ButtonKeyframe>> keyframes);
+    explicit ButtonKeyframeSequence(std::vector<std::unique_ptr<ButtonKeyframe>> keyframes);
     ButtonKeyframeSequence(const ButtonKeyframeSequence& rhs) = default;
     ButtonKeyframeSequence& operator=(const ButtonKeyframeSequence& that) = default;
     virtual ~ButtonKeyframeSequence() = default;

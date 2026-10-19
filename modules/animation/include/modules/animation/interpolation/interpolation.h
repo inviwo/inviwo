@@ -54,7 +54,7 @@ public:
      *             context (e.g. for temporary introspection). The InterpolationFactory always
      *             supplies the real application pointer.
      */
-    Interpolation(InviwoApplication* app);
+    explicit Interpolation(InviwoApplication* app);
     virtual ~Interpolation() = default;
 
     virtual Interpolation* clone() const = 0;

@@ -40,9 +40,9 @@ class Property;
 /// A RAII utility for locking and unlocking the network
 struct IVW_CORE_API NetworkLock {
     NetworkLock();
-    NetworkLock(ProcessorNetwork* network);
-    NetworkLock(Processor* network);
-    NetworkLock(Property* network);
+    explicit NetworkLock(ProcessorNetwork* network);
+    explicit NetworkLock(Processor* network);
+    explicit NetworkLock(Property* network);
     ~NetworkLock();
 
     NetworkLock(const NetworkLock&) = delete;

@@ -48,8 +48,8 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
     PickingAction* pickObj = nullptr;
 
     // Find the smallest object with capacity >= size
-    auto it = std::ranges::lower_bound(unusedObjects_, size, std::ranges::less{},
-                                       [](PickingAction* p) { return p->getCapacity(); });
+    const auto it = std::ranges::lower_bound(unusedObjects_, size, std::ranges::less{},
+                                             [](PickingAction* p) { return p->getCapacity(); });
 
     if (it != unusedObjects_.end()) {
         pickObj = *it;
@@ -76,10 +76,10 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
 bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     const std::scoped_lock lock(mutex_);
 
-    auto it1 = std::ranges::find(unusedObjects_, p);
+    const auto it1 = std::ranges::find(unusedObjects_, p);
     if (it1 == unusedObjects_.end()) {
 
-        auto it2 = util::find_if(
+        const auto it2 = util::find_if(
             pickingActions_, [p](const std::unique_ptr<PickingAction>& o) { return p == o.get(); });
 
         if (!pickingActions_.empty() && it2 == pickingActions_.end() - 1) {
@@ -89,7 +89,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
 
             // clean-up unused queue
             while (!pickingActions_.empty()) {
-                auto it = std::ranges::find(unusedObjects_, pickingActions_.back().get());
+                const auto it = std::ranges::find(unusedObjects_, pickingActions_.back().get());
                 if (it == unusedObjects_.end()) {
                     break;
                 }
@@ -102,7 +102,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
             (*it2)->setAction(nullptr);
             (*it2)->setProcessor(nullptr);
 
-            auto insit =
+            const auto insit =
                 std::ranges::upper_bound(unusedObjects_, (*it2)->getCapacity(), std::ranges::less{},
                                          [](PickingAction* po) { return po->getCapacity(); });
 

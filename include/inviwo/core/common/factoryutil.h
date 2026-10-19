@@ -64,7 +64,7 @@ namespace util {
  * @see Camera CameraFactory
  */
 IVW_CORE_API CameraFactory* getCameraFactory();
-IVW_CORE_API CameraFactory* getCameraFactory(InviwoApplication* app);
+IVW_CORE_API CameraFactory* getCameraFactory(const InviwoApplication* app);
 IVW_CORE_API CameraFactory* getCameraFactory(Processor* processor);
 IVW_CORE_API CameraFactory* getCameraFactory(Property* property);
 ///@}
@@ -75,7 +75,7 @@ IVW_CORE_API CameraFactory* getCameraFactory(Property* property);
  * @see DataReader DataReaderFactory
  */
 IVW_CORE_API DataReaderFactory* getDataReaderFactory();
-IVW_CORE_API DataReaderFactory* getDataReaderFactory(InviwoApplication* app);
+IVW_CORE_API DataReaderFactory* getDataReaderFactory(const InviwoApplication* app);
 IVW_CORE_API DataReaderFactory* getDataReaderFactory(Processor* processor);
 IVW_CORE_API DataReaderFactory* getDataReaderFactory(Property* property);
 ///@}
@@ -86,7 +86,7 @@ IVW_CORE_API DataReaderFactory* getDataReaderFactory(Property* property);
  * @see DataWriter DataWriterFactory
  */
 IVW_CORE_API DataWriterFactory* getDataWriterFactory();
-IVW_CORE_API DataWriterFactory* getDataWriterFactory(InviwoApplication* app);
+IVW_CORE_API DataWriterFactory* getDataWriterFactory(const InviwoApplication* app);
 IVW_CORE_API DataWriterFactory* getDataWriterFactory(Processor* processor);
 IVW_CORE_API DataWriterFactory* getDataWriterFactory(Property* property);
 ///@}
@@ -97,7 +97,7 @@ IVW_CORE_API DataWriterFactory* getDataWriterFactory(Property* property);
  * @see Dialog DialogFactory
  */
 IVW_CORE_API DialogFactory* getDialogFactory();
-IVW_CORE_API DialogFactory* getDialogFactory(InviwoApplication* app);
+IVW_CORE_API DialogFactory* getDialogFactory(const InviwoApplication* app);
 IVW_CORE_API DialogFactory* getDialogFactory(Processor* processor);
 IVW_CORE_API DialogFactory* getDialogFactory(Property* property);
 ///@}
@@ -108,7 +108,7 @@ IVW_CORE_API DialogFactory* getDialogFactory(Property* property);
  * @see MeshDrawer MeshDrawerFactory
  */
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory();
-IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(InviwoApplication* app);
+IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(const InviwoApplication* app);
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(Processor* processor);
 IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(Property* property);
 ///@}
@@ -119,7 +119,7 @@ IVW_CORE_API MeshDrawerFactory* getMeshDrawerFactory(Property* property);
  * @see MetaData MetaDataFactory
  */
 IVW_CORE_API MetaDataFactory* getMetaDataFactory();
-IVW_CORE_API MetaDataFactory* getMetaDataFactory(InviwoApplication* app);
+IVW_CORE_API MetaDataFactory* getMetaDataFactory(const InviwoApplication* app);
 IVW_CORE_API MetaDataFactory* getMetaDataFactory(Processor* processor);
 IVW_CORE_API MetaDataFactory* getMetaDataFactory(Property* property);
 ///@}
@@ -130,7 +130,7 @@ IVW_CORE_API MetaDataFactory* getMetaDataFactory(Property* property);
  * @see Inport InportFactory
  */
 IVW_CORE_API InportFactory* getInportFactory();
-IVW_CORE_API InportFactory* getInportFactory(InviwoApplication* app);
+IVW_CORE_API InportFactory* getInportFactory(const InviwoApplication* app);
 IVW_CORE_API InportFactory* getInportFactory(Processor* processor);
 IVW_CORE_API InportFactory* getInportFactory(Property* property);
 ///@}
@@ -141,7 +141,7 @@ IVW_CORE_API InportFactory* getInportFactory(Property* property);
  * @see Outport OutportFactory
  */
 IVW_CORE_API OutportFactory* getOutportFactory();
-IVW_CORE_API OutportFactory* getOutportFactory(InviwoApplication* app);
+IVW_CORE_API OutportFactory* getOutportFactory(const InviwoApplication* app);
 IVW_CORE_API OutportFactory* getOutportFactory(Processor* processor);
 IVW_CORE_API OutportFactory* getOutportFactory(Property* property);
 ///@}
@@ -152,7 +152,7 @@ IVW_CORE_API OutportFactory* getOutportFactory(Property* property);
  * @see PortInspector PortInspectorFactory
  */
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory();
-IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(InviwoApplication* app);
+IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(const InviwoApplication* app);
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(Processor* processor);
 IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(Property* property);
 ///@}
@@ -163,7 +163,7 @@ IVW_CORE_API PortInspectorFactory* getPortInspectorFactory(Property* property);
  * @see Processor ProcessorFactory
  */
 IVW_CORE_API ProcessorFactory* getProcessorFactory();
-IVW_CORE_API ProcessorFactory* getProcessorFactory(InviwoApplication* app);
+IVW_CORE_API ProcessorFactory* getProcessorFactory(const InviwoApplication* app);
 IVW_CORE_API ProcessorFactory* getProcessorFactory(Processor* processor);
 IVW_CORE_API ProcessorFactory* getProcessorFactory(Property* property);
 ///@}
@@ -174,7 +174,7 @@ IVW_CORE_API ProcessorFactory* getProcessorFactory(Property* property);
  * @see ProcessorWidget ProcessorWidgetFactory
  */
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory();
-IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(InviwoApplication* app);
+IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(const InviwoApplication* app);
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(Processor* processor);
 IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(Property* property);
 ///@}
@@ -185,7 +185,7 @@ IVW_CORE_API ProcessorWidgetFactory* getProcessorWidgetFactory(Property* propert
  * @see PropertyConverter PropertyConverterManager
  */
 IVW_CORE_API PropertyConverterManager* getPropertyConverterManager();
-IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(InviwoApplication* app);
+IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(const InviwoApplication* app);
 IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(Processor* processor);
 IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(Property* property);
 ///@}
@@ -196,7 +196,7 @@ IVW_CORE_API PropertyConverterManager* getPropertyConverterManager(Property* pro
  * @see Property PropertyFactory
  */
 IVW_CORE_API PropertyFactory* getPropertyFactory();
-IVW_CORE_API PropertyFactory* getPropertyFactory(InviwoApplication* app);
+IVW_CORE_API PropertyFactory* getPropertyFactory(const InviwoApplication* app);
 IVW_CORE_API PropertyFactory* getPropertyFactory(Processor* processor);
 IVW_CORE_API PropertyFactory* getPropertyFactory(Property* property);
 ///@}
@@ -207,7 +207,7 @@ IVW_CORE_API PropertyFactory* getPropertyFactory(Property* property);
  * @see PropertyWidget PropertyWidgetFactory
  */
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory();
-IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(InviwoApplication* app);
+IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(const InviwoApplication* app);
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(Processor* processor);
 IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(Property* property);
 ///@}
@@ -219,7 +219,7 @@ IVW_CORE_API PropertyWidgetFactory* getPropertyWidgetFactory(Property* property)
  * @see Data DataRepresentation RepresentationFactory RepresentationMetaFactory
  */
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory();
-IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(InviwoApplication* app);
+IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(const InviwoApplication* app);
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(Processor* processor);
 IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(Property* property);
 ///@}
@@ -234,7 +234,7 @@ IVW_CORE_API RepresentationMetaFactory* getRepresentationMetaFactory(Property* p
  */
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory();
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
-    InviwoApplication* app);
+    const InviwoApplication* app);
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
     Processor* processor);
 IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory(
@@ -246,7 +246,7 @@ IVW_CORE_API RepresentationConverterMetaFactory* getRepresentationConverterMetaF
  * Resource Manager
  */
 IVW_CORE_API ResourceManager* getResourceManager();
-IVW_CORE_API ResourceManager* getResourceManager(InviwoApplication* app);
+IVW_CORE_API ResourceManager* getResourceManager(const InviwoApplication* app);
 IVW_CORE_API ResourceManager* getResourceManager(Processor* processor);
 IVW_CORE_API ResourceManager* getResourceManager(Property* property);
 ///@}

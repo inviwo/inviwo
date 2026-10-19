@@ -104,9 +104,9 @@ public:
     using ShaderDefines = std::map<std::string, std::string, std::less<>>;
 
     ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource);
-    ShaderObject(std::shared_ptr<const ShaderResource> resource);
+    explicit ShaderObject(std::shared_ptr<const ShaderResource> resource);
     ShaderObject(ShaderType shaderType, std::string_view fileName);
-    ShaderObject(std::string_view fileName);
+    explicit ShaderObject(std::string_view fileName);
     ShaderObject(GLenum shaderType, std::string_view fileName);
 
     ShaderObject(const ShaderObject& rhs) = delete;

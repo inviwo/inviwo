@@ -59,7 +59,7 @@ class IVW_MODULE_QTWIDGETS_API PropertyWidgetQt : public QWidget,
 public:
     using BaseCallBack = std::function<void()>;
 
-    PropertyWidgetQt(Property* property = nullptr);
+    explicit PropertyWidgetQt(Property* property = nullptr);
     virtual ~PropertyWidgetQt();
 
     // Should be called first thing after the property has been added to a layout.

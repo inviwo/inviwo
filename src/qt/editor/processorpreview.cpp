@@ -54,9 +54,9 @@
 
 namespace inviwo {
 
-QImage utilqt::generatePreview(std::string_view classIdentifier, ProcessorFactory* factory) {
+QImage utilqt::generatePreview(std::string_view classIdentifier, const ProcessorFactory* factory) {
     try {
-        if (auto processor = factory->createShared(classIdentifier)) {
+        if (const auto processor = factory->createShared(classIdentifier)) {
             return utilqt::generatePreview(*processor);
         } else {
             return QImage();
@@ -73,8 +73,8 @@ QImage utilqt::generatePreview(Processor& processor) {
         auto scene = std::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
 
-        double yshift = 20.0;
-        double offset = processor.getInports().size() * yshift;
+        const double yshift = 20.0;
+        double offset = static_cast<double>(processor.getInports().size()) * yshift;
 
         for (auto inport : processor.getInports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
@@ -82,11 +82,11 @@ QImage utilqt::generatePreview(Processor& processor) {
             auto pl = new QGraphicsTextItem(QString::fromStdString(inport->getIdentifier()));
             pl->setDefaultTextColor(Qt::lightGray);
             scene->addItem(pl);
-            auto pos = item->getInportGraphicsItem(inport)->pos();
+            const auto pos = item->getInportGraphicsItem(inport)->pos();
             pl->setPos(pos + QPointF(0, -offset));
 
-            double h = pl->boundingRect().height();
-            auto t = QTransform().translate(1.0, -h / 2.0);
+            const double h = pl->boundingRect().height();
+            const auto t = QTransform().translate(1.0, -h / 2.0);
             pl->setTransform(t);
 
             auto path = QPainterPath(pos);
@@ -100,18 +100,18 @@ QImage utilqt::generatePreview(Processor& processor) {
             offset -= yshift;
         }
 
-        offset = processor.getOutports().size() * yshift;
+        offset = static_cast<double>(processor.getOutports().size()) * yshift;
         for (auto outport : processor.getOutports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);
             auto pl = new QGraphicsTextItem(QString::fromStdString(outport->getIdentifier()));
             pl->setDefaultTextColor(Qt::lightGray);
             scene->addItem(pl);
-            auto pos = item->getOutportGraphicsItem(outport)->pos();
+            const auto pos = item->getOutportGraphicsItem(outport)->pos();
             pl->setPos(pos + QPointF(1.0, offset));
 
-            double h = pl->boundingRect().height();
-            auto t = QTransform().translate(0.0, -h / 2.0);
+            const double h = pl->boundingRect().height();
+            const auto t = QTransform().translate(0.0, -h / 2.0);
             pl->setTransform(t);
 
             auto path = QPainterPath(pos);
@@ -125,8 +125,8 @@ QImage utilqt::generatePreview(Processor& processor) {
             offset -= yshift;
         }
 
-        float padBelow = processor.getOutports().empty() ? 10.0f : 0.0f;
-        float padAbove = processor.getInports().empty() ? 10.0f : 0.0f;
+        const float padBelow = processor.getOutports().empty() ? 10.0f : 0.0f;
+        const float padAbove = processor.getInports().empty() ? 10.0f : 0.0f;
 
         scene->clearSelection();  // Selections would also render to the file
                                   // Re-shrink the scene to it's bounding contents
@@ -150,8 +150,9 @@ QImage utilqt::generatePreview(Processor& processor) {
 }
 
 QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double opacity) {
-    std::string cid = utilqt::fromQString(classIdentifier);
-    if (auto processor = InviwoApplication::getPtr()->getProcessorFactory()->createShared(cid)) {
+    const std::string cid = utilqt::fromQString(classIdentifier);
+    if (const auto processor =
+            InviwoApplication::getPtr()->getProcessorFactory()->createShared(cid)) {
         return generateProcessorPreview(*processor, opacity);
     } else {
         return QImage{};
@@ -195,10 +196,10 @@ QImage utilqt::generateProcessorPreview(Processor& processor, double opacity) {
 
 void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
-    auto save = [&](std::string_view classIdentifier) {
+    const auto save = [&](std::string_view classIdentifier) {
         std::filesystem::create_directories(path);
-        QString imgname = utilqt::toQString(fmt::format("{}/{}.png", path, classIdentifier));
-        QImage img = utilqt::generatePreview(classIdentifier, app->getProcessorFactory());
+        const QString imgname = utilqt::toQString(fmt::format("{}/{}.png", path, classIdentifier));
+        const QImage img = utilqt::generatePreview(classIdentifier, app->getProcessorFactory());
         if (!img.isNull()) {
             QByteArray data;
             QBuffer buffer(&data);

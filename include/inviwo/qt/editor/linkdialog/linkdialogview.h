@@ -37,7 +37,7 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API LinkDialogGraphicsView : public QGraphicsView {
 public:
-    LinkDialogGraphicsView(QWidget* parent);
+    explicit LinkDialogGraphicsView(QWidget* parent);
     virtual ~LinkDialogGraphicsView() = default;
 };
 

@@ -44,7 +44,7 @@
 namespace inviwo {
 namespace util {
 
-void saveNetwork(ProcessorNetwork* network, std::string_view filename) {
+void saveNetwork(const ProcessorNetwork* network, std::string_view filename) {
     try {
         Serializer xmlSerializer(filename);
         network->serialize(xmlSerializer);
@@ -54,11 +54,11 @@ void saveNetwork(ProcessorNetwork* network, std::string_view filename) {
     }
 }
 
-void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir,
+void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::path& dir,
                      std::string_view name, std::string_view ext, bool onlyActiveCanvases) {
 
     // Get all canvases, possibly only the active ones. We need their count below.
-    auto allCanvases = network->getProcessorsByType<inviwo::CanvasProcessor>();
+    const auto allCanvases = network->getProcessorsByType<inviwo::CanvasProcessor>();
     std::vector<CanvasProcessor*> allConsideredCanvases;
     if (onlyActiveCanvases) {
         allConsideredCanvases.reserve(allCanvases.size());
@@ -73,7 +73,7 @@ void saveAllCanvases(ProcessorNetwork* network, const std::filesystem::path& dir
     int i = 0;
     for (auto cp : allConsideredCanvases) {
         if (!cp->isValid() || !cp->isReady()) {
-            std::ostringstream msg;
+            const std::ostringstream msg;
             log::error(
                 "Canvas is not ready or not valid, no image saved\n"
                 "    Display Name: {}\n"
@@ -169,13 +169,13 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
 }
 
 std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
-    auto fileNameWithoutExtension = filePath.stem().string();
+    const auto fileNameWithoutExtension = filePath.stem().string();
 #if defined(WIN32)
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");
 #else
-    auto decoration1 = std::string_view("libinviwo-module-");
-    auto decoration2 = std::string_view("libinviwo-");
+    const auto decoration1 = std::string_view("libinviwo-module-");
+    const auto decoration2 = std::string_view("libinviwo-");
 #endif
     auto inviwoModulePos = fileNameWithoutExtension.find(decoration1);
     if (inviwoModulePos == std::string::npos) {
@@ -188,10 +188,11 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
     } else {
         inviwoModulePos = decoration1.size();
     }
-    auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #ifdef IVW_DEBUG
     // Remove debug ending "d" at end of file name
-    len -= 1;
+    const auto len = fileNameWithoutExtension.size() - inviwoModulePos - 1;
+#else
+    const auto len = fileNameWithoutExtension.size() - inviwoModulePos;
 #endif
     auto moduleName = fileNameWithoutExtension.substr(inviwoModulePos, len);
     return moduleName;
@@ -199,8 +200,8 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
 
 std::string stripIdentifier(std::string_view identifier) {
     // Valid identifier: [a-zA-Z_][a-zA-Z0-9_]*
-    auto firstCharValid = [](char c) -> bool { return (c == '_' || std::isalpha(c)); };
-    auto invalidChar = [](char c) -> bool { return !(c == '_' || std::isalnum(c)); };
+    const auto firstCharValid = [](char c) -> bool { return (c == '_' || std::isalpha(c)); };
+    const auto invalidChar = [](char c) -> bool { return !(c == '_' || std::isalnum(c)); };
 
     std::string stripped{identifier};
     while (!stripped.empty()) {

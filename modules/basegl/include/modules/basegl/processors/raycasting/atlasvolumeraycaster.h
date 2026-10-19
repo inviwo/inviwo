@@ -48,7 +48,8 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API AtlasVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    AtlasVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    explicit AtlasVolumeRaycaster(std::string_view identifier = "",
+                                  std::string_view displayName = "");
     virtual ~AtlasVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

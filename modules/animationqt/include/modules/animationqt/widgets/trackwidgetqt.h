@@ -53,7 +53,7 @@ class KeyframeSequenceWidgetQt;
 
 class IVW_MODULE_ANIMATIONQT_API TrackWidgetQt : public QGraphicsItem, public TrackObserver {
 public:
-    TrackWidgetQt(Track& track);
+    explicit TrackWidgetQt(Track& track);
     virtual ~TrackWidgetQt();
     virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* options,
                        QWidget* widget) override;

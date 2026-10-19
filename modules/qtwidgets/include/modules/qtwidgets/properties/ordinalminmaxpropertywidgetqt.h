@@ -90,7 +90,7 @@ public:
 template <typename T>
 class OrdinalMinMaxPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property);
+    explicit OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxPropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
@@ -182,9 +182,9 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const T inc = minMaxProperty_->getIncrement();
     const T sep = minMaxProperty_->getMinSeparation();
 
-    QSignalBlocker minBlock(min_);
-    QSignalBlocker maxBlock(max_);
-    QSignalBlocker slideBlock(slider_);
+    const QSignalBlocker minBlock(min_);
+    const QSignalBlocker maxBlock(max_);
+    const QSignalBlocker slideBlock(slider_);
 
     min_->setMinValue(range.x, ConstraintBehavior::Editable);
     min_->setMaxValue(range.y - sep, ConstraintBehavior::Editable);
@@ -219,14 +219,14 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
     if (!util::almostEqual(newRange.x, range.x)) {
         modified = true;
         range.x = newRange.x;
-        QSignalBlocker minBlock(min_);
+        const QSignalBlocker minBlock(min_);
         min_->setValue(newRange.x);
     }
 
     if (!util::almostEqual(newRange.y, range.y)) {
         modified = true;
         range.y = newRange.y;
-        QSignalBlocker maxBlock(max_);
+        const QSignalBlocker maxBlock(max_);
         max_->setValue(newRange.y);
     }
 

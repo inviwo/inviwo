@@ -70,7 +70,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
     layout_->setSpacing(1);
     layout_->setContentsMargins(0, 0, 0, 0);
 
-    QSize iconSize = QSize(8, 8);
+    const QSize iconSize = QSize(8, 8);
 
     {
         QIcon enableTrackIcon;
@@ -119,7 +119,8 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         QAction* prev = new QAction(prevIcon, "Prev Keyframe", this);
         connect(prev, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            auto it = std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it =
+                std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.begin()) {
                 controller_.eval(controller_.getCurrentTime(), *std::prev(it));
             }
@@ -156,7 +157,8 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         QAction* next = new QAction(nextIcon, "Next Keyframe", this);
         connect(next, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            auto it = std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it =
+                std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
             if (it != times.end()) {
                 controller_.eval(controller_.getCurrentTime(), *it);
             }

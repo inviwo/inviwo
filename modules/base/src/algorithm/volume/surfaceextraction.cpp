@@ -48,7 +48,7 @@ glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, doubl
     if (v0 == v1) {
         return p0;
     }
-    float t = static_cast<float>(v0 / (v0 - v1));
+    const float t = static_cast<float>(v0 / (v0 - v1));
     return p0 + t * (p1 - p0);
 }
 
@@ -63,30 +63,30 @@ void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexB
     if (index == 0) {  // FULLY OUTSIDE
         return;
     } else if (index == 1) {  // ONLY P0 INSIDE
-        auto p01 = interpolate(p0, v0, p1, v1);
-        auto p02 = interpolate(p0, v0, p2, v2);
+        const auto p01 = interpolate(p0, v0, p1, v1);
+        const auto p02 = interpolate(p0, v0, p2, v2);
         addTriangle(vertexTree, indexBuffer, positions, normals, p0, p01, p02);
     } else if (index == 2) {  // ONLY P1 INSIDE
-        auto p10 = interpolate(p1, v1, p0, v0);
-        auto p12 = interpolate(p1, v1, p2, v2);
+        const auto p10 = interpolate(p1, v1, p0, v0);
+        const auto p12 = interpolate(p1, v1, p2, v2);
         addTriangle(vertexTree, indexBuffer, positions, normals, p1, p12, p10);
     } else if (index == 3) {  // P0 AND P1 INSIDE
-        auto p02 = interpolate(p0, v0, p2, v2);
-        auto p12 = interpolate(p1, v1, p2, v2);
+        const auto p02 = interpolate(p0, v0, p2, v2);
+        const auto p12 = interpolate(p1, v1, p2, v2);
         addTriangle(vertexTree, indexBuffer, positions, normals, p0, p1, p12);
         addTriangle(vertexTree, indexBuffer, positions, normals, p0, p12, p02);
     } else if (index == 4) {  // ONLY P2 INSIDE
-        auto p20 = interpolate(p2, v2, p0, v0);
-        auto p21 = interpolate(p2, v2, p1, v1);
+        const auto p20 = interpolate(p2, v2, p0, v0);
+        const auto p21 = interpolate(p2, v2, p1, v1);
         addTriangle(vertexTree, indexBuffer, positions, normals, p2, p20, p21);
     } else if (index == 5) {  // P0 AND P2 INSIDE
-        auto p01 = interpolate(p0, v0, p1, v1);
-        auto p21 = interpolate(p2, v2, p1, v1);
+        const auto p01 = interpolate(p0, v0, p1, v1);
+        const auto p21 = interpolate(p2, v2, p1, v1);
         addTriangle(vertexTree, indexBuffer, positions, normals, p0, p01, p21);
         addTriangle(vertexTree, indexBuffer, positions, normals, p0, p21, p2);
     } else if (index == 6) {  // P1 AND P2 INSIDE
-        auto p10 = interpolate(p1, v1, p0, v0);
-        auto p20 = interpolate(p2, v2, p0, v0);
+        const auto p10 = interpolate(p1, v1, p0, v0);
+        const auto p20 = interpolate(p2, v2, p0, v0);
         addTriangle(vertexTree, indexBuffer, positions, normals, p1, p20, p10);
         addTriangle(vertexTree, indexBuffer, positions, normals, p1, p2, p20);
     } else if (index == 7) {  // FULLY INSIDE
@@ -112,9 +112,9 @@ size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& position
 void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
                  std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& a,
                  const glm::vec3& b, const glm::vec3& c) {
-    size_t i0 = addVertex(vertexTree, positions, normals, a);
-    size_t i1 = addVertex(vertexTree, positions, normals, b);
-    size_t i2 = addVertex(vertexTree, positions, normals, c);
+    const size_t i0 = addVertex(vertexTree, positions, normals, a);
+    const size_t i1 = addVertex(vertexTree, positions, normals, b);
+    const size_t i2 = addVertex(vertexTree, positions, normals, c);
 
     if (i0 == i1 || i0 == i2 || i1 == i2) {
         // triangle is so small so that the vertices are merged.
@@ -125,9 +125,9 @@ void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer
     indexBuffer->add(static_cast<uint32_t>(i1));
     indexBuffer->add(static_cast<uint32_t>(i2));
 
-    vec3 e0 = b - a;
-    vec3 e1 = c - a;
-    vec3 n = glm::normalize(glm::cross(e0, e1));
+    const vec3 e0 = b - a;
+    const vec3 e1 = c - a;
+    const vec3 n = glm::normalize(glm::cross(e0, e1));
 
     normals[i0] += n;
     normals[i1] += n;

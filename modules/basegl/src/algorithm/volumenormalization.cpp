@@ -93,7 +93,7 @@ std::shared_ptr<Volume> VolumeNormalization::normalize(const Volume& volume) {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dims.x), static_cast<GLsizei>(dims.y));
 
-    VolumeGL* outVolumeGL = outVolume->getEditableRepresentation<VolumeGL>();
+    const VolumeGL* outVolumeGL = outVolume->getEditableRepresentation<VolumeGL>();
 
     const auto drawBuff = fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     glDrawBuffer(drawBuff);

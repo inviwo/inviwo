@@ -87,7 +87,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
             colormaps_[i]->setVisible(i == static_cast<size_t>(*selectedColorAxis));
         }
 
-        auto updateColormap = [&]() {
+        const auto updateColormap = [&]() {
             if (colormaps_.size() <= static_cast<size_t>(*selectedColorAxis)) return;
             auto cm = dynamic_cast<const ColormapProperty*>(colormaps_[selectedColorAxis]);
             if (cm) *tf = cm->getTransferFunction();
@@ -110,10 +110,10 @@ void DataFrameColormapProperty::createOrUpdateProperties(
     std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
     dataframe_ = dataframe;
-    auto oldColormapProperties = colormaps_;
+    const auto oldColormapProperties = colormaps_;
     colormaps_.clear();
     for (size_t i = 0; i < dataframe_->getNumberOfColumns(); i++) {
-        auto c = dataframe_->getColumn(i);
+        const auto c = dataframe_->getColumn(i);
         std::string displayName = "Settings";
         std::string identifier = util::stripIdentifier(c->getHeader());
 

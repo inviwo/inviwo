@@ -98,18 +98,18 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 
     tooltipCallBack_ = scatterPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
         if (!p) return;
-        if (auto dataframe = dataFramePort_.getData()) {
+        if (const auto dataframe = dataFramePort_.getData()) {
             p->setToolTip(dataframe::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
     highlightChangedCallBack_ =
         scatterPlot_.addHighlightChangedCallback([this](const BitSet& highlighted) {
-            if (auto data = dataFramePort_.getData()) {
+            if (const auto data = dataFramePort_.getData()) {
                 BitSet indices;
-                auto iCol = data->getIndexColumn();
+                const auto iCol = data->getIndexColumn();
                 const auto& indexCol =
                     iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : highlighted) {
+                for (const auto idx : highlighted) {
                     indices.add(indexCol[idx]);
                 }
                 brushingPort_.highlight(indices);
@@ -118,12 +118,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         });
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const BitSet& selected) {
-            if (auto data = dataFramePort_.getData()) {
+            if (const auto data = dataFramePort_.getData()) {
                 BitSet indices;
-                auto iCol = data->getIndexColumn();
+                const auto iCol = data->getIndexColumn();
                 const auto& indexCol =
                     iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : selected) {
+                for (const auto idx : selected) {
                     indices.add(indexCol[idx]);
                 }
                 brushingPort_.select(indices);
@@ -132,12 +132,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
         });
     filteringChangedCallBack_ =
         scatterPlot_.addFilteringChangedCallback([this](const BitSet& filtered) {
-            if (auto data = dataFramePort_.getData()) {
+            if (const auto data = dataFramePort_.getData()) {
                 BitSet indices;
-                auto iCol = data->getIndexColumn();
+                const auto iCol = data->getIndexColumn();
                 const auto& indexCol =
                     iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-                for (auto idx : filtered) {
+                for (const auto idx : filtered) {
                     indices.add(indexCol[idx]);
                 }
                 brushingPort_.filter(getIdentifier(), indices);
@@ -186,7 +186,7 @@ void ScatterPlotProcessor::process() {
         scatterPlot_.setIndexColumn(dataFramePort_.getData()->getIndexColumn());
 
         indexToRowMap_ = [&]() {
-            auto iCol = dataFramePort_.getData()->getIndexColumn();
+            const auto iCol = dataFramePort_.getData()->getIndexColumn();
             auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
             indexToRow.reserve(indexCol.size());
@@ -197,10 +197,10 @@ void ScatterPlotProcessor::process() {
         }();
     }
 
-    auto transformIdsToRows = [&](const BitSet& b) {
+    const auto transformIdsToRows = [&](const BitSet& b) {
         BitSet rows;
-        for (auto id : b) {
-            auto it = indexToRowMap_.find(id);
+        for (const auto id : b) {
+            const auto it = indexToRowMap_.find(id);
             if (it != indexToRowMap_.end()) {
                 rows.add(it->second);
             }

@@ -193,7 +193,7 @@ void OrdinalAnimationProperty<T>::update() {
             r = detail::pbc(r, value_.getMinValue(), value_.getMaxValue());
             break;
         case BoundaryType::Mirror: {
-            auto m = detail::mirror(r, value_.getMinValue(), value_.getMaxValue());
+            const auto m = detail::mirror(r, value_.getMinValue(), value_.getMaxValue());
             delta_.set(m * delta_.get());
             r = glm::clamp(r, value_.getMinValue(), value_.getMaxValue());
             break;

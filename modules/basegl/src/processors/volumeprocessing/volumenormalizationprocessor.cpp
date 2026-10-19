@@ -104,7 +104,7 @@ void VolumeNormalizationProcessor::process() {
         inputChannels_.set(channels);
     }
 
-    auto inputVolume = volumeInport_.getData();
+    const auto inputVolume = volumeInport_.getData();
 
     const bvec4 normalize{normalizeChannels_[0], normalizeChannels_[1], normalizeChannels_[2],
                           normalizeChannels_[3]};

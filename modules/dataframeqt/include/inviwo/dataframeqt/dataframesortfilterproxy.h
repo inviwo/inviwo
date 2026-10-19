@@ -52,7 +52,7 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameSortFilterProxy : public QSortFilterPr
 public:
     enum Roles { Data = Qt::UserRole, Filter };
 
-    DataFrameSortFilterProxy(QObject* parent = nullptr);
+    explicit DataFrameSortFilterProxy(QObject* parent = nullptr);
     virtual ~DataFrameSortFilterProxy() = default;
 
     void setManager(BrushingAndLinkingManager& manager);

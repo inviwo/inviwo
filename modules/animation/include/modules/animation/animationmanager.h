@@ -58,7 +58,7 @@ class Animation;
  */
 class IVW_MODULE_ANIMATION_API AnimationManager {
 public:
-    AnimationManager(InviwoApplication* app);
+    explicit AnimationManager(InviwoApplication* app);
     virtual ~AnimationManager() = default;
 
     TrackFactory& getTrackFactory();

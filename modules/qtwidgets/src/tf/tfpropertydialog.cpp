@@ -178,7 +178,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
             helpBtn->setFocusPolicy(Qt::FocusPolicy::NoFocus);
             layout->insertWidget(1, helpBtn);
 
-            if (auto* qtModule = util::getModuleByType<QtWidgetsModule>()) {
+            if (const auto* qtModule = util::getModuleByType<QtWidgetsModule>()) {
                 QObject::connect(helpBtn, &QToolButton::clicked, this,
                                  [qtModule]() { qtModule->showTFHelpWindow(); });
             }
@@ -219,7 +219,7 @@ TFPropertyDialog::TFPropertyDialog(std::unique_ptr<TFPropertyConcept> model)
                     case MenuItemType::copy:
                     case MenuItemType::del:   return !editor_->selectedItems().isEmpty();
                     case MenuItemType::paste: {
-                        auto* clipboard = QApplication::clipboard();
+                        const auto* clipboard = QApplication::clipboard();
                         const auto* mimeData = clipboard->mimeData();
                         return mimeData &&
                                mimeData->hasFormat(QString::fromUtf8(TFEditor::mimeTFPrimitives));
@@ -520,7 +520,7 @@ void TFPropertyDialog::setReadOnly(bool readonly) {
 void TFPropertyDialog::updateTFPreview() {
     if (ongoingUpdate_) return;
 
-    auto pixmap = utilqt::toQPixmap(*concept_, QSize(preview_->width(), 20));
+    const auto pixmap = utilqt::toQPixmap(*concept_, QSize(preview_->width(), 20));
     preview_->setPixmap(pixmap);
 }
 

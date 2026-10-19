@@ -99,11 +99,11 @@ DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
 }
 
 QPointF DialogConnectionGraphicsItem::getStartPoint() const {
-    auto si = startPropertyGraphicsItem_->getConnectionIndex(this);
+    const auto si = startPropertyGraphicsItem_->getConnectionIndex(this);
     return startPropertyGraphicsItem_->calculateArrowCenter(si);
 }
 QPointF DialogConnectionGraphicsItem::getEndPoint() const {
-    auto ei = endPropertyGraphicsItem_->getConnectionIndex(this);
+    const auto ei = endPropertyGraphicsItem_->getConnectionIndex(this);
     return endPropertyGraphicsItem_->calculateArrowCenter(ei);
 }
 

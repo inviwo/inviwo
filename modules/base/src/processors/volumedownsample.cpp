@@ -100,7 +100,8 @@ void VolumeDownsample::process() {
 
 std::shared_ptr<Volume> VolumeDownsample::downsample(std::shared_ptr<const Volume> source,
                                                      size3_t strides, util::DownsamplingMode mode) {
-    auto volumeRam = util::volumeDownsample(source->getRepresentation<VolumeRAM>(), strides, mode);
+    const auto volumeRam =
+        util::volumeDownsample(source->getRepresentation<VolumeRAM>(), strides, mode);
     auto volume = std::make_shared<Volume>(*source, noData,
                                            VolumeConfig{.dimensions = volumeRam->getDimensions()});
     volume->addRepresentation(volumeRam);

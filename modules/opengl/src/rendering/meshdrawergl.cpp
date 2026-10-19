@@ -62,40 +62,40 @@ void MeshDrawerGL::draw() {
     }
 
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
-    utilgl::Enable<MeshGL> enable(meshGL);
+    const utilgl::Enable<MeshGL> enable(meshGL);
 
-    std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
+    const std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
             auto indexBuffer = meshGL->getIndexBuffer(i);
-            auto numIndices = indexBuffer->getSize();
+            const auto numIndices = indexBuffer->getSize();
             if (numIndices > 0) {
                 indexBuffer->bind();
-                auto drawMode = getGLDrawMode(meshGL->getMeshInfoForIndexBuffer(i));
+                const auto drawMode = getGLDrawMode(meshGL->getMeshInfoForIndexBuffer(i));
                 glDrawElements(drawMode, static_cast<GLsizei>(numIndices),
                                indexBuffer->getFormatType(), nullptr);
             }
         }
     } else {
         // the mesh does not contain index buffers, render all vertices
-        auto drawMode = getGLDrawMode(meshToDraw_->getDefaultMeshInfo());
+        const auto drawMode = getGLDrawMode(meshToDraw_->getDefaultMeshInfo());
         glDrawArrays(drawMode, 0, static_cast<GLsizei>(meshGL->getBufferGL(0)->getSize()));
     }
 }
 
 void MeshDrawerGL::draw(DrawMode drawMode) {
     auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
-    utilgl::Enable<MeshGL> enable(meshGL);
+    const utilgl::Enable<MeshGL> enable(meshGL);
 
-    auto drawModeGL = getGLDrawMode(drawMode);
+    const auto drawModeGL = getGLDrawMode(drawMode);
 
-    std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
+    const std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
             auto indexBuffer = meshGL->getIndexBuffer(i);
-            auto numIndices = indexBuffer->getSize();
+            const auto numIndices = indexBuffer->getSize();
             if (numIndices > 0) {
                 indexBuffer->bind();
                 glDrawElements(drawModeGL, static_cast<GLsizei>(numIndices),

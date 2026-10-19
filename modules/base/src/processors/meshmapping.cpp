@@ -129,8 +129,8 @@ MeshMapping::MeshMapping()
     addProperties(enabled_, tf_, buffer_, component_, useCustomDataRange_, customDataRange_,
                   dataRange_);
 
-    auto getBuffer = [this]() -> const BufferBase* {
-        if (auto mesh = meshInport_.getData()) {
+    const auto getBuffer = [this]() -> const BufferBase* {
+        if (const auto mesh = meshInport_.getData()) {
             if (buffer_.getSelectedIndex() < mesh->getNumberOfBuffers()) {
                 if (auto buffer = mesh->getBuffer(buffer_.getSelectedIndex())) {
                     return buffer;
@@ -140,7 +140,7 @@ MeshMapping::MeshMapping()
         return nullptr;
     };
 
-    auto updateDataRange = [this, getBuffer]() {
+    const auto updateDataRange = [this, getBuffer]() {
         if (const auto buffer = getBuffer()) {
             // obtain range of selected component of chosen buffer
             auto range = util::bufferMinMax(buffer);
@@ -153,7 +153,7 @@ MeshMapping::MeshMapping()
     };
     component_.onChange(updateDataRange);
 
-    auto updateComponents = [this, getBuffer]() {
+    const auto updateComponents = [this, getBuffer]() {
         const std::array<OptionPropertyIntOption, 4> options = {{{"component1", "Component 1", 0},
                                                                  {"component2", "Component 2", 1},
                                                                  {"component3", "Component 3", 2},
@@ -174,7 +174,7 @@ MeshMapping::MeshMapping()
     meshInport_.onChange([this, updateComponents, updateDataRange]() {
         component_.setReadOnly(!meshInport_.hasData());
         if (meshInport_.hasData()) {
-            auto mesh = meshInport_.getData();
+            const auto mesh = meshInport_.getData();
 
             std::vector<OptionPropertyIntOption> bufferOptions;
             for (auto&& [index, buffer] : util::enumerate(mesh->getBuffers())) {
@@ -194,7 +194,7 @@ void MeshMapping::process() {
     if (enabled_.get() && meshInport_.hasData() &&
         (meshInport_.getData()->getNumberOfBuffers() > 0)) {
 
-        auto inputMesh = meshInport_.getData();
+        const auto inputMesh = meshInport_.getData();
         auto srcBuffer =
             inputMesh->getBuffer(buffer_.getSelectedIndex())->getRepresentation<BufferRAM>();
 
@@ -207,8 +207,9 @@ void MeshMapping::process() {
                                    dst = &colorsOut, tf = &tf_.get()](auto pBuffer) {
             auto& vec = pBuffer->getDataContainer();
             std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
-                auto value = util::glmcomp(v, comp);
-                double normalized = (static_cast<double>(value) - range.x) / (range.y - range.x);
+                const auto value = util::glmcomp(v, comp);
+                const double normalized =
+                    (static_cast<double>(value) - range.x) / (range.y - range.x);
                 return tf->sample(normalized);
             });
         });
@@ -216,7 +217,7 @@ void MeshMapping::process() {
         // create a new mesh containing all buffers of the input mesh
         // The first color buffer, if existing, is replaced with the mapped colors.
         // Otherwise, a new color buffer will be added.
-        auto colBuffer = std::make_shared<Buffer<vec4>>(
+        const auto colBuffer = std::make_shared<Buffer<vec4>>(
             std::make_shared<BufferRAMPrecision<vec4>>(std::move(colorsOut)));
 
         auto mesh = inputMesh->clone();

@@ -44,7 +44,7 @@ namespace inviwo {
 
 namespace py = pybind11;
 
-void exposeSerialization(pybind11::module& m) {
+void exposeSerialization(const pybind11::module& m) {
 
     py::enum_<SerializationTarget>(m, "SerializationTarget")
         .value("Node", SerializationTarget::Node)
@@ -87,7 +87,7 @@ void exposeSerialization(pybind11::module& m) {
             [](Serializer& s, std::string_view key, const py::typing::Iterable<double>& data,
                std::string_view itemKey) {
                 std::vector<double> vData{};
-                for (auto i : data) {
+                for (const auto i : data) {
                     vData.emplace_back(i.cast<double>());
                 }
                 s.serialize(key, vData, itemKey);
@@ -106,7 +106,7 @@ void exposeSerialization(pybind11::module& m) {
             [](Serializer& s, std::string_view key, const py::typing::Iterable<int>& data,
                std::string_view itemKey) {
                 std::vector<int> vData{};
-                for (auto i : data) {
+                for (const auto i : data) {
                     vData.emplace_back(i.cast<int>());
                 }
                 s.serialize(key, vData, itemKey);
@@ -118,7 +118,7 @@ void exposeSerialization(pybind11::module& m) {
             [](Serializer& s, std::string_view key, const py::typing::Iterable<std::string>& data,
                std::string_view itemKey) {
                 std::vector<std::string> vData{};
-                for (auto i : data) {
+                for (const auto i : data) {
                     vData.emplace_back(i.cast<std::string>());
                 }
                 s.serialize(key, vData, itemKey);

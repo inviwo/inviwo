@@ -43,7 +43,7 @@ class Processor;
  */
 class IVW_CORE_API LogFilter : public Logger {
 public:
-    LogFilter(Logger* logger = LogCentral::getPtr());
+    explicit LogFilter(Logger* logger = LogCentral::getPtr());
     LogFilter(Logger* logger, LogVerbosity verbosity);
     LogFilter(const LogFilter&) = default;
     LogFilter(LogFilter&&) noexcept = default;

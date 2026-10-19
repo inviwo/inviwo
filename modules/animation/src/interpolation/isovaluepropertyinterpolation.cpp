@@ -63,9 +63,9 @@ template <typename Value, typename InterpolateValue>
 void interpolatePropertyValue(const std::vector<std::unique_ptr<ValueKeyframe<Value>>>& keys,
                               Seconds to, Value& out, InterpolateValue interpolateValue) {
 
-    auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-        return time < key->getTime();
-    });
+    const auto it =
+        std::upper_bound(keys.begin(), keys.end(), to,
+                         [](const auto& time, const auto& key) { return time < key->getTime(); });
     const auto& prev = *(*std::prev(it));
     const auto& next = *(*it);
 

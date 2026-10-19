@@ -46,7 +46,7 @@ class Property;
 
 class IVW_MODULE_QTWIDGETS_API ButtonPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    ButtonPropertyWidgetQt(ButtonProperty* property);
+    explicit ButtonPropertyWidgetQt(ButtonProperty* property);
     virtual void updateFromProperty() override;
     QPushButton* getButton();
 

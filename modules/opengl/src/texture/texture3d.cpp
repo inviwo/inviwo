@@ -69,7 +69,7 @@ Texture3D::Texture3D(size3_t dimensions, GLenum format, GLenum internalFormat, G
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glDeleteSync(syncObj);
             syncObj = 0;
@@ -94,7 +94,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
         dimensions_ = rhs.dimensions_;
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-            std::scoped_lock lock{syncMutex};
+            const std::scoped_lock lock{syncMutex};
             if (syncObj != 0) {
                 glDeleteSync(syncObj);
                 syncObj = 0;

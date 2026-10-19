@@ -108,8 +108,8 @@ Point3DGenerationProcessor::Point3DGenerationProcessor()
 
     addPort(outport_);
 
-    auto center = [](auto& item) {
-        auto callback = [&item]() {
+    const auto center = [](auto& item) {
+        const auto callback = [&item]() {
             if (item.autoCenter) {
                 item.offset.set(-0.5 * (item.a1.get() + item.a2.get() + item.a3.get()));
             }
@@ -128,7 +128,7 @@ Point3DGenerationProcessor::Point3DGenerationProcessor()
 }
 
 void Point3DGenerationProcessor::process() {
-    std::shared_ptr<std::vector<vec3>> points = std::make_shared<std::vector<vec3>>();
+    const std::shared_ptr<std::vector<vec3>> points = std::make_shared<std::vector<vec3>>();
 
     if (gridProps_) {
         util::Grid3DPointGeneration opts{

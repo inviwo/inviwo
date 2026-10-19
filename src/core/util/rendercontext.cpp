@@ -56,7 +56,7 @@ void RenderContext::activateDefaultRenderContext() const {
 void RenderContext::activateLocalRenderContext() const {
     if (!defaultContext_) return;
 
-    auto id = std::this_thread::get_id();
+    const auto id = std::this_thread::get_id();
 
     if (id == mainThread_) {
         activateDefaultRenderContext();
@@ -66,7 +66,7 @@ void RenderContext::activateLocalRenderContext() const {
     Canvas* localContext = nullptr;
     {
         std::unique_lock<std::mutex> lock(mutex_);
-        auto it = contextMap_.find(id);
+        const auto it = contextMap_.find(id);
         if (it == contextMap_.end()) {
             auto& canvas = contextMap_[id];
             lock.unlock();
@@ -81,12 +81,12 @@ void RenderContext::activateLocalRenderContext() const {
 }
 
 void RenderContext::clearContext() {
-    auto id = std::this_thread::get_id();
+    const auto id = std::this_thread::get_id();
     std::unique_lock<std::mutex> lock(mutex_);
     if (id == mainThread_) {
         contextMap_.erase(id);
     } else {
-        auto it = contextMap_.find(id);
+        const auto it = contextMap_.find(id);
         if (it != contextMap_.end()) {
             auto canvas = it->second.release();
             contextMap_.erase(it);
@@ -112,7 +112,7 @@ void RenderContext::unRegisterContext(Canvas::ContextID id) {
 
 std::string RenderContext::getContextName(Canvas::ContextID id) const {
     const std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextRegistry_.find(id);
+    const auto it = contextRegistry_.find(id);
     if (it != contextRegistry_.end()) {
         return it->second.name;
     } else {
@@ -122,7 +122,7 @@ std::string RenderContext::getContextName(Canvas::ContextID id) const {
 
 void RenderContext::setContextName(Canvas::ContextID id, std::string_view name) {
     const std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextRegistry_.find(id);
+    const auto it = contextRegistry_.find(id);
     if (it != contextRegistry_.end()) {
         it->second.name = name;
     }
@@ -130,7 +130,7 @@ void RenderContext::setContextName(Canvas::ContextID id, std::string_view name) 
 
 std::thread::id RenderContext::getContextThreadId(Canvas::ContextID id) const {
     const std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextRegistry_.find(id);
+    const auto it = contextRegistry_.find(id);
     if (it != contextRegistry_.end()) {
         return it->second.threadId;
     } else {
@@ -140,7 +140,7 @@ std::thread::id RenderContext::getContextThreadId(Canvas::ContextID id) const {
 
 void RenderContext::setContextThreadId(Canvas::ContextID id, std::thread::id threadId) {
     const std::unique_lock<std::mutex> lock(mutex_);
-    auto it = contextRegistry_.find(id);
+    const auto it = contextRegistry_.find(id);
     if (it != contextRegistry_.end()) {
         it->second.threadId = threadId;
     }

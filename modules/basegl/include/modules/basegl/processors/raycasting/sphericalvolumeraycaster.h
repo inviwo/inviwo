@@ -48,7 +48,8 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API SphericalVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    SphericalVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    explicit SphericalVolumeRaycaster(std::string_view identifier = "",
+                                      std::string_view displayName = "");
     virtual ~SphericalVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

@@ -56,7 +56,7 @@ BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
 
 void BaseKeyframe::setTime(Seconds time) {
     if (time != time_) {
-        auto oldTime = time_;
+        const auto oldTime = time_;
         time_ = time;
         notifyKeyframeTimeChanged(this, oldTime);
     }

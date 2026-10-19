@@ -46,7 +46,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_PLOTTINGGL_API PCPDataFrameVisualizer : public DataVisualizer {
 public:
-    PCPDataFrameVisualizer(InviwoApplication* app);
+    explicit PCPDataFrameVisualizer(InviwoApplication* app);
     virtual ~PCPDataFrameVisualizer() = default;
 
     // Inherited via DataVisualizer

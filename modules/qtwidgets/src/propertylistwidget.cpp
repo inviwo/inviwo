@@ -110,7 +110,7 @@ void PropertyListFrame::paintEvent(QPaintEvent*) {
 void PropertyListFrame::add(Processor* processor) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
-    util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&]() {
         listLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -121,12 +121,12 @@ void PropertyListFrame::add(Processor* processor) {
 }
 
 void PropertyListFrame::hide(Processor* processor) {
-    auto it = processorMap_.find(processor);
+    const auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) it->second->hide();
 }
 
 void PropertyListFrame::remove(Processor* processor) {
-    auto it = processorMap_.find(processor);
+    const auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) {
         it->second->hide();
         listLayout_->removeWidget(it->second);
@@ -138,7 +138,7 @@ void PropertyListFrame::remove(Processor* processor) {
 void PropertyListFrame::add(Property* property) {
     setUpdatesEnabled(false);
     listLayout_->setEnabled(false);
-    util::OnScopeExit enableUpdates([&]() {
+    const util::OnScopeExit enableUpdates([&]() {
         listLayout_->setEnabled(true);
         setUpdatesEnabled(true);
     });
@@ -148,11 +148,11 @@ void PropertyListFrame::add(Property* property) {
     }
 }
 void PropertyListFrame::hide(Property* property) {
-    auto it = propertyMap_.find(property);
+    const auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) it->second->hide();
 }
 void PropertyListFrame::remove(Property* property) {
-    auto it = propertyMap_.find(property);
+    const auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) {
         it->second->hide();
         listLayout_->removeWidget(it->second);
@@ -179,7 +179,7 @@ void PropertyListFrame::clear() {
 
 QWidget* PropertyListFrame::get(Processor* processor) {
     // check if processor widget has been already generated
-    auto it = processorMap_.find(processor);
+    const auto it = processorMap_.find(processor);
     if (it != processorMap_.end()) {
         return it->second;
     } else {
@@ -207,7 +207,7 @@ QWidget* PropertyListFrame::create(Processor* processor) {
 
 QWidget* PropertyListFrame::get(Property* property) {
     // check if processor widget has been already generated
-    auto it = propertyMap_.find(property);
+    const auto it = propertyMap_.find(property);
     if (it != propertyMap_.end()) {
         return it->second;
     } else {
@@ -239,7 +239,7 @@ void PropertyListFrame::onProcessorNetworkWillRemoveProcessor(Processor* process
 void PropertyListFrame::onWillRemoveProperty(Property* property, size_t) { remove(property); }
 
 QWidget* PropertyListFrame::findWidgetFor(Property* property) {
-    if (auto it = propertyMap_.find(property); it != propertyMap_.end()) {
+    if (const auto it = propertyMap_.find(property); it != propertyMap_.end()) {
         return it->second;
     }
 
@@ -248,12 +248,12 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
     auto* owner = property->getOwner();
     while (owner) {
         if (auto* processor = dynamic_cast<Processor*>(owner)) {
-            if (auto it = processorMap_.find(processor); it != processorMap_.end()) {
+            if (const auto it = processorMap_.find(processor); it != processorMap_.end()) {
                 widget = it->second;
                 break;
             }
         } else if (auto* cp = dynamic_cast<CompositeProperty*>(owner)) {
-            if (auto it = propertyMap_.find(cp); it != propertyMap_.end()) {
+            if (const auto it = propertyMap_.find(cp); it != propertyMap_.end()) {
                 widget = it->second;
                 break;
             }
@@ -268,7 +268,7 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
         owner = stack.back();
         stack.pop_back();
         if (auto* cp = dynamic_cast<CompositeProperty*>(owner)) {
-            if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
+            if (const auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
                 if (auto* pw = cw->widgetForProperty(cp)) {
                     widget = pw;
                     continue;
@@ -278,7 +278,7 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
         return nullptr;
     }
 
-    if (auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
+    if (const auto* cw = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(widget)) {
         if (auto* pw = cw->widgetForProperty(property)) {
             return pw;
         }

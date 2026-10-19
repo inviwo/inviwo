@@ -45,7 +45,7 @@ std::string_view IsoValueCollection::serializationItemKey() const { return "IsoV
 IsoValueCollection IsoValueCollection::load(std::string_view path) {
     auto factory = util::getDataReaderFactory();
 
-    if (auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
+    if (const auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
         return *tf;
     } else {
         throw Exception(SourceContext{}, "Unable to load IsoValueCollection from {}", path);

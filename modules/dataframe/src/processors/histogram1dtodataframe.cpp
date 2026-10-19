@@ -51,7 +51,7 @@ Histogram1DToDataFrame::Histogram1DToDataFrame()
 
 void Histogram1DToDataFrame::process() {
 
-    auto df = std::make_shared<DataFrame>();
+    const auto df = std::make_shared<DataFrame>();
 
     for (auto histogram : inport_) {
         df->addColumn(

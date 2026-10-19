@@ -105,7 +105,7 @@ std::optional<std::string> getRepoLink(const std::filesystem::path& path) {
 }  // namespace
 
 void openProcessorFile(const OpenProcessorFile& config) {
-    auto* inviwoModule = findModuleForFile(config.manager, config.cppFile);
+    const auto* inviwoModule = findModuleForFile(config.manager, config.cppFile);
 
     const auto candidates =
         inviwoModule ? headerCandidates(config.cppFile.lexically_relative(inviwoModule->getPath()),

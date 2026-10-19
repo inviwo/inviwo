@@ -129,14 +129,14 @@ void Animation::add(std::unique_ptr<Track> track) {
 
 std::vector<Keyframe*> Animation::addKeyframe(Property* property, Seconds time) {
     std::vector<Keyframe*> keyframes;
-    auto it = findTrack(property);
+    const auto it = findTrack(property);
     try {
         if (it != end()) {
             if (auto* keyframe =
                     dynamic_cast<BasePropertyTrack*>(&(*it))->addKeyFrameUsingPropertyValue(time)) {
                 keyframes.push_back(keyframe);
             }
-        } else if (auto propertyTracks = add(property); !propertyTracks.empty()) {
+        } else if (const auto propertyTracks = add(property); !propertyTracks.empty()) {
             for (auto* propertyTrack : propertyTracks) {
                 if (auto* keyframe = propertyTrack->addKeyFrameUsingPropertyValue(time)) {
                     keyframes.push_back(keyframe);
@@ -153,15 +153,15 @@ std::vector<Keyframe*> Animation::addKeyframe(Property* property, Seconds time) 
 
 std::vector<KeyframeSequence*> Animation::addKeyframeSequence(Property* property, Seconds time) {
     std::vector<KeyframeSequence*> sequences;
-    auto it = findTrack(property);
-    std::string interpolationErrMsg;
+    const auto it = findTrack(property);
+    const std::string interpolationErrMsg;
     try {
         if (it != end()) {
             if (auto* sequence =
                     dynamic_cast<BasePropertyTrack*>(&(*it))->addSequenceUsingPropertyValue(time)) {
                 sequences.push_back(sequence);
             }
-        } else if (auto propertyTracks = add(property); !propertyTracks.empty()) {
+        } else if (const auto propertyTracks = add(property); !propertyTracks.empty()) {
             for (auto* propertyTrack : propertyTracks) {
                 propertyTrack->addKeyFrameUsingPropertyValue(time);
                 sequences.push_back(&propertyTrack->toTrack()->getFirst());
@@ -186,7 +186,7 @@ Animation::iterator Animation::findTrack(Property* property) {
 }
 
 std::vector<BasePropertyTrack*> Animation::add(Property* property) {
-    auto it = findTrack(property);
+    const auto it = findTrack(property);
     if (it != end()) {
         if (auto* propertyTrack = dynamic_cast<BasePropertyTrack*>(&(*it))) {
             return {propertyTrack};
@@ -202,7 +202,7 @@ std::vector<BasePropertyTrack*> Animation::add(Property* property) {
         return propertyTracks;
     }
 
-    if (auto* composite = dynamic_cast<CompositeProperty*>(property)) {
+    if (const auto* composite = dynamic_cast<CompositeProperty*>(property)) {
         for (auto* child : composite->getProperties()) {
             auto childPropertyTracks = add(child);
             propertyTracks.insert(propertyTracks.end(), childPropertyTracks.begin(),
@@ -221,8 +221,8 @@ std::unique_ptr<Track> Animation::remove(size_t i) {
 }
 
 std::unique_ptr<Track> Animation::remove(Track* track) {
-    auto it = std::find_if(tracks_.begin(), tracks_.end(),
-                           [&](const auto& t) { return t.get() == track; });
+    const auto it = std::find_if(tracks_.begin(), tracks_.end(),
+                                 [&](const auto& t) { return t.get() == track; });
     if (it != tracks_.end()) {
         return remove(std::distance(tracks_.begin(), it));
     } else {
@@ -268,9 +268,9 @@ std::vector<Seconds> Animation::getAllTimes() const {
 Seconds Animation::getFirstTime() const {
     Seconds time{0};
 
-    auto it = std::min_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->getFirstTime() < b->getFirstTime();
-    });
+    const auto it = std::min_element(
+        tracks_.begin(), tracks_.end(),
+        [](const auto& a, const auto& b) { return a->getFirstTime() < b->getFirstTime(); });
     if (it != tracks_.end()) {
         time = (*it)->getFirstTime();
     }
@@ -279,9 +279,9 @@ Seconds Animation::getFirstTime() const {
 
 Seconds Animation::getLastTime() const {
     Seconds time{0};
-    auto it = std::max_element(tracks_.begin(), tracks_.end(), [](const auto& a, const auto& b) {
-        return a->getLastTime() < b->getLastTime();
-    });
+    const auto it = std::max_element(
+        tracks_.begin(), tracks_.end(),
+        [](const auto& a, const auto& b) { return a->getLastTime() < b->getLastTime(); });
     if (it != tracks_.end()) {
         time = (*it)->getLastTime();
     }
@@ -365,7 +365,7 @@ void Animation::trackRemovedInternal(Track* track) {
     if (auto propertyTrack = dynamic_cast<BasePropertyTrack*>(track)) {
         if (auto owner = propertyTrack->getProperty()->getOwner()) {
             // Only stop observing property owner if no other track needs it
-            auto sameOwnerIt =
+            const auto sameOwnerIt =
                 std::find_if(tracks_.begin(), tracks_.end(), [owner](const auto& elem) {
                     if (auto ptrck = dynamic_cast<BasePropertyTrack*>(elem.get())) {
                         return ptrck->getProperty()->getOwner() == owner;

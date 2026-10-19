@@ -78,8 +78,8 @@ TEST(VolumeSequenceUtilsTests, isSorted) {
     s2.push_back(createVolume(0.1));
     s2.push_back(createVolume(0.4));
 
-    auto a = util::isSorted(s1);
-    auto b = util::isSorted(s2);
+    const auto a = util::isSorted(s1);
+    const auto b = util::isSorted(s2);
 
     EXPECT_TRUE(a);
     EXPECT_FALSE(b);
@@ -91,7 +91,7 @@ TEST(VolumeSequenceUtilsTests, getTimestampRangeTest) {
     s1.push_back(createVolume(0.1));
     s1.push_back(createVolume(0.2));
 
-    auto range = util::getTimestampRange(s1);
+    const auto range = util::getTimestampRange(s1);
     EXPECT_EQ(range.first, 0.0);
     EXPECT_EQ(range.second, 0.2);
 }
@@ -102,10 +102,10 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     s1.push_back(createVolume(0.1));
     s1.push_back(createVolume(0.2));
 
-    auto p0 = util::getVolumesForTimestep(s1, 0.0);
-    auto p1 = util::getVolumesForTimestep(s1, 0.1);
-    auto p2 = util::getVolumesForTimestep(s1, 0.2);
-    auto p3 = util::getVolumesForTimestep(s1, 0.15);
+    const auto p0 = util::getVolumesForTimestep(s1, 0.0);
+    const auto p1 = util::getVolumesForTimestep(s1, 0.1);
+    const auto p2 = util::getVolumesForTimestep(s1, 0.2);
+    const auto p3 = util::getVolumesForTimestep(s1, 0.15);
 
     /* UNUSED
     auto A = s1[0].get();
@@ -144,9 +144,9 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     s2.push_back(createVolume());
     s2.push_back(createVolume());
 
-    auto p4 = util::getVolumesForTimestep(s2, 0.0);
-    auto p5 = util::getVolumesForTimestep(s2, 1.0);
-    auto p6 = util::getVolumesForTimestep(s2, 0.5);
+    const auto p4 = util::getVolumesForTimestep(s2, 0.0);
+    const auto p5 = util::getVolumesForTimestep(s2, 1.0);
+    const auto p6 = util::getVolumesForTimestep(s2, 0.5);
 
     EXPECT_EQ(p4.first.get(), s2[0].get());
     EXPECT_EQ(p4.second.get(), s2[1].get());

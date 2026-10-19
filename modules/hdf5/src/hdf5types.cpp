@@ -45,7 +45,7 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
 
     switch (dataset.getTypeClass()) {
         case H5T_INTEGER: {
-            H5::IntType type = dataset.getIntType();
+            const H5::IntType type = dataset.getIntType();
             precision = type.getPrecision();
 
             switch (type.getSign()) {
@@ -66,13 +66,13 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
             break;
         }
         case H5T_FLOAT: {
-            H5::FloatType type = dataset.getFloatType();
+            const H5::FloatType type = dataset.getFloatType();
             numerictype = NumericType::Float;
             precision = type.getPrecision();
             break;
         }
         case H5T_ARRAY: {
-            H5::ArrayType type = dataset.getArrayType();
+            const H5::ArrayType type = dataset.getArrayType();
             log::warn("HDF type not supported");
             return nullptr;
         }

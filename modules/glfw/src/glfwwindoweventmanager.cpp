@@ -130,8 +130,8 @@ void GLFWWindowEventManager::character(GLFWwindow* window, unsigned int characte
     auto self = GLFWUserData::get<GLFWWindowEventManager>(window, GLFWUserDataId::Interaction);
 
     // Convert event character from utf-32 to utf-8
-    std::u32string input = {character};
-    auto text = utf8::utf32to8(input);
+    const std::u32string input = {character};
+    const auto text = utf8::utf32to8(input);
 
     KeyboardEvent keyEvent(IvwKey::Unknown, KeyState::Press, self->modifiers_, character, text);
     self->propagateEvent(&keyEvent);
@@ -164,7 +164,7 @@ void GLFWWindowEventManager::mouseMotion(GLFWwindow* window, double x, double y)
     glfwGetWindowSize(window, &size.x, &size.y);
     const auto pos = normalPos(dvec2(x, y), size);
 
-    MouseState state =
+    const MouseState state =
         (self->mouseState_ == MouseState::Press ? MouseState::Move : self->mouseState_);
     MouseEvent mouseEvent(self->mouseButton_, state, self->mouseButton_, self->modifiers_, pos,
                           uvec2{size}, self->depth_(pos));
@@ -191,7 +191,7 @@ void GLFWWindowEventManager::scroll(GLFWwindow* window, double xoffset, double y
 void GLFWWindowEventManager::propagateEvent(Event* event) { eventPropagator_(event); }
 
 dvec2 GLFWWindowEventManager::normalPos(dvec2 pos, ivec2 size) {
-    dvec2 dsize{size};
+    const dvec2 dsize{size};
     return util::invertY(pos, dsize) / dsize;
 }
 

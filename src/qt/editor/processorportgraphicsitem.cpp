@@ -60,7 +60,7 @@ ProcessorPortGraphicsItem::ProcessorPortGraphicsItem(ProcessorGraphicsItem* pare
     setPos(pos);
     setFlags(ItemSendsScenePositionChanges);
 
-    auto color = port->getColorCode();
+    const auto color = port->getColorCode();
     connectionIndicator_ =
         new ProcessorPortConnectionIndicator(this, up, QColor(color.r, color.g, color.b));
     connectionIndicator_->setVisible(false);
@@ -127,16 +127,16 @@ void ProcessorInportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
 
     static constexpr QColor borderColor(40, 40, 40);
 
-    uvec3 color = inport_->getColorCode();
+    const uvec3 color = inport_->getColorCode();
 
-    QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
+    const QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
     p->setBrush(QColor(color.r, color.g, color.b));
     p->setPen(QPen(borderColor, lineWidth_));
 
     if (inport_->isOptional()) {
         // Use a different shape for optional ports (rounded at the bottom)
         QPainterPath path;
-        auto start = (portRect.topRight() + portRect.bottomRight()) * 0.5;
+        const auto start = (portRect.topRight() + portRect.bottomRight()) * 0.5;
         path.moveTo(start);
         path.lineTo(portRect.bottomRight());
         path.lineTo(portRect.bottomLeft());
@@ -146,7 +146,7 @@ void ProcessorInportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
 
         // Draw a dot in the middle
         const qreal radius = 1.5;
-        QRectF dotRect(QPointF(-radius, radius), QPointF(radius, -radius));
+        const QRectF dotRect(QPointF(-radius, radius), QPointF(radius, -radius));
         p->setPen(borderColor.lighter(180));
         p->setBrush(borderColor.lighter(180));
         p->drawEllipse(dotRect);
@@ -187,9 +187,9 @@ void ProcessorOutportGraphicsItem::paint(QPainter* p, const QStyleOptionGraphics
     p->setRenderHint(QPainter::SmoothPixmapTransform, true);
 
     static constexpr QColor borderColor(40, 40, 40);
-    uvec3 color = outport_->getColorCode();
+    const uvec3 color = outport_->getColorCode();
 
-    QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
+    const QRectF portRect(QPointF(-size_, size_) / 2.0f, QPointF(size_, -size_) / 2.0f);
     p->setBrush(QColor(color.r, color.g, color.b));
     p->setPen(QPen(borderColor, lineWidth_));
     p->drawRect(portRect);
@@ -236,7 +236,7 @@ void ProcessorPortConnectionIndicator::paint(QPainter* p, const QStyleOptionGrap
     gradBrush.setColorAt(1.0f, QColor(color_.red(), color_.green(), color_.blue(), 0));
 
     QLinearGradient gradPen(QPointF(0.0f, 0.0f), QPointF(0.0, up_ ? -length : length));
-    QColor lineColor = selected ? Qt::darkRed : Qt::black;
+    const QColor lineColor = selected ? Qt::darkRed : Qt::black;
     gradPen.setColorAt(0.0f, lineColor);
     gradPen.setColorAt(0.75f, lineColor);
     gradPen.setColorAt(1.0f, QColor(lineColor.red(), lineColor.green(), lineColor.blue(), 0));

@@ -206,7 +206,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
 
     visibleLayer_.onChange([&]() {
         if (inport_.hasData()) {
-            auto layers = inport_.getData()->getNumberOfColorLayers();
+            const auto layers = inport_.getData()->getNumberOfColorLayers();
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         }
     });
@@ -285,7 +285,7 @@ void CanvasProcessor::sizeChanged() {
     aspectRatioScaling_.setVisible(enableCustomInputDimensions_ && keepAspectRatio_);
 
     if (keepAspectRatio_) {
-        Property::OnChangeBlocker block{customInputDimensions_};  // avoid recursive onChange
+        const Property::OnChangeBlocker block{customInputDimensions_};  // avoid recursive onChange
         customInputDimensions_.set(calcScaledSize(dimensions_, aspectRatioScaling_));
     }
 
@@ -335,7 +335,7 @@ std::optional<std::filesystem::path> CanvasProcessor::exportFile(
 }
 
 const Layer* CanvasProcessor::getVisibleLayer() const {
-    if (auto image = inport_.getData()) {
+    if (const auto image = inport_.getData()) {
         return image->getLayer(visibleLayer_, colorLayer_);
     } else {
         return nullptr;

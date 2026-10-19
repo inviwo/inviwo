@@ -38,10 +38,10 @@ namespace inviwo {
 
 class IVW_CORE_API WheelEvent : public MouseInteractionEvent {
 public:
-    WheelEvent(MouseButtons buttonState = MouseButtons(flags::empty),
-               KeyModifiers modifiers = KeyModifiers(flags::empty), dvec2 delta = dvec2(0),
-               dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
-               double depth = 1.0);
+    explicit WheelEvent(MouseButtons buttonState = MouseButtons(flags::empty),
+                        KeyModifiers modifiers = KeyModifiers(flags::empty), dvec2 delta = dvec2(0),
+                        dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
+                        double depth = 1.0);
 
     WheelEvent(const WheelEvent& rhs) = default;
     WheelEvent& operator=(const WheelEvent& that) = default;

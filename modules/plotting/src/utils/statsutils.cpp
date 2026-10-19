@@ -92,12 +92,12 @@ RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
 
     b.x = sumY;
     A[1][0] = A[0][1] = sumX;
-    dvec2 km = glm::inverse(A) * b;
+    const dvec2 km = glm::inverse(A) * b;
     res.k = km.y;
     res.m = km.x;
     res.r2 = 0;
-    double meanX = sumX / A[0][0];
-    double meanY = sumY / A[0][0];
+    const double meanX = sumX / A[0][0];
+    const double meanY = sumY / A[0][0];
     double stdX = 0;
     double stdY = 0;
 

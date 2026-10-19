@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     qInstallMessageHandler(&inviwo::utilqt::logQtMessages);
 #endif
 
-    QApplication qtApp{argc, argv};
+    const QApplication qtApp{argc, argv};
     inviwo::InviwoApplication inviwoApp(argc, argv, "Inviwo");
 
     inviwo::utilqt::configureInviwoDefaultNames();
@@ -137,7 +137,8 @@ int main(int argc, char** argv) {
     clp.processCallbacks();  // run any command line callbacks from modules.
     qtApp.processEvents();
 
-    inviwo::util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
+    const inviwo::util::OnScopeExit clearNetwork(
+        [&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     if (auto numErrors = logCounter->getWarnCount()) {
         inviwo::log::warn("{} warnings generated during startup", numErrors);
@@ -162,7 +163,7 @@ int main(int argc, char** argv) {
             inviwo::log::exception(e);
             const auto message = fmt::format("{}\nApplication state might be corrupted, be warned.",
                                              e.getFullMessage(10));
-            auto res =
+            const auto res =
                 QMessageBox::critical(&mainWin, "Fatal Error", inviwo::utilqt::str(message),
                                       QMessageBox::Ignore | QMessageBox::Close, QMessageBox::Close);
             if (res == QMessageBox::Close) {
@@ -174,7 +175,7 @@ int main(int argc, char** argv) {
             inviwo::log::exception(e);
             const auto message =
                 fmt::format("{}\nApplication state might be corrupted, be warned.", e.what());
-            auto res =
+            const auto res =
                 QMessageBox::critical(&mainWin, "Fatal Error", inviwo::utilqt::str(message),
                                       QMessageBox::Ignore | QMessageBox::Close, QMessageBox::Close);
             if (res == QMessageBox::Close) {

@@ -46,7 +46,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTableVisualizer : public DataVisualizer {
 public:
-    DataFrameTableVisualizer(InviwoApplication* app);
+    explicit DataFrameTableVisualizer(InviwoApplication* app);
     virtual ~DataFrameTableVisualizer() = default;
 
     virtual std::string getName() const override;

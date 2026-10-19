@@ -202,7 +202,7 @@ namespace {
 
 QAction* tfAction(std::string_view name, TransferFunction tf, QMenu* menu,
                   TransferFunctionProperty* property, std::vector<TFPrimitive*> selection,
-                  QObject* parent) {
+                  const QObject* parent) {
     auto* action = menu->addAction(utilqt::toQString(name));
     const int iconWidth = utilqt::emToPx(menu, 11);
     action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
@@ -257,12 +257,12 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
 
     const auto addPresetActions = [presets, parent, property, selection = std::move(selection)](
                                       const std::filesystem::path& basePath) {
-        auto* factory = util::getDataReaderFactory();
-        auto files = filesystem::getDirectoryContentsRecursively(basePath);
+        const auto* factory = util::getDataReaderFactory();
+        const auto files = filesystem::getDirectoryContentsRecursively(basePath);
         for (const auto& file : files) {
             if (auto reader = factory->getReaderForTypeAndExtension<TransferFunction>(file)) {
                 util::exceptionGuard([&]() {
-                    auto tf = reader->readData(basePath / file);
+                    const auto tf = reader->readData(basePath / file);
                     tfAction(file.string(), std::move(*tf), presets, property, selection, parent);
                 });
             }
@@ -274,7 +274,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
         [presets, addPresetActions]() {
             for (const auto& im :
                  InviwoApplication::getPtr()->getModuleManager().getInviwoModules()) {
-                auto moduleTFPath = im.getPath(ModulePath::TransferFunctions);
+                const auto moduleTFPath = im.getPath(ModulePath::TransferFunctions);
                 if (!std::filesystem::is_directory(moduleTFPath)) continue;
                 addPresetActions(moduleTFPath);
             }
@@ -362,8 +362,8 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
     presets->setEnabled(!property->getReadOnly());
     presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(utilqt::emToPx(presets, 11)));
 
-    auto generateN = [property](colorbrewer::Category category, colorbrewer::Family family,
-                                bool discrete) {
+    const auto generateN = [property](colorbrewer::Category category, colorbrewer::Family family,
+                                      bool discrete) {
         return [category, family, discrete, property]() {
             GenerateNDialog dialog;
             if (category != colorbrewer::Category::Diverging) {
@@ -379,7 +379,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
                     auto start = dialog.start->value();
                     auto middle = dialog.middle->value();
                     auto stop = dialog.stop->value();
-                    auto steps = dialog.steps->value();
+                    const auto steps = dialog.steps->value();
 
                     if (!dialog.normalized->isChecked()) {
                         if (const auto* dataMap = property->data().getDataMap()) {
@@ -400,21 +400,21 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
         [presets, property, parent, generateN, selection = std::move(selection)]() {
             using enum colorbrewer::Category;
             for (auto category : {Diverging, Qualitative, Sequential}) {
-                for (auto discrete : {true, false}) {
+                for (const auto discrete : {true, false}) {
 
-                    auto categoryName =
+                    const auto categoryName =
                         fmt::format("{} {}", category, (discrete ? " Discrete" : " Contiguous"));
-                    auto first = colorbrewer::getFamiliesForCategory(category).front();
-                    auto categoryTF = colorbrewer::getTransferFunction(
+                    const auto first = colorbrewer::getFamiliesForCategory(category).front();
+                    const auto categoryTF = colorbrewer::getTransferFunction(
                         category, first, colorbrewer::getMaxNumberOfColorsForFamily(first),
                         discrete, 0.5);
                     auto* categoryMenu = addCategory(categoryName, presets, categoryTF);
 
-                    for (auto family : colorbrewer::getFamiliesForCategory(category)) {
+                    for (const auto family : colorbrewer::getFamiliesForCategory(category)) {
                         const auto max = colorbrewer::getMaxNumberOfColorsForFamily(family);
                         const auto min = colorbrewer::getMinNumberOfColorsForFamily(family);
 
-                        auto familyTF =
+                        const auto familyTF =
                             colorbrewer::getTransferFunction(category, family, max, discrete, 0.5);
                         auto* familyMenu = addCategory(toString(family), categoryMenu, familyTF);
                         for (auto n = min; n < max; ++n) {
@@ -424,7 +424,7 @@ QMenu* addTFColorbrewerPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctio
                                      familyMenu, property, selection, parent);
                         }
 
-                        auto* action = familyMenu->addAction("Generate...");
+                        const auto* action = familyMenu->addAction("Generate...");
                         QObject::connect(action, &QAction::triggered, presets,
                                          generateN(category, family, discrete));
                     }
@@ -477,7 +477,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
     const auto addAction = [parent, property, selection = std::move(selection)](
                                QMenu* menu, std::span<const glm::vec3> points,
                                std::string_view name, bool discrete) {
-        auto tf = colorListToTF(points, discrete);
+        const auto tf = colorListToTF(points, discrete);
         tfAction(name, tf, menu, property, selection, parent);
     };
 
@@ -491,7 +491,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
                     [category, addAction]() {
-                        for (auto cm : scm::allContinuous()) {
+                        for (const auto cm : scm::allContinuous()) {
                             addAction(category, scm::get(cm), format_as(cm), false);
                         }
                     },
@@ -503,7 +503,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
                     [category, addAction]() {
-                        for (auto cm : scm::allCyclic()) {
+                        for (const auto cm : scm::allCyclic()) {
                             addAction(category, scm::get(cm), format_as(cm), false);
                         }
                     },
@@ -516,7 +516,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
                     [category, addAction]() {
-                        for (auto cm : scm::allCategorical()) {
+                        for (const auto cm : scm::allCategorical()) {
                             addAction(category, scm::get(cm), format_as(cm), true);
                         }
                     },
@@ -530,7 +530,7 @@ QMenu* addScientificColorMapsPresetsMenu(QWidget* parent, QMenu* menu,
                 QObject::connect(
                     category, &QMenu::aboutToShow, category,
                     [category, addAction, size]() {
-                        for (auto cm : scm::allDiscrete()) {
+                        for (const auto cm : scm::allDiscrete()) {
                             addAction(category, scm::get(cm, size), format_as(cm), true);
                         }
                     },

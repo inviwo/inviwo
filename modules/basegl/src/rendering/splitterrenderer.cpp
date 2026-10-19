@@ -134,13 +134,13 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
 
     if (direction == splitter::Direction::Horizontal) {
         // rotate by 90 degree for horizontal split
-        mat4 rotMat = glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
+        const mat4 rotMat = glm::rotate(-glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f));
         posToNDC = rotMat * posToNDC;
         mHandle = rotMat * mHandle;
         mTri = rotMat * mTri;
     }
 
-    if (auto count = pos.size(); maxSplittersInShader_ != count) {
+    if (const auto count = pos.size(); maxSplittersInShader_ != count) {
         shader_.getGeometryShaderObject()->addShaderDefine("NUM_SPLITTERS", std::to_string(count));
         shader_.getGeometryShaderObject()->addShaderDefine("NUM_OUT_VERTICES",
                                                            std::to_string(4 * count));
@@ -151,8 +151,8 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
         pickingMapper_.resize(maxSplittersInShader_);
     }
 
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     MeshDrawerGL::DrawObject drawer(mesh_.getRepresentation<MeshGL>(), mesh_.getDefaultMeshInfo());
 
     shader_.activate();
@@ -213,7 +213,7 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
     bool triggerUpdate = false;
     const int pickId = static_cast<int>(e->getPickedId());
 
-    auto moveAction = [&](dvec2 screenPos) {
+    const auto moveAction = [&](dvec2 screenPos) {
         if (!dragAction_) return;
 
         // screenPos in normalized screen coords [0,1]

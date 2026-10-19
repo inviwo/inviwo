@@ -112,7 +112,7 @@ bool ColumnMetaDataProperty::getDrop() const { return drop_.get(); }
 std::string ColumnMetaDataProperty::getType() const { return type_.get(); }
 
 void ColumnMetaDataProperty::updateForNewColumn(const Column& col, util::OverwriteState overwrite) {
-    auto type = [](const Column& col) -> std::string_view {
+    const auto type = [](const Column& col) -> std::string_view {
         switch (col.getColumnType()) {
             case ColumnType::Categorical: return "Categorical";
             case ColumnType::Index:       return "Index";

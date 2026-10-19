@@ -50,8 +50,8 @@ class IVW_MODULE_ANIMATION_API ControlKeyframe : public BaseKeyframe {
 public:
     using value_type = void;
     ControlKeyframe() = default;
-    ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
-                    Seconds jumpTime = Seconds{0});
+    explicit ControlKeyframe(Seconds time, ControlAction action = ControlAction::Pause,
+                             Seconds jumpTime = Seconds{0});
     ControlKeyframe(const ControlKeyframe& rhs);
     ControlKeyframe& operator=(const ControlKeyframe& that);
     virtual ~ControlKeyframe();

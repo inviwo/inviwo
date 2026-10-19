@@ -232,9 +232,9 @@ const animation::DemoController& AnimationModule::getDemoController() const {
 
 bool AnimationModule::Converter::convert(TxElement* root) {
     using namespace xml;
-    std::vector<ElementMatcher> selector{{ElementMatcher{"Animation", {}}},
-                                         {ElementMatcher{"tracks", {}}},
-                                         {ElementMatcher{"track", {}}}};
+    const std::vector<ElementMatcher> selector{{ElementMatcher{"Animation", {}}},
+                                               {ElementMatcher{"tracks", {}}},
+                                               {ElementMatcher{"track", {}}}};
     bool res = false;
     switch (version_) {
         case 0: {

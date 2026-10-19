@@ -143,7 +143,7 @@ LayerInformation::LayerInformation()
 void LayerInformation::process() {
     using enum util::OverwriteState;
 
-    auto layer = layer_.getData();
+    const auto layer = layer_.getData();
     layerInfo_.updateForNewLayer(*layer, Yes);
 
     const auto dim = layer->getDimensions();
@@ -156,7 +156,7 @@ void LayerInformation::process() {
     util::updateDefaultState(basis_, layer->getBasis(), Yes);
     util::updateDefaultState(offset_, layer->getOffset(), Yes);
 
-    auto m = trans.getTextureToWorldMatrix();
+    const auto m = trans.getTextureToWorldMatrix();
     const dvec4 dx{m * dvec4{1.0 / static_cast<double>(dim.x), 0, 0, 0}};
     const dvec4 dy{m * dvec4{0, 1.0 / static_cast<double>(dim.y), 0, 0}};
     const dvec2 ts{glm::length(dx), glm::length(dy)};

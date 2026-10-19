@@ -166,7 +166,7 @@ public:
         if (const auto* resource = manager_->get(group, item)) {
             if (index.column() == Cols::Dims) {
                 fmt::memory_buffer buff;
-                auto out = fmt::appender(buff);
+                const auto out = fmt::appender(buff);
                 fmt::format_to(out, "{}", resource->dims.x);
                 if (resource->dims.y != 0) {
                     fmt::format_to(out, "x{}", resource->dims.y);

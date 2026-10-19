@@ -130,23 +130,23 @@ void RBFVectorFieldGenerator2D::process() {
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get());
 
     int row = 0;
-    for (auto& a : samples_) {
+    for (const auto& a : samples_) {
         int col = 0;
-        for (auto& b : samples_) {
-            auto r = glm::distance(a.first, b.first);
+        for (const auto& b : samples_) {
+            const auto r = glm::distance(a.first, b.first);
             A(row, col++) = shape_.get() + gaussian_.evaluate(r);
         }
         bx(row) = a.second.x;
         by(row++) = a.second.y;
     }
 
-    auto solverX = A.llt();
-    auto solverY = A.llt();
+    const auto solverX = A.llt();
+    const auto solverY = A.llt();
 
     xx = solverX.solve(bx);
     xy = solverY.solve(by);
 
-    auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
+    const auto img = std::make_shared<Image>(size_.get(), DataVec2Float32::get());
     img->getColorLayer()->setSwizzleMask(
         {ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero, ImageChannel::One});
     auto data =
@@ -163,8 +163,8 @@ void RBFVectorFieldGenerator2D::process() {
             vec2 v(0, 0);
             int s = 0;
             for (; s < seeds_.get(); s++) {
-                double r = glm::distance(p, samples_[s].first);
-                auto w = gaussian_.evaluate(r);
+                const double r = glm::distance(p, samples_[s].first);
+                const auto w = gaussian_.evaluate(r);
                 v.x += static_cast<float>(xx(s) * w);
                 v.y += static_cast<float>(xy(s) * w);
             }
@@ -175,11 +175,11 @@ void RBFVectorFieldGenerator2D::process() {
 }
 
 dvec2 RBFVectorFieldGenerator2D::randomVector() {
-    dvec2 v(1, 0);
+    const dvec2 v(1, 0);
 
-    auto d = theta_(mt_);
-    auto c = std::cos(d);
-    auto s = std::sin(d);
+    const auto d = theta_(mt_);
+    const auto c = std::cos(d);
+    const auto s = std::sin(d);
     return (mat2(c, s, -s, c) * v) * static_cast<float>((x_(mt_) * 2 - 1));
 }
 
@@ -193,8 +193,8 @@ void RBFVectorFieldGenerator2D::createSamples() {
     samples_.resize(seeds_.get());
 
     std::generate(samples_.begin(), samples_.end(), [&]() {
-        auto x = x_(mt_);
-        auto y = x_(mt_);
+        const auto x = x_(mt_);
+        const auto y = x_(mt_);
         return std::make_pair(dvec2(x, y), randomVector());
     });
 }
@@ -203,7 +203,7 @@ void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
 
-    for (auto sample : samples_) {
+    for (const auto sample : samples_) {
         sx.push_back(sample.first);
         sy.push_back(sample.second);
     }

@@ -140,8 +140,8 @@ auto erase_remove_if(T& cont, Pred pred)
     -> decltype(std::distance(std::declval<T>().begin(), std::declval<T>().end())) {
     using std::begin;
     using std::end;
-    auto it = std::remove_if(begin(cont), end(cont), pred);
-    auto nelem = std::distance(it, cont.end());
+    const auto it = std::remove_if(begin(cont), end(cont), pred);
+    const auto nelem = std::distance(it, cont.end());
     cont.erase(it, cont.end());
     return nelem;
 }
@@ -257,7 +257,7 @@ bool contains_if(const T& cont, Pred pred) {
 
 template <typename T, typename P>
 auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
-    auto it = std::ranges::find_if(cont, pred);
+    const auto it = std::ranges::find_if(cont, pred);
     if (it != std::ranges::end(cont)) {
         return *it;
     } else {
@@ -296,7 +296,7 @@ bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_t
 
 template <typename T, typename V>
 auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
-    auto it = cont.find(elem);
+    const auto it = cont.find(elem);
     if (it != end(cont)) {
         return it->second;
     } else {
@@ -307,7 +307,7 @@ auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
 template <typename T, typename V, typename Callable>
 auto map_find_or_null(T& cont, const V& elem, Callable f) ->
     typename std::invoke_result_t<Callable, typename T::mapped_type> {
-    auto it = cont.find(elem);
+    const auto it = cont.find(elem);
     if (it != end(cont)) {
         return f(it->second);
     } else {

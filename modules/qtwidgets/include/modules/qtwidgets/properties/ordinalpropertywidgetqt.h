@@ -153,7 +153,7 @@ OrdinalLikePropertyWidgetQt<Prop, Sem>::OrdinalLikePropertyWidgetQt(Prop* proper
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
 
-    auto factory = [this](size_t row, size_t col) {
+    const auto factory = [this](size_t row, size_t col) {
         auto editor = [&]() {
             if constexpr (Sem == OrdinalPropertyWidgetQtSemantics::SpinBox) {
                 return new OrdinalSpinBoxWidget<BT>();

@@ -249,8 +249,8 @@ template <typename T>
 void SequenceToDataFrame<T>::process() {
     const auto sequence = inport_.getData();
 
-    auto df = std::make_shared<DataFrame>();
-    auto index = df->addColumn<int>("index");
+    const auto df = std::make_shared<DataFrame>();
+    const auto index = df->addColumn<int>("index");
     auto cols = SequenceToDataFrameTraits<T>::header(*df);
 
     for (auto [i, item] : util::enumerate(*sequence)) {

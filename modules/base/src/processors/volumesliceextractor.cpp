@@ -168,7 +168,7 @@ void VolumeSliceExtractor::invokeEvent(Event* event) {
 }
 
 void VolumeSliceExtractor::shiftSlice(int shift) {
-    auto newSlice = static_cast<size_t>(sliceNumber_.get() + shift);
+    const auto newSlice = static_cast<size_t>(sliceNumber_.get() + shift);
     if (newSlice >= sliceNumber_.getMinValue() && newSlice <= sliceNumber_.getMaxValue()) {
         sliceNumber_.set(newSlice);
     }
@@ -238,7 +238,7 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
 
     const auto imgdim = sliceDimensions(voldim, state.axis);
 
-    auto res = state.cache->getTypedUnused<D>(imgdim);
+    const auto res = state.cache->getTypedUnused<D>(imgdim);
     auto sliceImage = res.first;
     auto layerrep = res.second;
     auto layerdata = layerrep->getDataTyped();
@@ -249,32 +249,32 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
 
     switch (state.axis) {
         case CartesianCoordinateAxis::X: {
-            util::IndexMapper3D vm(voldim);
-            util::IndexMapper2D im(imgdim);
-            auto x = glm::clamp(state.slice, size_t{0}, voldim.x - 1);
+            const util::IndexMapper3D vm(voldim);
+            const util::IndexMapper2D im(imgdim);
+            const auto x = glm::clamp(state.slice, size_t{0}, voldim.x - 1);
             for (size_t z = 0; z < voldim.z; z++) {
                 for (size_t y = 0; y < voldim.y; y++) {
-                    auto offsetVolume = vm(x, y, z);
-                    auto offsetImage = im(z, y);
+                    const auto offsetVolume = vm(x, y, z);
+                    const auto offsetImage = im(z, y);
                     layerdata[offsetImage] = f(voldata[offsetVolume]);
                 }
             }
             break;
         }
         case CartesianCoordinateAxis::Y: {
-            auto y = glm::clamp(state.slice, size_t{0}, voldim.y - 1);
+            const auto y = glm::clamp(state.slice, size_t{0}, voldim.y - 1);
             const size_t dataSize = voldim.x;
             const size_t initialStartPos = y * voldim.x;
             for (size_t j = 0; j < voldim.z; j++) {
-                auto offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
-                auto offsetImage = j * voldim.x;
+                const auto offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                const auto offsetImage = j * voldim.x;
                 std::transform(voldata + offsetVolume, voldata + offsetVolume + dataSize,
                                layerdata + offsetImage, f);
             }
             break;
         }
         case CartesianCoordinateAxis::Z: {
-            auto z = glm::clamp(state.slice, size_t{0}, voldim.z - 1);
+            const auto z = glm::clamp(state.slice, size_t{0}, voldim.z - 1);
             const size_t dataSize = voldim.x * voldim.y;
             const size_t initialStartPos = z * voldim.x * voldim.y;
             std::transform(voldata + initialStartPos, voldata + initialStartPos + dataSize,
@@ -303,8 +303,8 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     if (useTF) {
         using D = glm::vec<4, V>;
-        auto mapData = [&dm = vrprecision->getOwner()->dataMap, tf = state.tf,
-                        channel = state.channel, offset = state.alphaOffset](T value) {
+        const auto mapData = [&dm = vrprecision->getOwner()->dataMap, tf = state.tf,
+                              channel = state.channel, offset = state.alphaOffset](T value) {
             auto sample = tf->sample(
                 glm::clamp(dm.mapFromDataToNormalized(util::glmcomp(value, channel)), 0.0, 1.0));
             sample.a = glm::clamp(sample.a + offset, 0.0f, 1.0f);
@@ -313,7 +313,7 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
         return extractSliceInternal<T, D>(vrprecision, state, mapData);
     } else {
         using D = util::same_extent_t<T, V>;
-        auto mapData = [&dm = vrprecision->getOwner()->dataMap](T value) {
+        const auto mapData = [&dm = vrprecision->getOwner()->dataMap](T value) {
             return util::glm_convert_normalized<D>(glm::clamp(dm.mapFromDataToNormalized(value),
                                                               util::same_extent_t<T, double>(0.0),
                                                               util::same_extent_t<T, double>(1.0)));
@@ -325,7 +325,7 @@ std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 }  // namespace detail
 
 void VolumeSliceExtractor::process() {
-    auto vol = inport_.getData();
+    const auto vol = inport_.getData();
 
     if (tfGroup_.isChecked() &&
         channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
@@ -335,7 +335,7 @@ void VolumeSliceExtractor::process() {
     }
 
     const auto dims(vol->getDimensions());
-    double pos{sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
+    const double pos{sliceNumber_.get() / static_cast<double>(sliceNumber_.getMaxValue())};
     switch (sliceAlongAxis_.get()) {
         case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
@@ -399,7 +399,7 @@ void VolumeSliceExtractor::process() {
 
 void VolumeSliceExtractor::eventShiftSlice(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
-    int steps = static_cast<int>(wheelEvent->delta().y);
+    const int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
 }
 
@@ -408,7 +408,7 @@ void VolumeSliceExtractor::eventStepSliceUp(Event*) { shiftSlice(1); }
 void VolumeSliceExtractor::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
 void VolumeSliceExtractor::eventGestureShiftSlice(Event* event) {
-    GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
+    const GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     if (gestureEvent->deltaPos().y < 0)
         shiftSlice(1);
     else if (gestureEvent->deltaPos().y > 0)

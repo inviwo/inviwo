@@ -44,7 +44,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BASE_API LayerSeriesSource : public Processor {
 public:
-    LayerSeriesSource(InviwoApplication* app);
+    explicit LayerSeriesSource(InviwoApplication* app);
 
     virtual void process() override;
 

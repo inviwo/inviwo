@@ -71,7 +71,7 @@ void CompositeProperty::set(const Property* srcProperty) {
 }
 
 void CompositeProperty::set(const CompositeProperty* src) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     const auto& subProperties = src->getProperties();
     if (subProperties.size() == properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {
@@ -113,7 +113,7 @@ CompositeProperty& CompositeProperty::setCurrentStateAsDefault() {
 }
 
 CompositeProperty& CompositeProperty::resetToDefaultState() {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     for (auto elem : properties_) {
         elem->resetToDefaultState();
     }

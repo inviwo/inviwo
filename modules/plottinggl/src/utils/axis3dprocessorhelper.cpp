@@ -91,7 +91,7 @@ std::array<AxisParams, 3> findAxisPositions(dvec3 viewDirection) {
         const auto normal = glm::dot(edge.faceNormals[0], viewDirection) > 0 ? edge.faceNormals[0]
                                                                              : edge.faceNormals[1];
         const auto axis = corners[edge.idx[1]] - corners[edge.idx[0]];
-        auto dir = glm::cross(axis, normal);
+        const auto dir = glm::cross(axis, normal);
         return dir * glm::sign(glm::dot(center - corners[edge.idx[1]], dir));
     };
 

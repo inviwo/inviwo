@@ -48,7 +48,7 @@ public:
                                    double nearPlane = cameradefaults::nearPlane,
                                    double farPlane = cameradefaults::farPlane,
                                    double aspectRatio = cameradefaults::aspectRatio) const {
-        auto it = this->map_.find(key);
+        const auto it = this->map_.find(key);
         if (it != end(this->map_)) {
             return it->second->create(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio);
         } else {

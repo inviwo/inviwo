@@ -76,7 +76,7 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickMarks, dv
     }
 
     const size_t numTicks = tickMarks.size();
-    auto posBuffer = std::make_shared<Buffer<vec3>>(numTicks * 2, BufferUsage::Static);
+    const auto posBuffer = std::make_shared<Buffer<vec3>>(numTicks * 2, BufferUsage::Static);
     auto& vertices = posBuffer->getEditableRAMRepresentation()->getDataContainer();
 
     for (size_t i = 0u; i < numTicks; ++i) {
@@ -126,7 +126,7 @@ void getLabelPositions2D(const std::vector<double>& positions, bool mirrored, ve
     } else {
         const auto denom = positions.size() > 1 ? static_cast<float>(positions.size()) - 1.0f : 1.f;
         const vec2 scaling{axisDir * screenLength / denom};
-        auto seq = util::make_sequence(size_t{0}, positions.size(), size_t{1});
+        const auto seq = util::make_sequence(size_t{0}, positions.size(), size_t{1});
         std::ranges::transform(seq, dest.begin(), [&](size_t i) {
             return ivec2{glm::round(labelOrigin + scaling * static_cast<double>(i))};
         });
@@ -204,8 +204,8 @@ std::pair<vec2, vec2> tickBoundingRect(const AxisData& data,
     const auto axisLength = axisRange.y - axisRange.x;
     const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
 
-    auto getSize = [](vec2 pos, vec2 tickDir, TickData::Style style,
-                      bool flip) -> std::pair<vec2, vec2> {
+    const auto getSize = [](vec2 pos, vec2 tickDir, TickData::Style style,
+                            bool flip) -> std::pair<vec2, vec2> {
         vec2 tickOffset;
         switch (style) {
             using enum TickData::Style;

@@ -83,7 +83,7 @@ public:
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::const_iterator>;
 
-    BaseTrack(std::string_view name, size_t priority = 0);
+    explicit BaseTrack(std::string_view name, size_t priority = 0);
 
     virtual ~BaseTrack();
 
@@ -270,7 +270,7 @@ template <std::derived_from<KeyframeSequence> Seq>
 std::optional<Seconds> BaseTrack<Seq>::getPrevTime(Seconds at) const {
     std::optional<Seconds> prevKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
-        if (auto t = sequence->getPrevTime(at)) {
+        if (const auto t = sequence->getPrevTime(at)) {
             if (!prevKeyframeTime) {
                 prevKeyframeTime = t;
             } else {
@@ -285,7 +285,7 @@ template <std::derived_from<KeyframeSequence> Seq>
 std::optional<Seconds> BaseTrack<Seq>::getNextTime(Seconds at) const {
     std::optional<Seconds> nextKeyframeTime = std::nullopt;
     for (auto& sequence : sequences_) {
-        if (auto t = sequence->getNextTime(at)) {
+        if (const auto t = sequence->getNextTime(at)) {
             if (!nextKeyframeTime) {
                 nextKeyframeTime = t;
             } else {
@@ -372,7 +372,7 @@ auto BaseTrack<Seq>::end() const -> const_iterator {
  */
 template <std::derived_from<KeyframeSequence> Seq>
 typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
-    auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
+    const auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
         std::vector<std::unique_ptr<key_type>> keys;
         keys.push_back(std::move(key));
         auto seq = add(detail::DefaultSequenceCreator<Seq>::create(std::move(keys)));
@@ -385,7 +385,7 @@ typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewS
     }
 
     // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(this->begin(), this->end(), time);
+    const auto it = std::upper_bound(this->begin(), this->end(), time);
     if (it == this->begin()) {  // case 1
         if (asNewSequence) {
             return addNew(std::move(key));
@@ -416,7 +416,7 @@ typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewS
 template <std::derived_from<KeyframeSequence> Seq>
 auto BaseTrack<Seq>::addToClosestSequence(std::unique_ptr<key_type> key) -> key_type* {
     // 'it' will be the first seq. with a first time larger then 'to'.
-    auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
+    const auto it = std::upper_bound(this->begin(), this->end(), key->getTime());
 
     if (it == this->begin()) {  // case 1
         return it->add(std::move(key));
@@ -456,8 +456,8 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
 
 template <std::derived_from<KeyframeSequence> Seq>
 Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
-    auto it = std::upper_bound(sequences_.begin(), sequences_.end(), sequence,
-                               [](const auto& a, const auto& b) { return *a < *b; });
+    const auto it = std::upper_bound(sequences_.begin(), sequences_.end(), sequence,
+                                     [](const auto& a, const auto& b) { return *a < *b; });
 
     if (it != sequences_.begin()) {
         if ((*std::prev(it))->getLastTime() > sequence->getFirstTime()) {
@@ -468,7 +468,7 @@ Seq* BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
         throw Exception("Overlapping Sequence");
     }
 
-    auto inserted = sequences_.insert(it, std::move(sequence));
+    const auto inserted = sequences_.insert(it, std::move(sequence));
     this->notifyKeyframeSequenceAdded(this, inserted->get());
     (*inserted)->KeyframeSequenceObserverble::addObserver(this);
     return inserted->get();
@@ -500,8 +500,8 @@ std::unique_ptr<Keyframe> BaseTrack<Seq>::remove(Keyframe* key) {
 }
 template <std::derived_from<KeyframeSequence> Seq>
 std::unique_ptr<KeyframeSequence> BaseTrack<Seq>::remove(KeyframeSequence* seq) {
-    auto it = std::find_if(sequences_.begin(), sequences_.end(),
-                           [&](auto& elem) { return elem.get() == seq; });
+    const auto it = std::find_if(sequences_.begin(), sequences_.end(),
+                                 [&](auto& elem) { return elem.get() == seq; });
     if (it != sequences_.end()) {
         auto res = std::move(*it);
         sequences_.erase(it);
@@ -549,17 +549,17 @@ void BaseTrack<Seq>::serialize(Serializer& s) const {
 template <std::derived_from<KeyframeSequence> Seq>
 void BaseTrack<Seq>::deserialize(Deserializer& d) {
     {
-        auto old = name_;
+        const auto old = name_;
         d.deserialize("name", name_);
         if (old != name_) this->notifyNameChanged(this);
     }
     {
-        auto old = enabled_;
+        const auto old = enabled_;
         d.deserialize("enabled", enabled_);
         if (old != enabled_) this->notifyEnabledChanged(this);
     }
     {
-        auto old = priority_;
+        const auto old = priority_;
         d.deserialize("priority", priority_);
         if (old != priority_) this->notifyPriorityChanged(this);
     }

@@ -54,7 +54,7 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
     id->setDefaultTextColor(Qt::lightGray);
     id->setFont(getFont(linkdialog::FontType::Class));
     id->setCrop(static_cast<int>(rect().width() - 2.0 * linkdialog::offset));
-    auto offset = id->boundingRect().height();
+    const auto offset = id->boundingRect().height();
     id->setPos(rect().bottomLeft() + QPointF(linkdialog::offset, -linkdialog::offset - offset));
 
     name->setText(utilqt::toQString(processor->getDisplayName()));
@@ -109,7 +109,7 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
                                             QWidget*) {
     p->save();
 
-    QPen blackPen(QColor(0, 0, 0), 1);
+    const QPen blackPen(QColor(0, 0, 0), 1);
     p->setPen(blackPen);
     p->setRenderHint(QPainter::Antialiasing, true);
     p->setViewTransformEnabled(false);

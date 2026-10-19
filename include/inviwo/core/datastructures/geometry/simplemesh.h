@@ -36,7 +36,8 @@ namespace inviwo {
 
 class IVW_CORE_API SimpleMesh : public Mesh {
 public:
-    SimpleMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None);
+    explicit SimpleMesh(DrawType dt = DrawType::Points,
+                        ConnectivityType ct = ConnectivityType::None);
     SimpleMesh(const SimpleMesh& rhs) = default;
     SimpleMesh& operator=(const SimpleMesh& that) = default;
     virtual SimpleMesh* clone() const override;

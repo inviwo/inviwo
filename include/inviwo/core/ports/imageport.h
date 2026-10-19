@@ -376,7 +376,7 @@ Document BaseImageInport<N>::getInfo() const {
 
     auto doc = DataInport<Image, N>::getInfo();
 
-    auto t = doc.get({P{"table"}});
+    const auto t = doc.get({P{"table"}});
 
     utildoc::TableBuilder tb(t);
     tb(H("Outport Determining Size"), outportDeterminesSize_);

@@ -71,7 +71,7 @@ public:
 
     static std::string listFormats();
 
-    operator bool() const;
+    explicit operator bool() const;
 
     const AVOutputFormat* of;
 

@@ -217,7 +217,7 @@ void PersistenceDiagramPlotGL::plot(ImageOutport& dest, ImageInport& src, IndexB
 
 void PersistenceDiagramPlotGL::plot(const ivec2& start, const ivec2& size, IndexBuffer* indices,
                                     bool useAxisRanges) {
-    utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
+    const utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
     plot(size, indices, useAxisRanges);
 }
 
@@ -248,7 +248,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         auto clipped = algorithm::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y),
                                                           rectMin, rectMax);
         if (std::get<0>(clipped)) {
-            uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+            const uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
 
             vertices.push_back({std::get<1>(clipped), properties_.pointColor_.get(), 0});
             vertices.push_back({std::get<2>(clipped), properties_.pointColor_.get(), 0});
@@ -291,15 +291,15 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         selectedIndices = indices->getRAMRepresentation()->getDataContainer();
     } else {
         // no indices given, draw all data points
-        auto seq = util::make_sequence<uint32_t>(0, static_cast<uint32_t>(xyPairs.size()), 1);
+        const auto seq = util::make_sequence<uint32_t>(0, static_cast<uint32_t>(xyPairs.size()), 1);
         selectedIndices = std::vector<uint32_t>(seq.begin(), seq.end());
     }
 
     {
         // vertical lines
         uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
-        for (auto& index : selectedIndices) {
-            auto& point = xyPairs[index];
+        for (const auto& index : selectedIndices) {
+            const auto& point = xyPairs[index];
 
             auto clipped = algorithm::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                               rectMin, rectMax);
@@ -317,27 +317,27 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
     // data points
     if (properties_.showPoints_.get()) {
-        auto normalizeValue = [range = minmaxC_](double value) {
+        const auto normalizeValue = [range = minmaxC_](double value) {
             return (value - range.x) / (range.y - range.x);
         };
         auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
 
-        auto getColor = [this,
-                         hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
-                         buffer = colorBuffer, normalizeValue](uint32_t index) {
-            if (hoverEnabled && util::contains(hoveredIndices_, index)) {
-                return properties_.hoverColor_.get();
-            } else if (util::contains(selectedIndices_, index)) {
-                return properties_.selectionColor_.get();
-            } else if (color_) {
-                return properties_.tf_.get().sample(normalizeValue(buffer->getAsDouble(index)));
-            } else {
-                return properties_.pointColor_.get();
-            }
-        };
+        const auto getColor =
+            [this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
+             buffer = colorBuffer, normalizeValue](uint32_t index) {
+                if (hoverEnabled && util::contains(hoveredIndices_, index)) {
+                    return properties_.hoverColor_.get();
+                } else if (util::contains(selectedIndices_, index)) {
+                    return properties_.selectionColor_.get();
+                } else if (color_) {
+                    return properties_.tf_.get().sample(normalizeValue(buffer->getAsDouble(index)));
+                } else {
+                    return properties_.pointColor_.get();
+                }
+            };
 
         uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
-        for (auto& index : selectedIndices) {
+        for (const auto& index : selectedIndices) {
             const vec2 pLower(xyPairs[index].x);
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
 
@@ -355,15 +355,16 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
     mesh.addVertices(vertices);
 
-    MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(), mesh.getDefaultMeshInfo());
+    const MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(),
+                                          mesh.getDefaultMeshInfo());
 
-    utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::DepthFuncState depthFunc(GL_LEQUAL);
+    const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
-    vec2 minmaxX = useAxisRanges ? vec2(properties_.xAxis_.range_.get()) : minmaxX_;
-    vec2 minmaxY = useAxisRanges ? vec2(properties_.yAxis_.range_.get()) : minmaxY_;
+    const vec2 minmaxX = useAxisRanges ? vec2(properties_.xAxis_.range_.get()) : minmaxX_;
+    const vec2 minmaxY = useAxisRanges ? vec2(properties_.yAxis_.range_.get()) : minmaxY_;
     // adjust all margins by axis margin
-    vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
+    const vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
 
     lineShader_.activate();
     lineShader_.setUniform("minmaxX", minmaxX);
@@ -455,7 +456,7 @@ void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col, Type 
 void PersistenceDiagramPlotGL::setXAxisData(std::shared_ptr<const BufferBase> buffer) {
     xAxis_ = buffer;
     if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
+        const auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
         minmaxX_.x = static_cast<float>(minmax.first.x);
         minmaxX_.y = static_cast<float>(minmax.second.x);
 
@@ -470,7 +471,7 @@ void PersistenceDiagramPlotGL::setXAxisData(std::shared_ptr<const BufferBase> bu
 void PersistenceDiagramPlotGL::setYAxisData(std::shared_ptr<const BufferBase> buffer) {
     yAxis_ = buffer;
     if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
+        const auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
         minmaxY_.y = static_cast<float>(minmax.second.x);
 
         properties_.yAxis_.setRange(dvec2(properties_.yAxis_.range_.get().x, minmaxY_.y));
@@ -480,7 +481,7 @@ void PersistenceDiagramPlotGL::setYAxisData(std::shared_ptr<const BufferBase> bu
 void PersistenceDiagramPlotGL::setColorData(std::shared_ptr<const BufferBase> buffer) {
     color_ = buffer;
     if (buffer) {
-        auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
+        const auto minmax = util::bufferMinMax(buffer.get(), IgnoreSpecialValues::Yes);
         minmaxC_.x = static_cast<float>(minmax.first.x);
         minmaxC_.y = static_cast<float>(minmax.second.x);
     }
@@ -530,12 +531,12 @@ void PersistenceDiagramPlotGL::renderAxis(const size2_t& dims) {
 }
 
 void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
-    auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
+    const auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
         if (!indexColumn_) {
             return std::nullopt;
         }
         auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-        auto it = util::find(indexCol, static_cast<uint32_t>(id));
+        const auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
             return *it;
         } else {

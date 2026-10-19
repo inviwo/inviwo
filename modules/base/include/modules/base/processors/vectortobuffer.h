@@ -76,14 +76,14 @@ public:
 
     virtual void process() override {
         if (bufferTarget_.getSelectedValue() == BufferTarget::Data) {
-            auto repr = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
+            const auto repr = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
                 *inport_.getData(), bufferUsage_.getSelectedValue());
-            auto buffer = std::make_shared<Buffer<T, BufferTarget::Data>>(repr);
+            const auto buffer = std::make_shared<Buffer<T, BufferTarget::Data>>(repr);
             outport_.setData(buffer);
         } else {
-            auto repr = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
+            const auto repr = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
                 *inport_.getData(), bufferUsage_.getSelectedValue());
-            auto buffer = std::make_shared<Buffer<T, BufferTarget::Index>>(repr);
+            const auto buffer = std::make_shared<Buffer<T, BufferTarget::Index>>(repr);
             outport_.setData(buffer);
         }
     }

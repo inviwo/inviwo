@@ -114,7 +114,7 @@ void SpotLightSourceProcessor::updateSpotLightSource(SpotLight* lightSource) {
     const vec3 lightPos = lightPosition_.get(CoordinateSpace::World);
     const vec3 dir = -lightPosition_.getDirection(CoordinateSpace::World);
 
-    mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
+    const mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
     lightSource->setWorldMatrix(transformationMatrix);

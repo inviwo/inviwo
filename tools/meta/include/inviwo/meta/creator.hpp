@@ -55,10 +55,10 @@ public:
         std::ostream& log;
     };
 
-    Creator(const std::filesystem::path& inviwoRepo,
-            std::optional<std::filesystem::path> templateDir = {},
-            std::optional<std::filesystem::path> configFile = {},
-            Options opts = {false, false, false, std::cout});
+    explicit Creator(const std::filesystem::path& inviwoRepo,
+                     std::optional<std::filesystem::path> templateDir = {},
+                     std::optional<std::filesystem::path> configFile = {},
+                     Options opts = {false, false, false, std::cout});
 
     void createModule(const std::filesystem::path& modulePath, std::string_view org) const;
     void createFile(const std::filesystem::path& filePath) const;

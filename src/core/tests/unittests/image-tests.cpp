@@ -41,7 +41,7 @@ namespace inviwo {
 
 TEST(ImageTests, constructFromLayers) {
 
-    auto colorLayerRAM = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(
+    const auto colorLayerRAM = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(
         size2_t{2, 2}, LayerType::Color, swizzlemasks::rgba, InterpolationType::Linear,
         wrapping2d::clampAll);
     colorLayerRAM->getDataTyped()[0] = glm::u8vec4(1, 0, 0, 1);
@@ -49,9 +49,9 @@ TEST(ImageTests, constructFromLayers) {
     colorLayerRAM->getDataTyped()[2] = glm::u8vec4(3, 0, 0, 1);
     colorLayerRAM->getDataTyped()[3] = glm::u8vec4(4, 0, 0, 1);
 
-    auto colorLayer = std::make_shared<Layer>(colorLayerRAM);
+    const auto colorLayer = std::make_shared<Layer>(colorLayerRAM);
 
-    auto depthLayerRAM = std::make_shared<LayerRAMPrecision<float>>(
+    const auto depthLayerRAM = std::make_shared<LayerRAMPrecision<float>>(
         size2_t{2, 2}, LayerType::Depth, swizzlemasks::depth, InterpolationType::Linear,
         wrapping2d::clampAll);
     depthLayerRAM->getDataTyped()[0] = 0.1f;
@@ -59,9 +59,9 @@ TEST(ImageTests, constructFromLayers) {
     depthLayerRAM->getDataTyped()[2] = 0.3f;
     depthLayerRAM->getDataTyped()[3] = 0.4f;
 
-    auto depthLayer = std::make_shared<Layer>(depthLayerRAM);
+    const auto depthLayer = std::make_shared<Layer>(depthLayerRAM);
 
-    auto pickingLayerRAM = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(
+    const auto pickingLayerRAM = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(
         size2_t{2, 2}, LayerType::Picking, swizzlemasks::rgba, InterpolationType::Linear,
         wrapping2d::clampAll);
     pickingLayerRAM->getDataTyped()[0] = glm::u8vec4(5, 0, 0, 1);
@@ -69,9 +69,9 @@ TEST(ImageTests, constructFromLayers) {
     pickingLayerRAM->getDataTyped()[2] = glm::u8vec4(7, 0, 0, 1);
     pickingLayerRAM->getDataTyped()[3] = glm::u8vec4(8, 0, 0, 1);
 
-    auto pickingLayer = std::make_shared<Layer>(pickingLayerRAM);
+    const auto pickingLayer = std::make_shared<Layer>(pickingLayerRAM);
 
-    auto image = std::make_shared<Image>(std::vector{colorLayer, depthLayer, pickingLayer});
+    const auto image = std::make_shared<Image>(std::vector{colorLayer, depthLayer, pickingLayer});
 
     EXPECT_EQ(image->getDimensions(), size2_t(2));
     EXPECT_EQ(image->getNumberOfColorLayers(), 1);

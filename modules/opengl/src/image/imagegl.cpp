@@ -172,7 +172,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     // ensure that target has at least same number of color layers
     if (target->colorLayersGL_.size() < source->colorLayersGL_.size()) {
         if (auto targetImage = target->getOwner()) {
-            std::size_t delta = source->colorLayersGL_.size() - target->colorLayersGL_.size();
+            const std::size_t delta = source->colorLayersGL_.size() - target->colorLayersGL_.size();
             for (std::size_t i = 0; i < delta; ++i) {
                 targetImage->addColorLayer(
                     std::make_shared<Layer>(target->colorLayersGL_[0]->getDimensions(),
@@ -187,7 +187,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     }
 
     // Render to FBO, with correct scaling
-    auto state = target->activate(ImageType::AllLayers);
+    const auto state = target->activate(ImageType::AllLayers);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const auto sourceDim = static_cast<vec2>(source->getDimensions());
@@ -269,16 +269,16 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     // Secondary copy using PBO
     // Depth texture
     if (!copyDepth) {
-        auto sDepth = source->getDepthLayerGL()->getTexture();
-        auto tDepth = target->getDepthLayerGL()->getTexture();
+        const auto sDepth = source->getDepthLayerGL()->getTexture();
+        const auto tDepth = target->getDepthLayerGL()->getTexture();
 
         if (sDepth && tDepth) tDepth->loadFromPBO(sDepth.get());
     }
 
     // Picking texture
     if (!pickingCopied && pickingAttachmentID_) {
-        auto sPicking = source->getPickingLayerGL()->getTexture();
-        auto tPicking = target->getPickingLayerGL()->getTexture();
+        const auto sPicking = source->getPickingLayerGL()->getTexture();
+        const auto tPicking = target->getPickingLayerGL()->getTexture();
 
         if (sPicking && tPicking) tPicking->loadFromPBO(sPicking.get());
     }
@@ -371,7 +371,7 @@ void ImageGL::update(bool editable) {
 }
 
 void ImageGL::reAttachAllLayers() {
-    utilgl::ActivateFBO fbo{frameBufferObject_};
+    const utilgl::ActivateFBO fbo{frameBufferObject_};
     frameBufferObject_.detachAllTextures();
     colorAttachmentIDs_.clear();
     pickingAttachmentID_ = std::nullopt;
@@ -397,7 +397,7 @@ void ImageGL::reAttachAllLayers() {
                                              *pickingAttachmentID_);
     }
 
-    if (auto status = frameBufferObject_.status(); status != GL_FRAMEBUFFER_COMPLETE) {
+    if (const auto status = frameBufferObject_.status(); status != GL_FRAMEBUFFER_COMPLETE) {
         throw OpenGLException(SourceContext{}, "Framebuffer ({}) incomplete: {}",
                               frameBufferObject_.getID(),
                               utilgl::framebufferStatusToString(status));

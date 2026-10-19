@@ -95,11 +95,11 @@ void ImageLayer::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
-    utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+    const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
-    TextureUnit colorTexUnit;
-    TextureUnit pickingTexUnit;
-    TextureUnit depthTexUnit;
+    const TextureUnit colorTexUnit;
+    const TextureUnit pickingTexUnit;
+    const TextureUnit depthTexUnit;
 
     int colorUnit = colorTexUnit.getUnitNumber();
     switch (outputLayer_.get()) {

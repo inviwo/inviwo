@@ -51,7 +51,7 @@ class IVW_MODULE_USERINTERFACEGL_API BoxLayout : public Layout {
 public:
     enum class LayoutDirection { Vertical, Horizontal };
 
-    BoxLayout(LayoutDirection direction);
+    explicit BoxLayout(LayoutDirection direction);
     virtual ~BoxLayout() = default;
 
     void setDirection(LayoutDirection direction);

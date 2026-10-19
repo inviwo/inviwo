@@ -65,7 +65,7 @@ DataSpecFormat parseDataSpecifier(std::string_view str, std::string_view line) {
 
     // check for data dimensionality/number of components
     int dims = 1;
-    if (auto pos = str.find('['); pos != std::string_view::npos) {
+    if (const auto pos = str.find('['); pos != std::string_view::npos) {
         if (!str.ends_with(']')) {
             throw DataReaderException(SourceContext{},
                                       "Invalid data dimensions in data specifier: {:?}", line);
@@ -142,7 +142,7 @@ void addDataSpecifier(std::unordered_map<std::string_view, DataSpec>& dataSpecs,
                       const AmiraDict& defines, std::string_view name, std::string_view str,
                       std::string_view line) {
     std::optional<int> size;
-    if (auto it = defines.find(name); it == defines.end()) {
+    if (const auto it = defines.find(name); it == defines.end()) {
         log::warn("Format specifier '{}' was not defined.", line);
     } else {
         ivec4 dims{0};
@@ -232,7 +232,7 @@ ParseLevel parseLine(ParseLevel level, AmiraMeshHeader& header, std::string_view
 }  // namespace
 
 std::pair<dvec3, dvec3> getBoundingBox(const AmiraDict& params) {
-    auto it = params.find("BoundingBox");
+    const auto it = params.find("BoundingBox");
     if (it == params.end()) {
         throw DataReaderException(SourceContext{}, "Missing BoundingBox in Parameters");
     }

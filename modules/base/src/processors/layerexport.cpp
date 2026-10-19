@@ -47,7 +47,7 @@ LayerExport::LayerExport(InviwoApplication* app)
     : DataExport<Layer, LayerInport>{util::getDataWriterFactory(app), "", "image"} {}
 
 const Layer* LayerExport::getData() {
-    if (auto layer = port_.getData()) {
+    if (const auto layer = port_.getData()) {
         return layer.get();
     }
     return nullptr;

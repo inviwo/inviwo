@@ -104,7 +104,7 @@ const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indices_; }
 
 void Mesh::addBuffer(BufferInfo info, std::shared_ptr<BufferBase> buffer) {
-    auto it = std::ranges::find_if(
+    const auto it = std::ranges::find_if(
         buffers_, [&](const auto& item) { return item.first.location == info.location; });
 
     if (it == buffers_.end()) {
@@ -135,7 +135,7 @@ auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<Buf
 }
 
 auto Mesh::removeBuffer(BufferBase* buffer) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
-    if (auto it = std::ranges::find_if(
+    if (const auto it = std::ranges::find_if(
             buffers_, [&](const auto& item) { return item.second.get() == buffer; });
         it != buffers_.end()) {
         auto old = *it;
@@ -150,7 +150,7 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
     if (idx < buffers_.size()) {
         auto old = buffers_[idx];
         if (old.first.location != info.location) {
-            if (auto it = std::ranges::find_if(
+            if (const auto it = std::ranges::find_if(
                     buffers_,
                     [&](const auto& item) { return item.first.location == info.location; });
                 it != buffers_.end()) {
@@ -169,12 +169,12 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
 
 auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr<BufferBase> buff)
     -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
-    if (auto it = std::ranges::find_if(
+    if (const auto it = std::ranges::find_if(
             buffers_, [&](const auto& item) { return item.second.get() == oldbuffer; });
         it != buffers_.end()) {
         auto old = *it;
         if (old.first.location != info.location) {
-            if (auto locit = std::ranges::find_if(
+            if (const auto locit = std::ranges::find_if(
                     buffers_,
                     [&](const auto& item) { return item.first.location == info.location; });
                 locit != buffers_.end()) {
@@ -207,7 +207,7 @@ void Mesh::addIndices(const IndexVector& indices) {
 
 std::shared_ptr<IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
-    auto indices = std::make_shared<IndexBuffer>(indicesRam);
+    const auto indices = std::make_shared<IndexBuffer>(indicesRam);
     addIndices({.dt = dt, .ct = ct}, indices);
     return indicesRam;
 }
@@ -234,8 +234,8 @@ const BufferBase* Mesh::getBuffer(size_t idx) const {
 }
 
 std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
-    if (auto it = std::ranges::find_if(buffers_,
-                                       [&](const auto& item) { return item.first.type == type; });
+    if (const auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.first.type == type; });
         it != buffers_.end()) {
         return {it->second.get(), it->first.location};
     } else {
@@ -244,8 +244,8 @@ std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
 }
 
 std::pair<BufferBase*, int> Mesh::findBuffer(BufferType type) {
-    if (auto it = std::ranges::find_if(buffers_,
-                                       [&](const auto& item) { return item.first.type == type; });
+    if (const auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.first.type == type; });
         it != buffers_.end()) {
         return {it->second.get(), it->first.location};
     } else {
@@ -263,7 +263,7 @@ Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
 }
 
 Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
-    if (auto it = std::ranges::find_if(
+    if (const auto it = std::ranges::find_if(
             buffers_, [&](const auto& item) { return item.second.get() == buffer; });
         it != buffers_.end()) {
         return it->first;
@@ -274,7 +274,7 @@ Mesh::BufferInfo Mesh::getBufferInfo(BufferBase* buffer) const {
 
 void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
     if (idx < buffers_.size()) {
-        if (auto locit = std::ranges::find_if(
+        if (const auto locit = std::ranges::find_if(
                 buffers_, [&](const auto& item) { return item.first.location == info.location; });
             &*locit != &buffers_[idx] && locit != buffers_.end()) {
             throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
@@ -287,10 +287,10 @@ void Mesh::setBufferInfo(size_t idx, BufferInfo info) {
 }
 
 void Mesh::setBufferInfo(BufferBase* buffer, BufferInfo info) {
-    if (auto it = std::ranges::find_if(
+    if (const auto it = std::ranges::find_if(
             buffers_, [&](const auto& item) { return item.second.get() == buffer; });
         it != buffers_.end()) {
-        if (auto locit = std::ranges::find_if(
+        if (const auto locit = std::ranges::find_if(
                 buffers_, [&](const auto& item) { return item.first.location == info.location; });
             locit != it && locit != buffers_.end()) {
             throw Exception(SourceContext{}, "Location '{}' already used in Mesh", info.location);
@@ -316,8 +316,8 @@ BufferBase* Mesh::getBuffer(size_t idx) {
 }
 
 BufferBase* Mesh::getBuffer(BufferType type) {
-    if (auto it = std::ranges::find_if(buffers_,
-                                       [&](const auto& item) { return item.first.type == type; });
+    if (const auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.first.type == type; });
         it != buffers_.end()) {
         return it->second.get();
     } else {
@@ -326,8 +326,8 @@ BufferBase* Mesh::getBuffer(BufferType type) {
 }
 
 const BufferBase* Mesh::getBuffer(BufferType type) const {
-    if (auto it = std::ranges::find_if(buffers_,
-                                       [&](const auto& item) { return item.first.type == type; });
+    if (const auto it = std::ranges::find_if(
+            buffers_, [&](const auto& item) { return item.first.type == type; });
         it != buffers_.end()) {
         return it->second.get();
     } else {

@@ -63,7 +63,7 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                       auto opts = OptionPropertyState<std::string>{};
                       const auto keys = factory_->getKeyView();
                       for (auto& key : keys) opts.options.emplace_back(key);
-                      auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
+                      const auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
                       opts.selectedIndex = it != keys.end() ? std::distance(keys.begin(), it) : 0;
                       opts.help =
                           "The type of camera to use, defaults to a Perspective camera"_help;
@@ -411,7 +411,7 @@ void CameraProperty::serialize(Serializer& s) const {
 
 void CameraProperty::deserialize(Deserializer& d) {
     if (serializationMode_ != PropertySerializationMode::None) {
-        auto aspect = getAspectRatio();
+        const auto aspect = getAspectRatio();
         camera_->configureProperties(*this, false);
         d.deserialize("Camera", camera_);
         hideConfiguredProperties();

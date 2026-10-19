@@ -67,7 +67,7 @@ MeshTexturing::MeshTexturing(std::string_view identifier, Document help, float b
 
 void MeshTexturing::bind(TextureUnitContainer& cont) {
     if (inport.hasData()) {
-        auto& unit = cont.emplace_back();
+        const auto& unit = cont.emplace_back();
         utilgl::bindColorTexture(*inport.getData(), unit);
         unitNumber = unit.getUnitNumber();
     } else {

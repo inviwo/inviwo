@@ -151,7 +151,7 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
         }
     };
 
-    auto write = [&](const File& file, const std::filesystem::path& dst) {
+    const auto write = [&](const File& file, const std::filesystem::path& dst) {
         log(dst.generic_string(), file.description);
 
         if (!opts.force && fs::exists(im.path() / dst)) {
@@ -266,7 +266,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
         return path;
     };
 
-    auto filter = [&](const fs::path& path) {
+    const auto filter = [&](const fs::path& path) {
         const auto p = path.generic_string();
         const auto test = std::regex(R"(^tests/)");
         const auto ext = std::regex(R"(^ext/)");

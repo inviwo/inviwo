@@ -58,7 +58,7 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameTableView : public QTableView {
     Q_OBJECT
 #include <warn/pop>
 public:
-    DataFrameTableView(QWidget* parent = nullptr);
+    explicit DataFrameTableView(QWidget* parent = nullptr);
     virtual ~DataFrameTableView() = default;
 
     void setManager(BrushingAndLinkingManager& manager);

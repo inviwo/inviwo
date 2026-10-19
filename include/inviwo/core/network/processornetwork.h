@@ -127,7 +127,7 @@ public:
             }
         }();
 
-        auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
+        const auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
         assignIdentifierAndName(*processor, name);
         if (addProcessor(processor)) {
             return processor;
@@ -523,12 +523,12 @@ std::vector<T*> ProcessorNetwork::getProcessorsByType() const {
 
 template <typename C>
 void ProcessorNetwork::forEachProcessor(C callback) {
-    for (auto& item : processors_) callback(item.second.get());
+    for (const auto& item : processors_) callback(item.second.get());
 }
 
 template <typename C>
 void ProcessorNetwork::forEachConnection(C callback) {
-    for (auto& item : connectionsVec_) callback(item);
+    for (const auto& item : connectionsVec_) callback(item);
 }
 
 template <typename C>

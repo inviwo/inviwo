@@ -46,14 +46,14 @@
 
 namespace inviwo {
 
-void exposeCamera(pybind11::module& m) {
+void exposeCamera(const pybind11::module& m) {
     namespace py = pybind11;
 
-    auto zo = py::classh<ZoomOptions>(m, "ZoomOptions")
-                  .def_readwrite("factor", &ZoomOptions::factor)
-                  .def_readwrite("origin", &ZoomOptions::origin)
-                  .def_readwrite("bounded", &ZoomOptions::bounded)
-                  .def_readwrite("boundingBox", &ZoomOptions::boundingBox);
+    const auto zo = py::classh<ZoomOptions>(m, "ZoomOptions")
+                        .def_readwrite("factor", &ZoomOptions::factor)
+                        .def_readwrite("origin", &ZoomOptions::origin)
+                        .def_readwrite("bounded", &ZoomOptions::bounded)
+                        .def_readwrite("boundingBox", &ZoomOptions::boundingBox);
 
     py::native_enum<ZoomOptions::Bounded>(zo, "Bounded", "enum.Enum")
         .value("Yes", ZoomOptions::Bounded::Yes)

@@ -114,7 +114,7 @@ Tags getPlatformTags() {
 Tag getPlatformTag(const Tags& t) {
     // return the first matching tag in the platform tags, starting from the most specific ones
     // which is assumed to be the last ones in the list.
-    for (auto& tag : getPlatformTags().tags_ | std::views::reverse) {
+    for (const auto& tag : getPlatformTags().tags_ | std::views::reverse) {
         if (std::ranges::contains(t.tags_, tag)) {
             return tag;
         }

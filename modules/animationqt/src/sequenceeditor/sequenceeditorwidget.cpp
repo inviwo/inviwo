@@ -68,7 +68,7 @@ void SequenceEditorWidget::onKeyframeAdded(Keyframe* key, KeyframeSequence*) {
 }
 
 void SequenceEditorWidget::onKeyframeRemoved(Keyframe* key, KeyframeSequence*) {
-    auto it = keyframeEditorWidgets_.find(key);
+    const auto it = keyframeEditorWidgets_.find(key);
     if (it != keyframeEditorWidgets_.end()) {
         keyframesLayout_->removeWidget(it->second);
         delete it->second;
@@ -89,15 +89,15 @@ void SequenceEditorWidget::reorderKeyframes() {
 
     bool orderChanged = false;
     int i = 0;
-    for (auto w : widgets) {
+    for (const auto w : widgets) {
         orderChanged |= keyframesLayout_->indexOf(w.second) != i++;
     }
 
     if (orderChanged) {
-        for (auto w : widgets) {
+        for (const auto w : widgets) {
             keyframesLayout_->removeWidget(w.second);
         }
-        for (auto w : widgets) {
+        for (const auto w : widgets) {
             keyframesLayout_->addWidget(w.second);
         }
     };

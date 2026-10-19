@@ -220,7 +220,7 @@ void PresentationProcessor::updateSlideImage() {
     IVW_ASSERT(reader != nullptr, "Could not find reader for " << currentFileName);
 
     try {
-        auto layer = reader->readData(currentFileName);
+        const auto layer = reader->readData(currentFileName);
 
         currentSlide_ = std::make_shared<Image>(layer);
     } catch (const DataReaderException& e) {
@@ -258,7 +258,7 @@ void PresentationProcessor::updateProperties() {
 }
 
 void PresentationProcessor::updateFileName() {
-    int index = slideIndex_.get() - 1;
+    const int index = slideIndex_.get() - 1;
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
     } else {

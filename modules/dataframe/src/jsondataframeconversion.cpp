@@ -107,7 +107,7 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string_view header, 
 }
 
 void extractColumnsFromRow(const json& j, DataFrame& df) {
-    auto checkEntireColumnForType = [&](size_t columnIndex, std::string_view columnHeader) {
+    const auto checkEntireColumnForType = [&](size_t columnIndex, std::string_view columnHeader) {
         bool found = false;
         for (const auto& row : j["data"]) {
             const auto& item = row[columnIndex];
@@ -168,10 +168,10 @@ void extractColumnsFromRow(const json& j, DataFrame& df) {
 
 void extractRows(const json& data, DataFrame& df) {
     for (auto colIndex : std::ranges::iota_view(size_t{1}, df.getNumberOfColumns())) {
-        auto column = df.getColumn(colIndex);
+        const auto column = df.getColumn(colIndex);
         if (column->getColumnType() == ColumnType::Categorical) {
             auto* categorical = static_cast<CategoricalColumn*>(column.get());
-            auto addValue = categorical->addMany();
+            const auto addValue = categorical->addMany();
             for (auto& row : data) {
                 addValue(row[colIndex - 1].get<std::string_view>());
             }
@@ -251,8 +251,8 @@ void createColumnsFromTypes(const json& j, DataFrame& df) {
             throw JSONConversionException(R"(expected data type 'string' in "types")");
         }
 
-        auto columnHeader = j["columns"][index].get<std::string_view>();
-        auto type = element.get<std::string_view>();
+        const auto columnHeader = j["columns"][index].get<std::string_view>();
+        const auto type = element.get<std::string_view>();
         if (type == categoricalTypeStr) {
             df.addCategoricalColumn(columnHeader, 0u);
         } else {
@@ -280,7 +280,7 @@ void to_json(json& j, const DataFrame& df) {
         }
     }
     json data = json::array();
-    auto printers = generateColumnPrinters(df);
+    const auto printers = generateColumnPrinters(df);
     for (size_t row = 0; row < df.getNumberOfRows(); ++row) {
         json list = json::array();
         for (const auto& printer : printers) {
@@ -347,7 +347,7 @@ void from_json(const json& j, DataFrame& df) {
 }
 
 void to_json(json& j, const DataFrameInport& port) {
-    if (auto data = port.getData()) {
+    if (const auto data = port.getData()) {
         j = *data;
     } else {
         j.clear();

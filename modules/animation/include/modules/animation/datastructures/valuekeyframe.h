@@ -48,7 +48,7 @@ class ValueKeyframe : public BaseKeyframe {
 public:
     using value_type = T;
     ValueKeyframe() = default;
-    ValueKeyframe(Seconds time);
+    explicit ValueKeyframe(Seconds time);
     ValueKeyframe(Seconds time, const T& value);
     virtual ~ValueKeyframe() = default;
     virtual ValueKeyframe* clone() const override;

@@ -38,7 +38,7 @@ class InviwoApplication;
 
 class IVW_MODULE_NIFTI_API NiftiModule : public InviwoModule {
 public:
-    NiftiModule(InviwoApplication* app);
+    explicit NiftiModule(InviwoApplication* app);
 };
 
 }  // namespace inviwo

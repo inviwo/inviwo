@@ -52,7 +52,7 @@ void Encoder::open(AVDictionary* opt_arg) const {
     av_dict_copy(&opt, opt_arg, 0);
 
     /* open the codec */
-    int ret = avcodec_open2(ctx, ctx->codec, &opt);
+    const int ret = avcodec_open2(ctx, ctx->codec, &opt);
 
     av_dict_free(&opt);
     if (ret < 0) {
@@ -61,13 +61,13 @@ void Encoder::open(AVDictionary* opt_arg) const {
 }
 
 void Encoder::sendFrame(const Frame& frame) const {
-    if (auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
+    if (const auto ret = avcodec_send_frame(ctx, frame.frame); ret < 0) {
         throw Exception(SourceContext{}, "Error sending a frame to the encoder: {}", Error(ret));
     }
 }
 
 int Encoder::receivePacket(Packet& pkt) const {
-    auto ret = avcodec_receive_packet(ctx, pkt.pkt);
+    const auto ret = avcodec_receive_packet(ctx, pkt.pkt);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
 
     if (ret < 0) {

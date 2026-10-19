@@ -174,7 +174,7 @@ std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(const Handle& handle,
                                                            std::vector<Selection> selection,
                                                            size_t timeDimension,
                                                            VolumeConfig volumeConfig) {
-    auto dataset = handle.open();
+    const auto dataset = handle.open();
 
     if (timeDimension > selection.size()) {
         throw Exception{SourceContext{}, "Invalid time index, must be less than {}",
@@ -193,13 +193,13 @@ std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(const Handle& handle,
 
 VolumeConfig getVolumeConfig(const Handle& handle, const std::vector<Selection>& selection,
                              VolumeConfig volumeConfig) {
-    auto dataset = handle.open();
+    const auto dataset = handle.open();
     const auto config = getDimConfig<3>(dataset.getSpace(), selection);
     return getVolumeConfig(dataset, config, std::move(volumeConfig));
 }
 LayerConfig getLayerConfig(const Handle& handle, const std::vector<Selection>& selection,
                            LayerConfig layerConfig) {
-    auto dataset = handle.open();
+    const auto dataset = handle.open();
     const auto config = getDimConfig<2>(dataset.getSpace(), selection);
     return getLayerConfig(dataset, config, std::move(layerConfig));
 }
@@ -233,7 +233,7 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
 
     volumeRam->dispatch<void, dispatching::filter::Scalars>([&](auto vrprecision) {
         using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
-        auto data = vrprecision->getView();
+        const auto data = vrprecision->getView();
         try {
             dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
         } catch (H5::DataSetIException& e) {
@@ -277,7 +277,7 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
     layerRam->dispatch<void, dispatching::filter::Scalars>([&](auto lrprecision) {
         using ValueType = ::inviwo::util::PrecisionValueType<decltype(lrprecision)>;
 
-        auto data = lrprecision->getView();
+        const auto data = lrprecision->getView();
         try {
             dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
         } catch (H5::DataSetIException& e) {
@@ -311,7 +311,7 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
     auto buffer =
         dispatching::singleDispatch<std::shared_ptr<BufferBase>, dispatching::filter::Scalars>(
             format->getId(), [&]<typename T>() -> std::shared_ptr<BufferBase> {
-                auto repr = std::make_shared<BufferRAMPrecision<T>>(
+                const auto repr = std::make_shared<BufferRAMPrecision<T>>(
                     static_cast<size_t>(config.selectedDimensions[0]));
                 try {
                     dataset.read(repr->getDataContainer().data(), TypeMap<T>::getType(),
@@ -332,7 +332,7 @@ std::shared_ptr<BufferBase> getBufferAtPathAsType(const Handle& handle,
 
 glm::dmat4 getBasis(const Handle& handle) {
     glm::dmat4 basis{1.0};
-    auto dataset = handle.open();
+    const auto dataset = handle.open();
     const H5::DataSpace space = dataset.getSpace();
     const int rank = space.getSimpleExtentNdims();
     if (rank != 2) {

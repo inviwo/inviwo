@@ -53,7 +53,7 @@ TEST(ShaderTests, initTest) {
 }
 
 TEST(ShaderTests, implicitVertShader) {
-    Shader shader{"img_texturequad.frag"};
+    const Shader shader{"img_texturequad.frag"};
     ASSERT_TRUE(shader.isReady());
 }
 

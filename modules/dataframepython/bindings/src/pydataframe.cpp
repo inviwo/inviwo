@@ -281,7 +281,7 @@ void exposeDataFrame(pybind11::module& m) {
             std::string str = fmt::format("<DataFrame: {} column(s), {} rows",
                                           d.getNumberOfColumns(), d.getNumberOfRows());
             size_t i = 0;
-            for (auto c : d) {
+            for (const auto c : d) {
                 ++i;
                 str += fmt::format("\n   {:>3}: '{}', {}, {}", i, c->getHeader(), c->getSize(),
                                    c->getBuffer()->getDataFormat()->getString());
@@ -376,7 +376,7 @@ void exposeDataFrame(pybind11::module& m) {
     exposeStandardDataPorts<DataFrame>(m, "DataFrame");
 }
 
-void exposeDataFrameProperties(pybind11::module& m) {
+void exposeDataFrameProperties(const pybind11::module& m) {
     py::native_enum<ColumnOptionProperty::AddNoneOption>(m, "AddNoneOption", "enum.Enum")
         .value("No", ColumnOptionProperty::AddNoneOption::No)
         .value("Yes", ColumnOptionProperty::AddNoneOption::Yes)

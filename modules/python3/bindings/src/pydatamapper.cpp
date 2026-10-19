@@ -84,7 +84,7 @@ Units:
 
 }  // namespace
 
-void exposeDataMapper(py::module& m) {
+void exposeDataMapper(const py::module& m) {
 
     py::classh<Unit>(m, "Unit")
         .def(py::init([](std::string unit) { return units::unit_from_string(std::move(unit)); }))

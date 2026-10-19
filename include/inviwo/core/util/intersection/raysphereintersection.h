@@ -52,7 +52,7 @@ std::pair<bool, T> raySphereIntersection(const glm::tvec3<T, P>& sphereCenter, c
                                          const glm::tvec3<T, P>& origin,
                                          const glm::tvec3<T, P>& direction, const T t0,
                                          const T t1) {
-    glm::tvec3<T, P> m = origin - sphereCenter;
+    const glm::tvec3<T, P> m = origin - sphereCenter;
     T b = glm::dot(m, direction);
     T c = glm::dot(m, m) - radius * radius;
     // Exit if ray origin is outside of sphere and pointing away from sphere

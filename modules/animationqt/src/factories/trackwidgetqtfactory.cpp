@@ -41,7 +41,7 @@ void TrackWidgetQtFactory::registerTrackToWidgetMap(std::string_view trackId,
 }
 
 std::string TrackWidgetQtFactory::getWidgetId(std::string_view trackId) const {
-    auto it = trackToWidget_.find(trackId);
+    const auto it = trackToWidget_.find(trackId);
     if (it != trackToWidget_.end()) {
         return it->second;
     } else {

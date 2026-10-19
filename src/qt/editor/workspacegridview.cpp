@@ -100,15 +100,15 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
     if (utilqt::getData(index, Role::Type) == Type::File) {
 
         option.text = "";
-        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
+        const QStyle* style = option.widget ? option.widget->style() : QApplication::style();
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
         const auto name = utilqt::getData(index, Qt::DisplayRole).toString();
         const auto path = utilqt::getData(index, Role::Path).toString();
         const auto& image = [&]() {
-            QVariant annotations = utilqt::getData(index, Role::Annotations);
+            const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
-                WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
+                const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
                 return workspaceInfo.annotations->getPrimaryCanvasQImage();
             } else {
                 return WorkspaceAnnotationsQt::getMissingImage();
@@ -147,7 +147,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         option.font.setPointSizeF(option.font.pointSizeF() * 1.2);
 
         option.text = "";
-        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
+        const QStyle* style = option.widget ? option.widget->style() : QApplication::style();
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
         painter->setClipping(false);
@@ -168,14 +168,14 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
             return l;
         }();
 
-        auto rect = option.rect;
+        const auto rect = option.rect;
         const auto imgRect = QRect{
             QPoint{level * indent, rect.center().y() - img.rect().center().y()}, img.rect().size()};
         painter->drawImage(imgRect, img, img.rect());
 
         auto nameRect = option.rect;
 
-        auto cols = view_->header()->count();
+        const auto cols = view_->header()->count();
         auto width = nameRect.width();
         for (int i = 1; i < cols; ++i) {
             width += view_->columnWidth(i);
@@ -200,7 +200,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
 
     auto directories = str.split('/');
 
-    bool keepFirst = str[0] != '/';
+    const bool keepFirst = str[0] != '/';
     const int widthFirst = (keepFirst ? metrics.boundingRect(directories.front()).width() : 0);
     const QString strFirst = (keepFirst ? directories.front() : "");
     if (keepFirst) {
@@ -221,7 +221,7 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
     }
 
     int leftWidth = width - widthFirst - widthDots;
-    QString result =
+    const QString result =
         std::accumulate(directories.begin(), directories.end(), QString(),
                         [&, index = 0, leftWidth](QString str, const QString& dir) mutable {
                             if (leftWidth >= widthDirs[index]) {
@@ -254,7 +254,7 @@ public:
         : QAbstractProxyModel(parent), chunkSize_{chunkSize} {
 
         setSourceModel(model);
-        auto reset = [this]() {
+        const auto reset = [this]() {
             beginResetModel();
             sourceIndexMapping_.clear();
             endResetModel();
@@ -272,7 +272,8 @@ public:
             model, &QAbstractItemModel::dataChanged, this,
             [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const auto& roles) {
                 for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
-                    auto changed = mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
+                    const auto changed =
+                        mapFromSource(sourceModel()->index(i, 0, topLeft.parent()));
                     dataChanged(changed, changed, roles);
                 }
             });
@@ -283,11 +284,11 @@ public:
         return chunkSize_;
     }
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {
-        auto sourceParent = mapToSource(parent);
-        auto sourceRows = sourceModel()->rowCount(sourceParent);
+        const auto sourceParent = mapToSource(parent);
+        const auto sourceRows = sourceModel()->rowCount(sourceParent);
 
         if (utilqt::getData(sourceParent, Role::Type) == Type::SubSection) {
-            auto chunkedRows = (sourceRows + chunkSize_ - 1) / chunkSize_;
+            const auto chunkedRows = (sourceRows + chunkSize_ - 1) / chunkSize_;
             return chunkedRows;
         } else {
             return sourceRows;
@@ -476,9 +477,9 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
     if (newChunkSize != proxy_->chunkSize()) {
         std::vector<QModelIndex> expanded;
         auto findExpanded = [&](auto& self, const QModelIndex& parent) -> void {
-            auto rows = proxy_->rowCount(parent);
+            const auto rows = proxy_->rowCount(parent);
             for (int i = 0; i < rows; ++i) {
-                auto index = proxy_->index(i, 0, parent);
+                const auto index = proxy_->index(i, 0, parent);
                 if (isExpanded(index)) {
                     expanded.push_back(proxy_->mapToSource(index));
                     self(self, index);
@@ -495,8 +496,8 @@ void WorkspaceGridView::resizeEvent(QResizeEvent* event) {
 
 void WorkspaceGridView::mousePressEvent(QMouseEvent* event) {
     // Deselect if clicking outside, or on the selected item
-    QModelIndex item = indexAt(event->pos());
-    bool selected = selectionModel()->isSelected(indexAt(event->pos()));
+    const QModelIndex item = indexAt(event->pos());
+    const bool selected = selectionModel()->isSelected(indexAt(event->pos()));
     QTreeView::mousePressEvent(event);
     if ((!item.isValid()) || selected) {
         clearSelection();

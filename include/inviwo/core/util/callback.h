@@ -70,7 +70,7 @@ public:
     }
 
     const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
-        auto cb = dispatcher_.add(std::move(lambda));
+        const auto cb = dispatcher_.add(std::move(lambda));
         callBackList_.push_back(cb);
         return callBackList_.back().get();
     }
@@ -84,11 +84,11 @@ public:
      * @return bool True if removed, false otherwise.
      */
     bool remove(const BaseCallBack* callback) {
-        auto it = std::remove_if(callBackList_.begin(), callBackList_.end(),
-                                 [&](const std::shared_ptr<std::function<void()>>& ptr) {
-                                     return ptr.get() == callback;
-                                 });
-        auto nelem = std::distance(it, callBackList_.end());
+        const auto it = std::remove_if(callBackList_.begin(), callBackList_.end(),
+                                       [&](const std::shared_ptr<std::function<void()>>& ptr) {
+                                           return ptr.get() == callback;
+                                       });
+        const auto nelem = std::distance(it, callBackList_.end());
         callBackList_.erase(it, callBackList_.end());
         return nelem > 0;
     }

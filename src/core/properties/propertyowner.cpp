@@ -72,7 +72,7 @@ PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
     , ownedProperties_{std::move(rhs.ownedProperties_)}
     , invalidationLevel_(rhs.invalidationLevel_) {
 
-    for (auto& p : ownedProperties_) {
+    for (const auto& p : ownedProperties_) {
         std::erase(rhs.properties_, p.get());
         std::erase(rhs.eventProperties_, p.get());
         std::erase(rhs.compositeProperties_, p.get());
@@ -89,7 +89,7 @@ PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
 
         invalidationLevel_ = that.invalidationLevel_;
         ownedProperties_ = std::move(that.ownedProperties_);
-        for (auto& p : ownedProperties_) {
+        for (const auto& p : ownedProperties_) {
             std::erase(that.properties_, p.get());
             std::erase(that.eventProperties_, p.get());
             std::erase(that.compositeProperties_, p.get());
@@ -138,7 +138,8 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
         index = properties_.size();
     }
 
-    if (auto* existing = getPropertyByIdentifier(property->getIdentifier()); existing != nullptr) {
+    if (const auto* existing = getPropertyByIdentifier(property->getIdentifier());
+        existing != nullptr) {
         throw Exception(SourceContext{},
                         "Cannot add Property: [id: '{}', class id: '{}'] to PropertyOwner '{}'"
                         ", the identifier is already used by [id: '{}', class id: '{}']",
@@ -203,7 +204,7 @@ Property* PropertyOwner::removePropertyImpl(iterator it) {
     Property* prop = nullptr;
     if (it != properties_.end()) {
         prop = *it;
-        size_t index = std::distance(properties_.begin(), it);
+        const size_t index = std::distance(properties_.begin(), it);
         notifyObserversWillRemoveProperty(prop, index);
 
         std::erase(eventProperties_, *it);
@@ -272,7 +273,7 @@ Property* PropertyOwner::getPropertyByIdentifier(std::string_view identifier,
         if (property->getIdentifier() == identifier) return property;
     }
     if (recursiveSearch) {
-        for (auto* compositeProperty : compositeProperties_) {
+        for (const auto* compositeProperty : compositeProperties_) {
             if (auto* p = compositeProperty->getPropertyByIdentifier(identifier, true)) return p;
         }
     }
@@ -286,8 +287,9 @@ Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
     if (rest.empty()) {
         return getPropertyByIdentifier(first);
     } else {
-        auto it = std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
-                               [f = first](auto* comp) { return comp->getIdentifier() == f; });
+        const auto it =
+            std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
+                         [f = first](auto* comp) { return comp->getIdentifier() == f; });
         if (it != compositeProperties_.end()) {
             return (*it)->getPropertyByPath(rest);
         } else {
@@ -309,8 +311,8 @@ auto PropertyOwner::find(Property* property) const -> const_iterator {
 }
 
 bool PropertyOwner::move(Property* property, size_t newIndex) {
-    if (auto it = find(property); it != cend()) {
-        auto index = std::distance(cbegin(), it);
+    if (const auto it = find(property); it != cend()) {
+        const auto index = std::distance(cbegin(), it);
         notifyObserversWillRemoveProperty(property, index);
         properties_.erase(it);
         notifyObserversDidRemoveProperty(this, property, index);

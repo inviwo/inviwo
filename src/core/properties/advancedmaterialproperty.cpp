@@ -88,7 +88,7 @@ AdvancedMaterialProperty* AdvancedMaterialProperty::clone() const {
 AdvancedMaterialProperty::~AdvancedMaterialProperty() {}
 
 vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
-    ShadingFunctionKind shadingType = getPhaseFunctionEnum();
+    const ShadingFunctionKind shadingType = getPhaseFunctionEnum();
     vec4 scaledMaterial(getIndexOfRefractionTerm(1.f, indexOfRefractionProp.get()),
                         roughnessProp.get(), anisotropyProp.get(), 0.f);
 
@@ -105,7 +105,8 @@ vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
         scaledMaterial.y = WardParameterMapping(roughnessProp.get());
     } else if (shadingType == ShadingFunctionKind::AbcMicrofacet) {
         // TODO: Use better parameter naming for this
-        vec2 bcParameter = BCParameterMapping(vec2(roughnessProp.get(), anisotropyProp.get()));
+        const vec2 bcParameter =
+            BCParameterMapping(vec2(roughnessProp.get(), anisotropyProp.get()));
         scaledMaterial.y = bcParameter.x;
         scaledMaterial.z = bcParameter.y;
     } else if (shadingType == ShadingFunctionKind::Ashikhmin) {
@@ -118,7 +119,7 @@ vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
 }
 
 void AdvancedMaterialProperty::phaseFunctionChanged() {
-    ShadingFunctionKind shadingType = getPhaseFunctionEnum();
+    const ShadingFunctionKind shadingType = getPhaseFunctionEnum();
     indexOfRefractionProp.setVisible(false);
     roughnessProp.setVisible(false);
     specularColorProp.setVisible(false);

@@ -50,7 +50,7 @@ Decoder::Decoder(const AVStream* stream) : ctx{nullptr} {
         throw Exception(SourceContext{}, "Could not alloc a decoding context");
     }
 
-    if (auto ret = avcodec_parameters_to_context(ctx, stream->codecpar); ret < 0) {
+    if (const auto ret = avcodec_parameters_to_context(ctx, stream->codecpar); ret < 0) {
         avcodec_free_context(&ctx);
         throw Exception(SourceContext{}, "Could not copy the stream parameters: {}", Error{ret});
     }
@@ -58,7 +58,7 @@ Decoder::Decoder(const AVStream* stream) : ctx{nullptr} {
     ctx->pkt_timebase = stream->time_base;
     ctx->thread_count = 0;  // let ffmpeg pick the thread count
 
-    if (auto ret = avcodec_open2(ctx, codec, nullptr); ret < 0) {
+    if (const auto ret = avcodec_open2(ctx, codec, nullptr); ret < 0) {
         avcodec_free_context(&ctx);
         throw Exception(SourceContext{}, "Could not open video codec '{}': {}", codecId.name(),
                         Error{ret});
@@ -68,19 +68,19 @@ Decoder::Decoder(const AVStream* stream) : ctx{nullptr} {
 Decoder::~Decoder() { avcodec_free_context(&ctx); }
 
 void Decoder::sendPacket(const Packet& pkt) const {
-    if (auto ret = avcodec_send_packet(ctx, pkt.pkt); ret < 0) {
+    if (const auto ret = avcodec_send_packet(ctx, pkt.pkt); ret < 0) {
         throw Exception(SourceContext{}, "Error sending a packet to the decoder: {}", Error{ret});
     }
 }
 
 void Decoder::flush() const {
-    if (auto ret = avcodec_send_packet(ctx, nullptr); ret < 0) {
+    if (const auto ret = avcodec_send_packet(ctx, nullptr); ret < 0) {
         throw Exception(SourceContext{}, "Error flushing the decoder: {}", Error{ret});
     }
 }
 
 int Decoder::receiveFrame(Frame& frame) const {
-    auto ret = avcodec_receive_frame(ctx, frame.frame);
+    const auto ret = avcodec_receive_frame(ctx, frame.frame);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) return ret;
 
     if (ret < 0) {

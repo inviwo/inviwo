@@ -62,8 +62,8 @@ std::filesystem::path Settings::getFileName() const {
 InviwoApplication* Settings::getInviwoApplication() { return app_; }
 
 void Settings::load() {
-    util::KeepTrueWhileInScope guard{&isDeserializing_};
-    auto filename = getFileName();
+    const util::KeepTrueWhileInScope guard{&isDeserializing_};
+    const auto filename = getFileName();
 
     if (std::filesystem::is_regular_file(filename)) {
         // An error is not critical as the default setting will be used.

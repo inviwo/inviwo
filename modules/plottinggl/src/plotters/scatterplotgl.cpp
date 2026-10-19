@@ -271,7 +271,7 @@ void ScatterPlotGL::plot(ImageOutport& dest, ImageInport& src, bool useAxisRange
 }
 
 void ScatterPlotGL::plot(const ivec2& start, const ivec2& size, bool useAxisRanges) {
-    utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
+    const utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
     plot(size, useAxisRanges);
 }
 
@@ -445,8 +445,8 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
 
         for (size_t i = properties_.showFiltered_ ? 0 : 1; i < points_.offsets.size() - 1; ++i) {
             if (!enabled[i]) continue;
-            auto begin = points_.offsets[i];
-            auto end = points_.offsets[i + 1];
+            const auto begin = points_.offsets[i];
+            const auto end = points_.offsets[i + 1];
             if (end == begin) continue;
 
             shader_.setUniform("secondaryColor.color", secondaryColor[i]);
@@ -471,9 +471,9 @@ void ScatterPlotGL::plot(const size2_t& dims, bool useAxisRanges) {
 }
 
 void ScatterPlotGL::attachVertexAttributes() {
-    auto attachAttrib = [&](auto buffer, GLuint loc,
-                            BufferObject::BindingType bindingType =
-                                BufferObject::BindingType::ForceFloat) {
+    const auto attachAttrib = [&](auto buffer, GLuint loc,
+                                  BufferObject::BindingType bindingType =
+                                      BufferObject::BindingType::ForceFloat) {
         if (buffer) {
             points_.boa.attachBufferObjectEnforce(
                 buffer->template getRepresentation<BufferGL>()->getBufferObject().get(), loc,
@@ -585,7 +585,7 @@ void ScatterPlotGL::partitionData() {
 
     auto& indices = points_.indices.getEditableRAMRepresentation()->getDataContainer();
     if (indices.size() != numDataPoints) {
-        auto seq = util::make_sequence<std::uint32_t>(0, numDataPoints);
+        const auto seq = util::make_sequence<std::uint32_t>(0, numDataPoints);
         indices.assign(seq.begin(), seq.end());
     }
 
@@ -611,10 +611,10 @@ void ScatterPlotGL::partitionData() {
             [&](const auto brprecision) {
                 const auto& data = brprecision->getDataContainer();
 
-                auto ascending = [&data](std::uint32_t a, std::uint32_t b) {
+                const auto ascending = [&data](std::uint32_t a, std::uint32_t b) {
                     return data[a] < data[b];
                 };
-                auto descending = [&data](std::uint32_t a, std::uint32_t b) {
+                const auto descending = [&data](std::uint32_t a, std::uint32_t b) {
                     return data[a] > data[b];
                 };
                 for (size_t i = 0; i < points_.offsets.size() - 1; ++i) {

@@ -44,12 +44,12 @@ namespace inviwo::ffmpeg {
 InputContext::InputContext(std::filesystem::path aFilename)
     : filename{std::move(aFilename)}, ctx{nullptr} {
 
-    if (auto ret = avformat_open_input(&ctx, filename.string().c_str(), nullptr, nullptr);
+    if (const auto ret = avformat_open_input(&ctx, filename.string().c_str(), nullptr, nullptr);
         ret < 0) {
         throw Exception(SourceContext{}, "Could not open '{}': {}", filename, Error{ret});
     }
 
-    if (auto ret = avformat_find_stream_info(ctx, nullptr); ret < 0) {
+    if (const auto ret = avformat_find_stream_info(ctx, nullptr); ret < 0) {
         avformat_close_input(&ctx);
         throw Exception(SourceContext{}, "Could not find stream information in '{}': {}", filename,
                         Error{ret});
@@ -88,7 +88,8 @@ bool InputContext::readPacket(Packet& pkt) {
 }
 
 void InputContext::seek(int streamIndex, int64_t timestamp) {
-    if (auto ret = av_seek_frame(ctx, streamIndex, timestamp, AVSEEK_FLAG_BACKWARD); ret < 0) {
+    if (const auto ret = av_seek_frame(ctx, streamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
+        ret < 0) {
         throw Exception(SourceContext{}, "Error while seeking in '{}': {}", filename, Error{ret});
     }
 }

@@ -68,7 +68,7 @@ private:
 
 class IVW_MODULE_OPENGL_API TextureUnitContainer {
 public:
-    TextureUnitContainer(size_t i = 0);
+    explicit TextureUnitContainer(size_t i = 0);
     TextureUnitContainer(const TextureUnitContainer&) = delete;
     TextureUnitContainer& operator=(const TextureUnitContainer&) = delete;
     TextureUnitContainer(TextureUnitContainer&& rhs) noexcept = default;

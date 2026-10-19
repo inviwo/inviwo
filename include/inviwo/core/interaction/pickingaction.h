@@ -48,7 +48,7 @@ public:
     friend class PickingManager;
     using Callback = std::function<void(PickingEvent*)>;
 
-    PickingAction(size_t start, size_t size = 1);
+    explicit PickingAction(size_t start, size_t size = 1);
     virtual ~PickingAction();
 
     /**

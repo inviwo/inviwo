@@ -62,12 +62,12 @@ OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
     onRemoveShader_ = ShaderManager::getPtr()->onWillRemoveShader([this](GLuint id) {
         // Close any open editors.
         const auto& shaders = ShaderManager::getPtr()->getShaders();
-        auto it = std::ranges::find_if(ShaderManager::getPtr()->getShaders(),
-                                       [id](Shader* s) { return s->getID() == id; });
+        const auto it = std::ranges::find_if(ShaderManager::getPtr()->getShaders(),
+                                             [id](Shader* s) { return s->getID() == id; });
         if (it == shaders.end()) return;
 
-        for (auto& obj : (*it)->getShaderObjects()) {
-            auto eit = editors_.find(obj.getID());
+        for (const auto& obj : (*it)->getShaderObjects()) {
+            const auto eit = editors_.find(obj.getID());
             if (eit != editors_.end()) {
                 eit->second->close();
                 editors_.erase(eit);
@@ -78,7 +78,7 @@ OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
     connect(this, &QMenu::aboutToShow, this, [this]() {
         clear();
 
-        auto* reloadShaders = addAction(QIcon(":/svgicons/revert.svg"), "&Reload All");
+        const auto* reloadShaders = addAction(QIcon(":/svgicons/revert.svg"), "&Reload All");
         connect(reloadShaders, &QAction::triggered,
                 []() { ShaderManager::getPtr()->rebuildAllShaders(); });
         for (auto* shader : ShaderManager::getPtr()->getShaders()) {
@@ -99,8 +99,8 @@ void OpenGLQtMenu::addShaderObjects(Shader* shader) {
                     !shader->getLabel().empty() ? fmt::format(" ({})", shader->getLabel()) : "");
 
     auto* item = addMenu(utilqt::toQString(title));
-    for (auto& obj : shader->getShaderObjects()) {
-        auto* action = item->addAction(utilqt::toQString(obj.getFileName()));
+    for (const auto& obj : shader->getShaderObjects()) {
+        const auto* action = item->addAction(utilqt::toQString(obj.getFileName()));
         connect(action, &QAction::triggered,
                 [this, shaderID = shader->getID(), objID = obj.getID()]() {
                     showShader(shaderID, objID);
@@ -111,19 +111,19 @@ void OpenGLQtMenu::addShaderObjects(Shader* shader) {
 void OpenGLQtMenu::showShader(GLuint shaderID, GLuint objectID) {
     auto* mainWindow = utilqt::getApplicationMainWindow();
 
-    auto it = editors_.find(objectID);
+    const auto it = editors_.find(objectID);
     if (it != editors_.end()) {
         it->second->show();
         it->second->raise();
         it->second->activateWindow();
     } else {
         const auto& shaders = ShaderManager::getPtr()->getShaders();
-        auto sit =
+        const auto sit =
             std::ranges::find_if(shaders, [&](const Shader* s) { return s->getID() == shaderID; });
         if (sit == shaders.end()) return;
 
-        auto objs = (*sit)->getShaderObjects();
-        auto oit = std::ranges::find_if(
+        const auto objs = (*sit)->getShaderObjects();
+        const auto oit = std::ranges::find_if(
             objs, [&](const ShaderObject& obj) { return obj.getID() == objectID; });
         if (oit == objs.end()) return;
 
@@ -132,7 +132,7 @@ void OpenGLQtMenu::showShader(GLuint shaderID, GLuint objectID) {
         auto editor = std::make_unique<ShaderWidget>(&obj, mainWindow);
         editor->setAttribute(Qt::WA_DeleteOnClose);
         connect(editor.get(), &ShaderWidget::destroyed, this, [this, objectID]() {
-            auto i = editors_.find(objectID);
+            const auto i = editors_.find(objectID);
             if (i != editors_.end()) {
                 i->second.release();
                 editors_.erase(i);

@@ -54,7 +54,7 @@ public:
 class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    TIFFStackVolumeRAMLoader(const std::filesystem::path& sourceFile);
+    explicit TIFFStackVolumeRAMLoader(const std::filesystem::path& sourceFile);
     virtual TIFFStackVolumeRAMLoader* clone() const override;
     virtual ~TIFFStackVolumeRAMLoader() = default;
 

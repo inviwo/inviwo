@@ -149,7 +149,7 @@ auto getSelf(const std::weak_ptr<Processor>& pw) -> std::shared_ptr<FileList> {
 }  // namespace
 
 void FileList::cycleFiles() {
-    auto* net = getNetwork();
+    const auto* net = getNetwork();
     auto* app = net->getApplication();
 
     bool expected = false;
@@ -157,7 +157,7 @@ void FileList::cycleFiles() {
     if (running_.compare_exchange_strong(expected, desired)) {
         app->dispatchFrontAndForget([pw = weak_from_this(), app, net]() {
             const util::OnScopeExit stopRunning{[&]() {
-                if (auto self = getSelf(pw)) self->running_ = false;
+                if (const auto self = getSelf(pw)) self->running_ = false;
             }};
 
             const auto files = getFiles(pw);
@@ -176,13 +176,13 @@ void FileList::cycleFiles() {
 }
 
 bool FileList::running(const std::weak_ptr<Processor>& pw) {
-    if (auto self = getSelf(pw)) return self->running_;
+    if (const auto self = getSelf(pw)) return self->running_;
     return false;
 }
 
 auto FileList::getFiles(const std::weak_ptr<Processor>& pw)
     -> std::vector<std::filesystem::directory_entry> {
-    if (auto self = getSelf(pw)) {
+    if (const auto self = getSelf(pw)) {
         return self->files_;
     } else {
         return {};
@@ -191,7 +191,7 @@ auto FileList::getFiles(const std::weak_ptr<Processor>& pw)
 
 void FileList::setIndex(const std::weak_ptr<Processor>& pw, size_t i,
                         const std::filesystem::path& path) {
-    if (auto self = getSelf(pw)) {
+    if (const auto self = getSelf(pw)) {
         log::info("Loading: {} {:?g}", i, path);
         self->selectedIndex_.set(i);
     }
@@ -211,7 +211,7 @@ void FileList::process() {
              std::ranges::to<std::vector>();
     std::ranges::sort(files_);
 
-    auto df = std::make_shared<DataFrame>();
+    const auto df = std::make_shared<DataFrame>();
 
     df->addCategoricalColumn("Name", files_ | std::views::transform([](auto& item) {
                                          return item.path().filename().generic_string();

@@ -100,7 +100,7 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     tooltipCallBack_ =
         persistenceDiagramPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
             if (!p) return;
-            if (auto dataframe = dataFrame_.getData()) {
+            if (const auto dataframe = dataFrame_.getData()) {
                 p->setToolTip(dataframe::createToolTipForRow(*dataFrame_.getData(), rowId));
             }
         });
@@ -132,18 +132,18 @@ void PersistenceDiagramPlotProcessor::process() {
             persistenceDiagramPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());
         }
 
-        auto dataframe = dataFrame_.getData();
-        auto dfSize = dataframe->getNumberOfRows();
+        const auto dataframe = dataFrame_.getData();
+        const auto dfSize = dataframe->getNumberOfRows();
 
-        auto iCol = dataframe->getIndexColumn();
+        const auto iCol = dataframe->getIndexColumn();
         auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-        auto filteredIndicies = brushingPort_.getFilteredIndices();
+        const auto filteredIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
         auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - filteredIndicies.size());
 
-        auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
+        const auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
                      [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
@@ -166,14 +166,14 @@ void PersistenceDiagramPlotProcessor::process() {
 
 void PersistenceDiagramPlotProcessor::onXAxisChange() {
     if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
-    auto idx = birth_.get();
+    const auto data = dataFrame_.getData();
+    const auto idx = birth_.get();
     persistenceDiagramPlot_.setXAxis(data->getColumn(idx));
 }
 
 void PersistenceDiagramPlotProcessor::onYAxisChange() {
     if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
+    const auto data = dataFrame_.getData();
 
     if (death_.size() > 0 && death_.get() > 0) {
         persistenceDiagramPlot_.setYAxis(data->getColumn(death_.get()),
@@ -188,12 +188,12 @@ void PersistenceDiagramPlotProcessor::onYAxisChange() {
 
 void PersistenceDiagramPlotProcessor::onColorChange() {
     if (!dataFrame_.hasData()) return;
-    auto data = dataFrame_.getData();
-    auto idx = colorCol_.get();
+    const auto data = dataFrame_.getData();
+    const auto idx = colorCol_.get();
     if (idx == -1) {
         persistenceDiagramPlot_.setColorData(nullptr);
     } else {
-        auto buffer = data->getColumn(idx)->getBuffer();
+        const auto buffer = data->getColumn(idx)->getBuffer();
         persistenceDiagramPlot_.setColorData(buffer);
     }
 }

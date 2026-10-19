@@ -56,13 +56,13 @@ struct BitSetIteratorWrapper {
 
 }  // namespace
 
-void exposeBitset(pybind11::module& m) {
+void exposeBitset(const pybind11::module& m) {
     namespace py = pybind11;
 
     py::classh<BitSetIteratorWrapper>(m, "BitSetIterator")
         .def("__next__", [](BitSetIteratorWrapper& w) {
             if (w.begin != w.end) {
-                auto val = *w.begin;
+                const auto val = *w.begin;
                 ++w.begin;
                 return val;
             } else {

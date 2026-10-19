@@ -50,7 +50,7 @@ class DemoNavigatorDockWidgetQt;
 class IVW_MODULE_ANIMATIONQT_API AnimationQtModule : public InviwoModule,
                                                      public animation::AnimationQtSupplier {
 public:
-    AnimationQtModule(InviwoApplication* app);
+    explicit AnimationQtModule(InviwoApplication* app);
     virtual ~AnimationQtModule();
 
     animation::TrackWidgetQtFactory& getTrackWidgetQtFactory();

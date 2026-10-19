@@ -184,7 +184,7 @@ void BitSet::add(const std::vector<bool>& v) {
     auto it = v.begin();
     while (it != v.end()) {
         it = std::find(it, v.end(), true);
-        auto endIt = std::find(it, v.end(), false);
+        const auto endIt = std::find(it, v.end(), false);
         addRange(static_cast<std::uint32_t>(std::distance(v.begin(), it)),
                  static_cast<std::uint32_t>(std::distance(v.begin(), endIt)));
         it = endIt;

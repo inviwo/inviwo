@@ -110,15 +110,15 @@ bool operator!=(const TransferFunction& lhs, const TransferFunction& rhs) {
 }
 
 TransferFunction TransferFunction::load(const std::filesystem::path& path) {
-    auto* factory = util::getDataReaderFactory();
-    if (auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
+    const auto* factory = util::getDataReaderFactory();
+    if (const auto tf = factory->readDataForTypeAndExtension<TransferFunction>(path)) {
         return *tf;
     } else {
         throw Exception(SourceContext{}, "Unable to load TransferFunction from {}", path);
     }
 }
 void TransferFunction::save(const TransferFunction& tf, const std::filesystem::path& path) {
-    auto* factory = util::getDataWriterFactory();
+    const auto* factory = util::getDataWriterFactory();
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
         throw Exception(SourceContext{}, "Unable to save TransferFunction to {}", path);
     }

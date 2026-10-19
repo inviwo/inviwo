@@ -108,13 +108,13 @@ AssimpReader::AssimpReader()
     , logLevel_(AssimpLogLevel::Warn)
     , verboseLog_(false)
     , fixInvalidData_(false) {
-    aiString str{};
-    Assimp::Importer importer{};
+    const aiString str{};
+    const Assimp::Importer importer{};
 
-    size_t readers = importer.GetImporterCount();
+    const size_t readers = importer.GetImporterCount();
     for (size_t i = 0; i < readers; ++i) {
         const aiImporterDesc* desc = importer.GetImporterInfo(i);
-        for (std::string_view e :
+        for (const std::string_view e :
              util::splitStringView(std::string_view(desc->mFileExtensions), ' ')) {
             addExtension(
                 {.extension = LCString{e},
@@ -148,10 +148,11 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     std::clock_t start_readmetadata = std::clock();
 
     // logging
-    bool logging = (logLevel_ != AssimpLogLevel::None);
+    const bool logging = (logLevel_ != AssimpLogLevel::None);
     if (logging) {
-        Assimp::Logger::LogSeverity logSeverity = verboseLog_ ? Assimp::Logger::LogSeverity::VERBOSE
-                                                              : Assimp::Logger::LogSeverity::NORMAL;
+        const Assimp::Logger::LogSeverity logSeverity = verboseLog_
+                                                            ? Assimp::Logger::LogSeverity::VERBOSE
+                                                            : Assimp::Logger::LogSeverity::NORMAL;
         Assimp::DefaultLogger::create("AssimpImportLog.txt", logSeverity, 0);
         // if logging is enabled, errors will always be logged
         Assimp::DefaultLogger::get()->attachStream(
@@ -220,9 +221,9 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     size_t color_channels = 0;
     size_t texture_channels = 0;
     bool use_normals = true;
-    bool use_materials = scene->HasMaterials();
+    const bool use_materials = scene->HasMaterials();
 
-    auto getDrawType = [](unsigned int aiPrimitiveTypes) {
+    const auto getDrawType = [](unsigned int aiPrimitiveTypes) {
         // ignore the n-gon flag of the primitive type since we are enforcing triangulation
         // @see aiPrimitiveType
         if (aiPrimitiveTypes & aiPrimitiveType_POINT) {
@@ -237,7 +238,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
 
     // get the configuration
     for (size_t i = 0; i < size_t{scene->mNumMeshes}; ++i) {
-        aiMesh* m = scene->mMeshes[i];
+        const aiMesh* m = scene->mMeshes[i];
 
         color_channels = std::max(size_t{m->GetNumColorChannels()}, color_channels);
         texture_channels = std::max(size_t{m->GetNumUVChannels()}, texture_channels);
@@ -258,8 +259,8 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     // create Inviwo's data structures for the model
     auto mesh = std::make_shared<Mesh>();
 
-    auto prep = std::make_shared<Vec3BufferRAM>();
-    auto pbuff = std::make_shared<Buffer<vec3>>(prep);
+    const auto prep = std::make_shared<Vec3BufferRAM>();
+    const auto pbuff = std::make_shared<Buffer<vec3>>(prep);
 
     std::shared_ptr<Vec3BufferRAM> nrep;
     std::shared_ptr<Buffer<vec3>> nbuff;
@@ -287,18 +288,18 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
 
     // iterate over the meshes and fill the data structures
     for (size_t i = 0; i < size_t{scene->mNumMeshes}; ++i) {
-        aiMesh* m = scene->mMeshes[i];
+        const aiMesh* m = scene->mMeshes[i];
 
         // positions
         for (size_t j = 0; j < m->mNumVertices; ++j) {
-            aiVector3D v = m->mVertices[j];
+            const aiVector3D v = m->mVertices[j];
             prep->add(vec3(v.x, v.y, v.z));
         }
 
         // normals
         if (use_normals) {
             for (size_t j = 0; j < m->mNumVertices; ++j) {
-                aiVector3D n = m->mNormals[j];
+                const aiVector3D n = m->mNormals[j];
                 nrep->add(vec3(n.x, n.y, n.z));
             }
         }
@@ -308,7 +309,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         const float material_influence = 0.5f;
 
         if (use_materials) {
-            aiMaterial* mat = scene->mMaterials[m->mMaterialIndex];
+            const aiMaterial* mat = scene->mMaterials[m->mMaterialIndex];
 
             aiColor4D ambient;
             aiColor4D diffuse;
@@ -320,7 +321,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
             }
 
             if (AI_SUCCESS == aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse)) {
-                vec4 dcol = vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a);
+                const vec4 dcol = vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a);
                 if (use_ambient) {
                     padding_color += dcol;
                     padding_color *= 0.5f;
@@ -329,11 +330,11 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
                 }
             }
 
-            vec4 material_influence_color = padding_color * material_influence;
+            const vec4 material_influence_color = padding_color * material_influence;
 
             for (size_t l = 0; l < size_t{m->GetNumColorChannels()}; ++l) {
                 for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
-                    aiColor4D c = m->mColors[l][j];
+                    const aiColor4D c = m->mColors[l][j];
                     crep[l]->add(vec4(c.r, c.g, c.b, c.a) * (1.0f - material_influence) +
                                  material_influence_color);
                 }
@@ -341,7 +342,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         } else {
             for (size_t l = 0; l < size_t{m->GetNumColorChannels()}; ++l) {
                 for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
-                    aiColor4D c = m->mColors[l][j];
+                    const aiColor4D c = m->mColors[l][j];
                     crep[l]->add(vec4(c.r, c.g, c.b, c.a));
                 }
             }
@@ -357,7 +358,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         // texture coordinates
         for (size_t l = 0; l < m->GetNumUVChannels(); ++l) {
             for (size_t j = 0; j < m->mNumVertices; ++j) {
-                aiVector3D t = m->mTextureCoords[l][j];
+                const aiVector3D t = m->mTextureCoords[l][j];
                 trep[l]->add(vec3(t.x, t.y, t.z));
             }
         }
@@ -371,7 +372,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         // indices
         std::vector<uint32_t> indices;
         for (size_t j = 0; j < m->mNumFaces; ++j) {
-            aiFace face = m->mFaces[j];
+            const aiFace face = m->mFaces[j];
             for (size_t k = 0; k < face.mNumIndices; ++k) {
                 indices.push_back(vertex_offset + face.mIndices[k]);
             }
@@ -392,13 +393,14 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     // use additional unused attribute locations for extra color channels and texture coords
     int auxLocation = static_cast<int>(BufferType::Unknown);
     for (size_t i = 0; i < color_channels; ++i) {
-        int location = (i == 0 ? static_cast<int>(BufferType::ColorAttrib) : auxLocation++);
+        const int location = (i == 0 ? static_cast<int>(BufferType::ColorAttrib) : auxLocation++);
         mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib, location), cbuff[i]);
     }
 
     // texture coords
     for (size_t i = 0; i < texture_channels; ++i) {
-        int location = (i == 0 ? static_cast<int>(BufferType::TexCoordAttrib) : auxLocation++);
+        const int location =
+            (i == 0 ? static_cast<int>(BufferType::TexCoordAttrib) : auxLocation++);
         mesh->addBuffer(Mesh::BufferInfo(BufferType::TexCoordAttrib, location), tbuff[i]);
     }
 
@@ -417,10 +419,11 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
 }
 
 bool AssimpReader::setOption(std::string_view key, std::any value) {
-    if (auto* fix = std::any_cast<bool>(&value); fix && key == "FixInvalidData") {
+    if (const auto* fix = std::any_cast<bool>(&value); fix && key == "FixInvalidData") {
         setFixInvalidDataFlag(*fix);
         return true;
-    } else if (auto* level = std::any_cast<LogVerbosity>(&value); level && key == "LogLevel") {
+    } else if (const auto* level = std::any_cast<LogVerbosity>(&value);
+               level && key == "LogLevel") {
         switch (*level) {
             case LogVerbosity::Error: setLogLevel(AssimpLogLevel::Error); return true;
             case LogVerbosity::Warn:  setLogLevel(AssimpLogLevel::Warn); return true;

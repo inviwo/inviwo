@@ -50,7 +50,7 @@ namespace inviwo {
 namespace utilgl {
 
 std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
-    auto convertToGL = [](ImageChannel channel) -> GLint {
+    const auto convertToGL = [](ImageChannel channel) -> GLint {
         switch (channel) {
             case ImageChannel::Red:   return static_cast<GLint>(GL_RED);
             case ImageChannel::Green: return static_cast<GLint>(GL_GREEN);
@@ -103,7 +103,7 @@ InterpolationType convertInterpolationFromGL(GLenum interpolation) {
 }
 
 SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
-    auto convertFromGL = [](GLint channel) {
+    const auto convertFromGL = [](GLint channel) {
         switch (static_cast<GLenum>(channel)) {
             case GL_RED:   return ImageChannel::Red;
             case GL_GREEN: return ImageChannel::Green;

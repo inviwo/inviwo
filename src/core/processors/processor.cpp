@@ -185,7 +185,7 @@ void Processor::accept(NetworkVisitor& visitor) {
 
 void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
     portGroups_[port] = portGroup;
-    if (auto it = groupPorts_.find(portGroup); it != groupPorts_.end()) {
+    if (const auto it = groupPorts_.find(portGroup); it != groupPorts_.end()) {
         it->second.push_back(port);
     } else {
         groupPorts_[std::string(portGroup)].push_back(port);
@@ -193,7 +193,7 @@ void Processor::addPortToGroup(Port* port, std::string_view portGroup) {
 }
 
 void Processor::removePortFromGroups(Port* port) {
-    if (auto groupIt = portGroups_.find(port); groupIt != portGroups_.end()) {
+    if (const auto groupIt = portGroups_.find(port); groupIt != portGroups_.end()) {
         std::erase(groupPorts_[groupIt->second], port);
         if (groupPorts_[groupIt->second].empty()) groupPorts_.erase(groupIt->second);
         portGroups_.erase(groupIt);
@@ -278,7 +278,7 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
 const std::string& Processor::getPortGroup(Port* port) const {
-    auto it = portGroups_.find(port);
+    const auto it = portGroups_.find(port);
     if (it != portGroups_.end()) {
         return it->second;
     } else {
@@ -296,7 +296,7 @@ std::vector<std::string> Processor::getPortGroups() const {
 }
 
 const std::vector<Port*>& Processor::getPortsInGroup(std::string_view portGroup) const {
-    auto it = groupPorts_.find(portGroup);
+    const auto it = groupPorts_.find(portGroup);
     if (it != groupPorts_.end()) {
         return it->second;
     } else {

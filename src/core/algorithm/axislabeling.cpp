@@ -193,7 +193,7 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
         return {.start = valueMin, .stop = valueMax, .step = step};
     }
 
-    auto weightedScore = [&weights](auto scores) {
+    const auto weightedScore = [&weights](auto scores) {
         return std::inner_product(scores.begin(), scores.end(), weights.begin(), 0.0);
     };
 
@@ -214,7 +214,7 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
             }
 
             // loop over increasing number of ticks/labels
-            for (auto k : std::ranges::iota_view(2, maxAttempts)) {
+            for (const auto k : std::ranges::iota_view(2, maxAttempts)) {
                 scores[1] = 1.0;
                 scores[2] = densityMax(k, numTicks);
                 if (weightedScore(scores) < bestScore) {
@@ -222,8 +222,8 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
                 }
 
                 const double delta = (valueMax - valueMin) / (static_cast<double>((k + 1) * j) * q);
-                for (auto zStart = static_cast<int>(std::ceil(std::log10(delta)));
-                     auto z : std::ranges::iota_view(zStart)) {
+                for (const auto zStart = static_cast<int>(std::ceil(std::log10(delta)));
+                     const auto z : std::ranges::iota_view(zStart)) {
                     const double step = q * static_cast<double>(j) * pow(10.0, z);
                     scores[1] = coverageMax(valueMin, valueMax, step * static_cast<double>(k - 1));
                     if (weightedScore(scores) < bestScore) {
@@ -234,7 +234,7 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
                     const int maxStart = static_cast<int>(std::ceil(valueMin / step)) * j;
                     if (minStart > maxStart) continue;
 
-                    for (auto start : std::ranges::iota_view(minStart, maxStart)) {
+                    for (const auto start : std::ranges::iota_view(minStart, maxStart)) {
                         const double labelMin =
                             static_cast<double>(start) * (step / static_cast<double>(j));
                         const double labelMax = labelMin + step * static_cast<double>(k - 1);
@@ -247,7 +247,7 @@ LinearRange labelingExtendedWilkinson(double valueMin, double valueMax, int numT
                             density(k, numTicks, valueMin, valueMax, labelMin, labelMax),
                             1.0  // legibility not considered
                         };
-                        if (auto s = weightedScore(score);
+                        if (const auto s = weightedScore(score);
                             s > bestScore && (labelMin <= valueMin && labelMax >= valueMax)) {
                             bestScore = s;
                             result.start = labelMin;
@@ -375,9 +375,9 @@ LinearRange labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
     if (roundNumbers) {
         // Classic round_numbers mode may require a larger step.
         // Get first multiple of steps that are <= vMin
-        auto vMinsFloored =
+        const auto vMinsFloored =
             steps | std::views::transform([vMin](double s) { return std::floor(vMin / s) * s; });
-        auto vMaxsFloored =
+        const auto vMaxsFloored =
             std::views::zip(vMinsFloored, steps) | std::views::transform([nBins](auto elem) {
                 return std::get<0>(elem) + std::get<1>(elem) * nBins;
             });
@@ -385,11 +385,12 @@ LinearRange labelingMatplotlib(double valueMin, double valueMax, int maxTicks,
             std::views::zip(largeSteps, vMaxsFloored) | std::views::transform([vMax](auto elem) {
                 return std::get<0>(elem) && (std::get<1>(elem) >= vMax);
             });
-        if (auto it = std::ranges::find(largeStepsRounded, true); it != largeStepsRounded.end()) {
+        if (const auto it = std::ranges::find(largeStepsRounded, true);
+            it != largeStepsRounded.end()) {
             iStep = static_cast<size_t>(std::distance(largeStepsRounded.begin(), it));
         }
     } else {
-        if (auto it = std::ranges::find(largeSteps, true); it != largeSteps.end()) {
+        if (const auto it = std::ranges::find(largeSteps, true); it != largeSteps.end()) {
             iStep = static_cast<size_t>(std::distance(largeSteps.begin(), it));
         }
     }

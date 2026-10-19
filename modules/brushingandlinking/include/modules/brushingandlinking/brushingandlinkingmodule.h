@@ -38,7 +38,7 @@ class InviwoApplication;
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingModule : public InviwoModule {
 public:
-    BrushingAndLinkingModule(InviwoApplication* app);
+    explicit BrushingAndLinkingModule(InviwoApplication* app);
 };
 
 }  // namespace inviwo

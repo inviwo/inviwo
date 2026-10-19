@@ -114,8 +114,8 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
 #pragma omp parallel for
 #endif
     for (int j = 0; j < copyExtent.y; j++) {
-        size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
-        size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
+        const size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;
+        const size_t dstPos = (j + dstOffset.y) * dstDim.x + dstOffset.x;
         conversionCopy(src + srcPos, dst + dstPos, static_cast<size_t>(copyExtent.x));
     }
 

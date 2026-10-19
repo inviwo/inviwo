@@ -119,16 +119,16 @@ void SplitImage::process() {
         ivec4 viewport0;
         ivec4 viewport1;
         if (splitDirection_ == splitter::Direction::Vertical) {
-            int width = static_cast<int>(splitPosition_ * dims.x);
+            const int width = static_cast<int>(splitPosition_ * static_cast<float>(dims.x));
             viewport0 = ivec4(0, 0, width, dims.y);
             viewport1 = ivec4(width, 0, dims.x - width, dims.y);
         } else {
-            int height = static_cast<int>(splitPosition_ * dims.y);
+            const int height = static_cast<int>(splitPosition_ * static_cast<float>(dims.y));
             viewport0 = ivec4(0, dims.y - height, dims.x, height);
             viewport1 = ivec4(0, 0, dims.x, dims.y - height);
         }
 
-        auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
+        const auto renderPort = [&](const ImageInport& inport, const auto& viewport) {
             TextureUnit colorUnit, depthUnit, pickingUnit;
             TextureUnitContainer additionalColorUnits;
             Shader* shader = nullptr;
@@ -160,7 +160,7 @@ void SplitImage::process() {
             }
 
             glEnable(GL_SCISSOR_TEST);
-            utilgl::ScissorState scissorviewport(viewport);
+            const utilgl::ScissorState scissorviewport(viewport);
 
             shader->activate();
             utilgl::singleDrawImagePlaneRect();

@@ -109,7 +109,7 @@ struct fmt::formatter<inviwo::UnicodeFloat> : fmt::formatter<double> {
         fmt::basic_memory_buffer<char, 64> buf;
         fmt::basic_format_context<fmt::appender, char> tmpCtx(fmt::appender(buf), ctx.args());
         fmt::formatter<double>::format(v.value, tmpCtx);
-        std::string_view s(buf.data(), buf.size());
+        const std::string_view s(buf.data(), buf.size());
 
         // If not scientific form, return unchanged.
         const size_t epos = s.find_last_of("eE");

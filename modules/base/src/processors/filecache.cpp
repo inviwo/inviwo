@@ -42,7 +42,7 @@ namespace inviwo {
 
 namespace detail {
 
-std::string cacheState(Processor* processor, ProcessorNetwork& net,
+std::string cacheState(Processor* processor, const ProcessorNetwork& net,
                        const std::filesystem::path& refPath, std::pmr::string& xml) {
     std::pmr::monotonic_buffer_resource mbr{1024 * 32};
 
@@ -133,7 +133,7 @@ std::string cacheState(Processor* processor, ProcessorNetwork& net,
             s.doc().RootElement(),
             [](TiXmlElement* current, TiXmlElement* parent) -> bool {
                 if (current->Value() == "absolutePath") {
-                    if (auto* rp = parent->FirstChildElement("workspaceRelativePath")) {
+                    if (const auto* rp = parent->FirstChildElement("workspaceRelativePath")) {
                         return rp->Attribute("content")
                             .transform([](std::string_view value) { return !value.empty(); })
                             .value_or(false);
@@ -167,7 +167,7 @@ CacheBase::CacheBase()
     isReady_.setUpdate([this]() {
         if (getInports().empty()) return true;
 
-        auto* inport = getInports().front();
+        const auto* inport = getInports().front();
         return isCached_ ||
                (inport->isConnected() && util::all_of(inport->getConnectedOutports(),
                                                       [](Outport* p) { return p->isReady(); }));
@@ -213,7 +213,7 @@ bool CacheBase::isConnectionActive(Inport* inport, Outport*) const {
 
 void CacheBase::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
     if (auto* net = getNetwork()) {
-        auto key = detail::cacheState(this, *net, refDir_.get(), xml_);
+        const auto key = detail::cacheState(this, *net, refDir_.get(), xml_);
         if (modifiedProperty == nullptr && key == loadedKey()) {
             return;
         }

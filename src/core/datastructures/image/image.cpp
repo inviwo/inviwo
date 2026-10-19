@@ -56,21 +56,22 @@ Image::Image(std::vector<std::shared_ptr<Layer>> layers)
         layers.empty() ? LayerConfig::defaultDimensions : layers.front()->getDimensions();
 
     constexpr auto getType = [](const auto& layer) { return layer->getLayerType(); };
-    if (auto it = std::ranges::find(layers, LayerType::Depth, getType); it != layers.end()) {
+    if (const auto it = std::ranges::find(layers, LayerType::Depth, getType); it != layers.end()) {
         depthLayer_ = *it;
         layers.erase(it);
     } else {
         depthLayer_ = createDepthLayer(dims);
     }
 
-    if (auto it = std::ranges::find(layers, LayerType::Picking, getType); it != layers.end()) {
+    if (const auto it = std::ranges::find(layers, LayerType::Picking, getType);
+        it != layers.end()) {
         pickingLayer_ = *it;
         layers.erase(it);
     } else {
         pickingLayer_ = createPickingLayer(dims);
     }
 
-    if (auto it = std::ranges::find_if_not(
+    if (const auto it = std::ranges::find_if_not(
             layers, [](auto& layer) { return layer->getLayerType() == LayerType::Color; });
         it != layers.end()) {
         throw Exception(SourceContext{}, "Multiple layers of type {} found", (*it)->getLayerType());
@@ -264,7 +265,7 @@ Layer* Image::getPickingLayer() { return pickingLayer_.get(); }
 size2_t Image::getDimensions() const { return getColorLayer()->getDimensions(); }
 
 void Image::setDimensions(size2_t dimensions) {
-    for (auto& layer : colorLayers_) layer->setDimensions(dimensions);
+    for (const auto& layer : colorLayers_) layer->setDimensions(dimensions);
     if (depthLayer_) depthLayer_->setDimensions(dimensions);
     if (pickingLayer_) pickingLayer_->setDimensions(dimensions);
 }
@@ -370,7 +371,7 @@ Document Image::getInfo() const {
     tb(H("Depth"), getDepthLayer() ? "Yes" : "No");
     tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
     tb(H("Format"), getDataFormat()->getString());
-    auto dims = getDimensions();
+    const auto dims = getDimensions();
     tb(H("Dimension"), dims);
     tb(H("Aspect Ratio"),
        dims.y == 0 ? "Invalid"

@@ -64,7 +64,7 @@ AnimationTimeState ControlTrack::operator()(Seconds from, Seconds to, AnimationS
     if (!isEnabled() || empty()) return {to, state};
 
     // 'it' will be the first seq. with a first time larger than 'to'.
-    auto it =
+    const auto it =
         std::upper_bound(begin(), end(), to, [](const auto& a, const auto& b) { return a < b; });
 
     if (it == begin()) {

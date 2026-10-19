@@ -361,7 +361,7 @@ auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileEx
         util::value_type_t<T>* data = img.data();
         const double scale = (outMax - outMin) / (inMax - inMin);
         for (size_t i = 0; i < img.size(); i++) {
-            auto dataValue = glm::clamp(static_cast<double>(data[i]), inMin, inMax);
+            const auto dataValue = glm::clamp(static_cast<double>(data[i]), inMin, inMax);
             data[i] = static_cast<util::value_type_t<T>>((dataValue - inMin) * scale + outMin);
         }
     }
@@ -371,7 +371,7 @@ auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileEx
 void saveLayer(const LayerRAM& layer, const std::filesystem::path& filePath) {
     layer.dispatch<void>([&]<typename T>(const LayerRAMPrecision<T>* lr) {
         const auto fileExtension = toLower(filePath.extension().string());
-        auto img = prepareImgFromLayer(lr, fileExtension);
+        const auto img = prepareImgFromLayer(lr, fileExtension);
         try {
             img.save(filePath.string().c_str());
         } catch (cimg_library::CImgIOException& e) {
@@ -383,7 +383,7 @@ void saveLayer(const LayerRAM& layer, const std::filesystem::path& filePath) {
 
 void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst, std::string_view extension) {
     layer.dispatch<void>([&]<typename T>(const LayerRAMPrecision<T>* lr) {
-        auto img = prepareImgFromLayer(lr, extension);
+        const auto img = prepareImgFromLayer(lr, extension);
         try {
             cimgutil::saveCImgToBuffer(img, extension, dst);
         } catch (cimg_library::CImgIOException& e) {
@@ -394,7 +394,7 @@ void saveLayer(const LayerRAM& layer, std::vector<unsigned char>& dst, std::stri
 }
 
 bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
-    auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
+    const auto interpolation = detail::toCImgInterpolationType(source->getInterpolation());
     return rescaleLayerRamToLayerRam(source, target, interpolation);
 }
 
@@ -429,12 +429,12 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target,
             }();
 
             auto srcData = static_cast<const P*>(source->getData());
-            P* dstData = static_cast<P*>(target->getData());
+            const P* dstData = static_cast<P*>(target->getData());
 
             if (rank == 0) {
-                cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
-                auto resized = src.get_resize(resizeDim.x, resizeDim.y, -100, -100,
-                                              static_cast<int>(interpolation));
+                const cimg_library::CImg<P> src(srcData, sourceDim.x, sourceDim.y, 1, 1, true);
+                const auto resized = src.get_resize(resizeDim.x, resizeDim.y, -100, -100,
+                                                    static_cast<int>(interpolation));
 
                 cimg_library::CImg<P> dst(dstData, targetDim.x, targetDim.y, 1, 1, true);
                 dst.fill(P{0});
@@ -446,9 +446,9 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target,
                 // Permute from interleaved to planar format,
                 // we need to specify yzcx as input instead of cxyz
 
-                size_t comp = util::extent<T>::value;
+                const size_t comp = util::extent<T>::value;
 
-                cimg_library::CImg<P> src(srcData, comp, sourceDim.x, sourceDim.y, 1, true);
+                const cimg_library::CImg<P> src(srcData, comp, sourceDim.x, sourceDim.y, 1, true);
                 auto temp = src.get_permute_axes("yzcx");  // put first index last
 
                 temp.resize(resizeDim.x, resizeDim.y, -100, -100, static_cast<int>(interpolation));
@@ -489,7 +489,7 @@ std::string getOpenEXRVersion() {
 TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 #ifdef cimg_use_tiff
     TIFF* tif = TIFFOpen(filename.string().c_str(), "r");
-    util::OnScopeExit closeFile([tif]() {
+    const util::OnScopeExit closeFile([tif]() {
         if (tif) TIFFClose(tif);
     });
 

@@ -222,7 +222,7 @@ private:
 
     class IVW_QTEDITOR_API AdjustSceneToChangesBlocker {
     public:
-        AdjustSceneToChangesBlocker(NetworkEditor& network);
+        explicit AdjustSceneToChangesBlocker(NetworkEditor& network);
         AdjustSceneToChangesBlocker() = delete;
         AdjustSceneToChangesBlocker(const AdjustSceneToChangesBlocker&) = delete;
         AdjustSceneToChangesBlocker(AdjustSceneToChangesBlocker&&) = delete;

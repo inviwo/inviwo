@@ -55,7 +55,7 @@ void addInviwoMetaAction(QMenu* menu) {
         saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
         if (saveFileDialog.exec()) {
-            QString qpath = saveFileDialog.selectedFiles().at(0);
+            const QString qpath = saveFileDialog.selectedFiles().at(0);
             const auto path = utilqt::fromQString(qpath);
 
             try {
@@ -99,7 +99,7 @@ void addInviwoMetaAction(QMenu* menu) {
         menu->connect(action, &QAction::triggered, [&]() {
             create("Module", [](meta::Creator& creator, const std::filesystem::path& path) {
                 bool ok;
-                QString text = QInputDialog::getText(
+                const QString text = QInputDialog::getText(
                     nullptr, "Add Module", "Organization:", QLineEdit::Normal, "inviwo", &ok,
                     Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
                 if (ok && !text.isEmpty()) {

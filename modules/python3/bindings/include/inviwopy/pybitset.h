@@ -33,6 +33,6 @@
 
 namespace inviwo {
 
-void exposeBitset(pybind11::module& m);
+void exposeBitset(const pybind11::module& m);
 
 }  // namespace inviwo

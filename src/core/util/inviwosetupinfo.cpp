@@ -96,7 +96,7 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication& app, ProcessorNetwork&
                                        std::pmr::vector<ModuleSetupInfo>& modules) -> void {
         if (auto* mfo = mm.getFactoryObject(moduleId)) {
             for (auto&& [dependencyId, _] : mfo->dependencies) {
-                if (auto* inviwoModule = mm.getModuleByIdentifier(dependencyId)) {
+                if (const auto* inviwoModule = mm.getModuleByIdentifier(dependencyId)) {
                     if (!std::ranges::contains(
                             modules, inviwoModule->getIdentifier(),
                             [](const auto& m) { return std::string_view{m.name}; })) {
@@ -120,8 +120,8 @@ void InviwoSetupInfo::deserialize(Deserializer& d) { d.deserialize("Modules", mo
 
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
     std::string_view moduleName) const {
-    auto it = util::find_if(modules_,
-                            [&](const ModuleSetupInfo& info) { return info.name == moduleName; });
+    const auto it = util::find_if(
+        modules_, [&](const ModuleSetupInfo& info) { return info.name == moduleName; });
     if (it != modules_.end()) {
         return &(*it);
     } else {
@@ -132,7 +132,7 @@ const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleForProcessor(
     std::string_view processorClassIdentifier) const {
     for (const auto& module : modules_) {
-        auto it =
+        const auto it =
             std::find(module.processors.begin(), module.processors.end(), processorClassIdentifier);
         if (it != module.processors.end()) {
             return &module;

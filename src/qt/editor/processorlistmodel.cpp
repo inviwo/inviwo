@@ -68,7 +68,7 @@ QModelIndex ProcessorListModel::index(int row, int column, const QModelIndex& pa
     Node* parentNode = indexToNode(parent);
     if (!parentNode) return {};
 
-    Node* childNode = parentNode->child(row);
+    const Node* childNode = parentNode->child(row);
     if (childNode) return createIndex(row, column, childNode);
 
     return {};
@@ -76,7 +76,7 @@ QModelIndex ProcessorListModel::index(int row, int column, const QModelIndex& pa
 Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
     if (!index.isValid()) return Qt::NoItemFlags;
 
-    auto* node = indexToNode(index);
+    const auto* node = indexToNode(index);
     switch (node->type) {
         case Node::Type::Item:
             return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemNeverHasChildren;
@@ -88,7 +88,7 @@ Qt::ItemFlags ProcessorListModel::flags(const QModelIndex& index) const {
 }
 QVariant ProcessorListModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) return {};
-    auto* node = indexToNode(index);
+    const auto* node = indexToNode(index);
 
     switch (node->type) {
         case Node::Type::Root: {
@@ -123,8 +123,8 @@ QModelIndex ProcessorListModel::parent(const QModelIndex& index) const {
 
     if (!index.isValid()) return QModelIndex{};
 
-    if (auto* node = indexToNode(index)) {
-        if (auto* parent = node->parent) {
+    if (const auto* node = indexToNode(index)) {
+        if (const auto* parent = node->parent) {
             if (parent != root_.get()) {
                 return createIndex(parent->row, 0, parent);
             }
@@ -133,7 +133,7 @@ QModelIndex ProcessorListModel::parent(const QModelIndex& index) const {
     return QModelIndex{};
 }
 int ProcessorListModel::rowCount(const QModelIndex& parent) const {
-    auto* node = indexToNode(parent);
+    const auto* node = indexToNode(parent);
     return node ? node->size() : 0;
 }
 int ProcessorListModel::columnCount(const QModelIndex&) const { return 1; }
@@ -161,7 +161,7 @@ void ProcessorListModel::categoryAndSort(Grouping grouping, Item& item,
                                          StringMap<std::unordered_set<Item*>>& groups,
                                          StringMap<QVariant>& groupToSort) {
 
-    auto add = [&](auto&& group, auto&& sort) {
+    const auto add = [&](auto&& group, auto&& sort) {
         groups[group].insert(&item);
         groupToSort[group] = sort;
     };
@@ -280,7 +280,7 @@ void ProcessorListModel::build() {
 
 bool ProcessorListModel::updateItem(std::string_view classIdentifier,
                                     const std::function<bool(Item&)>& updater) {
-    auto it = classIdentifierToItem_.find(classIdentifier);
+    const auto it = classIdentifierToItem_.find(classIdentifier);
     if (it != classIdentifierToItem_.end()) {
         if (updater(*it->second)) {
             if (grouping_ == Grouping::LastUsed || grouping_ == Grouping::MostUsed) {
@@ -288,8 +288,8 @@ bool ProcessorListModel::updateItem(std::string_view classIdentifier,
                 build();
                 endResetModel();
             } else {
-                auto* node = itemToNode_[it->second];
-                auto index = createIndex(node->row, 0, node);
+                const auto* node = itemToNode_[it->second];
+                const auto index = createIndex(node->row, 0, node);
                 dataChanged(index, index);
                 return true;
             }

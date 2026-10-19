@@ -78,7 +78,7 @@ MarginProperty::MarginProperty(const MarginProperty& rhs)
 MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); }
 
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),
              top_.getIncrement());
     right_.set(right, std::min(right_.getMinValue(), right),
@@ -122,10 +122,10 @@ vec2 MarginProperty::getLowerLeftMargin() const { return {left_, bottom_}; }
 vec2 MarginProperty::getUpperRightMargin() const { return {right_, top_}; }
 
 void MarginProperty::setLowerLeftMargin(vec2 lowerLeft) {
-    auto left = lowerLeft.x;
-    auto bottom = lowerLeft.y;
+    const auto left = lowerLeft.x;
+    const auto bottom = lowerLeft.y;
 
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     left_.set(left, std::min(left_.getMinValue(), left), std::max(left_.getMaxValue(), left * 2.0f),
               left_.getIncrement());
     bottom_.set(bottom, std::min(bottom_.getMinValue(), bottom),
@@ -133,10 +133,10 @@ void MarginProperty::setLowerLeftMargin(vec2 lowerLeft) {
 }
 
 void MarginProperty::setUpperRightMargin(vec2 upperRight) {
-    auto right = upperRight.x;
-    auto top = upperRight.y;
+    const auto right = upperRight.x;
+    const auto top = upperRight.y;
 
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     right_.set(right, std::min(right_.getMinValue(), right),
                std::max(right_.getMaxValue(), right * 2.0f), right_.getIncrement());
     top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),

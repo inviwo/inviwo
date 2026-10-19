@@ -53,7 +53,7 @@ struct IsovalueParameters {
 )");
 }  // namespace
 
-void setUniforms(Shader& shader, const IsoValueProperty& iso, const DataMapper* volumeDM) {
+void setUniforms(const Shader& shader, const IsoValueProperty& iso, const DataMapper* volumeDM) {
     auto positions = iso.get().getPositionsf();
     const auto colors = iso.get().getColors();
     const auto name = iso.getIdentifier();

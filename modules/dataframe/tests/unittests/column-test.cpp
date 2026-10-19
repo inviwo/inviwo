@@ -71,7 +71,7 @@ TEST(ColumnTests, Create) {
 }
 
 TEST(ColumnTests, IndexColumn) {
-    IndexColumn col("index", {0, 1, 2, 3});
+    const IndexColumn col("index", {0, 1, 2, 3});
 
     EXPECT_EQ(ColumnType::Index, col.getColumnType()) << "Incorrect column type";
     EXPECT_EQ(4, col.getSize()) << "Row count differs";
@@ -97,7 +97,7 @@ TEST(ColumnTests, CategoricalColumn) {
 TEST(ColumnTests, FloatColumn) {
     TemplateColumn<float> col("Column", {0.0f, 0.1f, 0.5f, 1.0f, 2.0f, 10.0f});
 
-    auto buffer = col.getBuffer();
+    const auto buffer = col.getBuffer();
     const auto rows = col.getSize();
 
     EXPECT_EQ(ColumnType::Ordinal, col.getColumnType()) << "Incorrect column type";
@@ -118,7 +118,7 @@ TEST(ColumnTests, DataAccess) {
     const auto value = col.get(2);
     col.set(2, 5.0f);
 
-    auto buffer = col.getBuffer();
+    const auto buffer = col.getBuffer();
     const auto rows = col.getSize();
 
     ASSERT_EQ(DataFormat<float>::id(), buffer->getDataFormat()->getId())
@@ -136,7 +136,7 @@ TEST(ColumnTests, DataAccess) {
 
 TEST(ColumnAppend, IntColumn) {
     TemplateColumn<int> col("IntCol", {0, 1, 2, 3});
-    TemplateColumn<int> col2("IntCol2", {4, 5});
+    const TemplateColumn<int> col2("IntCol2", {4, 5});
 
     EXPECT_EQ(4, col.getSize());
 
@@ -180,7 +180,7 @@ TEST(ColumnAppend, CategoricalThrow) {
     CategoricalColumn catCol("Column");
     catCol.add("b");
 
-    TemplateColumn<int> intCol("IntCol", std::vector<int>{0, 1});
+    const TemplateColumn<int> intCol("IntCol", std::vector<int>{0, 1});
 
     EXPECT_NO_THROW(col.append(catCol));
     EXPECT_THROW(col.append(intCol), Exception);
@@ -197,7 +197,7 @@ TEST(ColumnAppend, TypeMismatch) {
 }
 
 TEST(ColumnFilter, NoFilter) {
-    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+    const TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
 
     const auto result = dataframe::selectRows(intCol, {});
     EXPECT_EQ(0, result.size()) << "Incorrect number of filtered rows";
@@ -238,7 +238,7 @@ TEST(ColumnFilter, CategoricalMulti) {
 }
 
 TEST(ColumnFilter, IntLess) {
-    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+    const TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
 
     std::vector<dataframefilters::ItemFilter> filters;
     filters.push_back(dataframefilters::intMatch(0, filters::NumberComp::Less, 4));
@@ -251,7 +251,7 @@ TEST(ColumnFilter, IntLess) {
 }
 
 TEST(ColumnFilter, IntRange) {
-    TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
+    const TemplateColumn<int> intCol("IntCol", {0, 1, 2, 2, 4, 7, 10, 9, 5, 3});
 
     std::vector<dataframefilters::ItemFilter> filters;
     filters.push_back(dataframefilters::intRange(0, 2, 5));

@@ -390,7 +390,7 @@ Document FileProperty::getDescription() const {
     using H = utildoc::TableBuilder::Header;
 
     Document doc = Property::getDescription();
-    auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
+    const auto table = doc.get({P("table", {{"class", "propertyInfo"}})});
 
     utildoc::TableBuilder tb(table);
     switch (fileMode_) {

@@ -90,7 +90,7 @@ void Converter::updateByteOrder(TxElement* root) {
             // move endianness to own tag
             TxElement byteOrder{"ByteOrder"};
 
-            auto content = littleEndianNode->Attribute("content").value_or("1");
+            const auto content = littleEndianNode->Attribute("content").value_or("1");
             byteOrder.SetAttribute(
                 "content",
                 fmt::format("{}", content == "1" ? static_cast<int>(ByteOrder::LittleEndian)
@@ -215,8 +215,8 @@ std::shared_ptr<VolumeSequence> readIvfFile(const std::filesystem::path& filePat
     d.deserialize("BasisAndOffset", basisAndOffset);
     d.deserialize("WorldTransform", worldTransform);
 
-    auto dataMap = deserializeDataMap(d);
-    auto axes = deserializeAxes(d);
+    const auto dataMap = deserializeDataMap(d);
+    const auto axes = deserializeAxes(d);
 
     std::vector<VolumeMetaData> volumeData;
     if (d.hasElement("RawFiles")) {
@@ -229,7 +229,7 @@ std::shared_ptr<VolumeSequence> readIvfFile(const std::filesystem::path& filePat
 
     auto sequence = std::make_shared<VolumeSequence>();
     for (const auto& [path, metaData] : volumeData) {
-        auto volume =
+        const auto volume =
             std::make_shared<Volume>(dimensions, format, swizzleMask, interpolation, wrapping);
         sequence->push_back(volume);
 
@@ -239,8 +239,8 @@ std::shared_ptr<VolumeSequence> readIvfFile(const std::filesystem::path& filePat
         volume->axes = axes;
         *(volume->getMetaDataMap()) = metaData;
 
-        auto volumeDisk = std::make_shared<VolumeDisk>(fileDirectory / path, dimensions, format,
-                                                       swizzleMask, interpolation, wrapping);
+        const auto volumeDisk = std::make_shared<VolumeDisk>(
+            fileDirectory / path, dimensions, format, swizzleMask, interpolation, wrapping);
         auto loader = std::make_unique<RawVolumeRAMLoader>(fileDirectory / path, byteOffset,
                                                            byteOrder, compression);
         volumeDisk->setLoader(loader.release());
@@ -263,7 +263,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::filesystem::path& f
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
 
-    auto sequence = readIvfFile(localPath);
+    const auto sequence = readIvfFile(localPath);
     if (sequence->size() != 1) {
         throw DataReaderException{
             SourceContext{},

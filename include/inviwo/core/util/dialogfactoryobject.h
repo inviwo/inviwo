@@ -41,7 +41,7 @@ class Dialog;
 
 class IVW_CORE_API DialogFactoryObject {
 public:
-    DialogFactoryObject(std::string_view className);
+    explicit DialogFactoryObject(std::string_view className);
     virtual ~DialogFactoryObject() {}
 
     virtual std::unique_ptr<Dialog> create() = 0;
@@ -55,7 +55,8 @@ private:
 template <typename T>
 class DialogFactoryObjectTemplate : public DialogFactoryObject {
 public:
-    DialogFactoryObjectTemplate(std::string_view className) : DialogFactoryObject(className) {}
+    explicit DialogFactoryObjectTemplate(std::string_view className)
+        : DialogFactoryObject(className) {}
 
     virtual ~DialogFactoryObjectTemplate() {}
 

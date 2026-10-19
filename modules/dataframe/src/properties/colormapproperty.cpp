@@ -157,12 +157,12 @@ colorbrewer::Family ColormapProperty::getFamily() const { return *colormap; }
 void ColormapProperty::setupForColumn(const Column& col) {
     col.getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
-            auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
+            const auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
             setupForColumn(col, minMax.first.x, minMax.second.x);
         });
 }
 void ColormapProperty::setupForColumn(const Column& col, double minVal, double maxVal) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
 
     if (auto catCol = dynamic_cast<const CategoricalColumn*>(&col)) {
         type.set(ColormapType::Categorical);
@@ -192,8 +192,8 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
 }
 
 TransferFunction ColormapProperty::getTransferFunction() const {
-    auto midPoint = (divergenceMidPoint - divergenceMidPoint.getMinValue()) /
-                    (divergenceMidPoint.getMaxValue() - divergenceMidPoint.getMinValue());
+    const auto midPoint = (divergenceMidPoint - divergenceMidPoint.getMinValue()) /
+                          (divergenceMidPoint.getMaxValue() - divergenceMidPoint.getMinValue());
     return colorbrewer::getTransferFunction(getCategory(), *colormap,
                                             static_cast<glm::uint8>(*nColors), *discrete, midPoint);
 }

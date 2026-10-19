@@ -85,7 +85,7 @@ void ClockGL::reset() {
 size_t ClockGL::getCount() const { return count_; }
 
 auto ClockGL::getElapsedTime(std::chrono::seconds timeout) -> duration {
-    auto startWaitingTime = std::chrono::high_resolution_clock::now();
+    const auto startWaitingTime = std::chrono::high_resolution_clock::now();
 
     if (isRunning()) {
         // add query end marker to get time elapsed since start without affecting ongoing
@@ -114,7 +114,7 @@ auto ClockGL::getElapsedTime(std::chrono::seconds timeout) -> duration {
             return accumulatedTime_;
         }
     } else {  // timeout
-        std::string msg =
+        const std::string msg =
             "ClockGL timeout: ClockGL waited " +
             std::to_string(std::chrono::duration_cast<std::chrono::seconds>(timeout).count()) +
             "s for OpenGL to finish. Elapsed time will be incorrect.\n"

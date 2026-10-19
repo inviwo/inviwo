@@ -60,7 +60,7 @@ bool isConvex(const T& polygon) {
     const std::size_t n = polygon.size();
     if (n < 3) return true;
 
-    auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
+    const auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
 
     for (std::size_t i = 0; i < n; ++i) {
         if (cross2D(polygon[(i + 1) % n] - polygon[i], polygon[(i + 2) % n] - polygon[i]) <= 0) {
@@ -84,11 +84,11 @@ bool isInside(const C& hull, const std::ranges::range_value_t<C>& p) {
     if (n < 3) return false;
 
     // signed area of the triangle spanned by a and b
-    auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
+    const auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
 
     // look for a sign change between p and the current segment of the hull.
     // If it changes, then p lies on the outside.
-    bool positive = cross2D(hull[1] - hull[0], p - hull[0]) >= 0;
+    const bool positive = cross2D(hull[1] - hull[0], p - hull[0]) >= 0;
     for (std::size_t i = 1; i < n; ++i) {
         if ((cross2D(hull[(i + 1) % n] - hull[i], p - hull[i]) >= 0) != positive) {
             return false;
@@ -108,7 +108,7 @@ double getArea(const C& polygon) {
     using E = std::ranges::range_value_t<C>;
     const std::size_t n = polygon.size();
 
-    auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
+    const auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
     double area = 0.0;
     for (std::size_t i = 0; i < n; ++i) {
         area += cross2D(polygon[i], polygon[(i + 1) % n]);
@@ -130,7 +130,7 @@ std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
     using E = std::ranges::range_value_t<C>;
     // sort points according to x coordinate, if equal chose lower y coordinate
     std::vector<E> p(points.begin(), points.end());
-    auto compare = [](const E& a, const E& b) {
+    const auto compare = [](const E& a, const E& b) {
         return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y));
     };
     std::ranges::sort(p, compare);
@@ -143,7 +143,7 @@ std::vector<std::ranges::range_value_t<C>> convexHull(const C& points) {
     // signed area of the triangle spanned by a and b.
     // Is used to determine the turn direction between a and b, i.e.
     // clockwise (cw, > 0), counter-clockwise (ccw, < 0) or co-linear (= 0)
-    auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
+    const auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
 
     const std::size_t n = points.size();
     std::vector<E> hull(2 * n);
@@ -202,7 +202,7 @@ std::span<const glm::vec<2, T>> convexHull(std::span<const glm::vec<2, T>, N> po
     // sort points according to x coordinate, if equal chose lower y coordinate
     std::array<E, N> p;
     std::ranges::copy(points, p.begin());
-    auto compare = [](const E& a, const E& b) {
+    const auto compare = [](const E& a, const E& b) {
         return (a.x < b.x) || ((a.x == b.x) && (a.y < b.y));
     };
     std::ranges::sort(p, compare);
@@ -210,7 +210,7 @@ std::span<const glm::vec<2, T>> convexHull(std::span<const glm::vec<2, T>, N> po
     // signed area of the triangle spanned by a and b.
     // Is used to determine the turn direction between a and b, i.e.
     // clockwise (cw, > 0), counter-clockwise (ccw, < 0) or co-linear (= 0)
-    auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
+    const auto cross2D = [](const E& a, const E& b) { return (a.x * b.y - a.y * b.x); };
 
     std::size_t k = 0;
     // build lower hull

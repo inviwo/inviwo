@@ -192,7 +192,7 @@ TEST(OptionProperty, SerializeCopyAll) {
 }
 
 TEST(OptionProperty, SerializeCopyDefault) {
-    OptionProperty<int> src{"src", "src", {1, 2, 3, 4, 5}, 1};
+    const OptionProperty<int> src{"src", "src", {1, 2, 3, 4, 5}, 1};
 
     Serializer s{};
     s.serialize("Property", src);

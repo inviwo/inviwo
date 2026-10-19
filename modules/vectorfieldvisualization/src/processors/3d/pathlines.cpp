@@ -160,7 +160,7 @@ PathLinesDeprecated::PathLinesDeprecated()
 }
 
 void PathLinesDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<dvec3>> {
+    const auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<dvec3>> {
         if (sampler_.isConnected()) {
             if (allowLooping_.getVisible()) {
                 allowLooping_.setVisible(false);
@@ -178,22 +178,22 @@ void PathLinesDeprecated::process() {
 
     if (!sampler) return;
 
-    auto mesh = std::make_shared<BasicMesh>();
+    const auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(sampler->getModelMatrix());
     mesh->setWorldMatrix(sampler->getWorldMatrix());
 
-    auto m =
+    const auto m =
         pathLineProperties_.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer());
 
     float maxVelocity = 0;
-    PathLine3DTracer tracer(sampler, pathLineProperties_);
+    const PathLine3DTracer tracer(sampler, pathLineProperties_);
 
-    bool hasColors = colors_.hasData();
+    const bool hasColors = colors_.hasData();
 
     bool warnOnce = true;
     bool warnOnce2 = true;
 
-    auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
+    const auto lines = std::make_shared<IntegralLineSet>(sampler->getModelMatrix());
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto& seeds : seedPoints_) {
 
@@ -202,9 +202,9 @@ void PathLinesDeprecated::process() {
 #endif
         for (long long j = 0; j < static_cast<long long>(seeds->size()); j++) {
             const auto& p = (*seeds)[j];
-            vec4 P = m * vec4(p, 1.0f);
+            const vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec4(vec3(P), pathLineProperties_.getStartT()));
-            auto size = line.getPositions().size();
+            const auto size = line.getPositions().size();
             if (size > 1) {
 #ifdef IVW_USE_OPENMP
 #pragma omp critical
@@ -215,14 +215,15 @@ void PathLinesDeprecated::process() {
     }
 
     for (auto& line : *lines) {
-        auto size = line.getPositions().size();
+        const auto size = line.getPositions().size();
         if (size <= 1) continue;
 
         auto position = line.getPositions().begin();
         auto velocity = line.getMetaData<dvec3>("velocity").begin();
         auto timestamp = line.getMetaData<double>("timestamp").begin();
 
-        auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+        const auto indexBuffer =
+            mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
         indexBuffer->add(0);
 
         vec4 c{0};
@@ -238,12 +239,12 @@ void PathLinesDeprecated::process() {
         }
 
         for (size_t ii = 0; ii < size; ii++) {
-            vec3 pos(*position);
-            vec3 v(*velocity);
-            float t = static_cast<float>(*timestamp);
+            const vec3 pos(*position);
+            const vec3 v(*velocity);
+            const float t = static_cast<float>(*timestamp);
 
-            float l = glm::length(v);
-            float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
+            const float l = glm::length(v);
+            const float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
             maxVelocity = std::max(maxVelocity, l);
 
             switch (coloringMethod_.get()) {

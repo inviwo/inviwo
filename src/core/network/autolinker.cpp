@@ -43,13 +43,13 @@ void AutoLinker::update(ProcessorNetwork& network, Processor& target, Processor*
 
     std::vector<Property*> sourceProperties;
     const auto collectProperties = [&](const Processor* p) {
-        if (auto it = std::ranges::find(ignore, p); it == ignore.end()) {
+        if (const auto it = std::ranges::find(ignore, p); it == ignore.end()) {
             p->getPropertiesRecursive(sourceProperties);
         }
     };
 
     if (source) {
-        for (auto* p : util::getPredecessors(source)) {
+        for (const auto* p : util::getPredecessors(source)) {
             collectProperties(p);
         }
     } else {

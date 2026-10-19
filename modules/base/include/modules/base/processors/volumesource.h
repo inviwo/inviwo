@@ -59,7 +59,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    VolumeSource(InviwoApplication* app, const std::filesystem::path& filePath = {});
+    explicit VolumeSource(InviwoApplication* app, const std::filesystem::path& filePath = {});
     virtual ~VolumeSource() = default;
 
     virtual void deserialize(Deserializer& d) override;

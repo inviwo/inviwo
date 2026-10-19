@@ -69,7 +69,7 @@ std::vector<std::unique_ptr<Property>> createPrefabs() {
     return vec;
 }
 
-void updateMetaData(ListProperty& metadata, const MetaDataOwner& data) {
+void updateMetaData(const ListProperty& metadata, const MetaDataOwner& data) {
     for (auto* property : metadata) {
         if (!data.hasMetaData(property->getDisplayName())) continue;
 
@@ -89,7 +89,7 @@ void updateMetaData(ListProperty& metadata, const MetaDataOwner& data) {
     }
 }
 
-void clearMetaData(ListProperty& metadata) {
+void clearMetaData(const ListProperty& metadata) {
     for (auto* property : metadata) {
         property->resetToDefaultState();
     }

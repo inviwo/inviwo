@@ -111,7 +111,7 @@ TEST(ShaderObject, parseSource) {
 
     LineNumberResolver lnr;
 
-    auto getSource =
+    const auto getSource =
         [](std::string_view path) -> std::optional<std::pair<std::string, std::string>> {
         if (path == "inc1") {
             return std::pair<std::string, std::string>{path, "Inc1"};
@@ -124,7 +124,7 @@ TEST(ShaderObject, parseSource) {
     };
 
     using Placeholder = typename ShaderSegment::Placeholder;
-    std::unordered_map<Placeholder, std::vector<ShaderSegment>> replacements{
+    const std::unordered_map<Placeholder, std::vector<ShaderSegment>> replacements{
         {Placeholder("MAGIC_REPLACEMENT", "REPLACEMENT"),
          {ShaderSegment{Placeholder{"MAGIC_REPLACEMENT", "REPLACEMENT"}, "Repl1",
                         "replacement code1;\nreplacement code2;", 900},
@@ -136,13 +136,13 @@ TEST(ShaderObject, parseSource) {
     std::ostringstream oss;
 
     utilgl::parseShaderSource("Code1", code1, oss, lnr, replacements, getSource);
-    auto parsed = oss.str();
+    const auto parsed = oss.str();
 
     std::stringstream ss;
     for (auto&& [key, line] : util::zip(lnr, util::splitStringView(parsed, '\n'))) {
         ss << fmt::format("{:<12} {:>2}: {}\n", key.first, key.second, line);
     }
-    auto pre = ss.str();
+    const auto pre = ss.str();
 
     auto expectedLines = util::splitStringView(code1Parsed, '\n');
     auto parsedLines = util::splitStringView(parsed, '\n');

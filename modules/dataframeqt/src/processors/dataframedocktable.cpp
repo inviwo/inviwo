@@ -267,7 +267,7 @@ void DataFrameDockTable::setWidgetParent(DataFrameDockTableWidget* widget,
                 widget->setParent(nullptr);
                 widget->setFloating(true);
             }
-        } else if (auto* p = getNetwork()->getProcessorByIdentifier(processorId)) {
+        } else if (const auto* p = getNetwork()->getProcessorByIdentifier(processorId)) {
             if (auto* parent = dynamic_cast<QMainWindow*>(p->getProcessorWidget())) {
                 widget->setParent(parent);
                 setDockArea(widget, dockArea_.get());
@@ -346,7 +346,7 @@ std::optional<std::filesystem::path> DataFrameDockTable::exportFile(
     const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
 
-    if (auto data = inport_.getData()) {
+    if (const auto data = inport_.getData()) {
         return util::saveData(*data, path, name, candidateExtensions, overwrite);
     }
 

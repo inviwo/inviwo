@@ -33,7 +33,7 @@
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo::util {
-DoubleRefProperty* getCameraFovProperty(CameraProperty& comp) {
+DoubleRefProperty* getCameraFovProperty(const CameraProperty& comp) {
     return dynamic_cast<DoubleRefProperty*>(comp.getCameraProperty("fov"));
 }
 std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
@@ -59,7 +59,7 @@ DoubleRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp,
     return fov;
 }
 
-DoubleRefProperty* getCameraWidthProperty(CameraProperty& comp) {
+DoubleRefProperty* getCameraWidthProperty(const CameraProperty& comp) {
     return dynamic_cast<DoubleRefProperty*>(comp.getCameraProperty("width"));
 }
 
@@ -86,7 +86,7 @@ DoubleRefProperty* updateOrCreateCameraWidthProperty(
     return width;
 }
 
-DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& comp) {
+DoubleVec2RefProperty* getCameraEyeOffsetProperty(const CameraProperty& comp) {
     return dynamic_cast<DoubleVec2RefProperty*>(comp.getCameraProperty("offset"));
 }
 

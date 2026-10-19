@@ -79,7 +79,7 @@ class IVW_MODULE_ANIMATION_API TrackFactory
     using Parent = StandardFactory<Track, TrackFactoryObject, std::string_view, ProcessorNetwork*>;
 
 public:
-    TrackFactory(ProcessorNetwork* network);
+    explicit TrackFactory(ProcessorNetwork* network);
 
     using Parent::create;
 

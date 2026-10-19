@@ -102,13 +102,13 @@ Texture::Texture(GLenum target, GLFormat glFormat, GLenum filtering, const Swizz
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     {
-        auto f = static_cast<GLuint>(filtering);
+        const auto f = static_cast<GLuint>(filtering);
         glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
         glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
     }
 
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        auto w = static_cast<GLuint>(wrap);
+        const auto w = static_cast<GLuint>(wrap);
         glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     glBindTexture(target_, 0);
@@ -134,12 +134,12 @@ Texture::Texture(GLenum target, GLenum format, GLenum internalformat, GLenum dat
     auto swizzleMaskGL = utilgl::convertSwizzleMaskToGL(swizzleMask);
     glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     {
-        auto f = static_cast<GLuint>(filtering);
+        const auto f = static_cast<GLuint>(filtering);
         glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
         glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
     }
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        auto w = static_cast<GLuint>(wrap);
+        const auto w = static_cast<GLuint>(wrap);
         glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     glBindTexture(target_, 0);
@@ -312,7 +312,7 @@ SwizzleMask Texture::getSwizzleMask() const {
 }
 
 void Texture::setInterpolation(InterpolationType interpolation) {
-    auto f = static_cast<GLuint>(utilgl::convertInterpolationToGL(interpolation));
+    const auto f = static_cast<GLuint>(utilgl::convertInterpolationToGL(interpolation));
     bind();
     glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &f);
     glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &f);
@@ -330,7 +330,7 @@ InterpolationType Texture::getInterpolation() const {
 void Texture::setWrapping(std::span<const GLenum> wrapping) {
     bind();
     for (auto [i, wrap] : util::enumerate(wrapping)) {
-        auto w = static_cast<GLuint>(wrap);
+        const auto w = static_cast<GLuint>(wrap);
         glTexParameterIuiv(target_, wrapNames[i], &w);
     }
     unbind();
@@ -371,7 +371,7 @@ void Texture::download(void* data) const {
     bool downloadComplete = false;
 
     {
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         }
@@ -380,7 +380,7 @@ void Texture::download(void* data) const {
     if (pboBackHasData_) {
         // Copy from PBO
         bindToPBO();
-        void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+        const void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
         if (mem) {
             memcpy(data, mem, getNumberOfValues() * getSizeInBytes());
             downloadComplete = true;
@@ -408,7 +408,7 @@ void Texture::downloadToPBO() const {
     }
 
     {
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         }

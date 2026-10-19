@@ -79,14 +79,14 @@ auto HistogramCache::calculateHistograms(const std::function<std::vector<Histogr
 
         util::dispatchPool([calculate, promise = std::move(promise),
                             weakState = std::weak_ptr<State>(state_)]() mutable {
-            if (auto state = weakState.lock()) {
+            if (const auto state = weakState.lock()) {
                 const auto newHistograms =
                     std::make_shared<const std::vector<Histogram1D>>(calculate());
                 promise.set_value(newHistograms);
 
                 util::dispatchFrontAndForget(
                     [weakState = std::weak_ptr<State>(state), newHistograms]() mutable {
-                        if (auto state = weakState.lock()) {
+                        if (const auto state = weakState.lock()) {
                             const std::scoped_lock lock{state->mutex};
                             state->callbacks.invoke(newHistograms);
                         }
@@ -120,7 +120,7 @@ std::shared_ptr<const std::vector<Histogram1D>> HistogramCache::calculateHistogr
 
     util::dispatchFrontAndForget(
         [weakState = std::weak_ptr<State>(state_), newHistograms]() mutable {
-            if (auto state = weakState.lock()) {
+            if (const auto state = weakState.lock()) {
                 const std::scoped_lock lock{state->mutex};
                 state->callbacks.invoke(newHistograms);
             }
@@ -134,7 +134,7 @@ void HistogramCache::forEach(
     const std::scoped_lock lock{state_->mutex};
 
     if (util::is_future_ready(state_->histograms)) {
-        if (auto histograms = state_->histograms.get()) {
+        if (const auto histograms = state_->histograms.get()) {
             for (auto&& [channel, histogram] : util::enumerate(*histograms)) {
                 callback(histogram, channel);
             }

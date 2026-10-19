@@ -188,7 +188,7 @@ void BasisProperty::load() {
         offset /= dimensions_;
     }
 
-    util::KeepTrueWhileInScope block(&updating_);
+    const util::KeepTrueWhileInScope block(&updating_);
     a_.set(basis[0]);
     b_.set(basis[1]);
     c_.set(basis[2]);
@@ -209,7 +209,7 @@ void BasisProperty::save() {
 
     if (autoCenter_) {
         offset = -0.5 * (basis[0] + basis[1] + basis[2]);
-        util::KeepTrueWhileInScope block(&updating_);
+        const util::KeepTrueWhileInScope block(&updating_);
         offset_ = offset;
     } else {
         offset = offset_.get();

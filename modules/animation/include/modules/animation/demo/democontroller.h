@@ -50,7 +50,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API DemoController : public DemoControllerObservable,
                                                 public PropertyOwner {
 public:
-    DemoController(InviwoApplication* app = util::getInviwoApplication());
+    explicit DemoController(InviwoApplication* app = util::getInviwoApplication());
     virtual ~DemoController();
 
     enum Offset { None, First, Previous, Next, Last, Reload };

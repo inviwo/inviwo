@@ -50,7 +50,7 @@ template <typename T>
 void checkColumnContents(const Column& col, const std::vector<T>& expected) {
     EXPECT_EQ(expected.size(), col.getSize())
         << fmt::format("Column should have {} rows", expected.size());
-    auto buffer = col.getBuffer();
+    const auto buffer = col.getBuffer();
     auto bufferram =
         static_cast<const BufferRAMPrecision<T>*>(buffer->getRepresentation<BufferRAM>());
     EXPECT_EQ(expected, bufferram->getDataContainer())
@@ -68,7 +68,7 @@ TEST(AppendRows, ByOrder) {
     bottom.addColumnFromBuffer("col", util::makeBuffer(std::vector<int>{3, 4}));
     bottom.updateIndexBuffer();
 
-    auto dataframe = dataframe::appendRows(top, bottom, false);
+    const auto dataframe = dataframe::appendRows(top, bottom, false);
 
     EXPECT_EQ(2, dataframe->getNumberOfColumns())
         << "DataFrame should have 2 columns (index + 'col')";
@@ -88,7 +88,7 @@ TEST(AppendRows, ByName) {
     bottom.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{3, 4}));
     bottom.updateIndexBuffer();
 
-    auto dataframe = dataframe::appendRows(top, bottom, true);
+    const auto dataframe = dataframe::appendRows(top, bottom, true);
 
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
     EXPECT_EQ(4, dataframe->getNumberOfRows()) << "Row count after appendRows not correct";
@@ -130,12 +130,12 @@ TEST(AppendColumns, DuplicateColumns) {
     right.updateIndexBuffer();
 
     {
-        auto dataframe = dataframe::appendColumns(left, right, false, false);
+        const auto dataframe = dataframe::appendColumns(left, right, false, false);
         EXPECT_EQ(5, dataframe->getNumberOfColumns()) << "DataFrame should have 5 columns";
     }
 
     {
-        auto dataframe = dataframe::appendColumns(left, right, true, false);
+        const auto dataframe = dataframe::appendColumns(left, right, true, false);
         EXPECT_EQ(4, dataframe->getNumberOfColumns())
             << "Column duplicates detected (expected: 3 data columns + index)";
     }
@@ -150,7 +150,7 @@ TEST(AppendColumns, Contents) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::appendColumns(left, right, false, false);
+    const auto dataframe = dataframe::appendColumns(left, right, false, false);
 
     checkColumnContents<int>(*dataframe->getColumn("int"), {1, 2});
     checkColumnContents<float>(*dataframe->getColumn("float"), {3.0f, 4.0f});
@@ -167,7 +167,7 @@ TEST(AppendColumns, MissingRows) {
 
     EXPECT_THROW(dataframe::appendColumns(left, right, false, false), Exception);
 
-    auto dataframe = dataframe::appendColumns(left, right, false, true);
+    const auto dataframe = dataframe::appendColumns(left, right, false, true);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "Append was not successful";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
 
@@ -180,14 +180,14 @@ TEST(AppendColumns, MissingRowsCategorical) {
     left.updateIndexBuffer();
 
     DataFrame right;
-    auto col = right.addCategoricalColumn("cat");
+    const auto col = right.addCategoricalColumn("cat");
     col->add("foo");
     col->add("bar");
     right.updateIndexBuffer();
 
     EXPECT_THROW(dataframe::appendColumns(left, right, false, false), Exception);
 
-    auto dataframe = dataframe::appendColumns(left, right, false, true);
+    const auto dataframe = dataframe::appendColumns(left, right, false, true);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "Append was not successful";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "DataFrame should have 3 columns";
 
@@ -208,7 +208,7 @@ TEST(InnerJoin, ByIndexColumn) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::innerJoin(left, right);
+    const auto dataframe = dataframe::innerJoin(left, right);
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
 
@@ -230,7 +230,7 @@ TEST(InnerJoin, ByCustomColumn) {
         dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"int", "int"}),
         Exception);
 
-    auto dataframe =
+    const auto dataframe =
         dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"int", "int2"});
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
@@ -246,12 +246,12 @@ TEST(InnerJoin, Categorical) {
     left.updateIndexBuffer();
 
     DataFrame right;
-    auto col = right.addCategoricalColumn("cat");
+    const auto col = right.addCategoricalColumn("cat");
     col->add("foo");
     col->add("bar");
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::innerJoin(left, right);
+    const auto dataframe = dataframe::innerJoin(left, right);
     EXPECT_EQ(2, dataframe->getNumberOfRows()) << "inner join should result in 2 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
 
@@ -276,7 +276,7 @@ TEST(InnerJoin, ByCategoricalColumn) {
     right.addColumnFromBuffer("int", util::makeBuffer(std::vector<int>{1, 2, 3}));
     right.updateIndexBuffer();
 
-    auto dataframe =
+    const auto dataframe =
         dataframe::innerJoin(left, right, std::pair<std::string, std::string>{"cat", "cat"});
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "inner join should result in 5 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
@@ -301,7 +301,7 @@ TEST(LeftJoin, ByIndexColumn) {
     right.addColumnFromBuffer("float", util::makeBuffer(std::vector<float>{3.0f, 4.0f}));
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::leftJoin(left, right);
+    const auto dataframe = dataframe::leftJoin(left, right);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "left join should result in 3 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "left join should result in 3 columns";
 
@@ -323,7 +323,7 @@ TEST(LeftJoin, ByCustomColumn) {
         dataframe::leftJoin(left, right, std::pair<std::string, std::string>{"int", "int"}),
         Exception);
 
-    auto dataframe =
+    const auto dataframe =
         dataframe::leftJoin(left, right, std::pair<std::string, std::string>{"int", "int2"});
     EXPECT_EQ(5, dataframe->getNumberOfRows()) << "left join should result in 5 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "left join should result in 3 columns";
@@ -342,7 +342,7 @@ TEST(LeftJoin, Categorical) {
     right.addCategoricalColumn("cat", {"foo", "bar"});
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::leftJoin(left, right);
+    const auto dataframe = dataframe::leftJoin(left, right);
     EXPECT_EQ(3, dataframe->getNumberOfRows()) << "inner join should result in 3 rows";
     EXPECT_EQ(3, dataframe->getNumberOfColumns()) << "inner join should result in 3 columns";
 
@@ -371,7 +371,7 @@ TEST(LeftJoin, MultipleKeyColumns) {
     right.addCategoricalColumn("cat2", {"hello", "world", "test", "cat", "dog"});
     right.updateIndexBuffer();
 
-    auto dataframe = dataframe::leftJoin(
+    const auto dataframe = dataframe::leftJoin(
         left, right,
         std::vector<std::pair<std::string, std::string>>{{"int", "int"}, {"cat", "cat"}});
     EXPECT_EQ(8, dataframe->getNumberOfRows()) << "left join should result in 8 rows";

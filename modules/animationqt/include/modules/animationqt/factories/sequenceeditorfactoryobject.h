@@ -43,7 +43,7 @@ class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactoryObject {
 public:
-    SequenceEditorFactoryObject(const std::string& classIdentifier);
+    explicit SequenceEditorFactoryObject(const std::string& classIdentifier);
     virtual ~SequenceEditorFactoryObject() = default;
 
     virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&,
@@ -60,7 +60,7 @@ public:
     // Requires a static classIdentifier() method on T
     SequenceEditorFactoryObjectTemplate() : SequenceEditorFactoryObject(T::classIdentifier()) {}
 
-    SequenceEditorFactoryObjectTemplate(const std::string& classIdentifier)
+    explicit SequenceEditorFactoryObjectTemplate(const std::string& classIdentifier)
         : SequenceEditorFactoryObject(classIdentifier) {}
     virtual ~SequenceEditorFactoryObjectTemplate() = default;
 

@@ -68,8 +68,8 @@ TrianglesToWireframe::TrianglesToWireframe() : Processor(), mesh_{"mesh"}, wiref
 }
 
 void TrianglesToWireframe::process() {
-    auto mesh = mesh_.getData();
-    auto wireframe = std::make_shared<Mesh>();
+    const auto mesh = mesh_.getData();
+    const auto wireframe = std::make_shared<Mesh>();
     wireframe->setModelMatrix(mesh->getModelMatrix());
     wireframe->setWorldMatrix(mesh->getWorldMatrix());
 
@@ -77,7 +77,7 @@ void TrianglesToWireframe::process() {
         wireframe->addBuffer(buf.first, std::shared_ptr<BufferBase>(buf.second->clone()));
     }
 
-    auto indicesRam = std::make_shared<IndexBufferRAM>();
+    const auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto& vec = indicesRam->getDataContainer();
     wireframe->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                           std::make_shared<IndexBuffer>(indicesRam));

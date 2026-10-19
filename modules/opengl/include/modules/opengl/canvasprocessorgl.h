@@ -46,7 +46,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    CanvasProcessorGL(InviwoApplication* app);
+    explicit CanvasProcessorGL(InviwoApplication* app);
     virtual ~CanvasProcessorGL() = default;
 };
 

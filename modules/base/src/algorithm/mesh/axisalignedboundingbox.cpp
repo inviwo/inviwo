@@ -57,7 +57,7 @@ std::pair<dvec3, dvec3> axisAlignedBoundingBox(
     dvec3 worldMin(std::numeric_limits<float>::max());
     dvec3 worldMax(std::numeric_limits<float>::lowest());
     for (const auto& mesh : meshes) {
-        auto minmax = axisAlignedBoundingBox(*mesh);
+        const auto minmax = axisAlignedBoundingBox(*mesh);
         worldMin = glm::min(worldMin, minmax.first);
         worldMax = glm::max(worldMax, minmax.second);
     }
@@ -69,11 +69,11 @@ std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh) {
     dvec3 worldMax(std::numeric_limits<float>::lowest());
 
     const auto& buffers = mesh.getBuffers();
-    auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
+    const auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
         return buff.first.type == BufferType::PositionAttrib;
     });
     if (it != buffers.end() && it->second->getSize() > 0) {
-        auto minmax = util::bufferMinMax(it->second.get());
+        const auto minmax = util::bufferMinMax(it->second.get());
 
         const dmat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
         worldMin = glm::min(worldMin, dvec3(trans * dvec4(dvec3(minmax.first), 1.0)));

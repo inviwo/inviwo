@@ -47,8 +47,8 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API MultiChannelVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    MultiChannelVolumeRaycaster(std::string_view identifier = "",
-                                std::string_view displayName = "");
+    explicit MultiChannelVolumeRaycaster(std::string_view identifier = "",
+                                         std::string_view displayName = "");
     virtual ~MultiChannelVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

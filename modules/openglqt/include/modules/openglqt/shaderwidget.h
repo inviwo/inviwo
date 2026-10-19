@@ -51,7 +51,7 @@ class CodeEdit;
 
 class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {
 public:
-    ShaderWidget(ShaderObject* obj, QWidget* parent = nullptr);
+    explicit ShaderWidget(ShaderObject* obj, QWidget* parent = nullptr);
     virtual ~ShaderWidget();
 
 protected:

@@ -37,7 +37,7 @@ class InviwoApplication;
 
 class IVW_MODULE_DATAFRAMEQT_API DataFrameQtModule : public InviwoModule {
 public:
-    DataFrameQtModule(InviwoApplication* app);
+    explicit DataFrameQtModule(InviwoApplication* app);
     virtual ~DataFrameQtModule() = default;
 };
 

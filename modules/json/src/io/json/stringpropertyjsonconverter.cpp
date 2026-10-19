@@ -36,7 +36,7 @@ namespace inviwo {
 void to_json(json& j, const StringProperty& p) { j = json{{"value", p.get()}}; }
 
 void from_json(const json& j, StringProperty& p) {
-    auto value = j.value("value", p.get());
+    const auto value = j.value("value", p.get());
     p.set(value);
 }
 

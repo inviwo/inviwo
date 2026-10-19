@@ -48,7 +48,7 @@ const std::string& FileShaderResource::key() const { return key_; }
 
 const std::string& FileShaderResource::source() const {
     if (!cache_.empty()) return cache_;
-    auto stream = std::ifstream(fileName_);
+    const auto stream = std::ifstream(fileName_);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     cache_ = std::move(buffer).str();

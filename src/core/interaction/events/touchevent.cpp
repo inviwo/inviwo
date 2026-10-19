@@ -135,8 +135,8 @@ dvec2 TouchEvent::centerPoint() const {
         return dvec2(0.0);
     } else {
         // Compute average position
-        auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
-                                   [](dvec2 s, const TouchPoint& p) { return s + p.pos(); });
+        const auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
+                                         [](dvec2 s, const TouchPoint& p) { return s + p.pos(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -146,7 +146,7 @@ dvec2 TouchEvent::centerPointNormalized() const {
         return dvec2(0.0);
     } else {
         // Compute average position
-        auto sum =
+        const auto sum =
             std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
                             [](dvec2 s, const TouchPoint& p) { return s + p.posNormalized(); });
         return sum / static_cast<double>(touchPoints_.size());
@@ -158,7 +158,7 @@ dvec2 TouchEvent::prevCenterPointNormalized() const {
         return dvec2(0.0);
     } else {
         // Compute average position
-        auto sum =
+        const auto sum =
             std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
                             [](dvec2 s, const TouchPoint& p) { return s + p.prevPosNormalized(); });
         return sum / static_cast<double>(touchPoints_.size());
@@ -170,8 +170,8 @@ dvec3 TouchEvent::centerNDC() const {
         return dvec3(0.0);
     } else {
         // Compute average position
-        auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec3(0.0),
-                                   [](dvec3 s, const TouchPoint& p) { return s + p.ndc(); });
+        const auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec3(0.0),
+                                         [](dvec3 s, const TouchPoint& p) { return s + p.ndc(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -181,8 +181,9 @@ double TouchEvent::averageDepth() const {
         return 1.0;
     } else {
         // Compute average position
-        auto sum = std::accumulate(touchPoints_.begin(), touchPoints_.end(), 0.0,
-                                   [](double s, const TouchPoint& p) { return s + p.depth(); });
+        const auto sum =
+            std::accumulate(touchPoints_.begin(), touchPoints_.end(), 0.0,
+                            [](double s, const TouchPoint& p) { return s + p.depth(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -201,7 +202,7 @@ PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) 
 
     return std::accumulate(points.begin(), points.end(), toPickingState(points.front().state()),
                            [&](PickingState ps, const TouchPoint& tp) {
-                               auto s = toPickingState(tp.state());
+                               const auto s = toPickingState(tp.state());
                                if (ps == s)
                                    return ps;
                                else
@@ -217,7 +218,8 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
         double distance = std::numeric_limits<float>::max();
         for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
             for (size_t j = i + 1; j < touchPoints_.size(); ++j) {
-                double ijDistance = glm::distance2(touchPoints_[i].pos(), touchPoints_[j].pos());
+                const double ijDistance =
+                    glm::distance2(touchPoints_[i].pos(), touchPoints_[j].pos());
                 if (ijDistance < distance) {
                     distance = ijDistance;
                     touchPoint1 = &touchPoints_[i];

@@ -72,11 +72,11 @@ col = ivwdataframe.{0}Column('{0}Col')
 )delim",
                                                classname);
 
-        auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+        const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
         py::eval<py::eval_statements>(source, dict);
 
-        auto pyCol = dict["col"];
+        const auto pyCol = dict["col"];
         auto col = pyCol.cast<TemplateColumn<T>>();
 
         auto expectedFormat = DataFormat<T>::get();
@@ -116,16 +116,16 @@ col.add('b')
 col.add('a')
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
-    auto pyCategories = dict["col"].attr("categories");
-    auto result = pyCategories.cast<std::vector<std::string>>();
+    const auto pyCategories = dict["col"].attr("categories");
+    const auto result = pyCategories.cast<std::vector<std::string>>();
 
     const std::vector<std::string> expected = {"a", "c", "b"};
 
-    auto rows = dict["col"].attr("size").cast<size_t>();
+    const auto rows = dict["col"].attr("size").cast<size_t>();
 
     EXPECT_EQ(4, rows) << "Row count differs";
     EXPECT_EQ(expected, result) << "Categories in column are not correct";
@@ -144,12 +144,12 @@ col.buffer.size = 6
 col.buffer.data = np.array([0.0, 0.1, 0.5, 1.0, 2.0, 10.0], dtype=np.single)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
-    auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
-    auto rows = dict["col"].attr("size").cast<size_t>();
+    const auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
+    const auto rows = dict["col"].attr("size").cast<size_t>();
 
     ASSERT_EQ(DataFormat<float>::id(), buffer->getDataFormat()->getId())
         << "column buffer has incorrect data format";
@@ -178,13 +178,13 @@ value = col.get(2)
 col.set(2, 5.0)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
     const auto value = dict["value"].cast<float>();
-    auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
-    auto rows = dict["col"].attr("size").cast<size_t>();
+    const auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
+    const auto rows = dict["col"].attr("size").cast<size_t>();
 
     ASSERT_EQ(DataFormat<float>::id(), buffer->getDataFormat()->getId())
         << "column buffer has incorrect data format";
@@ -220,12 +220,12 @@ col2.add(5)
 col.append(col2)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
-    auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
-    auto rows = dict["col"].attr("size").cast<size_t>();
+    const auto buffer = dict["col"].attr("buffer").cast<std::shared_ptr<BufferBase>>();
+    const auto rows = dict["col"].attr("size").cast<size_t>();
 
     ASSERT_EQ(DataFormat<int>::id(), buffer->getDataFormat()->getId())
         << "column buffer has incorrect data format";
@@ -259,12 +259,12 @@ col2.add('b')
 col.append(col2)
 )delim";
 
-    auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
+    const auto dict = py::cast<py::dict>(PyDict_Copy(py::globals().ptr()));
 
     py::eval<py::eval_statements>(source, dict);
 
-    auto pyCategories = dict["col"].attr("categories");
-    auto result = pyCategories.cast<std::vector<std::string>>();
+    const auto pyCategories = dict["col"].attr("categories");
+    const auto result = pyCategories.cast<std::vector<std::string>>();
 
     const std::vector<std::string> expected = {"a", "c", "b", "d", "e"};
 

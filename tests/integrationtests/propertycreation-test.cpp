@@ -73,7 +73,7 @@ protected:
 };
 
 TEST_P(PropertyCreationTests, Create) {
-    LogErrorCheck checklog;
+    const LogErrorCheck checklog;
     auto originalProperty = factory_->create(GetParam(), "identifier", "displayname");
     ASSERT_NE(originalProperty, nullptr);
 

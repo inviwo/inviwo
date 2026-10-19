@@ -124,7 +124,7 @@ void VolumeSubset::process() {
         if (dim == dims_) {
             outport_.setData(inport_.getData());
         } else {
-            auto volume = std::make_shared<Volume>(*inport_.getData(), NoData{});
+            const auto volume = std::make_shared<Volume>(*inport_.getData(), NoData{});
             volume->addRepresentation(VolumeRAMSubSet::apply(vol, dim, offset));
 
             if (adjustBasisAndOffset_.get()) {

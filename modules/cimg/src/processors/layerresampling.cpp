@@ -106,8 +106,8 @@ void LayerResampling::process() {
     }
 
     if (outputDimensions_.get() != sourceDimensions) {
-        auto layer = std::make_shared<Layer>(*inport_.getData(), noData,
-                                             LayerConfig{.dimensions = outputDimensions_.get()});
+        const auto layer = std::make_shared<Layer>(
+            *inport_.getData(), noData, LayerConfig{.dimensions = outputDimensions_.get()});
 
         const auto sourceLayerRam = inport_.getData()->getRepresentation<LayerRAM>();
         auto destLayerRam = layer->getEditableRepresentation<LayerRAM>();

@@ -95,7 +95,7 @@ public:
     LayerReprConfig config() const;
 
 protected:
-    LayerRepresentation(LayerType type = LayerType::Color);
+    explicit LayerRepresentation(LayerType type = LayerType::Color);
     LayerRepresentation(const LayerRepresentation& rhs) = default;
     LayerRepresentation& operator=(const LayerRepresentation& that) = default;
 

@@ -281,7 +281,7 @@ constexpr std::array operators = {"\\+"sv,
 std::vector<std::shared_ptr<std::function<void()>>> utilqt::setGLSLSyntaxHighlight(
     SyntaxHighlighter& sh, GLSLSyntaxHighlight& settings) {
 
-    QColor bgColor = utilqt::toQColor(settings.backgroundColor);
+    const QColor bgColor = utilqt::toQColor(settings.backgroundColor);
 
     QTextCharFormat defaultFormat;
     defaultFormat.setBackground(bgColor);

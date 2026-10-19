@@ -73,7 +73,7 @@ CommandLineParser::CommandLineParser(int argc, char** argv)
     if (!args_.empty()) {
         args_[0] = std::filesystem::path(args_[0]).filename().string();
     }
-    auto it = std::ranges::find(args_, "--");
+    const auto it = std::ranges::find(args_, "--");
     if (it != args_.end()) {
         std::copy(std::next(it), args_.end(), std::back_inserter(ignoredArgs_));
     }
@@ -208,8 +208,9 @@ void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int
 }
 
 void CommandLineParser::remove(TCLAP::Arg* arg) {
-    auto it = std::find_if(std::begin(callbacks_), std::end(callbacks_),
-                           [arg](const auto& callback) { return std::get<1>(callback) == arg; });
+    const auto it =
+        std::find_if(std::begin(callbacks_), std::end(callbacks_),
+                     [arg](const auto& callback) { return std::get<1>(callback) == arg; });
     if (it != callbacks_.end()) {
         callbacks_.erase(it);
     }

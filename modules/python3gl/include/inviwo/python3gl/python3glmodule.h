@@ -35,7 +35,7 @@ namespace inviwo {
 
 class IVW_MODULE_PYTHON3GL_API Python3GLModule : public InviwoModule {
 public:
-    Python3GLModule(InviwoApplication* app);
+    explicit Python3GLModule(InviwoApplication* app);
     virtual ~Python3GLModule() = default;
 };
 

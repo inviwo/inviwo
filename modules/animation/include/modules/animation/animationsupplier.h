@@ -49,8 +49,8 @@ class AnimationManager;
  */
 class IVW_MODULE_ANIMATION_API AnimationSupplier {
 public:
-    AnimationSupplier(AnimationManager& manager);
-    AnimationSupplier(InviwoApplication* app);
+    explicit AnimationSupplier(AnimationManager& manager);
+    explicit AnimationSupplier(InviwoApplication* app);
     AnimationSupplier(const AnimationSupplier&) = delete;
     AnimationSupplier& operator=(const AnimationSupplier&) = delete;
     virtual ~AnimationSupplier();

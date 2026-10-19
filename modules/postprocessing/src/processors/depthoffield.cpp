@@ -203,18 +203,18 @@ DepthOfField::DepthOfField()
 
 void DepthOfField::clickToFocus(Event* e) {
     auto mouseEvent = static_cast<MouseEvent*>(e);
-    size2_t clickPos(mouseEvent->x(), mouseEvent->y());
-    double depthNdc =
+    const size2_t clickPos(mouseEvent->x(), mouseEvent->y());
+    const double depthNdc =
         inport_.getData()->getDepthLayer()->getRepresentation<LayerRAM>()->getAsNormalizedDouble(
             clickPos);
     focusDepth_.set(ndcToWorldDepth(depthNdc));
 }
 
 void DepthOfField::process() {
-    int maxEvalCount =
+    const int maxEvalCount =
         static_cast<int>(approximate_ ? viewCountApprox_.get() : viewCountExact_.get());
-    std::shared_ptr<const Image> img = inport_.getData();
-    size2_t dim = img->getDimensions();
+    const std::shared_ptr<const Image> img = inport_.getData();
+    const size2_t dim = img->getDimensions();
     TextureUnitContainer cont;
 
     if (evalCount_ >= maxEvalCount) {
@@ -227,12 +227,12 @@ void DepthOfField::process() {
         return;
     }
 
-    SkewedPerspectiveCamera* camera = dynamic_cast<SkewedPerspectiveCamera*>(&camera_.get());
-    double focusDepth = calculateFocusDepth();
+    const SkewedPerspectiveCamera* camera = dynamic_cast<SkewedPerspectiveCamera*>(&camera_.get());
+    const double focusDepth = calculateFocusDepth();
 
     if (approximate_) {
-        vec2 cameraPos = calculatePeripheralCameraPos(evalCount_, maxEvalCount);
-        double fovy = glm::radians(camera->getFovy());
+        const vec2 cameraPos = calculatePeripheralCameraPos(evalCount_, maxEvalCount);
+        const double fovy = glm::radians(camera->getFovy());
         if (useComputeShaders_) {
             warpToLightfieldGPU(cont, fovy, focusDepth, dim, cameraPos);
         } else {
@@ -249,7 +249,7 @@ void DepthOfField::process() {
         }
         evalCount_++;
         dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth]() {
-            if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
+            if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 if (auto* SkewedCamera =
                         dynamic_cast<SkewedPerspectiveCamera*>(&(self->camera_.get()))) {
                     self->moveCamera(SkewedCamera, maxEvalCount, focusDepth);
@@ -269,7 +269,7 @@ void DepthOfField::process() {
         // Reset camera
         evalCount_ = maxEvalCount;
         dispatchFront([weakSelf = weak_from_this()]() {
-            if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
+            if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 self->camera_.setCamera(std::unique_ptr<Camera>(self->ogCamera_->clone()));
             }
         });
@@ -285,7 +285,8 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
 
     if (approximate_) {
         // Prepare light field
-        size3_t dimLightField(dim.x, dim.y, viewCountApprox_.get() + simViewCountApprox_.get());
+        const size3_t dimLightField(dim.x, dim.y,
+                                    viewCountApprox_.get() + simViewCountApprox_.get());
         if (!lightField_ || lightField_->getDimensions() != dimLightField) {
             lightField_ = std::make_shared<Volume>(dimLightField, DataFormat<vec4>::get());
             lightFieldDepth_ = std::make_shared<Volume>(dimLightField, DataFormat<float>::get());
@@ -340,18 +341,18 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
     const auto maxDepthWorld = ndcToWorldDepth(minmax.second);
 
     dispatchFront([weakSelf = weak_from_this(), minDepthWorld, maxDepthWorld]() {
-        if (auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
+        if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
 
-            NetworkLock lock(self.get());
+            const NetworkLock lock(self.get());
 
             self->focusDepth_.set(self->focusDepth_.get(),
                                   std::min(minDepthWorld, self->focusDepth_.get()),
                                   std::max(maxDepthWorld, self->focusDepth_.get()),
                                   (maxDepthWorld - minDepthWorld) / 100.0);
 
-            int depthScale = static_cast<int>(floor(log10(minDepthWorld)));
-            double minAperture = pow(10, depthScale - 1);
-            double maxAperture = pow(10, depthScale);
+            const int depthScale = static_cast<int>(floor(log10(minDepthWorld)));
+            const double minAperture = pow(10, depthScale - 1);
+            const double maxAperture = pow(10, depthScale);
             self->aperture_.set(self->aperture_.get(), std::min(minAperture, self->aperture_.get()),
                                 std::max(maxAperture, self->aperture_.get()),
                                 (maxAperture - minAperture) / 90.0);
@@ -365,11 +366,11 @@ double DepthOfField::calculateFocusDepth() {
     if (manualFocus_ || !trackingInport_.hasData()) {
         return focusDepth_.get();
     } else {
-        vec3 lookFrom = ogCamera_->getLookFrom();
-        vec3 lookTo = ogCamera_->getLookTo();
-        vec3 front = glm::normalize(lookTo - lookFrom);
+        const vec3 lookFrom = ogCamera_->getLookFrom();
+        const vec3 lookTo = ogCamera_->getLookTo();
+        const vec3 front = glm::normalize(lookTo - lookFrom);
 
-        auto mesh = trackingInport_.getData();
+        const auto mesh = trackingInport_.getData();
         const vec3 focusPoint = mesh->getBuffer(0)->getRepresentation<BufferRAM>()->getAsDVec3(0);
         return glm::length(glm::dot(focusPoint - lookFrom, front) * front);
     }
@@ -379,8 +380,8 @@ vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount)
     if (evalCount == 0) {
         return vec2(0.0f, 0.0f);
     } else {
-        double currAngle = 2.0 * std::numbers::pi * (static_cast<double>(evalCount) - 0.5) /
-                           static_cast<double>(maxEvalCount - 1);
+        const double currAngle = 2.0 * std::numbers::pi * (static_cast<double>(evalCount) - 0.5) /
+                                 static_cast<double>(maxEvalCount - 1);
         return static_cast<vec2>(aperture_.get() / 2.0 *
                                  dvec2(glm::cos(currAngle), glm::sin(currAngle)));
     }
@@ -406,11 +407,11 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
                                        size2_t dim, vec2 cameraPos) {
     glActiveTexture(GL_TEXTURE);
     auto lightFieldGL = lightField_->getEditableRepresentation<VolumeGL>();
-    auto lightFieldTexHandle = lightFieldGL->getTexture()->getID();
+    const auto lightFieldTexHandle = lightFieldGL->getTexture()->getID();
     glBindImageTexture(0, lightFieldTexHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
     auto lightFieldDepthGL = lightFieldDepth_->getEditableRepresentation<VolumeGL>();
-    auto lightFieldDepthTexHandle = lightFieldDepthGL->getTexture()->getID();
+    const auto lightFieldDepthTexHandle = lightFieldDepthGL->getTexture()->getID();
     glBindImageTexture(1, lightFieldDepthTexHandle, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
     addToLightFieldShader_.activate();
@@ -464,12 +465,12 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
 
     for (size_t x = 0; x < dim.x; x++) {
         for (size_t y = 0; y < dim.y; y++) {
-            vec2 screenPos(x, y);
-            double zNdc = inDepth->getAsDouble(screenPos);
-            double zWorld = ndcToWorldDepth(zNdc);
-            vec4 color = inColor->getAsNormalizedDVec4(screenPos);
+            const vec2 screenPos(x, y);
+            const double zNdc = inDepth->getAsDouble(screenPos);
+            const double zWorld = ndcToWorldDepth(zNdc);
+            const vec4 color = inColor->getAsNormalizedDVec4(screenPos);
 
-            size3_t pos(x, y, evalCount_);
+            const size3_t pos(x, y, evalCount_);
             lightField->setFromDVec4(pos, color);
             lightFieldDepth->setFromDouble(pos, zWorld);
 
@@ -499,20 +500,23 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
 void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorld, size_t viewIndex,
                         VolumeRAM* lightField, VolumeRAM* lightFieldDepth, double fovy,
                         double focusDepth) {
-    double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
-    double angle = double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
-    vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
+    const double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
+    const double angle =
+        double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
+    const vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
 
-    vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
-    size3_t dimLightField = lightField_->getDimensions();
-    vec2 simScreenpos = screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
-    ivec3 pos(round(simScreenpos.x), round(simScreenpos.y), viewCountApprox_.get() + viewIndex);
+    const vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
+    const size3_t dimLightField = lightField_->getDimensions();
+    const vec2 simScreenpos =
+        screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
+    const ivec3 pos(round(simScreenpos.x), round(simScreenpos.y),
+                    viewCountApprox_.get() + viewIndex);
     if (pos.x < 0 || pos.x >= static_cast<int>(dimLightField.x) || pos.y < 0 ||
         pos.y >= static_cast<int>(dimLightField.y) || pos.z < 0 ||
         pos.z >= static_cast<int>(dimLightField.z))
         return;
 
-    double currDepth = lightFieldDepth->getAsDouble(pos);
+    const double currDepth = lightFieldDepth->getAsDouble(pos);
     if (currDepth < 0 || currDepth > zWorld + 0.01) {
         lightField->setFromDVec4(pos, color);
         lightFieldDepth->setFromDouble(pos, zWorld);
@@ -541,12 +545,12 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
                               double focusDepth) {
     if (evalCount_ >= maxEvalCount) return;
 
-    vec3 lookFrom = ogCamera_->getLookFrom();
-    vec3 lookTo = ogCamera_->getLookTo();
-    vec3 lookUp = ogCamera_->getLookUp();
+    const vec3 lookFrom = ogCamera_->getLookFrom();
+    const vec3 lookTo = ogCamera_->getLookTo();
+    const vec3 lookUp = ogCamera_->getLookUp();
 
-    vec3 front = glm::normalize(lookTo - lookFrom);
-    vec3 up = glm::normalize(lookUp - glm::dot(lookUp, front) * front);
+    const vec3 front = glm::normalize(lookTo - lookFrom);
+    const vec3 up = glm::normalize(lookUp - glm::dot(lookUp, front) * front);
 
     camera_.setLook(lookFrom, lookFrom + front * focusDepth, up);
 
@@ -554,16 +558,16 @@ void DepthOfField::moveCamera(SkewedPerspectiveCamera* camera, int maxEvalCount,
     if (approximate_) {
         offset = calculatePeripheralCameraPos(evalCount_ + 1, maxEvalCount);
     } else {
-        double radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
-        double angle = 2.0 * std::numbers::pi * haltonY_[evalCount_];
+        const double radius = aperture_.get() / 2.0 * sqrt(haltonX_[evalCount_]);
+        const double angle = 2.0 * std::numbers::pi * haltonY_[evalCount_];
         offset = static_cast<vec2>(radius * dvec2(glm::cos(angle), glm::sin(angle)));
     }
     camera->setOffset(offset);
 }
 
 double DepthOfField::ndcToWorldDepth(double depthNdc) {
-    double nearClip = camera_.getNearPlaneDist();
-    double farClip = camera_.getFarPlaneDist();
+    const double nearClip = camera_.getNearPlaneDist();
+    const double farClip = camera_.getFarPlaneDist();
     return farClip * nearClip / (farClip - depthNdc * (farClip - nearClip));
 }
 }  // namespace inviwo

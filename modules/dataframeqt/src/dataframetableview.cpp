@@ -95,7 +95,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
     setAlternatingRowColors(true);
 
     // change corner button to disable sorting instead of selecting all
-    if (auto* btn = findChild<QAbstractButton*>()) {
+    if (const auto* btn = findChild<QAbstractButton*>()) {
         if (QObject::disconnect(btn, &QAbstractButton::clicked, this, &QTableView::selectAll)) {
             QObject::connect(btn, &QAbstractButton::clicked, this, [&]() {
                 horizontalHeader()->setSortIndicator(-1, Qt::AscendingOrder);
@@ -120,7 +120,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent)
                          if (ignoreEvents_) return;
                          const util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
                          QModelIndexList mappedRows;
-                         for (auto& index : selectionModel()->selectedRows()) {
+                         for (const auto& index : selectionModel()->selectedRows()) {
                              mappedRows.append(sortProxy_->mapToSource(index));
                          }
                          model_->selectRows(mappedRows);
@@ -159,7 +159,7 @@ void DataFrameTableView::brushingUpdate() {
     selectionModel()->clearSelection();
 
     QItemSelection s;
-    for (auto row : model_->getSelectedRows()) {
+    for (const auto row : model_->getSelectedRows()) {
         const QModelIndex start{model_->index(row, 0)};
         const QModelIndex end{model_->index(row, model_->columnCount() - 1)};
         s.select(sortProxy_->mapFromSource(start), sortProxy_->mapFromSource(end));

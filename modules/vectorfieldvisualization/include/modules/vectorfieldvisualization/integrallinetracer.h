@@ -205,16 +205,17 @@ template <typename SpatialSampler, bool TimeDependent>
 auto IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector& oldPos,
                                                              double stepSize) const -> StepResult {
     auto normalize = [](const auto v) {
-        auto l = glm::length(v);
+        const auto l = glm::length(v);
         if (l == 0) return v;
         return v / l;
     };
 
-    auto move = [&](const SpatialVector& pos, DataVector v, double stepsize) -> SpatialVector {
+    const auto move = [&](const SpatialVector& pos, DataVector v,
+                          double stepsize) -> SpatialVector {
         if (normalizeSamples_) {
             v = normalize(v);
         }
-        DataVector offset = (invBasis_ * (v * stepsize));
+        const DataVector offset = (invBasis_ * (v * stepsize));
         if constexpr (TimeDependent) {
             return pos + SpatialVector(offset, stepsize);
         } else if constexpr (SampleDim == 3) {
@@ -300,7 +301,7 @@ IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent
         if (!sampler_->withinBounds(pos)) {
             return IntegralLine::TerminationReason::OutOfBounds;
         }
-        StepResult result = step(pos, stepSize_ * (fwd ? 1.0 : -1.0));
+        const StepResult result = step(pos, stepSize_ * (fwd ? 1.0 : -1.0));
         if (result.outOfBounds) {
             return IntegralLine::TerminationReason::OutOfBounds;
         }

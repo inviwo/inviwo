@@ -76,12 +76,12 @@ void ButtonProperty::set(const Property* src) {
     if (auto boolprop = dynamic_cast<const ButtonProperty*>(src)) {
         if (boolprop->buttonPressed_) ptr = &buttonPressed_;
     }
-    util::KeepTrueWhileInScope guard(ptr);
+    const util::KeepTrueWhileInScope guard(ptr);
     Property::set(src);
 }
 
 void ButtonProperty::pressButton() {
-    util::KeepTrueWhileInScope guard(&buttonPressed_);
+    const util::KeepTrueWhileInScope guard(&buttonPressed_);
     propertyModified();
 }
 

@@ -140,7 +140,7 @@ void TextRenderer::setFont(const std::filesystem::path& fontPath) {
     }
     fontface_ = nullptr;
 
-    int error = FT_New_Face(fontlib_, fontPath.string().c_str(), 0, &fontface_);
+    const int error = FT_New_Face(fontlib_, fontPath.string().c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
         throw Exception(SourceContext{}, "Unsupported font format: {}", fontPath);
     } else if (error) {
@@ -189,14 +189,14 @@ TextBoundingBox TextRenderer::computeBoundingBox(std::string_view str) {
         const uint32_t charCode = *it;
 
         // query font cache for glyph matching the character code
-        auto p = requestGlyph(fc, charCode);
+        const auto p = requestGlyph(fc, charCode);
         if (!p.first) {
             // glyph not found, skip it
             penPos += p.second.advance;
             continue;
         }
 
-        GlyphEntry& glyph = p.second;
+        const GlyphEntry& glyph = p.second;
 
         if (charCode == lf) {
             verticalOffset += getLineHeight();
@@ -214,7 +214,7 @@ TextBoundingBox TextRenderer::computeBoundingBox(std::string_view str) {
         }
 
         // compute top-left position of glyph based on current pen position
-        ivec2 pos(penPos.x + glyph.bearing.x, verticalOffset + penPos.y - glyph.bearing.y);
+        const ivec2 pos(penPos.x + glyph.bearing.x, verticalOffset + penPos.y - glyph.bearing.y);
 
         // update global glyphs bounding box
         glyphsTopLeft = glm::min(glyphsTopLeft, pos);
@@ -231,8 +231,8 @@ TextBoundingBox TextRenderer::computeBoundingBox(std::string_view str) {
     textBoxExtent.y += verticalOffset;
 
     // determine glyphs bounding box relative to bottom left corner of text box
-    ivec2 glyphsBottomLeft(glyphsTopLeft.x, textBoxExtent.y - glyphsBottomRight.y);
-    ivec2 glyphsExtent(glyphsBottomRight - glyphsTopLeft);
+    const ivec2 glyphsBottomLeft(glyphsTopLeft.x, textBoxExtent.y - glyphsBottomRight.y);
+    const ivec2 glyphsExtent(glyphsBottomRight - glyphsTopLeft);
 
     return {textBoxExtent, glyphsBottomLeft, glyphsExtent, getBaseLineOffset()};
 }
@@ -242,7 +242,7 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
 
     auto& fc = getFontCache();
 
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     fc.glyphTex->bind();
 
@@ -253,7 +253,7 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
     shader_->setUniform("color", color);
 
     auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
-    utilgl::Enable<MeshGL> enable(rect);
+    const utilgl::Enable<MeshGL> enable(rect);
 
     ivec2 glyphPos{0};
     int verticalOffset = 0;
@@ -265,14 +265,14 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
          it != utf8::iterator{end, str.begin(), end}; ++it) {
         const uint32_t charCode = *it;
 
-        auto p = requestGlyph(fc, charCode);
+        const auto p = requestGlyph(fc, charCode);
         if (!p.first) {
             // glyph not found, skip it
             glyphPos += p.second.advance;
             continue;
         }
 
-        GlyphEntry& glyph = p.second;
+        const GlyphEntry& glyph = p.second;
 
         if (charCode == lf) {
             verticalOffset += getLineHeight();
@@ -287,8 +287,8 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
 
         // compute floating point position
         vec3 pos(posf, 0.f);
-        pos.x += (glyphPos.x + glyph.bearing.x) * scaling.x;
-        pos.y -= (verticalOffset - glyphPos.y - glyph.bearing.y) * scaling.y;
+        pos.x += static_cast<float>(glyphPos.x + glyph.bearing.x) * scaling.x;
+        pos.y -= static_cast<float>(verticalOffset - glyphPos.y - glyph.bearing.y) * scaling.y;
 
         // Translate quad to correct position and render
         const mat4 dataToWorld(
@@ -316,14 +316,14 @@ void TextRenderer::render(std::string_view str, float x, float y, const vec2& sc
 void TextRenderer::render(const TextBoundingBox& textBoundingBox, const ivec2& origin,
                           std::string_view str, const vec4& color) {
     // set up viewport
-    ivec2 dim(textBoundingBox.glyphsExtent);
-    utilgl::ViewportState viewport(origin.x, origin.y, dim.x, dim.y);
+    const ivec2 dim(textBoundingBox.glyphsExtent);
+    const utilgl::ViewportState viewport(origin.x, origin.y, dim.x, dim.y);
 
     // adjust text position, i.e. the pen position, to match the first baseline
-    vec2 textPos(textBoundingBox.glyphPenOffset);
+    const vec2 textPos(textBoundingBox.glyphPenOffset);
 
     // render text into texture
-    vec2 scale(2.f / vec2(dim));
+    const vec2 scale(2.f / vec2(dim));
     render(str, vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
 }
 
@@ -358,7 +358,7 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, std::optional
         currTexture_ = texture;
     }
     if (clearColor) {
-        utilgl::ClearColor clear{*clearColor};
+        const utilgl::ClearColor clear{*clearColor};
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -373,15 +373,15 @@ void TextRenderer::renderToTexture(const TextTextureObject& texObject, const siz
         texObject.texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     // set up viewport
-    ivec2 pos(origin);
-    ivec2 dim(size);
-    utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
+    const ivec2 pos(origin);
+    const ivec2 dim(size);
+    const utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
 
     // adjust text position, i.e. the pen position, to match the first baseline
-    vec2 textPos(texObject.bbox.glyphPenOffset);
+    const vec2 textPos(texObject.bbox.glyphPenOffset);
 
     // render text into texture
-    vec2 scale(2.f / vec2(dim));
+    const vec2 scale(2.f / vec2(dim));
     render(str, vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
 }
 
@@ -391,19 +391,19 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
                                    const std::vector<std::string>& str, const vec4& color,
                                    bool clearTexture) {
 
-    auto state = setupRenderState(
+    const auto state = setupRenderState(
         texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     for (auto&& elem : util::zip(origin, size, str)) {
         // set up viewport
-        ivec2 pos(get<0>(elem));
-        ivec2 dim(get<1>(elem));
-        utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
+        const ivec2 pos(get<0>(elem));
+        const ivec2 dim(get<1>(elem));
+        const utilgl::ViewportState viewport(pos.x, pos.y, dim.x, dim.y);
 
         // render text into texture
-        vec2 scale(2.f / vec2(dim));
+        const vec2 scale(2.f / vec2(dim));
         // adjust text position, i.e. the pen position, to match the first baseline
-        vec2 textPos(computeBoundingBox(get<2>(elem)).glyphPenOffset);
+        const vec2 textPos(computeBoundingBox(get<2>(elem)).glyphPenOffset);
         render(get<2>(elem), vec2(-1.0f, 1.0f) - textPos * scale, scale, color);
     }
 }
@@ -411,24 +411,24 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
                                    const std::vector<TexAtlasEntry>& entries, bool clearTexture) {
 
-    auto state = setupRenderState(
+    const auto state = setupRenderState(
         texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
     for (auto& elem : entries) {
         // set up viewport
-        utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
-                                       elem.texExtent.y);
+        const utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
+                                             elem.texExtent.y);
 
         // render text into texture
-        vec2 scale(2.f / vec2(elem.texExtent));
+        const vec2 scale(2.f / vec2(elem.texExtent));
         // adjust text position, i.e. the pen position, to match the first baseline
-        vec2 textPos(computeBoundingBox(elem.value).glyphPenOffset);
+        const vec2 textPos(computeBoundingBox(elem.value).glyphPenOffset);
         render(elem.value, vec2(-1.0f, 1.0f) - textPos * scale, scale, elem.color);
     }
 }
 
 void TextRenderer::clear(std::shared_ptr<Texture2D> texture, vec4 color) {
-    auto state = setupRenderState(texture, color);
+    const auto state = setupRenderState(texture, color);
 }
 
 vec2 TextRenderer::computeTextSize(std::string_view str, const vec2& scale) {
@@ -475,7 +475,7 @@ double TextRenderer::getFontDescender() const {
 std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::requestGlyph(FontCache& fc,
                                                                      unsigned int glyph) {
     // try to find the glyph
-    auto it = fc.glyphMap.find(glyph);
+    const auto it = fc.glyphMap.find(glyph);
     if (it != fc.glyphMap.end()) {
         return std::make_pair(true, it->second);
     } else {
@@ -631,14 +631,14 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
 
     // figure out texture size to fit all glyph given a specific width using the Shelf First Fit
     // algorithm this function also updates the glyph positions within the new atlas texture
-    auto calcTexLayout = [&](const int width, const int margin) {
+    const auto calcTexLayout = [&](const int width, const int margin) {
         std::vector<int> lineLengths;
         std::vector<int> lineHeights;
         lineLengths.push_back(0);
         lineHeights.push_back(0);
         // Fill each line by putting each element after the previous one.
         // If an element does not fit, start new line.
-        for (auto i : indices) {
+        for (const auto i : indices) {
             const auto& extent = fc.glyphMap[i].size + 2 * margin;
             size_t line = 0;
             while (line < lineLengths.size()) {
@@ -746,7 +746,7 @@ TextTextureObject createTextTextureObject(TextRenderer& textRenderer, std::strin
 
 std::shared_ptr<Texture2D> createTextTexture(TextRenderer& textRenderer, std::string text,
                                              vec4 fontColor, std::shared_ptr<Texture2D> tex) {
-    auto texObj = createTextTextureObject(textRenderer, text, fontColor, tex);
+    const auto texObj = createTextTextureObject(textRenderer, text, fontColor, tex);
     return texObj.texture;
 }
 

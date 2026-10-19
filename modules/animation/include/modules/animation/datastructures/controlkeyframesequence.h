@@ -53,7 +53,7 @@ class IVW_MODULE_ANIMATION_API ControlKeyframeSequence
     : public BaseKeyframeSequence<ControlKeyframe> {
 public:
     ControlKeyframeSequence() = default;
-    ControlKeyframeSequence(std::vector<std::unique_ptr<ControlKeyframe>> keyframes);
+    explicit ControlKeyframeSequence(std::vector<std::unique_ptr<ControlKeyframe>> keyframes);
     ControlKeyframeSequence(const ControlKeyframeSequence& rhs) = default;
     ControlKeyframeSequence& operator=(const ControlKeyframeSequence& that) = default;
     ControlKeyframeSequence& operator=(ControlKeyframeSequence&& that) = default;

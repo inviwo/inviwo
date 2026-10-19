@@ -62,8 +62,8 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     , acceptMode_{AcceptMode::Open}
     , fileMode_{FileMode::AnyFile} {
 
-    int width = this->sizeHint().height();
-    QSize labelSize(width, width);
+    const int width = this->sizeHint().height();
+    const QSize labelSize(width, width);
     warningLabel_->setScaledContents(true);
     warningLabel_->setPixmap(QPixmap(":/svgicons/file-warning.svg"));
     warningLabel_->setFixedSize(labelSize);
@@ -133,12 +133,12 @@ void FilePathLineEditQt::setCursorToEnd() { setCursorPosition(static_cast<int>(t
 
 void FilePathLineEditQt::resizeEvent(QResizeEvent*) {
     // adjust position of warning label to be on the right side
-    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    const int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     warningLabel_->move(width() - warningLabel_->width() - frameWidth, 0);
 }
 
 bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
-    auto update = [&](bool visible, std::string_view message) {
+    const auto update = [&](bool visible, std::string_view message) {
         warningLabel_->setVisible(visible);
         warningLabel_->setToolTip(utilqt::toQString(message));
         // make sure there is no text flowing into the warning label
@@ -147,7 +147,7 @@ bool FilePathLineEditQt::updateIcon(const std::filesystem::path& path) {
     };
 
     try {
-        auto status = std::filesystem::status(path);
+        const auto status = std::filesystem::status(path);
         const bool isFile = std::filesystem::is_regular_file(status);
         const bool isDir = std::filesystem::is_directory(status);
         const bool isUrl = net::isUrl(path);

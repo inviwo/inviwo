@@ -123,7 +123,7 @@ Document::PathComponent::PathComponent(
 Document::PathComponent::PathComponent(int index)
     : strrep_("Index: " + std::to_string(index))
     , matcher_{[index](const ElemVec& elements) -> ElemVec::const_iterator {
-        size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
+        const size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
         if (i < elements.size())
             return elements.begin() + i;
         else
@@ -142,7 +142,7 @@ Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& at
         return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
             if (e->isText()) return false;
             for (auto& attr : attributes) {
-                auto it = e->attributes().find(attr.first);
+                const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;
             }
@@ -159,7 +159,7 @@ Document::PathComponent::PathComponent(std::string_view name,
             if (e->isText()) return false;
             if (e->name() != name) return false;
             for (auto& attr : attributes) {
-                auto it = e->attributes().find(attr.first);
+                const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;
             }
@@ -197,7 +197,7 @@ Document::DocumentHandle::DocumentHandle(const Document* doc, Element* elem)
 Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathComponent>& path) {
     Element* current = elem_;
     for (const auto& pc : path) {
-        auto it = pc(current->children_);
+        const auto it = pc(current->children_);
         if (it != current->children_.end()) {
             current = (*it).get();
         } else {
@@ -210,9 +210,10 @@ Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathCom
 Document::DocumentHandle Document::DocumentHandle::insert(
     PathComponent pos, std::string_view name, std::string_view content,
     const UnorderedStringMap<std::string>& attributes) {
-    auto iter = pos(elem_->children_);
+    const auto iter = pos(elem_->children_);
 
-    auto it = elem_->children_.insert(iter, std::make_unique<Element>(name, content, attributes));
+    const auto it =
+        elem_->children_.insert(iter, std::make_unique<Element>(name, content, attributes));
 
     return DocumentHandle(doc_, it->get());
 }
@@ -225,8 +226,9 @@ Document::DocumentHandle Document::DocumentHandle::append(
 
 Document::DocumentHandle Document::DocumentHandle::insertText(PathComponent pos,
                                                               std::string_view text) {
-    auto iter = pos(elem_->children_);
-    auto it = elem_->children_.insert(iter, std::make_unique<Element>(ElementType::Text, text));
+    const auto iter = pos(elem_->children_);
+    const auto it =
+        elem_->children_.insert(iter, std::make_unique<Element>(ElementType::Text, text));
     return DocumentHandle(doc_, it->get());
 }
 Document::DocumentHandle Document::DocumentHandle::appendText(std::string_view text) {
@@ -234,14 +236,14 @@ Document::DocumentHandle Document::DocumentHandle::appendText(std::string_view t
 }
 
 Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Document doc) {
-    auto iter = pos(elem_->children_);
+    const auto iter = pos(elem_->children_);
 
     if (doc.empty()) {
         return {doc_, nullptr};
     }
 
-    auto it = elem_->children_.insert(iter, std::move_iterator(doc.root_->children_.begin()),
-                                      std::move_iterator(doc.root_->children_.end()));
+    const auto it = elem_->children_.insert(iter, std::move_iterator(doc.root_->children_.begin()),
+                                            std::move_iterator(doc.root_->children_.end()));
 
     return DocumentHandle(doc_, it->get());
 }

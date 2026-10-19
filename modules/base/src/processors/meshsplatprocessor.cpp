@@ -104,7 +104,7 @@ void MeshSplatProcessor::process() {
     std::vector<util::SplatInput> inputs;
     std::vector<std::shared_ptr<const Mesh>> meshes;
 
-    for (auto mesh : meshInport_) {
+    for (const auto mesh : meshInport_) {
 
         meshes.push_back(mesh);
         auto& input = inputs.emplace_back(util::SplatInput{
@@ -155,7 +155,7 @@ void MeshSplatProcessor::process() {
 
     auto [collect, jobs] = util::splatJobs(inputs, settings);
     dispatchMany(jobs, [this, collect, meshes](std::vector<vec2> results) {
-        auto volume = collect(std::move(results));
+        const auto volume = collect(std::move(results));
         range_.updateFromVolume(volume);
         volume->dataMap.dataRange = range_.getDataRange();
         volume->dataMap.valueRange = range_.getValueRange();

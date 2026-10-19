@@ -45,11 +45,11 @@ namespace util {
 /**
  * Utility function to get the InviwoApplication from a ProcessorNetwork
  */
-IVW_CORE_API InviwoApplication* getInviwoApplication(ProcessorNetwork*);
+IVW_CORE_API InviwoApplication* getInviwoApplication(const ProcessorNetwork*);
 /**
  * Utility function to get the InviwoApplication from a Processor
  */
-IVW_CORE_API InviwoApplication* getInviwoApplication(Processor*);
+IVW_CORE_API InviwoApplication* getInviwoApplication(const Processor*);
 /**
  * Utility function to get the InviwoApplication from a PropertyOwner
  */

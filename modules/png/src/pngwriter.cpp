@@ -147,7 +147,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     const auto size = ram->getDimensions();
     const auto bit_depth = df->getPrecision();
 
-    auto writePNG = [&](auto pixels) {
+    const auto writePNG = [&](auto pixels) {
         std::vector<png_bytep> rows(size.y);
         for (png_uint_32 r = 0; r < size.y; ++r) {
             // Inviwo images are upside down compared to how libpng expects them
@@ -210,7 +210,7 @@ void PNGLayerWriter::writeData(const Layer* data, const std::filesystem::path& f
     FILE* fp = filesystem::fopen(filePath, "wb");
     if (!fp)
         throw DataWriterException(SourceContext{}, "Failed to open file for writing, {}", filePath);
-    util::OnScopeExit closeFile([&fp]() { fclose(fp); });
+    const util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 
     writeData(data, fp);
 }

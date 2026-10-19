@@ -157,7 +157,7 @@ Trackball::Trackball(std::string_view identifier, std::string_view displayName,
     worldUp_.visibilityDependsOn(trackballMethod_,
                                  [](const OptionPropertyInt& opt) { return opt == 1 || opt == 2; });
 
-    auto isTAV = [](const OptionPropertyInt& opt) { return opt == 1; };
+    const auto isTAV = [](const OptionPropertyInt& opt) { return opt == 1; };
     verticalAngleLimit_.visibilityDependsOn(trackballMethod_, isTAV);
     fixUp_.visibilityDependsOn(trackballMethod_, isTAV);
     movementSpeed_.visibilityDependsOn(trackballMethod_,
@@ -698,7 +698,7 @@ void Trackball::touchGesture(Event* event) {
     if (rotation) {
         // Assume that We require two touches when using trackpad since the first one will occur
         // when sweeping over the canvas
-        size_t rotateBasedOnIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
+        const size_t rotateBasedOnIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
         const auto& point = touchPoints[rotateBasedOnIndex];
 
         if (point.state() == TouchState::Finished) return reset(event);
@@ -752,15 +752,15 @@ void Trackball::touchGesture(Event* event) {
         const auto pos1 = touchPoint1.posNormalized();
         const auto pos2 = touchPoint2.posNormalized();
 
-        auto v1(prevPos2 - prevPos1);
-        auto v2(pos2 - pos1);
+        const auto v1(prevPos2 - prevPos1);
+        const auto v2(pos2 - pos1);
 
         // The glm implementation of orientedAngle returns positive angle
         // for small negative angles.
         // auto angle = glm::orientedAngle(glm::normalize(v1), glm::normalize(v2));
         // Roll our own angle calculation
-        auto v1Normalized = glm::normalize(v1);
-        auto v2Normalized = glm::normalize(v2);
+        const auto v1Normalized = glm::normalize(v1);
+        const auto v2Normalized = glm::normalize(v2);
         auto angle = acos(glm::clamp(glm::dot(v1Normalized, v2Normalized), -1.0, 1.0));
         // Check orientation using cross product.
         if (v1Normalized.x * v2Normalized.y - v2Normalized.x * v1Normalized.y < 0) {
@@ -1003,12 +1003,13 @@ void Trackball::recenterFocusPoint(Event* event) {
     }
 
     if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        auto p = mouseEvent->ndc();
+        const auto p = mouseEvent->ndc();
 
         if (std::abs(p.z - 1.0) < glm::epsilon<decltype(p.z)>()) return;
 
-        auto newLookTo = object_->getWorldPosFromNormalizedDeviceCoords(static_cast<dvec3>(p));
-        auto newLookFrom = getLookFrom() + (newLookTo - getLookTo());
+        const auto newLookTo =
+            object_->getWorldPosFromNormalizedDeviceCoords(static_cast<dvec3>(p));
+        const auto newLookFrom = getLookFrom() + (newLookTo - getLookTo());
 
         setLookTo(newLookTo);
         setLookFrom(newLookFrom);

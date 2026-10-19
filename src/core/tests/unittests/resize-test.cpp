@@ -49,7 +49,8 @@ namespace inviwo {
 namespace {
 
 struct TestProcessor : Processor {
-    TestProcessor(const std::string& id) : Processor(id, id), inport("inport"), outport("outport") {
+    explicit TestProcessor(const std::string& id)
+        : Processor(id, id), inport("inport"), outport("outport") {
         addPort(inport);
         addPort(outport);
     }
@@ -79,7 +80,7 @@ const ProcessorInfo TestProcessor::processorInfo_{
 
 TEST(ResizeEvent, basic) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *     ┌───────────┐
@@ -117,7 +118,7 @@ TEST(ResizeEvent, basic) {
 
 TEST(ResizeEvent, twoSinks) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐
@@ -171,7 +172,7 @@ TEST(ResizeEvent, twoSinks) {
 
 TEST(ResizeEvent, dontHandleResizeEvents) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐
@@ -227,7 +228,7 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
 
 TEST(ResizeEvent, twoSinksDisconnect) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
-    ProcessorNetworkEvaluator evaluator{&network};
+    const ProcessorNetworkEvaluator evaluator{&network};
 
     /*
      *             ┌───────────┐

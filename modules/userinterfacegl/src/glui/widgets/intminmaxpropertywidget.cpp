@@ -63,7 +63,7 @@ IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty& property, Pr
     moveAction_ = [this](const dvec2& delta) {
         bool triggerUpdate = false;
         if (!property_->getReadOnly()) {
-            auto calcNewValue = [this, delta](int prev) {
+            const auto calcNewValue = [this, delta](int prev) {
                 return static_cast<int>(
                     round(prev + convertDeltaToSlider(delta) *
                                      static_cast<double>(getMaxValue() - getMinValue())));

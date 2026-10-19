@@ -46,7 +46,7 @@ class InviwoApplication;
  */
 class IVW_CORE_API InviwoCore : public InviwoModule {
 public:
-    InviwoCore(InviwoApplication* app);
+    explicit InviwoCore(InviwoApplication* app);
 
     virtual const std::filesystem::path& getPath() const override;
 

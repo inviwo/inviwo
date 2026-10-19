@@ -124,9 +124,9 @@ void VectorFieldGenerator4D::initializeResources() {
 
 void VectorFieldGenerator4D::process() {
 
-    auto seq = std::make_shared<VolumeSequenceOutport::type>();
+    const auto seq = std::make_shared<VolumeSequenceOutport::type>();
 
-    float dt = (tRange_.get().y - tRange_.get().x) / (size_.get().w - 1);
+    const float dt = (tRange_.get().y - tRange_.get().x) / (size_.get().w - 1);
 
     vec3 corners[4];
     corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
@@ -148,7 +148,7 @@ void VectorFieldGenerator4D::process() {
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
 
-        auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());
+        const auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());
         volume->dataMap.dataRange = vec2(0, 1);
         volume->dataMap.valueRange = vec2(-1, 1);
         volume->setMetaData<DoubleMetaData>("timestamp", t);
@@ -160,7 +160,7 @@ void VectorFieldGenerator4D::process() {
         shader_.setUniform("t", t);
         utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
 
-        VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
+        const VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));

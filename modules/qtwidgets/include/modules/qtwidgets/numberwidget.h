@@ -453,7 +453,7 @@ bool NumberWidget<T>::updateValueFromText(const QString& str) {
     }
     if (auto newValue = utilqt::numericValueFromString<T>(str); newValue) {
         T clamped = detail::clamp(*newValue, minValue_, maxValue_, minCB_, maxCB_);
-        bool updated = empty_ || (clamped != value_);
+        const bool updated = empty_ || (clamped != value_);
         empty_ = false;
         value_ = clamped;
         return updated;

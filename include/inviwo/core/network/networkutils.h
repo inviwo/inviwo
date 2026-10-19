@@ -63,8 +63,8 @@ private:
 
 }  // namespace detail
 
-IVW_CORE_API std::unordered_set<Processor*> getDirectPredecessors(Processor* processor);
-IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(Processor* processor);
+IVW_CORE_API std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor);
+IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(const Processor* processor);
 
 IVW_CORE_API std::unordered_set<Processor*> getPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getSuccessors(Processor* processor);
@@ -111,9 +111,9 @@ void traverseNetwork(
     if constexpr (V == VisitPattern::Post) f(processor);
 }
 
-IVW_CORE_API std::vector<Processor*> topologicalSortFiltered(ProcessorNetwork* network);
+IVW_CORE_API std::vector<Processor*> topologicalSortFiltered(const ProcessorNetwork* network);
 
-IVW_CORE_API std::vector<Processor*> topologicalSort(ProcessorNetwork* network);
+IVW_CORE_API std::vector<Processor*> topologicalSort(const ProcessorNetwork* network);
 
 struct IVW_CORE_API PropertyDistanceSorter {
     PropertyDistanceSorter();
@@ -175,7 +175,7 @@ IVW_CORE_API void offsetPosition(Processor* processors, ivec2 offset);
  */
 IVW_CORE_API void setSelected(const std::vector<Processor*>& processors, bool selected);
 
-IVW_CORE_API std::vector<Processor*> getSelected(ProcessorNetwork* network);
+IVW_CORE_API std::vector<Processor*> getSelected(const ProcessorNetwork* network);
 
 IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
                                     const std::filesystem::path& refPath);
@@ -202,7 +202,7 @@ IVW_CORE_API std::vector<Processor*> appendProcessorNetwork(
     ProcessorNetwork* destinationNetwork, const std::filesystem::path& workspaceFile,
     InviwoApplication* app);
 
-IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork& network, Processor& processor,
+IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork& network, const Processor& processor,
                                            PortConnection connection);
 
 IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
@@ -217,6 +217,6 @@ IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* netwo
                                                          std::shared_ptr<Processor> newProcessor,
                                                          Processor* oldProcessor);
 
-IVW_CORE_API bool canSplitConnection(Processor& p, const PortConnection& connection);
+IVW_CORE_API bool canSplitConnection(const Processor& p, const PortConnection& connection);
 
 }  // namespace inviwo::util

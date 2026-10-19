@@ -245,7 +245,7 @@ public:
         IVW_ASSERT(get, "The getter has to be valid");
         IVW_ASSERT(set, "The setter has to be valid");
 
-        auto val = get_();
+        const auto val = get_();
         get_ = std::move(get);
         set_ = std::move(set);
         if (val != get_()) {
@@ -253,7 +253,7 @@ public:
         }
     }
     void disconnectSetAndGet() {
-        auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", get_());
+        const auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", get_());
         get_ = [val]() { return *val; };
         set_ = [val](const T& newVal) { *val = newVal; };
         fallbackValue_ = val;
@@ -380,7 +380,8 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
         // Valid case
     } else if (!get_ && !set_) {
         // Both default we assign a dummy
-        auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", Defaultvalues<T>::getVal());
+        const auto val =
+            std::make_shared<ValueWrapper<T>>("fallbackValue", Defaultvalues<T>::getVal());
         get_ = [val]() { return *val; };
         set_ = [val](const T& newVal) { *val = newVal; };
         fallbackValue_ = val;
@@ -441,7 +442,7 @@ OrdinalRefProperty<T>::OrdinalRefProperty(const OrdinalRefProperty<T>& rhs)
     , minConstraint_{rhs.minConstraint_}
     , maxConstraint_{rhs.maxConstraint_} {
 
-    auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", rhs.get());
+    const auto val = std::make_shared<ValueWrapper<T>>("fallbackValue", rhs.get());
     get_ = [val]() { return *val; };
     set_ = [val](const T& newVal) { *val = newVal; };
     fallbackValue_ = val;
@@ -543,7 +544,7 @@ void OrdinalRefProperty<T>::set(const T& value, const T& minVal, const T& maxVal
     modified |= maxValue_.update(maxVal);
     modified |= increment_.update(increment);
 
-    auto val = clamp(value);  // make sure we clamp after we update min/max
+    const auto val = clamp(value);  // make sure we clamp after we update min/max
     if (val != get_()) {
         set_(val);
         modified = true;
@@ -561,7 +562,7 @@ void OrdinalRefProperty<T>::set(const OrdinalRefProperty* srcProperty) {
     if (isLinkingMaxBound()) modified |= maxValue_.update(srcProperty->maxValue_);
     modified |= increment_.update(srcProperty->increment_);
 
-    auto val = clamp(srcProperty->get_());  // make sure we clamp after we update min/max
+    const auto val = clamp(srcProperty->get_());  // make sure we clamp after we update min/max
     if (val != get_()) {
         set_(val);
         modified = true;
@@ -591,7 +592,7 @@ void OrdinalRefProperty<T>::setMinValue(const T& newMinValue) {
     // Make sure min < max
     modified |= maxValue_.update(glm::max(maxValue_.value, minValue_.value));
 
-    auto val = clamp(get_());  // make sure we clamp after we update min/max
+    const auto val = clamp(get_());  // make sure we clamp after we update min/max
     if (val != get_()) {
         set_(val);
         modified = true;
@@ -618,7 +619,7 @@ void OrdinalRefProperty<T>::setMaxValue(const T& newMaxValue) {
     // Make sure min < max
     modified |= minValue_.update(glm::min(minValue_.value, maxValue_.value));
 
-    auto val = clamp(get_());  // make sure we clamp after we update min/max
+    const auto val = clamp(get_());  // make sure we clamp after we update min/max
     if (val != get_()) {
         set_(val);
         modified = true;
@@ -645,7 +646,7 @@ void OrdinalRefProperty<T>::setIncrement(const T& newInc) {
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     bool modified = false;
-    if (auto value = fallbackValue_.lock()) {
+    if (const auto value = fallbackValue_.lock()) {
         modified |= value->reset();
     }
     modified |= minValue_.reset();
@@ -657,7 +658,7 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
 
 template <typename T>
 bool OrdinalRefProperty<T>::isDefaultState() const {
-    if (auto value = fallbackValue_.lock()) {
+    if (const auto value = fallbackValue_.lock()) {
         return value->isDefault() && increment_.isDefault() && minValue_.isDefault() &&
                maxValue_.isDefault();
     } else {
@@ -668,7 +669,7 @@ bool OrdinalRefProperty<T>::isDefaultState() const {
 template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
-    if (auto value = fallbackValue_.lock()) {
+    if (const auto value = fallbackValue_.lock()) {
         value->setAsDefault();
     }
     minValue_.setAsDefault();
@@ -690,10 +691,10 @@ template <typename T>
 void OrdinalRefProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
 
-    if (auto value = fallbackValue_.lock()) {
+    if (const auto value = fallbackValue_.lock()) {
         value->serialize(s, this->serializationMode_);
     } else {
-        ValueWrapper<T> val{"fallbackValue", get()};
+        const ValueWrapper<T> val{"fallbackValue", get()};
         val.serialize(s, this->serializationMode_);
     }
 
@@ -709,7 +710,7 @@ void OrdinalRefProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
 
     bool modified = false;
-    if (auto value = fallbackValue_.lock()) {
+    if (const auto value = fallbackValue_.lock()) {
         modified |= value->deserialize(d, this->serializationMode_);
     }
     modified |= minConstraint_.deserialize(d, this->serializationMode_);

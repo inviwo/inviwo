@@ -70,7 +70,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::filesystem::p
     if (!fp) {
         throw DataReaderException(SourceContext{}, "Failed to open file for reading, {}", filePath);
     }
-    util::OnScopeExit closeFile([fp]() { fclose(fp); });
+    const util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
     return readData(fp, filePath.string());
 }
@@ -88,7 +88,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
         throw DataReaderException(SourceContext{},
                                   "Internal PNG Error: Failed to create read struct: {}", name);
     }
-    util::OnScopeExit cleanup1([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
+    const util::OnScopeExit cleanup1([&]() { png_destroy_read_struct(&png_ptr, NULL, NULL); });
     png_set_error_fn(
         png_ptr, NULL,
         [](png_structp, png_const_charp message) {
@@ -101,7 +101,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
         throw DataReaderException(SourceContext{},
                                   "Internal PNG Error: Failed to create info struct {}", name);
     }
-    util::OnScopeExit cleanup2([&]() { png_destroy_read_struct(NULL, &info_ptr, NULL); });
+    const util::OnScopeExit cleanup2([&]() { png_destroy_read_struct(NULL, &info_ptr, NULL); });
 
     png_init_io(png_ptr, fp);
     png_set_sig_bytes(png_ptr, 8);
@@ -109,7 +109,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
 
     auto width = png_get_image_width(png_ptr, info_ptr);
     auto height = png_get_image_height(png_ptr, info_ptr);
-    auto color_type = png_get_color_type(png_ptr, info_ptr);
+    const auto color_type = png_get_color_type(png_ptr, info_ptr);
     auto bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
     SwizzleMask swizzleMask;

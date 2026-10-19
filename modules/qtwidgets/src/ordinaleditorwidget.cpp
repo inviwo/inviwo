@@ -67,7 +67,7 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget(bool intMode)
 BaseOrdinalEditorWidget::~BaseOrdinalEditorWidget() = default;
 
 void BaseOrdinalEditorWidget::updateEditor() {
-    QSignalBlocker block{editor_};
+    const QSignalBlocker block{editor_};
     editor_->setValue(transformValueToEditor());
 }
 
@@ -84,7 +84,7 @@ void BaseOrdinalEditorWidget::applyValue() {
 }
 
 void BaseOrdinalEditorWidget::applyMinValue() {
-    QSignalBlocker spinBlock(editor_);
+    const QSignalBlocker spinBlock(editor_);
 
     if (minCB_ == ConstraintBehavior::Ignore) {
         editor_->setMinimum(std::numeric_limits<double>::lowest());
@@ -94,7 +94,7 @@ void BaseOrdinalEditorWidget::applyMinValue() {
 }
 
 void BaseOrdinalEditorWidget::applyMaxValue() {
-    QSignalBlocker spinBlock(editor_);
+    const QSignalBlocker spinBlock(editor_);
 
     if (maxCB_ == ConstraintBehavior::Ignore) {
         editor_->setMaximum(std::numeric_limits<double>::max());
@@ -104,7 +104,7 @@ void BaseOrdinalEditorWidget::applyMaxValue() {
 }
 
 void BaseOrdinalEditorWidget::applyIncrement() {
-    QSignalBlocker spinBlock(editor_);
+    const QSignalBlocker spinBlock(editor_);
 
     editor_->setIncrement(transformIncrementToEditor());
     editor_->setDecimals(transformIncrementToEditorDecimals());

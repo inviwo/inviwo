@@ -159,8 +159,8 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
     const std::string& str) const {
     std::string errorMsg;
 
-    auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,
-                                       const std::string& errSource, size_t line) {
+    const auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,
+                                             const std::string& errSource, size_t line) {
         try {
             size_t idx = 0;
             retVal = std::stod(str, &idx);
@@ -177,11 +177,11 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
     };
 
     // tokenize line using space or tab (multiple spaces will be collapsed)
-    auto tokenize = [](const std::string& str) {
+    const auto tokenize = [](const std::string& str) {
         std::vector<std::string> tokens;
         size_t tokenStart = str.find_first_not_of(" \t");
         while (tokenStart != std::string::npos) {
-            auto tokenEnd = str.find_first_of(" \t", tokenStart);
+            const auto tokenEnd = str.find_first_of(" \t", tokenStart);
             tokens.push_back(str.substr(tokenStart, tokenEnd - tokenStart));
             tokenStart = str.find_first_not_of(" \t", tokenEnd);
         }

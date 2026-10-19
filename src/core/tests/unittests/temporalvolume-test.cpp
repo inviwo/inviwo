@@ -143,7 +143,7 @@ TEST(TemporalVolumeTest, InterpolateWithinRange) {
 
 TEST(TemporalVolumeTest, InterpolateAtExactFrame) {
     const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
-    auto frame = tv.interpolate(10.0s);
+    const auto frame = tv.interpolate(10.0s);
     EXPECT_EQ(frameIndexOf(frame.a), 1);
     EXPECT_EQ(frameIndexOf(frame.b), 2);
     EXPECT_DOUBLE_EQ(frame.t, 0.0);
@@ -152,12 +152,12 @@ TEST(TemporalVolumeTest, InterpolateAtExactFrame) {
 TEST(TemporalVolumeTest, InterpolateClampsOutsideRange) {
     const TemporalVolume tv{makeLoader(4, {0.0s, 10.0s, 20.0s, 30.0s})};
 
-    auto before = tv.interpolate(-100.0s);
+    const auto before = tv.interpolate(-100.0s);
     EXPECT_EQ(frameIndexOf(before.a), 0);
     EXPECT_EQ(frameIndexOf(before.b), 0);
     EXPECT_DOUBLE_EQ(before.t, 0.0);
 
-    auto after = tv.interpolate(100.0s);
+    const auto after = tv.interpolate(100.0s);
     EXPECT_EQ(frameIndexOf(after.a), 3);
     EXPECT_EQ(frameIndexOf(after.b), 3);
     EXPECT_DOUBLE_EQ(after.t, 0.0);
@@ -212,7 +212,7 @@ TEST(TemporalVolumeTest, Prefetch) {
 }
 
 TEST(TemporalVolumeTest, ProceduralLoaderDirect) {
-    ProceduralLoader loader{
+    const ProceduralLoader loader{
         3,
         {1.0s, 2.0s, 3.0s},
         makePrototype(),

@@ -57,7 +57,7 @@ constexpr std::string_view header = R"(<style>
 
 FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
 
-    auto dir = logPath.parent_path();
+    const auto dir = logPath.parent_path();
     if (!std::filesystem::is_directory(dir)) {
         std::filesystem::create_directories(dir);
     }
@@ -70,8 +70,8 @@ FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
     fileStream_ << "<div class='info'>Inviwo (v" << build::version << ") Log File</div>"
                 << std::endl;
 
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+    const auto t = std::time(nullptr);
+    const auto tm = *std::localtime(&t);
     char formatedString[21];
     strftime(formatedString, sizeof(formatedString), "%Y-%m-%d %H:%M:%S ", &tm);
     fileStream_ << "<div class='info nowrap'>Created at: " << formatedString << "</div>"

@@ -93,7 +93,7 @@ std::vector<unsigned char>& MemoryFileHandle::getBuffer() { return buffer_; }
 
 bool MemoryFileHandle::checkForOverflow() const {
 
-    auto pos = getNumberOfBytesInBuffer();
+    const auto pos = getNumberOfBytesInBuffer();
 
     bool overflowDetected = false;
     // check buffer contents after current position (at least 8 byte)

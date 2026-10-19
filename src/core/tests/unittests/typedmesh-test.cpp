@@ -52,7 +52,7 @@ bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTrait
         (a.getNumberOfIndices() != b.getNumberOfIndices())) {
         return false;
     }
-    auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {
+    const auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {
         for (auto&& elem : util::zip(buffersA, buffersB)) {
             auto& bufA = get<0>(elem);
             auto& bufB = get<1>(elem);
@@ -174,7 +174,7 @@ TEST(typedmesh, compilationChecks) {
     mesh.setVertexNormal(0, vec3(1.0f, 0.0f, 0.0f));
 
     // typed mesh clone
-    auto m = std::shared_ptr<MyMesh>(mesh.clone());
+    const auto m = std::shared_ptr<MyMesh>(mesh.clone());
 
     // buffers
     mesh.getTypedBuffer<buffertraits::NormalBuffer>();
@@ -182,8 +182,8 @@ TEST(typedmesh, compilationChecks) {
     mesh.getTypedEditableRAMRepresentation<buffertraits::NormalBuffer>();
     mesh.getTypedDataContainer<buffertraits::NormalBuffer>();
 
-    MyMesh copy(mesh);
-    auto copy2 = mesh;
+    const MyMesh copy(mesh);
+    const auto copy2 = mesh;
 
     using FloatBuffer =
         buffertraits::TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::PositionAttrib)>;
@@ -233,7 +233,7 @@ TEST(typedmesh, clone) {
     MyMesh mesh;
     mesh.addVertex(vec3(1.0f), vec4(1, 0, 0, 1));
 
-    auto copy = std::shared_ptr<MyMesh>(mesh.clone());
+    const auto copy = std::shared_ptr<MyMesh>(mesh.clone());
 
     EXPECT_TRUE(mesh == *copy.get()) << "cloned mesh not identical";
 
@@ -251,7 +251,7 @@ TEST(vertexop, addVertexTraits) {
     MyMesh mesh;
     uint32_t vertexCount = 0;
     for (auto&& elem : util::zip(vertices, colors)) {
-        uint32_t index = mesh.addVertex(get<0>(elem), get<1>(elem));
+        const uint32_t index = mesh.addVertex(get<0>(elem), get<1>(elem));
         EXPECT_EQ(vertexCount++, index);
     }
 
@@ -277,7 +277,7 @@ TEST(vertexop, addVertex) {
     uint32_t vertexCount = 0;
     for (auto&& elem : util::zip(vertices, colors)) {
         MyMesh::Vertex v = {get<0>(elem), get<1>(elem)};
-        uint32_t index = mesh.addVertex(v);
+        const uint32_t index = mesh.addVertex(v);
         EXPECT_EQ(vertexCount++, index);
     }
 

@@ -49,7 +49,7 @@ using namespace std::literals;
 inline void checkContext(std::string_view error, Canvas::ContextID org,
                          SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
-        auto* rc = RenderContext::getPtr();
+        const auto* rc = RenderContext::getPtr();
         const auto* const curr = rc->activeContext();
         if (org != curr) {
             const auto message =
@@ -62,7 +62,7 @@ inline void checkContext(std::string_view error, Canvas::ContextID org,
 }
 
 size_t BufferObjectArray::maxSize() const {
-    static size_t size = []() {
+    static const size_t size = []() {
         GLint glsize = 0;
         // usually about 16 should be more than BufferType::NumberOfBufferTypes.
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);

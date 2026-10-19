@@ -146,10 +146,10 @@ void MeshPicking::handlePickingEvent(PickingEvent* p) {
     } else if (auto we = p->getEventAs<WheelEvent>()) {
         p->markAsUsed();
 
-        double Zn = camera_.getNearPlaneDist();
-        double Zf = camera_.getFarPlaneDist();
+        const double Zn = camera_.getNearPlaneDist();
+        const double Zf = camera_.getFarPlaneDist();
 
-        dvec3 camDir(glm::normalize(camera_.get().getDirection()));
+        const dvec3 camDir(glm::normalize(camera_.get().getDirection()));
 
         position_.set(position_.get() + vec3(0.01 * (Zf - Zn) * we->delta().y * camDir));
     }
@@ -170,12 +170,14 @@ void MeshPicking::updatePosition(PickingEvent* p) {
     auto prevNDC = p->getPreviousNDC();
 
     // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = p->getPressedDepth();
+    const auto refDepth = p->getPressedDepth();
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+    const auto corrWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    const auto prevWorld =
+        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
 
     position_.set(position_.get() + vec3{corrWorld - prevWorld});
 }
@@ -216,9 +218,9 @@ void MeshPicking::render() {
     shader_.setUniform("dataToClip", dataToClip);
 
     {
-        utilgl::CullFaceState culling(cullFace_.get());
-        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        utilgl::DepthFuncState depthfunc(GL_LESS);
+        const utilgl::CullFaceState culling(cullFace_.get());
+        const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        const utilgl::DepthFuncState depthfunc(GL_LESS);
 
         drawer_->draw();
     }

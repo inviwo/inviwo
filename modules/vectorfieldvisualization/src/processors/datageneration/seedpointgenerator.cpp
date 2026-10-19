@@ -140,15 +140,15 @@ void SeedPointGenerator::process() {
         case PLANE:  planePoints(); break;
         case LINE:   linePoints(); break;
         case SPHERE: spherePoints(); break;
-        default:     log::warn("No points generated since given type is not yet implemented"); break;
+        default: log::warn("No points generated since given type is not yet implemented"); break;
     }
 }
 
 void SeedPointGenerator::onGeneratorChange() {
-    bool rnd = generator_.get() == RND;
-    bool plane = generator_.get() == PLANE;
-    bool line = generator_.get() == LINE;
-    bool sphere = generator_.get() == SPHERE;
+    const bool rnd = generator_.get() == RND;
+    const bool plane = generator_.get() == PLANE;
+    const bool line = generator_.get() == LINE;
+    const bool sphere = generator_.get() == SPHERE;
 
     numberOfPoints_.setVisible(rnd || line || sphere);
 
@@ -165,27 +165,27 @@ void SeedPointGenerator::onGeneratorChange() {
 }
 
 void SeedPointGenerator::spherePoints() {
-    auto T = [](auto&& r) { return util::randomNumber<float>(r, 0, glm::two_pi<float>()); };
-    auto cos_phi = [](auto&& r) { return util::randomNumber<float>(r, -1, 1); };
-    auto R = [](auto&& r) { return util::randomNumber<float>(r, 0, 1); };
+    const auto T = [](auto&& r) { return util::randomNumber<float>(r, 0, glm::two_pi<float>()); };
+    const auto cos_phi = [](auto&& r) { return util::randomNumber<float>(r, -1, 1); };
+    const auto R = [](auto&& r) { return util::randomNumber<float>(r, 0, 1); };
 
-    auto points = std::make_shared<std::vector<vec3>>();
+    const auto points = std::make_shared<std::vector<vec3>>();
 
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        float theta = T(mt_);
-        float phi = std::acos(cos_phi(mt_));
+        const float theta = T(mt_);
+        const float phi = std::acos(cos_phi(mt_));
 
-        vec2 range = sphereRadius_.get();
+        const vec2 range = sphereRadius_.get();
         float r = std::pow(R(mt_), 1.0f / 3.0f);
         r = range.x + r * (range.y - range.x);
 
-        float ct = std::cos(theta);
-        float st = std::sin(theta);
-        float sp = std::sin(phi);
-        float cp = std::cos(phi);
+        const float ct = std::cos(theta);
+        const float st = std::sin(theta);
+        const float sp = std::sin(phi);
+        const float cp = std::cos(phi);
 
-        vec3 g = vec3(ct * sp, st * sp, cp);
-        vec3 p = g * r + sphereCenter_.get();
+        const vec3 g = vec3(ct * sp, st * sp, cp);
+        const vec3 p = g * r + sphereCenter_.get();
 
         points->push_back(p);
     }
@@ -194,28 +194,28 @@ void SeedPointGenerator::spherePoints() {
 }
 
 void SeedPointGenerator::linePoints() {
-    auto points = std::make_shared<std::vector<vec3>>();
-    float dt = 1.0f / std::max((numberOfPoints_.get() - 1), 1);
+    const auto points = std::make_shared<std::vector<vec3>>();
+    const float dt = 1.0f / static_cast<float>(std::max((numberOfPoints_.get() - 1), 1));
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        auto p = lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (i * dt);
+        const auto p = lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (i * dt);
         points->push_back(p);
     }
     seedPoints_.setData(points);
 }
 
 void SeedPointGenerator::planePoints() {
-    auto points = std::make_shared<std::vector<vec3>>();
-    float dx = 1.0f / (planeResolution_.get().x - 1);
-    float dy = 1.0f / (planeResolution_.get().y - 1);
+    const auto points = std::make_shared<std::vector<vec3>>();
+    const float dx = 1.0f / static_cast<float>(planeResolution_.get().x - 1);
+    const float dy = 1.0f / static_cast<float>(planeResolution_.get().y - 1);
 
-    vec3 ox = planeE1_.get();
-    vec3 oy = planeE2_.get();
+    const vec3 ox = planeE1_.get();
+    const vec3 oy = planeE2_.get();
 
     for (int i = 0; i < planeResolution_.get().x; i++) {
         for (int j = 0; j < planeResolution_.get().y; j++) {
             vec3 p = planeOrigin_.get();
-            p += ox * (i * dx);
-            p += oy * (j * dy);
+            p += ox * (static_cast<float>(i) * dx);
+            p += oy * (static_cast<float>(j) * dy);
             points->push_back(p);
         }
     }
@@ -223,7 +223,7 @@ void SeedPointGenerator::planePoints() {
 }
 
 void SeedPointGenerator::randomPoints() {
-    auto points = std::make_shared<std::vector<vec3>>();
+    const auto points = std::make_shared<std::vector<vec3>>();
     for (int i = 0; i < numberOfPoints_.get(); i++) {
         const float x = util::randomNumber<float>(mt_);
         const float y = util::randomNumber<float>(mt_);

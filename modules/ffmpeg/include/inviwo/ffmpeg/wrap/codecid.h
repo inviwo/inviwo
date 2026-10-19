@@ -65,7 +65,7 @@ public:
 
     AVMediaType type() const;
 
-    operator bool() const;
+    explicit operator bool() const;
 
     auto operator<=>(const CodecID&) const = default;
 

@@ -57,13 +57,13 @@ TimerThread::~TimerThread() {
 }
 
 std::optional<TimerThread::clock_t::time_point> TimerThread::lastDelay() {
-    std::scoped_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
 
     return std::accumulate(timers_.begin(), timers_.end(), std::optional<clock_t::time_point>{},
                            [](std::optional<clock_t::time_point> a,
                               TimerInfo& item) -> std::optional<clock_t::time_point> {
                                std::optional<clock_t::time_point> b;
-                               if (auto cb = item.controlBlock_.lock()) {
+                               if (const auto cb = item.controlBlock_.lock()) {
                                    if (!cb->repeating_) {
                                        b = item.timePoint_;
                                    }
@@ -82,9 +82,9 @@ std::optional<TimerThread::clock_t::time_point> TimerThread::lastDelay() {
 }
 
 void TimerThread::add(std::weak_ptr<ControlBlock> controlBlock) {
-    if (auto cb = controlBlock.lock()) {
+    if (const auto cb = controlBlock.lock()) {
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            const std::unique_lock<std::mutex> lock(mutex_);
             timers_.emplace_back(clock_t::now() + cb->interval_, std::move(controlBlock));
             sort_ = true;
         }
@@ -116,25 +116,25 @@ void TimerThread::TimerLoop() {
             sort_ = false;
         }
 
-        auto now = clock_t::now();
-        auto expire = timers_.back().timePoint_;
+        const auto now = clock_t::now();
+        const auto expire = timers_.back().timePoint_;
         bool callTimer = expire < now;
 
         if (!callTimer)  // can I take a nap?
         {
-            auto napTime = expire - now;
+            const auto napTime = expire - now;
             condition_.wait_for(lock, napTime);
 
             if (!timers_.empty()) {
                 // check again
-                auto expire2 = timers_.back().timePoint_;
-                auto now2 = clock_t::now();
+                const auto expire2 = timers_.back().timePoint_;
+                const auto now2 = clock_t::now();
                 callTimer = expire2 < now2;
             }
         }
 
         if (callTimer) {
-            if (auto cb = timers_.back().controlBlock_.lock()) {
+            if (const auto cb = timers_.back().controlBlock_.lock()) {
                 if (cb->repeating_) {
                     timers_.back().timePoint_ += cb->interval_;
                     sort_ = true;
@@ -145,7 +145,7 @@ void TimerThread::TimerLoop() {
                     cb->finished_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                         std::future_status::ready) {
                     cb->finished_ = dispatchFront([ctrlblk = std::weak_ptr<ControlBlock>{cb}]() {
-                        if (auto cb2 = ctrlblk.lock()) {
+                        if (const auto cb2 = ctrlblk.lock()) {
                             cb2->callback_();
                         }
                     });

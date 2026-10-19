@@ -85,7 +85,7 @@ DataFrameModel::ValueFunc getValueFunc(const Column* col, bool categoryIndices) 
                     ->getRepresentation<BufferRAM>()
                     ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
                         return [br](int row) -> QVariant {
-                            auto val = br->getDataContainer()[row];
+                            const auto val = br->getDataContainer()[row];
                             return QVariant{static_cast<qulonglong>(val)};
                         };
                     });
@@ -98,7 +98,7 @@ DataFrameModel::ValueFunc getValueFunc(const Column* col, bool categoryIndices) 
                     ->getRepresentation<BufferRAM>()
                     ->template dispatch<ValueFunc, dispatching::filter::Scalars>([](auto br) {
                         return [br](int row) -> QVariant {
-                            auto val = br->getDataContainer()[row];
+                            const auto val = br->getDataContainer()[row];
                             if constexpr (std::is_floating_point_v<decltype(val)>) {
                                 return QVariant{val};
                             } else if constexpr (std::is_signed_v<decltype(val)>) {

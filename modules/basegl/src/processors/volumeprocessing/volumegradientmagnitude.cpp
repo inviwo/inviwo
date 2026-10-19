@@ -88,7 +88,7 @@ VolumeGradientMagnitude::~VolumeGradientMagnitude() = default;
 
 void VolumeGradientMagnitude::preProcess([[maybe_unused]] TextureUnitContainer& cont,
                                          Shader& shader, VolumeConfig& config) {
-    auto volume = inport_->getData();
+    const auto volume = inport_->getData();
     if (channel_.getSelectedIndex() >= volume->getDataFormat()->getComponents()) {
         throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
                         channel_.getSelectedValue(), volume->getDataFormat()->getComponents());

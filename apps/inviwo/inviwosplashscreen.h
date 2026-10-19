@@ -40,7 +40,7 @@ namespace inviwo {
 class InviwoSplashScreen : public QSplashScreen {
     Q_OBJECT
 public:
-    InviwoSplashScreen(bool enable = true);
+    explicit InviwoSplashScreen(bool enable = true);
     ~InviwoSplashScreen();
 
     virtual void show();

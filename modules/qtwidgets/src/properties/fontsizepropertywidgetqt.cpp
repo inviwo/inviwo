@@ -119,7 +119,7 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     connect(comboBox_, static_cast<void (QComboBox::*)(int)>(&IvwComboBox::currentIndexChanged),
             [&](int option) {
                 if (option >= 0) {
-                    int fontSize = comboBox_->currentData().toInt();
+                    const int fontSize = comboBox_->currentData().toInt();
 
                     if (fontSize != property_->get()) {
                         property_->setInitiatingWidget(this);
@@ -133,10 +133,10 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
 }
 
 void FontSizePropertyWidgetQt::updateFromProperty() {
-    QSignalBlocker block{comboBox_};
+    const QSignalBlocker block{comboBox_};
 
     comboBox_->clear();
-    for (auto size : fontSizes_) {
+    for (const auto size : fontSizes_) {
         comboBox_->addItem(QString::number(size), size);
     }
 

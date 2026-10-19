@@ -56,8 +56,9 @@ template <>
 struct ProcessorTraits<CompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>> {
     static ProcessorInfo getProcessorInfo() {
         constexpr auto name = std::string_view{"BrushingAndLinking Meta Source"};
-        auto id = util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
-                                         CompositeSourceBase::identifierSuffix());
+        const auto id =
+            util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
+                                   CompositeSourceBase::identifierSuffix());
         return {
             id,                 // Class identifier
             std::string{name},  // Display name
@@ -122,8 +123,9 @@ struct ProcessorTraits<
     SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>> {
     static ProcessorInfo getProcessorInfo() {
         constexpr auto name = std::string_view{"BrushingAndLinking Meta Sequence Source"};
-        auto id = util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
-                                         SequenceCompositeSourceBase::identifierSuffix());
+        const auto id =
+            util::appendIfNotEmpty(PortTraits<BrushingAndLinkingOutport>::classIdentifier(),
+                                   SequenceCompositeSourceBase::identifierSuffix());
         return {
             id,                 // Class identifier
             std::string{name},  // Display name
@@ -168,7 +170,7 @@ void SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport
     SequenceCompositeSourceBase* source) {
 
     if (source) {
-        if (auto* typedSource = dynamic_cast<
+        if (const auto* typedSource = dynamic_cast<
                 SequenceCompositeSource<BrushingAndLinkingInport, BrushingAndLinkingOutport>*>(
                 source)) {
             // set the new parent before we assign the superInport_ since that is the current

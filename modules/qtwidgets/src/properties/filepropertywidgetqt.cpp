@@ -170,7 +170,7 @@ void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
 void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
     const auto mimeData = event->mimeData();
     if (!mimeData->urls().empty()) {
-        auto url = mimeData->urls().front();
+        const auto url = mimeData->urls().front();
         const auto file = utilqt::toPath(url.toLocalFile());
 
         switch (property_->getFileMode()) {

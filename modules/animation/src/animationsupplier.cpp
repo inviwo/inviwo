@@ -61,17 +61,17 @@ void AnimationSupplier::registerPropertyTrackConnection(std::string_view propert
 }
 
 void AnimationSupplier::unRegisterAll() {
-    for (auto& elem : tracks_) {
+    for (const auto& elem : tracks_) {
         manager_.getTrackFactory().unRegisterObject(elem.get());
     }
     tracks_.clear();
 
-    for (auto& elem : interpolations_) {
+    for (const auto& elem : interpolations_) {
         manager_.getInterpolationFactory().unRegisterObject(elem.get());
     }
     interpolations_.clear();
 
-    for (auto& elem : recorders_) {
+    for (const auto& elem : recorders_) {
         manager_.getRecorderFactories().unRegisterObject(elem.get());
     }
     recorders_.clear();

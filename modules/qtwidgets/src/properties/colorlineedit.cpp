@@ -177,7 +177,7 @@ void ColorLineEdit::updateText() {
     QString str;
     switch (representation_) {
         case inviwo::ColorLineEdit::ColorRepresentation::Integer: {
-            auto c = util::glm_convert<ivec4>(color_ * 255.0);
+            const auto c = util::glm_convert<ivec4>(color_ * 255.0);
             str = QString("%1 %2 %3").arg(c.r).arg(c.g).arg(c.b);
             if (hasAlpha_) {
                 str.append(QString(" %1").arg(c.a));
@@ -216,7 +216,7 @@ void ColorLineEdit::updateColor() {
         // it is a hex color code
         color_ = color::hex2rgba(utilqt::fromQString(tokens.front()));
     } else {
-        auto locale = QLocale::system();
+        const auto locale = QLocale::system();
 
         dvec4 color(0.0);
         for (int i = 0; i < tokens.size(); ++i) {

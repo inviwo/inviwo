@@ -46,7 +46,7 @@
 namespace inviwo {
 
 void exposeDocument(pybind11::module& m) {
-    auto doc = m.def_submodule("doc", "Inviwo document classes");
+    const auto doc = m.def_submodule("doc", "Inviwo document classes");
 
     namespace py = pybind11;
 

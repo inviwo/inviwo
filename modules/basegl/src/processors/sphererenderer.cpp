@@ -128,7 +128,7 @@ void SphereRenderer::configureShader(Shader& shader) {
 }
 
 void SphereRenderer::process() {
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     bnl_.update();

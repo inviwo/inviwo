@@ -41,7 +41,7 @@ class CompositeProperty;
 class IVW_MODULE_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
                                                            public CompositePropertyObserver {
 public:
-    CompositePropertyWidgetQt(CompositeProperty* property);
+    explicit CompositePropertyWidgetQt(CompositeProperty* property);
     virtual bool isCollapsed() const override;
     virtual void onSetCollapsed(bool value) override;
 

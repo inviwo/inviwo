@@ -153,16 +153,16 @@ WorldTransformDeprecated<T>::WorldTransformDeprecated()
 
 template <typename T>
 void WorldTransformDeprecated<T>::process() {
-    std::shared_ptr<T> data(inport_.getData()->clone());
+    const std::shared_ptr<T> data(inport_.getData()->clone());
     data->setWorldMatrix(dmat4{matrix_.get()} * data->getWorldMatrix());
     outport_.setData(data);
 }
 
 template <typename T>
 void WorldTransformDeprecated<T>::changeVisibility() {
-    bool translate = type_.get() == 0;
-    bool rotate = type_.get() == 1;
-    bool scale = type_.get() == 2;
+    const bool translate = type_.get() == 0;
+    const bool rotate = type_.get() == 1;
+    const bool scale = type_.get() == 2;
     // bool user = type_.get() == 10; //Not used
 
     translate_.setVisible(translate);

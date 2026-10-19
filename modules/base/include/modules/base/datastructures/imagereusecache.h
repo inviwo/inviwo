@@ -67,15 +67,15 @@ std::pair<std::shared_ptr<Image>, LayerRAMPrecision<T>*> ImageReuseCache::getTyp
 
     std::pair<std::shared_ptr<Image>, LayerRAMPrecision<T>*> res;
 
-    auto reuse = getUnused();
+    const auto reuse = getUnused();
 
     if (reuse && reuse->getDataFormat() == DataFormat<T>::get() && reuse->getDimensions() == dim) {
         res.first = reuse;
         res.second = static_cast<LayerRAMPrecision<T>*>(
             reuse->getColorLayer()->getEditableRepresentation<LayerRAM>());
     } else {
-        auto sDstRepr = std::make_shared<LayerRAMPrecision<T>>(dim);
-        auto dstLayer = std::make_shared<Layer>(sDstRepr);
+        const auto sDstRepr = std::make_shared<LayerRAMPrecision<T>>(dim);
+        const auto dstLayer = std::make_shared<Layer>(sDstRepr);
         res.second = sDstRepr.get();
         res.first = std::make_shared<Image>(dstLayer);
     }

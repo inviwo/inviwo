@@ -41,7 +41,7 @@ class InviwoMainWindow;
 
 class IVW_QTEDITOR_API ToolsMenu : public QMenu {
 public:
-    ToolsMenu(InviwoMainWindow* win);
+    explicit ToolsMenu(InviwoMainWindow* win);
     virtual ~ToolsMenu() = default;
 };
 

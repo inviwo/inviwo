@@ -125,9 +125,10 @@ LorenzSystem::~LorenzSystem() = default;
 void LorenzSystem::process() {
     const size3_t dims{size_.get()};
 
-    auto velocityVolume = velocityVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
-    auto curlVolume = curlVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
-    auto divVolume = divVolumes_({.dimensions = dims, .format = DataFloat32::get()});
+    const auto velocityVolume =
+        velocityVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
+    const auto curlVolume = curlVolumes_({.dimensions = dims, .format = DataVec3Float32::get()});
+    const auto divVolume = divVolumes_({.dimensions = dims, .format = DataFloat32::get()});
 
     // Basis and offset
     const std::array<vec3, 4> corners{{{xRange_.get().x, yRange_.get().x, zRange_.get().x},
@@ -141,9 +142,9 @@ void LorenzSystem::process() {
     float maxCurl{0};
     const float maxDiv{std::abs(-1 - sigma_.get() - beta_.get())};
 
-    for (auto x : {xRange_.get().x, xRange_.get().y}) {
-        for (auto y : {yRange_.get().x, yRange_.get().y}) {
-            for (auto z : {zRange_.get().x, zRange_.get().y}) {
+    for (const auto x : {xRange_.get().x, xRange_.get().y}) {
+        for (const auto y : {yRange_.get().x, yRange_.get().y}) {
+            for (const auto z : {zRange_.get().x, zRange_.get().y}) {
                 maxVelocity = std::max({maxVelocity, std::abs(sigma_.get() * (y - x)),
                                         std::abs(x * (rho_.get() - z) - y),
                                         std::abs(x * y - beta_.get() * z)});
@@ -179,13 +180,13 @@ void LorenzSystem::process() {
 
     std::array<GLenum, 3> drawBuffers{GLenum{0}, GLenum{0}, GLenum{0}};
 
-    auto* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
+    const auto* volGL = velocityVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[0] = fbo_.attachColorTexture(volGL->getTexture().get(), 0);
 
-    auto* curlGL = curlVolume->getEditableRepresentation<VolumeGL>();
+    const auto* curlGL = curlVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[1] = fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
 
-    auto* divGL = divVolume->getEditableRepresentation<VolumeGL>();
+    const auto* divGL = divVolume->getEditableRepresentation<VolumeGL>();
     drawBuffers[2] = fbo_.attachColorTexture(divGL->getTexture().get(), 2);
 
     glDrawBuffers(static_cast<GLsizei>(drawBuffers.size()), drawBuffers.data());

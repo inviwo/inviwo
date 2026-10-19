@@ -46,7 +46,7 @@ void OpenGLQtCapabilities::printInfo() {
 
 std::vector<int> OpenGLQtCapabilities::getGLVersion() {
     const GLubyte* glversion = glGetString(GL_VERSION);
-    std::string glVersionStr =
+    const std::string glVersionStr =
         std::string((glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
     const auto versionInfoStr = util::splitStringView(glVersionStr, '.');
     const int major = stringTo<int>(versionInfoStr[0]);

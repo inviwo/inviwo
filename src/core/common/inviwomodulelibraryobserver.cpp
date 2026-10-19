@@ -56,7 +56,7 @@ void InviwoModuleLibraryObserver::observe(const std::filesystem::path& file) {
     // constructor is called.
     if (!observer_) observer_ = std::make_unique<Observer>(*this, app_);
     if (observing_.count(file) != 0) return;
-    auto dir = file.parent_path();
+    const auto dir = file.parent_path();
     if (!observer_->isObserved(dir)) observer_->startFileObservation(dir);
 
     observing_[file] = std::filesystem::last_write_time(file);
@@ -66,9 +66,9 @@ void InviwoModuleLibraryObserver::fileChanged(const std::filesystem::path& dir) 
     bool reload = false;
     for (const auto& f : filesystem::getDirectoryContents(dir)) {
         const auto file = dir / f;
-        auto it = observing_.find(file);
+        const auto it = observing_.find(file);
         if (it != observing_.end()) {
-            auto time = std::filesystem::last_write_time(file);
+            const auto time = std::filesystem::last_write_time(file);
             if (time > it->second) {
                 it->second = time;
                 reload = true;

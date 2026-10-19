@@ -92,8 +92,8 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     RenderContext::getPtr()->activateDefaultRenderContext();
     LGL_ERROR;
 
-    auto logCounter = std::make_shared<LogErrorCounter>();
-    auto stringLog = std::make_shared<StringLogger>();
+    const auto logCounter = std::make_shared<LogErrorCounter>();
+    const auto stringLog = std::make_shared<StringLogger>();
     LogCentral::getPtr()->registerLogger(logCounter);
     LogCentral::getPtr()->registerLogger(stringLog);
 

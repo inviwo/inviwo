@@ -206,7 +206,7 @@ VolumeInformation::VolumeInformation()
 void VolumeInformation::process() {
     using enum util::OverwriteState;
 
-    auto volume = volume_.getData();
+    const auto volume = volume_.getData();
 
     volumeInfo_.updateForNewVolume(*volume, Yes);
 
@@ -221,7 +221,7 @@ void VolumeInformation::process() {
     util::updateDefaultState(basis_, volume->getBasis(), Yes);
     util::updateDefaultState(offset_, volume->getOffset(), Yes);
 
-    auto m = trans.getTextureToWorldMatrix();
+    const auto m = trans.getTextureToWorldMatrix();
     const dvec4 dx{m * dvec4{1.0 / static_cast<double>(dim.x), 0, 0, 0}};
     const dvec4 dy{m * dvec4{0, 1.0 / static_cast<double>(dim.y), 0, 0}};
     const dvec4 dz{m * dvec4{0, 0, 1.0 / static_cast<double>(dim.z), 0}};
@@ -237,7 +237,7 @@ void VolumeInformation::process() {
         const auto* volumeRAM = volume->getRepresentation<VolumeRAM>();
         const auto channels = volume->getDataFormat()->getComponents();
 
-        auto sigVoxels = util::volumeSignificantVoxels(volumeRAM, IgnoreSpecialValues::Yes);
+        const auto sigVoxels = util::volumeSignificantVoxels(volumeRAM, IgnoreSpecialValues::Yes);
         significantVoxels_.set(sigVoxels);
         significantVoxelsRatio_.set(static_cast<double>(sigVoxels) /
                                     static_cast<double>(numVoxels));

@@ -55,8 +55,8 @@ class PortInspectionManager;
 
 class IVW_QTEDITOR_API CurveGraphicsItem : public EditorGraphicsItem {
 public:
-    CurveGraphicsItem(QColor color = QColor(38, 38, 38), QColor borderColor = Qt::black,
-                      QColor selectedBorderColor = Qt::darkRed);
+    explicit CurveGraphicsItem(QColor color = QColor(38, 38, 38), QColor borderColor = Qt::black,
+                               QColor selectedBorderColor = Qt::darkRed);
     CurveGraphicsItem(const CurveGraphicsItem&) = delete;
     CurveGraphicsItem(CurveGraphicsItem&&) = delete;
     CurveGraphicsItem& operator=(const CurveGraphicsItem&) = delete;

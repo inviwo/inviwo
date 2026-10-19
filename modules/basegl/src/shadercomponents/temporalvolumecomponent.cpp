@@ -74,7 +74,7 @@ TFData TemporalVolumeComponent::tfData() { return TFData{&volumePort}; }
 void TemporalVolumeComponent::initializeResources(Shader& shader) {}
 
 void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
-    auto temporal = volumePort.getData();
+    const auto temporal = volumePort.getData();
     if (!temporal || temporal->empty()) return;
 
     const Seconds t{time.get()};
@@ -99,7 +99,7 @@ void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont
         const auto count = prefetchAhead.get();
         const auto size = temporal->size();
 
-        for (auto i : views::iota_periodic(current, count, size, forward)) {
+        for (const auto i : views::iota_periodic(current, count, size, forward)) {
             temporal->prefetch(i, [](const std::shared_ptr<Volume>& vol) {
                 rendercontext::activateLocal();
                 vol->getRepresentation<VolumeGL>();
@@ -210,7 +210,7 @@ std::string TemporalVolumeComponent::getGradientString() const {
 }
 
 std::optional<size_t> TemporalVolumeComponent::channelsForVolume() const {
-    if (auto data = volumePort.getData(); data && !data->empty()) {
+    if (const auto data = volumePort.getData(); data && !data->empty()) {
         if (const auto* format = data->prototype().format) {
             return format->getComponents();
         }

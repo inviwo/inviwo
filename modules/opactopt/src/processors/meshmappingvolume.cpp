@@ -192,10 +192,10 @@ void MeshMappingVolume::process() {
     // create a new mesh containing all buffers of the input mesh
     // The first color buffer, if existing, is replaced with the mapped colors.
     // Otherwise, a new color buffer will be added.
-    auto colBuffer = std::make_shared<Buffer<vec4>>(
+    const auto colBuffer = std::make_shared<Buffer<vec4>>(
         std::make_shared<BufferRAMPrecision<vec4>>(std::move(colorsOut)));
 
-    auto mesh = std::shared_ptr<Mesh>{inputMesh->clone()};
+    const auto mesh = std::shared_ptr<Mesh>{inputMesh->clone()};
     if (auto [buff, loc] = mesh->findBuffer(BufferType::ColorAttrib); buff) {
         mesh->replaceBuffer(buff, Mesh::BufferInfo{BufferType::ColorAttrib, loc}, colBuffer);
     } else {

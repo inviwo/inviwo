@@ -118,7 +118,7 @@ VolumeConverter::VolumeConverter()
     dataRange_.insertProperty(2, outputDataRange_);
     addProperties(srcFormat_, dstFormat_, enableDataMapping_, dataRange_, valueAxis_);
 
-    auto updateOutputRange = [this]() {
+    const auto updateOutputRange = [this]() {
         const auto* format = DataFormatBase::get(dstFormat_);
         if (enableDataMapping_ && (format->getNumericType() != NumericType::Float)) {
             outputDataRange_.set(DataMapper{format}.dataRange);
@@ -147,12 +147,12 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
 
     const auto* ramSrc = src.getRepresentation<VolumeRAM>();
 
-    auto result = dispatching::doubleDispatch<
+    const auto result = dispatching::doubleDispatch<
         std::shared_ptr<VolumeRAM>, dispatching::filter::Scalars, dispatching::filter::All>(
         dstScalarFormatId, ramSrc->getDataFormatId(),
         [&]<typename DstScalarFormat, typename SrcFormat>() {
             const auto* ramSrcTyped = static_cast<const VolumeRAMPrecision<SrcFormat>*>(ramSrc);
-            std::span<const SrcFormat> srcData = ramSrcTyped->getView();
+            const std::span<const SrcFormat> srcData = ramSrcTyped->getView();
 
             using DstFormat = util::same_extent_t<SrcFormat, DstScalarFormat>;
 
@@ -160,7 +160,7 @@ std::shared_ptr<Volume> convertVolume(DataFormatId dstScalarFormatId, const Volu
             config.format = nullptr;
 
             auto ramDst = std::make_shared<VolumeRAMPrecision<DstFormat>>(config);
-            std::span<DstFormat> dstData = ramDst->getView();
+            const std::span<DstFormat> dstData = ramDst->getView();
 
             if (mapData) {
                 const dvec2 srcRange{(src.getDataFormat()->getNumericType() != NumericType::Float ||
@@ -223,8 +223,8 @@ void VolumeConverter::process() {
         }
     }();
 
-    auto dstVolume = [&]() {
-        auto srcVolume = inport_.getData();
+    const auto dstVolume = [&]() {
+        const auto srcVolume = inport_.getData();
         if (srcVolume->getDataFormat()->getId() == dstFormat_.get()) {
             return std::shared_ptr<Volume>(srcVolume->clone());
         } else {

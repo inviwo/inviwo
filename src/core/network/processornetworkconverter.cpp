@@ -287,7 +287,7 @@ void ProcessorNetworkConverter::updateCameraToComposite(TxElement* node) {
         const auto& type = node->GetAttribute("type");
         if (type == "org.inviwo.CameraProperty") {
             // create
-            TxElement newNode("Properties");
+            const TxElement newNode("Properties");
 
             // temp list
             std::vector<TxElement*> toBeDeleted;
@@ -441,11 +441,11 @@ void ProcessorNetworkConverter::updatePortsInProcessors(TxElement* root) {
         }
     }
 
-    for (auto& processorsOutport : processorsOutports) {
+    for (const auto& processorsOutport : processorsOutports) {
         delete processorsOutport.second;
     }
 
-    for (auto& processorsInport : processorsInports) {
+    for (const auto& processorsInport : processorsInports) {
         delete processorsInport.second;
     }
 }
@@ -625,7 +625,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
             const auto nodeKey = child->Attribute("key");
             if (nodeKey && *nodeKey == "org.inviwo.PropertyEditorWidgetMetaData") {
                 for (const auto& item : replacements) {
-                    if (auto* n = child->FirstChild(std::get<0>(item))) {
+                    if (const auto* n = child->FirstChild(std::get<0>(item))) {
                         TxElement newNode("MetaDataItem");
                         newNode.SetAttribute("type", std::get<1>(item));
                         newNode.SetAttribute("key", std::get<2>(item));
@@ -648,7 +648,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
     std::unordered_map<std::string, std::string> refrencemap;
 
-    auto fixcamera = [&](TxElement* node) {
+    const auto fixcamera = [&](TxElement* node) {
         const auto& key = node->Value();
 
         if (key == "Property") {
@@ -664,7 +664,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
                         if (name == "lookFrom" || name == "lookTo" || name == "lookUp") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec3RefProperty");
-                            if (auto* value = subNode->FirstChild("value")) {
+                            if (const auto* value = subNode->FirstChild("value")) {
                                 auto* val = value->Clone();
                                 val->SetValue(name);
                                 cam.LinkEndChild(val);
@@ -673,14 +673,14 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
                         } else if (name == "fov" || name == "aspectRatio" || name == "near" ||
                                    name == "far" || name == "width") {
                             subNode->SetAttribute("type", "org.inviwo.FloatRefProperty");
-                            if (auto* value = subNode->FirstChild("value")) {
+                            if (const auto* value = subNode->FirstChild("value")) {
                                 auto* val = value->Clone();
                                 val->SetValue(name);
                                 cam.LinkEndChild(val);
                             }
                         } else if (name == "offset") {
                             subNode->SetAttribute("type", "org.inviwo.FloatVec2RefProperty");
-                            if (auto* value = subNode->FirstChild("value")) {
+                            if (const auto* value = subNode->FirstChild("value")) {
                                 auto* val = value->Clone();
                                 val->SetValue(name);
                                 cam.LinkEndChild(val);
@@ -725,9 +725,9 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
     visit(root, fixcamera);
 
-    auto fixrefs = [&](TxElement* node) {
+    const auto fixrefs = [&](TxElement* node) {
         if (const auto& id = node->GetAttribute("reference"); !id.empty()) {
-            if (auto it = refrencemap.find(id); it != refrencemap.end()) {
+            if (const auto it = refrencemap.find(id); it != refrencemap.end()) {
                 node->SetAttribute("type", it->second);
             }
         }
@@ -737,7 +737,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 }
 
 void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
-    auto visit = [](TxElement* node, std::string_view name, auto&& func) {
+    const auto visit = [](TxElement* node, std::string_view name, auto&& func) {
         auto impl = [](TxElement* node, std::string_view name, auto&& func, auto& impl) -> void {
             if (node->Value() == name) {
                 func(node);

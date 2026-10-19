@@ -59,7 +59,8 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     if (!target) return false;
 
     // Copy and resize color layers
-    size_t minSize = std::min(source->getNumberOfColorLayers(), target->getNumberOfColorLayers());
+    const size_t minSize =
+        std::min(source->getNumberOfColorLayers(), target->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
         if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))

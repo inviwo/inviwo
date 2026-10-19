@@ -57,32 +57,32 @@ const std::vector<dvec4>& getColormap(const Family& family, glm::uint8 numberOfC
     }
 
     // Calculate offset into the std::vector<dvec4> enum class
-    auto familyIndex = static_cast<int>(family);
+    const auto familyIndex = static_cast<int>(family);
     int accumulated = 0;
     for (int i = 0; i < familyIndex; i++) {
-        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
-        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        const auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        const auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
         accumulated += (b - a) + 1;
     }
 
     accumulated += numberOfColors - getMinNumberOfColorsForFamily(family);
 
-    auto c = static_cast<Colormap>(accumulated);
+    const auto c = static_cast<Colormap>(accumulated);
 
     return getColormap(c);
 }
 
 std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
     // Calculate offset into the std::vector<dvec4> enum class
-    auto familyIndex = static_cast<int>(family);
+    const auto familyIndex = static_cast<int>(family);
     int accumulated = 0;
     for (int i = 0; i < familyIndex; i++) {
-        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
-        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
+        const auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
+        const auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
         accumulated += (b - a) + 1;
     }
 
-    auto numColormapsInThisFamily =
+    const auto numColormapsInThisFamily =
         getMaxNumberOfColorsForFamily(static_cast<Family>(familyIndex)) -
         getMinNumberOfColorsForFamily(static_cast<Family>(familyIndex));
 
@@ -143,7 +143,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
     auto color = [&](size_t i) { return vec4(colormap[i % colormap.size()]); };
 
     auto addPoint = [&](double pos, size_t i) { tf.add(std::clamp(pos, 0.0, 1.0), color(i)); };
-    auto addPointAlmost = [&](double pos, size_t i) {
+    const auto addPointAlmost = [&](double pos, size_t i) {
         addPoint(pos - 100.0 * std::numeric_limits<double>::epsilon(), i);
     };
 

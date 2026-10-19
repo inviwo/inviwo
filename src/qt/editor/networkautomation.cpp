@@ -56,7 +56,7 @@ namespace inviwo {
 
 namespace {
 
-void setEditorText(NetworkEditor& editor, Qt::KeyboardModifiers modifiers, bool autoLink) {
+void setEditorText(const NetworkEditor& editor, Qt::KeyboardModifiers modifiers, bool autoLink) {
     const auto enableInConnections = modifiers.testFlag(NetworkAutomation::autoInport);
     const auto enableOutConnections = modifiers.testFlag(NetworkAutomation::autoOutport);
     const auto disableAutoLinks = modifiers.testFlag(NetworkAutomation::noAutoLink);
@@ -73,7 +73,7 @@ void setEditorText(NetworkEditor& editor, Qt::KeyboardModifiers modifiers, bool 
     editor.getOverlay().setText(text, std::chrono::milliseconds{3000});
 }
 
-void clearEditorText(NetworkEditor& editor) { editor.getOverlay().clear(); }
+void clearEditorText(const NetworkEditor& editor) { editor.getOverlay().clear(); }
 
 void updateConnectionTarget(ConnectionGraphicsItem*& target, ConnectionGraphicsItem* source,
                             Processor* processor) {
@@ -93,7 +93,7 @@ void updateConnectionTarget(ConnectionGraphicsItem*& target, ConnectionGraphicsI
 }
 
 void updateProcessorTarget(ProcessorGraphicsItem*& target, ProcessorGraphicsItem* source,
-                           Processor* processor) {
+                           const Processor* processor) {
     if (target == source) return;
 
     if (target) {
@@ -162,17 +162,18 @@ void NetworkAutomation::AutoIn::update(QPointF scenePos, Qt::KeyboardModifiers m
     for (auto&& [index, pair] : util::enumerate(candidates)) {
         auto&& [inport, outportCandidates] = pair;
 
-        auto validOutports = selectAndSortPorts(outportCandidates.begin(), outportCandidates.end(),
-                                                utilqt::toGLM(scenePos), isPortFree);
+        const auto validOutports =
+            selectAndSortPorts(outportCandidates.begin(), outportCandidates.end(),
+                               utilqt::toGLM(scenePos), isPortFree);
 
         if (validOutports.first != validOutports.second) {
             const auto endPos = inportPos(index);
-            auto oldIt = connections.find(inport);
+            const auto oldIt = connections.find(inport);
             if (oldIt == connections.end() ||
                 oldIt->second->getOutportGraphicsItem()->getPort() != *validOutports.first) {
 
                 auto* outport = *(validOutports.first);
-                auto* pgi = editor.getProcessorGraphicsItem(outport->getProcessor());
+                const auto* pgi = editor.getProcessorGraphicsItem(outport->getProcessor());
                 auto* ogi = pgi->getOutportGraphicsItem(outport);
                 auto connection = std::make_unique<ConnectionOutportDragGraphicsItem>(
                     ogi, endPos, utilqt::toQColor(outport->getColorCode()));
@@ -216,17 +217,17 @@ void NetworkAutomation::AutoOut::update(QPointF scenePos, Qt::KeyboardModifiers 
     for (auto&& [index, pair] : util::enumerate(candidates)) {
         auto&& [outport, inportCandidates] = pair;
 
-        auto validInports = selectAndSortPorts(inportCandidates.begin(), inportCandidates.end(),
-                                               utilqt::toGLM(scenePos), isPortFree);
+        const auto validInports = selectAndSortPorts(
+            inportCandidates.begin(), inportCandidates.end(), utilqt::toGLM(scenePos), isPortFree);
 
         if (validInports.first != validInports.second) {
             const auto startPos = outportPos(index);
-            auto oldIt = connections.find(outport);
+            const auto oldIt = connections.find(outport);
             if (oldIt == connections.end() ||
                 oldIt->second->getInportGraphicsItem()->getPort() != *validInports.first) {
 
                 auto* inport = *(validInports.first);
-                auto* pgi = editor.getProcessorGraphicsItem(inport->getProcessor());
+                const auto* pgi = editor.getProcessorGraphicsItem(inport->getProcessor());
                 auto* ogi = pgi->getInportGraphicsItem(inport);
                 auto connection = std::make_unique<ConnectionInportDragGraphicsItem>(
                     startPos, ogi, utilqt::toQColor(outport->getColorCode()));
@@ -310,7 +311,7 @@ void NetworkAutomation::AutoLink::update(QPointF scenePos, Qt::KeyboardModifiers
             auto* sourceProperty = sourceProperties.front();
             auto* sourceProcessor = sourceProperty->getOwner()->getProcessor();
 
-            auto it = links.find(sourceProcessor);
+            const auto it = links.find(sourceProcessor);
             if (it != links.end()) {
                 if (it->second) {
                     it->second->setEndPoint(scenePos + zoom * QPointF{-75.0, 0.0},
@@ -318,7 +319,7 @@ void NetworkAutomation::AutoLink::update(QPointF scenePos, Qt::KeyboardModifiers
                     updatedLinks[sourceProcessor] = std::move(it->second);
                 }
             } else {
-                auto* pgi = editor.getProcessorGraphicsItem(sourceProcessor);
+                const auto* pgi = editor.getProcessorGraphicsItem(sourceProcessor);
                 auto lgi = std::make_unique<LinkConnectionDragGraphicsItem>(
                     pgi->getLinkGraphicsItem(), scenePos);
                 editor.addItem(lgi.get());

@@ -97,7 +97,7 @@ void ListProperty::set(const Property* src) {
 }
 
 void ListProperty::set(const ListProperty* src) {
-    NetworkLock l(this);
+    const NetworkLock l(this);
     // check for matching prefab types first
     if (getPrefabIDs() == src->getPrefabIDs()) {
         // TODO: should we sync/consider the UI flags here as well?
@@ -108,7 +108,7 @@ void ListProperty::set(const ListProperty* src) {
 
         const auto count = std::min(srcItems.size(), dstItems.size());
 
-        auto linkSameId = [&]() {
+        const auto linkSameId = [&]() {
             for (size_t i = 0; i < count; ++i) {
                 if (srcItems[i]->getClassIdentifier() == dstItems[i]->getClassIdentifier()) {
                     dstItems[i]->set(srcItems[i]);
@@ -118,7 +118,7 @@ void ListProperty::set(const ListProperty* src) {
             }
             return count;
         };
-        auto synced = linkSameId();
+        const auto synced = linkSameId();
 
         for (size_t i = synced; i < dstItems.size(); ++i) {
             removeProperty(dstItems[i]);
@@ -133,7 +133,7 @@ void ListProperty::set(const ListProperty* src) {
 }
 
 void ListProperty::setMaxNumberOfElements(size_t n) {
-    NetworkLock lock(this);
+    const NetworkLock lock(this);
     maxNumElements_ = n;
     if (n > 0) {  // n = 0 means no limit
         // remove superfluous list items
@@ -150,7 +150,7 @@ void ListProperty::setMaxNumberOfElements(size_t n) {
 size_t ListProperty::getMaxNumberOfElements() const { return maxNumElements_; }
 
 void ListProperty::clear() {
-    NetworkLock l(this);
+    const NetworkLock l(this);
     CompositeProperty::clear();
     propertyModified();
 }
@@ -173,15 +173,15 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
 
         // if prefab has a trailing number in its display name, use number of identifier
         const auto displayName = property->getDisplayName();
-        auto it = std::find_if(displayName.rbegin(), displayName.rend(),
-                               [](char c) { return !std::isdigit(c); });
-        std::string baseName = trim(std::string{displayName.begin(), it.base()});
+        const auto it = std::find_if(displayName.rbegin(), displayName.rend(),
+                                     [](char c) { return !std::isdigit(c); });
+        const std::string baseName = trim(std::string{displayName.begin(), it.base()});
         if (it.base() != displayName.end()) {
             // extract number from identifier
             const auto identifier = property->getIdentifier();
-            auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
-                                             [](char c) { return !std::isdigit(c); });
-            std::string number(itIdentifier.base(), identifier.end());
+            const auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
+                                                   [](char c) { return !std::isdigit(c); });
+            const std::string number(itIdentifier.base(), identifier.end());
             if (!number.empty()) {
                 property->setDisplayName(baseName + " " + number);
             } else {
@@ -223,7 +223,7 @@ Property* ListProperty::removeProperty(std::vector<Property*>::iterator it) {
 }
 
 bool ListProperty::move(Property* property, size_t newIndex) {
-    auto result = CompositeProperty::move(property, newIndex);
+    const auto result = CompositeProperty::move(property, newIndex);
     invalidate(Property::getInvalidationLevel());
     return result;
 }

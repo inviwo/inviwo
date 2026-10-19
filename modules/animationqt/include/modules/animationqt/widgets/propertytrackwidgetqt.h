@@ -44,7 +44,7 @@ class Track;
 
 class IVW_MODULE_ANIMATIONQT_API PropertyTrackWidgetQt : public TrackWidgetQt {
 public:
-    PropertyTrackWidgetQt(Track& track);
+    explicit PropertyTrackWidgetQt(Track& track);
     virtual ~PropertyTrackWidgetQt() = default;
 
     static std::string classIdentifier();

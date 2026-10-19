@@ -166,7 +166,7 @@ exported and imported.</p>
                                "h1, h2, h3, h4 {color: #c8ccd0; margin-bottom:3px;}");
     html.append("body", contents, {{"style", "margin: 7px;"}});
 
-    std::string str = doc;
+    const std::string str = doc;
     textedit->setHtml(utilqt::toQString(str));
 }
 

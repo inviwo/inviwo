@@ -89,8 +89,8 @@ ImageSnapshot::ImageSnapshot()
 }
 
 void ImageSnapshot::process() {
-    auto i1 = outport1ImageIndex_.get();
-    auto i2 = outport2ImageIndex_.get();
+    const auto i1 = outport1ImageIndex_.get();
+    const auto i2 = outport2ImageIndex_.get();
     if (i1 == -1) {
         outport1_.setData(inport_.getData());
     } else {

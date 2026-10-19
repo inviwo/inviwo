@@ -156,7 +156,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
 
 double Calculator::calculate(std::string expression, std::map<std::string, double>& vars) {
     // 1. Create the operator precedence map.
-    auto opPrecedence = getOpeatorPrecedence();
+    const auto opPrecedence = getOpeatorPrecedence();
 
     // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
     TokenQueue rpn = toRPN(expression, opPrecedence);
@@ -164,22 +164,22 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
     // 3. Evaluate the expression in RPN form.
     std::stack<double> evaluation;
     while (!rpn.empty()) {
-        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
+        const std::unique_ptr<TokenBase> base{std::move(rpn.front())};
         rpn.pop();
 
-        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
-        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
+        const Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
+        const Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
         if (strTok) {
             std::string str = strTok->val;
-            auto it = vars.find(str);
+            const auto it = vars.find(str);
             if (it != vars.end()) {
                 evaluation.push(it->second);
             } else if (evaluation.size() < 2) {
                 throw Exception(SourceContext{}, "Invalid equation");
             } else {
-                double right = evaluation.top();
+                const double right = evaluation.top();
                 evaluation.pop();
-                double left = evaluation.top();
+                const double left = evaluation.top();
                 evaluation.pop();
                 if (!str.compare("+")) {
                     evaluation.push(left + right);
@@ -209,7 +209,7 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
 std::string Calculator::shaderCode(std::string expression, std::map<std::string, double>& vars,
                                    std::map<std::string, std::string>& symbols) {
     // 1. Create the operator precedence map.
-    auto opPrecedence = getOpeatorPrecedence();
+    const auto opPrecedence = getOpeatorPrecedence();
 
     // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
     TokenQueue rpn = toRPN(expression, opPrecedence);
@@ -217,15 +217,15 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
     // 3. Evaluate the expression in RPN form.
     std::stack<std::string> evaluation;
     while (!rpn.empty()) {
-        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
+        const std::unique_ptr<TokenBase> base{std::move(rpn.front())};
         rpn.pop();
 
-        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
-        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
+        const Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
+        const Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
         if (strTok) {
             std::string str = strTok->val;
-            auto it1 = vars.find(str);
-            auto it2 = symbols.find(str);
+            const auto it1 = vars.find(str);
+            const auto it2 = symbols.find(str);
             if (it1 != vars.end()) {
                 evaluation.push(toString(it1->second));
             } else if (it2 != symbols.end()) {
@@ -233,9 +233,9 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
             } else if (evaluation.size() < 2) {
                 throw Exception(SourceContext{}, "Invalid equation");
             } else {
-                std::string right = evaluation.top();
+                const std::string right = evaluation.top();
                 evaluation.pop();
-                std::string left = evaluation.top();
+                const std::string left = evaluation.top();
                 evaluation.pop();
                 if (!str.compare("+")) {
                     evaluation.push("(" + left + " + " + right + ")");

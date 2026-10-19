@@ -36,7 +36,7 @@
 namespace inviwo::help {
 
 const HelpProcessor* ProcessorDocs::get(std::string_view classId) const {
-    if (auto it = map.find(classId); it != map.end()) {
+    if (const auto it = map.find(classId); it != map.end()) {
         return &it->second;
     } else {
         return nullptr;
@@ -48,10 +48,10 @@ ProcessorDocs generateDocs(InviwoApplication& app) {
 
     const log::SuppressLoggingLocal suppress{};
     std::string errorMessage;
-    auto& pf = *app.getProcessorFactory();
+    const auto& pf = *app.getProcessorFactory();
     for (const auto& classId : pf.getKeyView()) {
         try {
-            if (auto processor = pf.createShared(classId)) {
+            if (const auto processor = pf.createShared(classId)) {
                 docs.try_emplace(classId, buildProcessorHelp(*processor, app));
             }
         } catch (...) {

@@ -66,7 +66,7 @@ public:
      */
     class IVW_MODULE_OPENGL_API DrawObject {
     public:
-        DrawObject(const Mesh& mesh);
+        explicit DrawObject(const Mesh& mesh);
         DrawObject(const MeshGL* mesh, Mesh::MeshInfo arrayMeshInfo);
         DrawObject(const DrawObject&) = delete;
         DrawObject(DrawObject&&) = default;
@@ -103,7 +103,7 @@ public:
     };
 
     MeshDrawerGL();
-    MeshDrawerGL(const Mesh* mesh);
+    explicit MeshDrawerGL(const Mesh* mesh);
     MeshDrawerGL(const MeshDrawerGL& rhs) = default;
     MeshDrawerGL(MeshDrawerGL&& other) = default;
     virtual ~MeshDrawerGL() = default;

@@ -156,7 +156,7 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
             [this](const QString& str) { filter_->setCustomFilter(str); });
 
     connect(listView_, &QComboBox::currentIndexChanged, this, [this](int) {
-        auto grouping = listView_->currentData().value<Grouping>();
+        const auto grouping = listView_->currentData().value<Grouping>();
         filter_->setGrouping(grouping);
         model_->setGrouping(grouping);
         filter_->sort(0);
@@ -195,11 +195,11 @@ ProcessorListWidget::ProcessorListWidget(InviwoMainWindow* parent, HelpWidget* h
     lineEdit_->setText(settings.value("filterText", "").toString());
     listView_->setCurrentIndex(settings.value("currentView", 1).toInt());
 
-    auto useCounts = settings.value("useCounts", QVariant(QMap<QString, QVariant>{})).toMap();
+    const auto useCounts = settings.value("useCounts", QVariant(QMap<QString, QVariant>{})).toMap();
     for (auto it = useCounts.constBegin(); it != useCounts.constEnd(); ++it) {
         useCounts_[utilqt::fromQString(it.key())] = it.value().toLongLong();
     }
-    auto useTimes = settings.value("useTimes", QVariant(QMap<QString, QVariant>{})).toMap();
+    const auto useTimes = settings.value("useTimes", QVariant(QMap<QString, QVariant>{})).toMap();
     for (auto it = useTimes.constBegin(); it != useTimes.constEnd(); ++it) {
         useTimes_[utilqt::fromQString(it.key())] =
             static_cast<std::time_t>(it.value().toLongLong());
@@ -265,7 +265,7 @@ void ProcessorListWidget::setPredecessorProcessor(std::string_view identifier) {
 void ProcessorListWidget::addProcessor(const QString& className) {
     // create processor, add it to processor network
     auto* network = app_->getProcessorNetwork();
-    if (auto processor = createProcessor(className)) {
+    if (const auto processor = createProcessor(className)) {
         if (auto* target = filter_->currentStr("pre")
                                .transform([&](std::string_view id) {
                                    return network->getProcessorByIdentifier(id);
@@ -288,7 +288,7 @@ void ProcessorListWidget::addProcessor(const QString& className) {
 void ProcessorListWidget::buildList() {
     std::vector<ProcessorListModel::Item> items;
     const auto docs = win_->getDocs();
-    for (auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
+    for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
         for (const auto& processor : inviwoModule.getProcessors()) {
             const auto* help = docs->get(processor->getClassIdentifier());
             items.emplace_back(ProcessorListModel::Item{
@@ -298,12 +298,12 @@ void ProcessorListWidget::buildList() {
                 .metaInfo = processor->getMetaInformation(),
                 .lastUsed =
                     [&]() {
-                        auto it = useTimes_.find(processor->getClassIdentifier());
+                        const auto it = useTimes_.find(processor->getClassIdentifier());
                         return it == useTimes_.end() ? 0 : it->second;
                     }(),
                 .useCount =
                     [&]() {
-                        auto it = useCounts_.find(processor->getClassIdentifier());
+                        const auto it = useCounts_.find(processor->getClassIdentifier());
                         return it == useCounts_.end() ? 0 : it->second;
                     }()});
         }
@@ -325,12 +325,12 @@ void ProcessorListWidget::onRegister(ProcessorFactoryObject* pfo) {
                          .metaInfo = pfo->getMetaInformation(),
                          .lastUsed =
                              [&]() {
-                                 auto it = useTimes_.find(pfo->getClassIdentifier());
+                                 const auto it = useTimes_.find(pfo->getClassIdentifier());
                                  return it == useTimes_.end() ? 0 : it->second;
                              }(),
                          .useCount =
                              [&]() {
-                                 auto it = useCounts_.find(pfo->getClassIdentifier());
+                                 const auto it = useCounts_.find(pfo->getClassIdentifier());
                                  return it == useCounts_.end() ? 0 : it->second;
                              }()});
 }

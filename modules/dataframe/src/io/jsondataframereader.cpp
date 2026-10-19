@@ -51,7 +51,7 @@ std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::filesystem::
     auto file = open(fileName);
 
     file.seekg(0, std::ios::end);
-    std::streampos len = file.tellg();
+    const std::streampos len = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {

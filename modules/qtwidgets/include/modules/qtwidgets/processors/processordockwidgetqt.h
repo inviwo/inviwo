@@ -61,8 +61,9 @@ class IVW_MODULE_QTWIDGETS_API ProcessorDockWidgetQt : public InviwoDockWidget,
                                                        public ProcessorWidget {
     Q_OBJECT
 public:
-    ProcessorDockWidgetQt(Processor* p, const QString& title = QString("ProcessorDockWidgetQt"),
-                          QWidget* parent = nullptr);
+    explicit ProcessorDockWidgetQt(Processor* p,
+                                   const QString& title = QString("ProcessorDockWidgetQt"),
+                                   QWidget* parent = nullptr);
     virtual ~ProcessorDockWidgetQt() = default;
 
     // Override ProcessorWidget

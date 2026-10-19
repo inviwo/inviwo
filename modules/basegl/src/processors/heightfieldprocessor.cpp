@@ -197,7 +197,7 @@ void HeightFieldProcessor::process() {
 
     utilgl::setUniforms(shader_, camera_, lightingProperty_, heightScale_);
 
-    for (auto mesh : inport_) {
+    for (const auto mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo()};

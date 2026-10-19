@@ -48,7 +48,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API LineEditQt : public QLineEdit {
     Q_OBJECT
 public:
-    LineEditQt(QWidget* parent = nullptr);
+    explicit LineEditQt(QWidget* parent = nullptr);
     virtual ~LineEditQt() = default;
 
     virtual QSize sizeHint() const override { return QLineEdit::minimumSizeHint(); }

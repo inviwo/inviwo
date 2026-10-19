@@ -77,7 +77,7 @@ ImageInformation::ImageInformation()
 }
 
 void ImageInformation::process() {
-    auto image = image_.getData();
+    const auto image = image_.getData();
 
     imageInfo_.updateForNewImage(*image);
 

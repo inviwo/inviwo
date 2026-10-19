@@ -214,7 +214,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
+    if (const auto* resizeEvent = event->getAs<ResizeEvent>()) {
         // Note, no auto since we want a copy of the views
         const auto nonActive = viewManager_.getViews() |
                                std::views::transform([](auto& view) { return view.empty(); }) |
@@ -236,12 +236,12 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
             notifyObserversActiveConnectionsChange(this);
         }
     } else {
-        auto prop = [&](Event* newEvent, size_t ind) {
+        const auto prop = [&](Event* newEvent, size_t ind) {
             if (ind < viewManager_.size() && ind < multiInport_.getNumberOfConnections()) {
                 multiInport_.propagateEvent(newEvent, multiInport_.getConnectedOutport(ind));
             }
         };
-        auto propagated = viewManager_.propagateEvent(event, prop);
+        const auto propagated = viewManager_.propagateEvent(event, prop);
         if (!propagated && event->shouldPropagateTo(&multiInport_, this, source)) {
             multiInport_.propagateEvent(event);
         }
@@ -294,7 +294,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
         case Layout::HorizontalSplitMultiple:
         case Layout::VerticalSplitMultiple:
         case Layout::Single:
-        default:                              boundsVisible = false; break;
+        default: boundsVisible = false; break;
     }
 
     horizontalSplitter_.setVisible(hVisible);
@@ -320,8 +320,8 @@ bool ImageLayoutGL::isConnectionActive([[maybe_unused]] Inport* from, Outport* t
                "ImageLayoutGL was designed for one inport but isConnectionActive was called with "
                "another inport");
     const auto ports = multiInport_.getConnectedOutports();
-    auto portIt = std::ranges::find(ports, to);
-    auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
+    const auto portIt = std::ranges::find(ports, to);
+    const auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
     if (id < viewManager_.size()) {
         // Note: We cannot use Outport dimensions since it might not exist
         return !viewManager_[id].empty();
@@ -377,7 +377,7 @@ void ImageLayoutGL::process() {
 
     noise->deactivate();
 
-    ivec2 dim = outport_.getData()->getDimensions();
+    const ivec2 dim = outport_.getData()->getDimensions();
     glViewport(0, 0, dim.x, dim.y);
 
     shader_.deactivate();
@@ -394,28 +394,32 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     const int extra1 = dim.y % 3 >= 1 ? 1 : 0;  // add extra pixels to the small "windows" if the
     const int extra2 = dim.y % 3 >= 2 ? 1 : 0;  // size is not divisible by 3 to avoid black borders
 
-    auto rightMinMax = 1.f - vec2(rightMinMax_.getEnd() / static_cast<float>(dim.x),
-                                  rightMinMax_.getStart() / static_cast<float>(dim.x));
-    auto bottomMinMax = 1.f - vec2(topMinMax_.getEnd() / static_cast<float>(dim.y),
-                                   topMinMax_.getStart() / static_cast<float>(dim.y));
+    const auto rightMinMax =
+        1.f - vec2(static_cast<float>(rightMinMax_.getEnd()) / static_cast<float>(dim.x),
+                   static_cast<float>(rightMinMax_.getStart()) / static_cast<float>(dim.x));
+    const auto bottomMinMax =
+        1.f - vec2(static_cast<float>(topMinMax_.getEnd()) / static_cast<float>(dim.y),
+                   static_cast<float>(topMinMax_.getStart()) / static_cast<float>(dim.y));
     // Bounds cannot be smaller/larger than output size
-    auto leftBounds = glm::min(*leftMinMax_, ivec2(dim.x));
-    auto bottomBounds = glm::min(*bottomMinMax_, ivec2(dim.y));
+    const auto leftBounds = glm::min(*leftMinMax_, ivec2(dim.x));
+    const auto bottomBounds = glm::min(*bottomMinMax_, ivec2(dim.y));
 
-    const int midx = glm::clamp(
-        static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) * dim.x),
-        leftBounds.x, leftBounds.y);
+    const int midx =
+        glm::clamp(static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) *
+                                    static_cast<float>(dim.x)),
+                   leftBounds.x, leftBounds.y);
     const int midy = glm::clamp(
-        static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) * dim.y),
+        static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) *
+                         static_cast<float>(dim.y)),
         bottomBounds.x, bottomBounds.y);
 
     const int leftWindow3L1RX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Left1RightSplitter_, rightMinMax.x, rightMinMax.y) *
-                         dim.x),
+                         static_cast<float>(dim.x)),
         leftBounds.x, leftBounds.y);
     const int leftWindow3R1LX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Right1LeftSplitter_, rightMinMax.x, rightMinMax.y) *
-                         dim.x),
+                         static_cast<float>(dim.x)),
         leftBounds.x, leftBounds.y);
 
     const int portCount = static_cast<int>(multiInport_.getNumberOfConnections());
@@ -423,8 +427,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     const int widthMultiple = portCount > 1 ? dim.x / portCount : dim.x;
     const int heightMultiple = portCount > 1 ? dim.y / portCount : dim.y;
 
-    auto extraPixelsH = dim.y % std::max(1, portCount);
-    auto extraPixelsW = dim.x % std::max(1, portCount);
+    const auto extraPixelsH = dim.y % std::max(1, portCount);
+    const auto extraPixelsW = dim.x % std::max(1, portCount);
 
     int startH = 0;
     int startW = 0;
@@ -519,7 +523,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // X, Y, W, H
 
             for (auto i = 0; i < std::max(1, portCount); i++) {
-                auto height = (i < extraPixelsH) ? heightMultiple + 1 : heightMultiple;
+                const auto height = (i < extraPixelsH) ? heightMultiple + 1 : heightMultiple;
                 viewManager_.push_back(ivec4(0, startH, dim.x, height));
                 startH += height;
             }
@@ -534,13 +538,13 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // X, Y, W, H
 
             for (auto i = 0; i < std::max(1, portCount); i++) {
-                auto width = (i < extraPixelsW) ? widthMultiple + 1 : widthMultiple;
+                const auto width = (i < extraPixelsW) ? widthMultiple + 1 : widthMultiple;
                 viewManager_.push_back(ivec4(startW, 0, width, dim.y));
                 startW += width;
             }
             break;
         case Layout::Single:
-        default:             viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
+        default: viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
     }
 
     currentDim_ = dim;

@@ -52,7 +52,7 @@ public:
 
 template <typename Base>
 void JSONConverterRegistry<Base>::toJSON(json& j, const Base& p) const {
-    if (auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
+    if (const auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
         converter->toJSON(j, p);
     } else {
         throw Exception(SourceContext{}, "No json converter found for type: {}",
@@ -67,7 +67,7 @@ json JSONConverterRegistry<Base>::toJSON(const Base& p) const {
 }
 template <typename Base>
 void JSONConverterRegistry<Base>::fromJSON(const json& j, Base& p) const {
-    if (auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
+    if (const auto* converter = this->getFactoryObject(p.getClassIdentifier())) {
         converter->fromJSON(j, p);
     } else {
         throw Exception(SourceContext{}, "No json converter found for type: {}",

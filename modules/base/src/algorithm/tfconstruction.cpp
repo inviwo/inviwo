@@ -55,7 +55,7 @@ std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts) {
                   std::views::transform(clamptf) | std::ranges::to<std::vector>();
 
     std::ranges::sort(points, std::ranges::less{}, &TFPrimitiveData::pos);
-    auto dups = std::ranges::unique(points);
+    const auto dups = std::ranges::unique(points);
     points.erase(dups.begin(), dups.end());
 
     if (points.empty()) {

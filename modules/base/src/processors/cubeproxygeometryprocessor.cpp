@@ -103,7 +103,7 @@ void CubeProxyGeometry::process() {
         const auto dims = util::getVolumeDimensions(volume);
 
         if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
-            NetworkLock lock(this);
+            const NetworkLock lock(this);
 
             // set the clip ranges to [0,dims)
             clipX_.setRangeNormalized(ivec2(0, dims.x));
@@ -117,7 +117,8 @@ void CubeProxyGeometry::process() {
         }
     }
 
-    auto normals = addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
+    const auto normals =
+        addFaceNormals_ ? meshutil::IncludeNormals::Yes : meshutil::IncludeNormals::No;
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
         const ivec3 clipMin{clipX_->x, clipY_->x, clipZ_->x};

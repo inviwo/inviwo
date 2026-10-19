@@ -56,20 +56,20 @@ void MeshBnLGL::update() {
                 buffer.setSize(bit_ceil(size));
             }
 
-            auto bnlData = buffer.map(GL_WRITE_ONLY);
+            const auto bnlData = buffer.map(GL_WRITE_ONLY);
             std::fill(bnlData.begin(), bnlData.end(), 0);
             if (select) {
-                for (auto i : inport.getSelectedIndices()) {
+                for (const auto i : inport.getSelectedIndices()) {
                     bnlData[i] = 1;
                 }
             }
             if (highlight) {
-                for (auto i : inport.getHighlightedIndices()) {
+                for (const auto i : inport.getHighlightedIndices()) {
                     bnlData[i] = 2;
                 }
             }
             if (filter) {
-                for (auto i : inport.getFilteredIndices()) {
+                for (const auto i : inport.getFilteredIndices()) {
                     bnlData[i] = 3;
                 }
             }
@@ -79,7 +79,7 @@ void MeshBnLGL::update() {
 }
 
 void MeshBnLGL::bind(TextureUnitContainer& cont) {
-    auto& unit = cont.emplace_back();
+    const auto& unit = cont.emplace_back();
     utilgl::bindTexture(buffer, unit);
     unitNumber = unit.getUnitNumber();
 }

@@ -51,7 +51,7 @@ namespace util {
 
 inline auto makeEnvironmentModuleFilter() {
     const auto disabled = []() -> std::vector<std::string_view> {
-        if (auto* env = std::getenv("INVIWO_DISABLE_MODULES")) {
+        if (const auto* env = std::getenv("INVIWO_DISABLE_MODULES")) {
             return util::splitStringView(env, ';');
         } else {
             return {};

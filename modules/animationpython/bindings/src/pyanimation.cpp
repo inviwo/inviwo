@@ -94,7 +94,7 @@ struct SecondsConverter {
     static Seconds fromDouble(double d) { return Seconds{d}; }
 };
 
-void exposeEnums(py::module& m) {
+void exposeEnums(const py::module& m) {
     py::native_enum<AnimationState>(m, "AnimationState", "enum.Enum")
         .value("Paused", AnimationState::Paused)
         .value("Playing", AnimationState::Playing)
@@ -138,7 +138,7 @@ void exposeEnums(py::module& m) {
         .finalize();
 }
 
-void exposeAnimationTimeState(py::module& m) {
+void exposeAnimationTimeState(const py::module& m) {
     py::classh<AnimationTimeState>(m, "AnimationTimeState")
         .def(py::init([](double time, AnimationState state) {
                  return std::make_unique<AnimationTimeState>(Seconds{time}, state);
@@ -154,7 +154,7 @@ void exposeAnimationTimeState(py::module& m) {
         });
 }
 
-void exposeKeyframe(py::module& m) {
+void exposeKeyframe(const py::module& m) {
     py::classh<Keyframe>(m, "Keyframe")
         .def_property(
             "time", [](const Keyframe& k) { return k.getTime().count(); },
@@ -165,7 +165,7 @@ void exposeKeyframe(py::module& m) {
         });
 }
 
-void exposeBaseKeyframe(py::module& m) {
+void exposeBaseKeyframe(const py::module& m) {
     py::classh<BaseKeyframe, Keyframe>(m, "BaseKeyframe")
         .def_property(
             "easeIn",
@@ -201,7 +201,7 @@ void exposeValueKeyframe(py::module& m, const std::string& name) {
         });
 }
 
-void exposeCameraKeyframe(py::module& m) {
+void exposeCameraKeyframe(const py::module& m) {
     py::classh<CameraKeyframe, BaseKeyframe>(m, "CameraKeyframe")
         .def(py::init([](double time) { return std::make_unique<CameraKeyframe>(Seconds{time}); }),
              py::arg("time"))
@@ -214,7 +214,7 @@ void exposeCameraKeyframe(py::module& m) {
         });
 }
 
-void exposeControlKeyframe(py::module& m) {
+void exposeControlKeyframe(const py::module& m) {
     py::classh<ControlKeyframe, BaseKeyframe>(m, "ControlKeyframe")
         .def(py::init([](double time, ControlAction action, double jumpTime) {
                  return std::make_unique<ControlKeyframe>(Seconds{time}, action, Seconds{jumpTime});
@@ -230,7 +230,7 @@ void exposeControlKeyframe(py::module& m) {
         });
 }
 
-void exposeButtonKeyframe(py::module& m) {
+void exposeButtonKeyframe(const py::module& m) {
     py::classh<ButtonKeyframe, BaseKeyframe>(m, "ButtonKeyframe")
         .def(py::init([](double time) { return std::make_unique<ButtonKeyframe>(Seconds{time}); }),
              py::arg("time"))
@@ -239,7 +239,7 @@ void exposeButtonKeyframe(py::module& m) {
         });
 }
 
-void exposeCallbackKeyframe(py::module& m) {
+void exposeCallbackKeyframe(const py::module& m) {
     py::classh<CallbackKeyframe, BaseKeyframe>(m, "CallbackKeyframe")
         .def(
             py::init([](double time, std::function<void()> doFunc, std::function<void()> undoFunc) {
@@ -252,7 +252,7 @@ void exposeCallbackKeyframe(py::module& m) {
         });
 }
 
-void exposeInvalidationKeyframe(py::module& m) {
+void exposeInvalidationKeyframe(const py::module& m) {
     py::classh<InvalidationKeyframe, BaseKeyframe>(m, "InvalidationKeyframe")
         .def(py::init(
                  [](double time) { return std::make_unique<InvalidationKeyframe>(Seconds{time}); }),
@@ -262,7 +262,7 @@ void exposeInvalidationKeyframe(py::module& m) {
         });
 }
 
-void exposeKeyframeSequence(py::module& m) {
+void exposeKeyframeSequence(const py::module& m) {
     py::classh<KeyframeSequence>(m, "KeyframeSequence")
         .def_property_readonly("size", &KeyframeSequence::size)
         .def("__len__", &KeyframeSequence::size)
@@ -305,7 +305,7 @@ void exposeKeyframeSequence(py::module& m) {
         });
 }
 
-void exposeControlKeyframeSequence(py::module& m) {
+void exposeControlKeyframeSequence(const py::module& m) {
     py::classh<ControlKeyframeSequence, KeyframeSequence>(m, "ControlKeyframeSequence")
         .def(py::init<>())
         .def("__repr__", [](const ControlKeyframeSequence& seq) {
@@ -313,7 +313,7 @@ void exposeControlKeyframeSequence(py::module& m) {
         });
 }
 
-void exposeButtonKeyframeSequence(py::module& m) {
+void exposeButtonKeyframeSequence(const py::module& m) {
     py::classh<ButtonKeyframeSequence, KeyframeSequence>(m, "ButtonKeyframeSequence")
         .def(py::init<>())
         .def("__repr__", [](const ButtonKeyframeSequence& seq) {
@@ -321,7 +321,7 @@ void exposeButtonKeyframeSequence(py::module& m) {
         });
 }
 
-void exposeCallbackKeyframeSequence(py::module& m) {
+void exposeCallbackKeyframeSequence(const py::module& m) {
     py::classh<CallbackKeyframeSequence, KeyframeSequence>(m, "CallbackKeyframeSequence")
         .def(py::init<>())
         .def("__repr__", [](const CallbackKeyframeSequence& seq) {
@@ -329,7 +329,7 @@ void exposeCallbackKeyframeSequence(py::module& m) {
         });
 }
 
-void exposeInvalidationKeyframeSequence(py::module& m) {
+void exposeInvalidationKeyframeSequence(const py::module& m) {
     py::classh<InvalidationKeyframeSequence, KeyframeSequence>(m, "InvalidationKeyframeSequence")
         .def(py::init<>())
         .def_readwrite("path", &InvalidationKeyframeSequence::path)
@@ -338,7 +338,7 @@ void exposeInvalidationKeyframeSequence(py::module& m) {
         });
 }
 
-void exposeValueKeyframeSequenceBase(py::module& m) {
+void exposeValueKeyframeSequenceBase(const py::module& m) {
     py::classh<ValueKeyframeSequence>(m, "ValueKeyframeSequence")
         .def_property(
             "interpolation",
@@ -359,7 +359,7 @@ void exposeKeyframeSequenceTyped(py::module& m, const std::string& name) {
         });
 }
 
-void exposeInterpolation(py::module& m) {
+void exposeInterpolation(const py::module& m) {
     py::classh<Interpolation, PropertyOwner>(m, "Interpolation")
         .def_property_readonly(
             "displayName", [](const Interpolation& i) { return std::string{i.getDisplayName()}; })
@@ -371,7 +371,7 @@ void exposeInterpolation(py::module& m) {
         });
 }
 
-void exposeTrack(py::module& m) {
+void exposeTrack(const py::module& m) {
     py::classh<Track>(m, "Track")
         .def_property("enabled", &Track::isEnabled, &Track::setEnabled)
         .def_property(
@@ -400,10 +400,10 @@ void exposeTrack(py::module& m) {
             py::arg("at"))
         .def("getAllTimes",
              [](const Track& t) {
-                 auto times = t.getAllTimes();
+                 const auto times = t.getAllTimes();
                  std::vector<double> result;
                  result.reserve(times.size());
-                 for (auto& s : times) result.push_back(s.count());
+                 for (const auto& s : times) result.push_back(s.count());
                  return result;
              })
         .def("__len__", &Track::size)
@@ -436,7 +436,7 @@ void exposeTrack(py::module& m) {
         });
 }
 
-void exposeBasePropertyTrack(py::module& m) {
+void exposeBasePropertyTrack(const py::module& m) {
     py::classh<BasePropertyTrack>(m, "BasePropertyTrack")
         .def_property(
             "property", [](BasePropertyTrack& t) -> Property* { return t.getProperty(); },
@@ -456,7 +456,7 @@ void exposeBasePropertyTrack(py::module& m) {
             py::return_value_policy::reference_internal, py::arg("time"));
 }
 
-void exposeControlTrack(py::module& m) {
+void exposeControlTrack(const py::module& m) {
     py::classh<ControlTrack, Track>(m, "ControlTrack")
         .def(py::init<>())
         .def("__repr__", [](const ControlTrack& t) {
@@ -464,7 +464,7 @@ void exposeControlTrack(py::module& m) {
         });
 }
 
-void exposeCallbackTrack(py::module& m) {
+void exposeCallbackTrack(const py::module& m) {
     py::classh<CallbackTrack, Track>(m, "CallbackTrack")
         .def(py::init<>())
         .def("__repr__", [](const CallbackTrack& t) {
@@ -472,7 +472,7 @@ void exposeCallbackTrack(py::module& m) {
         });
 }
 
-void exposeAnimationClass(py::module& m) {
+void exposeAnimationClass(const py::module& m) {
     py::classh<Animation>(m, "Animation")
         .def(py::init([](std::string_view name) { return Animation{nullptr, name}; }),
              py::arg("name") = "Animation")
@@ -520,10 +520,10 @@ void exposeAnimationClass(py::module& m) {
         .def("clear", &Animation::clear)
         .def("getAllTimes",
              [](const Animation& a) {
-                 auto times = a.getAllTimes();
+                 const auto times = a.getAllTimes();
                  std::vector<double> result;
                  result.reserve(times.size());
-                 for (auto& s : times) result.push_back(s.count());
+                 for (const auto& s : times) result.push_back(s.count());
                  return result;
              })
         .def_property_readonly("firstTime",
@@ -551,7 +551,7 @@ void exposeAnimationClass(py::module& m) {
         });
 }
 
-void exposeAnimationController(py::module& m) {
+void exposeAnimationController(const py::module& m) {
     py::classh<AnimationController, PropertyOwner>(m, "AnimationController")
         .def("play", &AnimationController::play)
         .def("pause", &AnimationController::pause)
@@ -584,7 +584,7 @@ void exposeAnimationController(py::module& m) {
         });
 }
 
-void exposeMainAnimation(py::module& m) {
+void exposeMainAnimation(const py::module& m) {
     py::classh<MainAnimation>(m, "MainAnimation")
         .def_property_readonly(
             "animation", [](MainAnimation& ma) -> Animation& { return ma.get(); },
@@ -598,7 +598,7 @@ void exposeMainAnimation(py::module& m) {
         });
 }
 
-void exposeWorkspaceAnimations(py::module& m) {
+void exposeWorkspaceAnimations(const py::module& m) {
     py::classh<WorkspaceAnimations>(m, "WorkspaceAnimations")
         .def("__len__", &WorkspaceAnimations::size)
         .def(

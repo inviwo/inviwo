@@ -75,15 +75,15 @@ class ShaderResource;
 
 namespace utilgl {
 
-void setShaderUniforms(Shader& shader, const RangeConversionMap& map, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const RangeConversionMap& map, std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.inputOffset", name), static_cast<float>(map.inputOffset));
     shader.setUniform(buff.replace("{}.scale", name), static_cast<float>(map.scale));
     shader.setUniform(buff.replace("{}.outputOffset", name), static_cast<float>(map.outputOffset));
 }
 
-void setShaderUniforms(Shader& shader, const DataMapper& dataMapper, const DataFormatBase* format,
-                       std::string_view name) {
+void setShaderUniforms(const Shader& shader, const DataMapper& dataMapper,
+                       const DataFormatBase* format, std::string_view name) {
     const auto renormalization = utilgl::createGLFormatRenormalization(dataMapper, format);
 
     StrBuffer buff;
@@ -169,7 +169,7 @@ void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property,
     setShaderUniforms(shader, property.getState(), name);
 }
 
-void setShaderUniforms(Shader& shader, const LightingState& state, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const LightingState& state, std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.position", name), state.position);
     shader.setUniform(buff.replace("{}.ambientColor", name), state.ambient);
@@ -180,7 +180,8 @@ void setShaderUniforms(Shader& shader, const LightingState& state, std::string_v
 
 void addShaderDefines(Shader& /*shader*/, const CameraProperty& /*property*/) {}
 
-void setShaderUniforms(Shader& shader, const CameraProperty& property, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const CameraProperty& property,
+                       std::string_view name) {
     StrBuffer buff;
 
     shader.setUniform(buff.replace("{}.worldToView", name), property.viewMatrix());
@@ -196,7 +197,7 @@ void setShaderUniforms(Shader& shader, const CameraProperty& property, std::stri
     shader.setUniform(buff.replace("{}.farPlane", name), property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader& shader, const Camera& camera, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const Camera& camera, std::string_view name) {
     StrBuffer buff;
 
     shader.setUniform(buff.replace("{}.worldToView", name), camera.getViewMatrix());
@@ -366,16 +367,17 @@ void setShaderDefines(Shader& shader,
     }
 }
 
-void setShaderUniforms(Shader& shader, const RaycastingProperty& property) {
+void setShaderUniforms(const Shader& shader, const RaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const RaycastingProperty& property, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const RaycastingProperty& property,
+                       std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SpatialEntity& object, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const SpatialEntity& object, std::string_view name) {
     const SpatialCoordinateTransformer& ct = object.getCoordinateTransformer();
 
     const mat4 dataToWorldMatrix = mat4(ct.getDataToWorldMatrix());
@@ -499,7 +501,7 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
-    std::string_view compositingKey =
+    const std::string_view compositingKey =
         "APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, isoValue, t, tDepth, "
         "tIncr)";
     std::string_view compositingValue = "result";
@@ -524,12 +526,12 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
 
-void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property) {
+void setShaderUniforms(const Shader& shader, const SimpleRaycastingProperty& property) {
     shader.setUniform("samplingRate_", property.samplingRate_.get());
     shader.setUniform("isoValue_", property.isoValue_.get());
 }
 
-void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
+void setShaderUniforms(const Shader& shader, const SimpleRaycastingProperty& property,
                        std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.samplingRate", name), property.samplingRate_.get());
@@ -549,14 +551,15 @@ void addShaderDefines(Shader& shader, const IsoValueProperty& property) {
                                                       !property.get().empty());
 }
 
-void setShaderUniforms(Shader& shader, const IsoValueProperty& property) {
+void setShaderUniforms(const Shader& shader, const IsoValueProperty& property) {
     auto data = property.get().getVectorsf();
 
     shader.setUniform("isovalues", data.first);
     shader.setUniform("isosurfaceColors", data.second);
 }
 
-void setShaderUniforms(Shader& shader, const IsoValueProperty& property, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const IsoValueProperty& property,
+                       std::string_view name) {
     auto data = property.get().getVectorsf();
 
     StrBuffer buff;
@@ -585,7 +588,8 @@ void setShaderUniforms(Shader& shader, const SelectionColorProperty& property,
     setShaderUniforms(shader, property.getState(), name);
 }
 
-void setShaderUniforms(Shader& shader, const SelectionColorState& state, std::string_view name) {
+void setShaderUniforms(const Shader& shader, const SelectionColorState& state,
+                       std::string_view name) {
     StrBuffer buff;
     shader.setUniform(buff.replace("{}.color", name), state.color);
     shader.setUniform(buff.replace("{}.colorMixIn", name), state.colorMixIn);
@@ -595,7 +599,7 @@ void setShaderUniforms(Shader& shader, const SelectionColorState& state, std::st
 }
 
 void addShaderDefinesBGPort(Shader& shader, const ImageInport& port) {
-    std::string_view bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
+    const std::string_view bgKey = "DRAW_BACKGROUND(result,t,tIncr,color,bgTDepth,tDepth)";
     if (port.isConnected()) {
         shader.getFragmentShaderObject()->addShaderDefine("BACKGROUND_AVAILABLE");
         shader.getFragmentShaderObject()->addShaderDefine(
@@ -613,7 +617,7 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) 
     constexpr std::string_view key =
         "DRAW_PLANES(result, samplePosition, rayDirection, increment, params, t, tDepth)";
     if (enabled) {
-        StrBuffer planes(
+        const StrBuffer planes(
             "drawPlanes(result, samplePosition, rayDirection, increment{}{}{}, t, tDepth)",
             (indicator.plane1_ ? ", params.plane1" : ""),
             (indicator.plane2_ ? ", params.plane2" : ""),
@@ -624,7 +628,7 @@ void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& indicator) 
     }
 }
 
-void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& indicator,
+void setShaderUniforms(const Shader& shader, const VolumeIndicatorProperty& indicator,
                        std::string_view name) {
     StrBuffer buff;
 
@@ -689,7 +693,7 @@ std::string getShaderInfoLog(GLuint id) {
     LGL_ERROR;
 
     if (maxLogLength > 1) {
-        auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
+        const auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
         GLsizei logLength{0};
         glGetShaderInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
         return std::string(shaderInfoLog.get(), logLength);
@@ -704,7 +708,7 @@ std::string getProgramInfoLog(GLuint id) {
     LGL_ERROR;
 
     if (maxLogLength > 1) {
-        auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
+        const auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
         GLsizei logLength{0};
         glGetProgramInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
         return std::string(shaderInfoLog.get(), logLength);

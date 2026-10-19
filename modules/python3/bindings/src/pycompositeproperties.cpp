@@ -48,7 +48,7 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-void exposeCompositeProperties(py::module& m) {
+void exposeCompositeProperties(const py::module& m) {
 
     py::classh<CompositeProperty, PropertyOwner, Property>(
         m, "CompositeProperty", py::multiple_inheritance{}, py::dynamic_attr{})

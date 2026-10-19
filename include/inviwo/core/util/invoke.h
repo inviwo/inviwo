@@ -99,7 +99,7 @@ decltype(auto) invoke_prefix(F&& f, Tuple&& t) {
  */
 template <typename F, typename... Args>
 decltype(auto) invoke(F&& f, Args&&... args) {
-    auto tup = std::forward_as_tuple(std::forward<Args>(args)...);
+    const auto tup = std::forward_as_tuple(std::forward<Args>(args)...);
     using Tup = decltype(tup);
     using Fn = F&&;
 

@@ -138,25 +138,25 @@ void RBFVectorFieldGenerator3D::process() {
         mt_.seed(seed_.get());
     }
 
-    mat3 basis(2);
-    vec3 offset = vec3(-1);
+    const mat3 basis(2);
+    const vec3 offset = vec3(-1);
 
     std::vector<std::pair<dvec3, dvec3>> samples(seeds_.get());
     std::generate(samples.begin(), samples.end(), [&]() {
-        auto x = x_(mt_);
-        auto y = x_(mt_);
-        auto z = x_(mt_);
+        const auto x = x_(mt_);
+        const auto y = x_(mt_);
+        const auto z = x_(mt_);
         return std::make_pair(dvec3(x, y, z), randomVector());
     });
 
     if (mesh_.isConnected()) {
-        auto mesh = std::make_shared<BasicMesh>();
-        for (auto& p : samples) {
-            vec3 p0 = vec3(p.first);
-            vec3 p1 = p0 + glm::normalize(vec3(p.second)) * arrowLength_.get();
-            auto sphere = meshutil::colorsphere(p0, sphereRadius_.get());
-            auto arrow = meshutil::arrow(p0, p1, arrowColor_.get(), sphereRadius_.get() * 0.5f,
-                                         0.15f, sphereRadius_.get());
+        const auto mesh = std::make_shared<BasicMesh>();
+        for (const auto& p : samples) {
+            const vec3 p0 = vec3(p.first);
+            const vec3 p1 = p0 + glm::normalize(vec3(p.second)) * arrowLength_.get();
+            const auto sphere = meshutil::colorsphere(p0, sphereRadius_.get());
+            const auto arrow = meshutil::arrow(
+                p0, p1, arrowColor_.get(), sphereRadius_.get() * 0.5f, 0.15f, sphereRadius_.get());
             mesh->append(sphere.get());
             mesh->append(arrow.get());
         }
@@ -168,10 +168,10 @@ void RBFVectorFieldGenerator3D::process() {
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get()), xz(seeds_.get());
 
     int row = 0;
-    for (auto& a : samples) {
+    for (const auto& a : samples) {
         int col = 0;
-        for (auto& b : samples) {
-            auto r = glm::distance(a.first, b.first);
+        for (const auto& b : samples) {
+            const auto r = glm::distance(a.first, b.first);
             A(row, col++) = shape_.get() + gaussian_.evaluate(r);
         }
         bx(row) = a.second.x;
@@ -179,15 +179,15 @@ void RBFVectorFieldGenerator3D::process() {
         bz(row++) = a.second.z;
     }
 
-    auto solverX = A.llt();
-    auto solverY = A.llt();
-    auto solverZ = A.llt();
+    const auto solverX = A.llt();
+    const auto solverY = A.llt();
+    const auto solverZ = A.llt();
 
     xx = solverX.solve(bx);
     xy = solverY.solve(by);
     xz = solverZ.solve(bz);
 
-    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
+    const auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
     volume->dataMap.dataRange = vec2(0, 1);
     volume->dataMap.valueRange = vec2(-1, 1);
     volume->setBasis(basis);
@@ -207,7 +207,7 @@ void RBFVectorFieldGenerator3D::process() {
                 vec3 v(0, 0, 0);
                 int s = 0;
                 for (; s < seeds_.get(); s++) {
-                    double r = glm::distance(p, samples[s].first);
+                    const double r = glm::distance(p, samples[s].first);
                     v.x += static_cast<float>(xx(s) * gaussian_.evaluate(r));
                     v.y += static_cast<float>(xy(s) * gaussian_.evaluate(r));
                     v.z += static_cast<float>(xz(s) * gaussian_.evaluate(r));
@@ -224,7 +224,7 @@ void RBFVectorFieldGenerator3D::process() {
 dvec3 RBFVectorFieldGenerator3D::randomVector() {
     dvec3 v;
     v.z = x_(mt_);
-    auto t = theta_(mt_);
+    const auto t = theta_(mt_);
     v.y = v.x = sqrt(1 - v.z * v.z);
     v.x *= cos(t);
     v.y *= sin(t);

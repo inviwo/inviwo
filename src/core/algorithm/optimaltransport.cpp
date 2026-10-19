@@ -97,8 +97,8 @@ vec4 evaluate(std::span<const TFPrimitiveData> tf, double x) {
     if (x <= tf.front().pos) return tf.front().color;
     if (x >= tf.back().pos) return tf.back().color;
 
-    auto it = std::upper_bound(tf.begin(), tf.end(), x,
-                               [](double v, const TFPrimitiveData& p) { return v < p.pos; });
+    const auto it = std::upper_bound(tf.begin(), tf.end(), x,
+                                     [](double v, const TFPrimitiveData& p) { return v < p.pos; });
     const auto& p0 = *(it - 1);
     const auto& p1 = *it;
 
@@ -135,7 +135,7 @@ std::vector<TFPrimitiveData> linearBlend(std::span<const TFPrimitiveData> a,
     const auto positions = mergedPositions(a, b);
     std::vector<TFPrimitiveData> result;
     result.reserve(positions.size());
-    for (double x : positions) {
+    for (const double x : positions) {
         const vec4 ca = evaluate(a, x);
         const vec4 cb = evaluate(b, x);
         result.push_back({x, glm::mix(ca, cb, static_cast<float>(t))});
@@ -245,8 +245,8 @@ double invertCdf(const Cdf& cdf, double q) {
 
     const double targetMass = q * cdf.totalMass;
 
-    auto it = std::lower_bound(cdf.points.begin(), cdf.points.end(), targetMass,
-                               [](const CdfPoint& p, double mass) { return p.mass < mass; });
+    const auto it = std::lower_bound(cdf.points.begin(), cdf.points.end(), targetMass,
+                                     [](const CdfPoint& p, double mass) { return p.mass < mass; });
 
     if (it == cdf.points.begin()) return cdf.points.front().pos;
     if (it == cdf.points.end()) return supportMax(cdf);
@@ -336,7 +336,7 @@ void addStructuralVertices(std::span<const TFPrimitiveData> aspan,
                            std::span<const TFPrimitiveData> bspan, const Cdf& cdfA, const Cdf& cdfB,
                            double t, std::vector<QuantilePoint>& interpolatedCdf) {
 
-    auto addKnotsFrom = [&](std::span<const TFPrimitiveData> span, const Cdf& cdf) {
+    const auto addKnotsFrom = [&](std::span<const TFPrimitiveData> span, const Cdf& cdf) {
         for (const auto& p : span) {
             // Find the quantile of this knot by interpolating within its CDF segment.
             double q = 0.0;
@@ -430,7 +430,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
     std::vector<QuantilePoint> interpolatedCdf;
     interpolatedCdf.reserve(levels.size() + aspan.size() + bspan.size());
 
-    for (double q : levels) {
+    for (const double q : levels) {
         const auto qa = quantilePoint(aspan, cdfA, q);
         const auto qb = quantilePoint(bspan, cdfB, q);
         const double x = (1.0 - t) * qa.pos + t * qb.pos;

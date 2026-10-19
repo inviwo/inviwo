@@ -69,8 +69,8 @@ EigenMix::EigenMix()
 }
 
 void EigenMix::process() {
-    auto A = a_.getData();
-    auto B = b_.getData();
+    const auto A = a_.getData();
+    const auto B = b_.getData();
     res_.setData(std::make_shared<Eigen::MatrixXf>((*A) + w_.get() * ((*B) - (*A))));
 }
 

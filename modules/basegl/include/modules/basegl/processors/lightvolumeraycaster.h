@@ -46,7 +46,8 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API LightVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    LightVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
+    explicit LightVolumeRaycaster(std::string_view identifier = "",
+                                  std::string_view displayName = "");
     virtual ~LightVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

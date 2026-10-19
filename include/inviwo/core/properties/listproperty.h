@@ -204,7 +204,8 @@ public:
 
 private:
     struct Prefabs {
-        Prefabs(std::vector<std::unique_ptr<Property>> prefabs) : properties{std::move(prefabs)} {}
+        explicit Prefabs(std::vector<std::unique_ptr<Property>> prefabs)
+            : properties{std::move(prefabs)} {}
 
         Prefabs(const Prefabs& rhs) {
             properties.reserve(rhs.properties.size());

@@ -78,7 +78,7 @@ struct IVW_CORE_API TokenBase {
 template <class T>
 class Token : public TokenBase {
 public:
-    Token(T t) : val(t) {}
+    explicit Token(T t) : val(t) {}
     T val;
 };
 

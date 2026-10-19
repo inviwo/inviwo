@@ -59,7 +59,7 @@ void pool::detail::State::setProgress(size_t id, double newProgress) {
             const auto total = std::accumulate(progress.begin(), progress.end(), 0.0) /
                                static_cast<double>(progress.size());
             progressUpdate = dispatchFront([this, poolProcessor = processor, total]() {
-                if (auto p = poolProcessor.lock()) {
+                if (const auto p = poolProcessor.lock()) {
                     p->progress(this, total);
                 }
             });
@@ -74,8 +74,9 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
     , options_{options}
     , states_{}
     , notifyRemainingJobsFinish_{[this]() {
-        auto running = std::accumulate(states_.begin(), states_.end(), size_t{0},
-                                       [](size_t sum, auto& state) { return sum + state->nJobs; });
+        const auto running =
+            std::accumulate(states_.begin(), states_.end(), size_t{0},
+                            [](size_t sum, auto& state) { return sum + state->nJobs; });
         notifyObserversFinishBackgroundWork(this, running);
     }}
     , queue_{}
@@ -97,7 +98,7 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
 PoolProcessor::~PoolProcessor() { stopJobs(); }
 
 void PoolProcessor::stopJobs() {
-    for (auto& state : states_) {
+    for (const auto& state : states_) {
         state->stopSource.request_stop();
     }
 }
@@ -175,7 +176,7 @@ bool PoolProcessor::removeState(const std::shared_ptr<pool::detail::State>& stat
     const auto it = std::find(states_.begin(), states_.end(), state);
     IVW_ASSERT(it != states_.end(), "The state should always be found");
 
-    bool isLast = std::next(it) == states_.end();
+    const bool isLast = std::next(it) == states_.end();
     states_.erase(it);
 
     return isLast;
@@ -186,7 +187,7 @@ Delay& PoolProcessor::getDelay() {
         delay_.emplace(std::chrono::milliseconds(500),
                        [poolProcessor = std::weak_ptr<PoolProcessor>(
                             std::dynamic_pointer_cast<PoolProcessor>(shared_from_this()))]() {
-                           if (auto p = poolProcessor.lock()) {
+                           if (const auto p = poolProcessor.lock()) {
 
                                if (p->queuedDispatch() && !p->states_.empty()) {
                                    p->delayBackgroundJobReset_.call();

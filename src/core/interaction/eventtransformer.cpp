@@ -207,10 +207,10 @@ struct SM {
 namespace touch {
 
 inline void transformAndSendEvent(
-    TouchEvent& originalEvent, const EventTransformer::View& view,
+    const TouchEvent& originalEvent, const EventTransformer::View& view,
     const std::function<void(Event&, const EventTransformer::View&)>& propagate) {
 
-    TouchEvent newEvent{originalEvent};
+    const TouchEvent newEvent{originalEvent};
     /* TODO(Peter)
     newEvent.setCanvasSize(view.size());
     newEvent.setNdc(view.globalNdcToLocalNdc(originalEvent.ndc()));

@@ -111,9 +111,9 @@ OrientationIndicator::OrientationIndicator()
 
     cam_.setCurrentStateAsDefault();
 
-    auto setVisibility = [&]() {
-        bool twoD = locationType_.get() == Location::TwoD;
-        bool threeD = locationType_.get() == Location::ThreeD;
+    const auto setVisibility = [&]() {
+        const bool twoD = locationType_.get() == Location::TwoD;
+        const bool threeD = locationType_.get() == Location::ThreeD;
         viewCoords_.setVisible(twoD);
         cam_.setVisible(twoD);
         offset_.setVisible(threeD);
@@ -137,13 +137,13 @@ void OrientationIndicator::process() {
         auto p2 = viewCoords_.get() + vec2(scale, 0.0f);
         p = p * 2.0f - 1.0f;
         p2 = p2 * 2.0f - 1.0f;
-        vec4 viewPos(p, 0.f, 1.f);
-        vec4 viewPos2(p2, 0.f, 1.f);
-        auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
-        auto point = m * viewPos;
-        auto point2 = m * viewPos2;
+        const vec4 viewPos(p, 0.f, 1.f);
+        const vec4 viewPos2(p2, 0.f, 1.f);
+        const auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
+        const auto point = m * viewPos;
+        const auto point2 = m * viewPos2;
         start = vec3(point) / point.w;
-        auto end = vec3(point2) / point2.w;
+        const auto end = vec3(point2) / point2.w;
         scale = glm::distance(start, end);
     }
 
@@ -155,21 +155,21 @@ void OrientationIndicator::process() {
 }
 
 void OrientationIndicator::updateMesh() {
-    vec3 origin(0.0f);
+    const vec3 origin(0.0f);
     mat3 basis(glm::scale(axisScale_.get()));
 
     const static float baseRadius = 0.06f;      // radius
     const static float baseHeadradius = 0.15f;  // outer radius of arrow tips
-    vec3 radius = axisScale_.get() * radius_.get() * baseRadius;
-    vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
+    const vec3 radius = axisScale_.get() * radius_.get() * baseRadius;
+    const vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
 
     // build indicator using a sphere and three arrows
-    auto base = meshutil::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
-    auto xArrow =
+    const auto base = meshutil::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
+    const auto xArrow =
         meshutil::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
-    auto yArrow =
+    const auto yArrow =
         meshutil::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
-    auto zArrow =
+    const auto zArrow =
         meshutil::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
     base->append(xArrow.get());
     base->append(yArrow.get());

@@ -46,7 +46,7 @@ class IVW_MODULE_ANIMATION_API ButtonKeyframe : public BaseKeyframe {
 public:
     using value_type = bool;  // make it possible to use with KeyframeSequenceTyped
     ButtonKeyframe() = default;
-    ButtonKeyframe(Seconds time);
+    explicit ButtonKeyframe(Seconds time);
     ButtonKeyframe(const ButtonKeyframe& rhs) = default;
     ButtonKeyframe& operator=(const ButtonKeyframe& that) = default;
     virtual ~ButtonKeyframe() = default;

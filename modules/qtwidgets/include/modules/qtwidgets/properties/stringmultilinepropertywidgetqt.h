@@ -59,7 +59,7 @@ class MultiFileProperty;
  */
 class IVW_MODULE_QTWIDGETS_API StringMultilinePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    StringMultilinePropertyWidgetQt(StringProperty* property);
+    explicit StringMultilinePropertyWidgetQt(StringProperty* property);
 
     void updateFromProperty();
     void setPropertyValue();
@@ -72,7 +72,7 @@ private:
 
 class IVW_MODULE_QTWIDGETS_API MultiFileStringPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    MultiFileStringPropertyWidgetQt(MultiFileProperty* property);
+    explicit MultiFileStringPropertyWidgetQt(MultiFileProperty* property);
 
     void updateFromProperty();
     void setPropertyValue();
@@ -94,7 +94,7 @@ class IVW_MODULE_QTWIDGETS_API MultilineTextEdit : public QPlainTextEdit {
     Q_OBJECT
 #include <warn/pop>
 public:
-    MultilineTextEdit(QWidget* parent = nullptr);
+    explicit MultilineTextEdit(QWidget* parent = nullptr);
     virtual ~MultilineTextEdit();
 
     void adjustHeight();

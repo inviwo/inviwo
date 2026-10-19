@@ -39,7 +39,7 @@ namespace inviwo {
 TEST(CommandLineParserTest, DefaultTest) {
     const int argc = 1;
     const char* argv[argc] = {"unittests.exe"};
-    CommandLineParser clp(argc, const_cast<char**>(argv));
+    const CommandLineParser clp(argc, const_cast<char**>(argv));
     EXPECT_EQ(std::string{}, clp.getOutputPath().generic_string());
     EXPECT_EQ(std::string{}, clp.getWorkspacePath().generic_string());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
@@ -50,7 +50,7 @@ TEST(CommandLineParserTest, DefaultTest) {
 TEST(CommandLineParserTest, CommandLineParserTest) {
     const int argc = 3;
     const char* argv[argc] = {"unittests.exe", "-w", "C:/Just/A/Path/"};
-    CommandLineParser clp(argc, const_cast<char**>(argv));
+    const CommandLineParser clp(argc, const_cast<char**>(argv));
     EXPECT_EQ(std::string{}, clp.getOutputPath().generic_string());
     EXPECT_EQ(std::string{"C:/Just/A/Path/"}, clp.getWorkspacePath().generic_string());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());

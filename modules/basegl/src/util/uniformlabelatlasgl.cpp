@@ -76,8 +76,8 @@ bool UniformLabelAtlasGL::createAltas() {
         charSize = glm::max(charSize, renderer.computeBoundingBox("8").glyphsExtent);
     }
 
-    if (auto data = strings.getData(); data && data->size() > atlasSize.x * atlasSize.y) {
-        auto side = static_cast<size_t>(std::ceil(std::sqrt(data->size())));
+    if (const auto data = strings.getData(); data && data->size() > atlasSize.x * atlasSize.y) {
+        const auto side = static_cast<size_t>(std::ceil(std::sqrt(data->size())));
         atlasSize = size2_t{side, side};
     }
 
@@ -94,7 +94,7 @@ bool UniformLabelAtlasGL::createAltas() {
 
 void UniformLabelAtlasGL::fillAltas() {
     const auto toStr = [&](size_t i) {
-        if (auto data = strings.getData()) {
+        if (const auto data = strings.getData()) {
             if (i < data->size()) {
                 return data->at(i);
             }
@@ -105,10 +105,10 @@ void UniformLabelAtlasGL::fillAltas() {
     const auto labelSize = charSize * chars + margin;
     const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     {
-        auto state = renderer.setupRenderState(atlas, vec4{0.0});
+        const auto state = renderer.setupRenderState(atlas, vec4{0.0});
         for (size_t i = 0; i < atlasSize.y; ++i) {
             for (size_t j = 0; j < atlasSize.x; ++j) {
-                auto str = toStr(i * atlasSize.x + j);
+                const auto str = toStr(i * atlasSize.x + j);
                 const auto ttb = renderer.computeBoundingBox(str);
                 const size2_t offset = (labelSize - ttb.glyphsExtent) / 2;
                 const auto pos = static_cast<ivec2>(labelSize * size2_t{i, j} + offset);
@@ -120,7 +120,7 @@ void UniformLabelAtlasGL::fillAltas() {
 
 void UniformLabelAtlasGL::bind(TextureUnitContainer& cont) {
     if (labels) {
-        auto& unit = cont.emplace_back();
+        const auto& unit = cont.emplace_back();
         utilgl::bindTexture(*atlas, unit);
         unitNumber = unit.getUnitNumber();
     } else {

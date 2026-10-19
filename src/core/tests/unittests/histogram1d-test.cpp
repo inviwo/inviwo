@@ -68,7 +68,7 @@ public:
 
     template <typename T>
     std::vector<Histogram1D> createUniformHistogram(int maxValue, int inc, size_t binCount) const {
-        auto seq = util::make_sequence<int>(0, maxValue, inc);
+        const auto seq = util::make_sequence<int>(0, maxValue, inc);
         std::vector<T> data{seq.begin(), seq.end()};
         const DataMapper dataMap{dvec2{0.0, static_cast<double>(maxValue)}};
         return util::calculateHistograms<T>(data, dataMap, binCount);

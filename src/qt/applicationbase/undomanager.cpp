@@ -59,7 +59,7 @@ class AutoSaver {
 public:
     using clock_t = std::chrono::system_clock;
 
-    AutoSaver(
+    explicit AutoSaver(
         std::function<int()> numRestoreFiles = []() -> int { return 100000; },
         std::function<int()> restoreFrequency = []() -> int { return 1440; })
         : path_{filesystem::getPath(PathType::Settings)}
@@ -68,7 +68,7 @@ public:
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
                 FILE* file = filesystem::fopen(path_ / "autosave.inv", "rb");
                 if (!file) return std::nullopt;
-                util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
+                const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
                 const long length = [&]() {
                     std::fseek(file, 0, SEEK_END);
@@ -144,7 +144,7 @@ public:
 
     void save(std::shared_ptr<const std::pmr::string> str) {
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            const std::unique_lock<std::mutex> lock(mutex_);
             toSave_.push_back(str);
         }
         condition_.notify_one();
@@ -156,7 +156,7 @@ private:
     }
 
     static void clearOldSaves(const std::filesystem::path& path, size_t maxSaves) {
-        std::filesystem::directory_iterator it(path);
+        const std::filesystem::directory_iterator it(path);
 
         std::vector<std::filesystem::path> files{it, end(it)};
 
@@ -230,7 +230,7 @@ void UndoManager::markDirty() { dirty_ = true; }
 void UndoManager::pushState() {
     if (isRestoring) return;
 
-    auto str = std::make_shared<std::pmr::string>();
+    const auto str = std::make_shared<std::pmr::string>();
     str->reserve(8 * 1024);
 
     try {
@@ -244,7 +244,7 @@ void UndoManager::pushState() {
     if (head_ >= 0 && *str == *undoBuffer_[head_]) return;  // No Change
 
     ++head_;
-    auto offset = std::min(std::distance(undoBuffer_.begin(), undoBuffer_.end()), head_);
+    const auto offset = std::min(std::distance(undoBuffer_.begin(), undoBuffer_.end()), head_);
     undoBuffer_.erase(undoBuffer_.begin() + offset, undoBuffer_.end());
     undoBuffer_.push_back(str);
 
@@ -256,7 +256,7 @@ void UndoManager::pushState() {
 }
 void UndoManager::undoState() {
     if (head_ > 0) {
-        util::KeepTrueWhileInScope restore(&isRestoring);
+        const util::KeepTrueWhileInScope restore(&isRestoring);
         --head_;
 
         manager_->load(*undoBuffer_[head_], refPath_, StandardExceptionHandler{},
@@ -269,7 +269,7 @@ void UndoManager::undoState() {
 void UndoManager::redoState() {
     if (head_ >= -1 && head_ < static_cast<DiffType>(undoBuffer_.size()) - 1) {
 
-        util::KeepTrueWhileInScope restore(&isRestoring);
+        const util::KeepTrueWhileInScope restore(&isRestoring);
         ++head_;
 
         manager_->load(*undoBuffer_[head_], refPath_, StandardExceptionHandler{},

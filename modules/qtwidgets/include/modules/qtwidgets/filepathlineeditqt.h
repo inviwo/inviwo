@@ -54,7 +54,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
     Q_OBJECT
 public:
-    FilePathLineEditQt(QWidget* parent = nullptr);
+    explicit FilePathLineEditQt(QWidget* parent = nullptr);
     virtual ~FilePathLineEditQt() = default;
 
     void setPath(const std::filesystem::path& path);

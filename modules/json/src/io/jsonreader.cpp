@@ -59,6 +59,10 @@ std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& fileName
 std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& filePath, MetaDataOwner*) {
     return readData(filePath);
 }
+std::shared_ptr<json> JSONReader::readData(const std::filesystem::path& filePath, MetaDataOwner*,
+                                           std::stop_token) {
+    return readData(filePath);
+}
 
 std::shared_ptr<json> JSONReader::readData(std::istream& stream) const {
     const auto j = std::make_shared<json>();

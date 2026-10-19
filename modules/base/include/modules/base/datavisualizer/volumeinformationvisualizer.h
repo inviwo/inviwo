@@ -47,7 +47,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASE_API VolumeInformationVisualizer : public DataVisualizer {
 public:
-    VolumeInformationVisualizer(InviwoApplication* app);
+    explicit VolumeInformationVisualizer(InviwoApplication* app);
     virtual ~VolumeInformationVisualizer() = default;
     virtual std::string getName() const override;
     virtual Document getDescription() const override;

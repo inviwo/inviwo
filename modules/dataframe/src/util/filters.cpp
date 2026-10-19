@@ -66,7 +66,7 @@ namespace detail {
 
 template <typename T>
 ItemFilter epsilonComparison(int column, filters::NumberComp op, T value, T epsilon) {
-    auto createFilter = [v = value, column](auto comp) {
+    const auto createFilter = [v = value, column](auto comp) {
         return ItemFilter{std::function<bool(T)>([v, comp](T value) { return comp(value, v); }),
                           column, false};
     };
@@ -104,7 +104,7 @@ ItemFilter rangeComparison(int column, T min, T max) {
 }  // namespace detail
 
 ItemFilter intMatch(int column, filters::NumberComp op, std::int64_t value) {
-    auto createFilter = [v = value, column](auto comp) {
+    const auto createFilter = [v = value, column](auto comp) {
         return ItemFilter{std::function<bool(std::int64_t)>(
                               [v, comp](std::int64_t value) { return comp(value, v); }),
                           column, false};

@@ -55,7 +55,7 @@ using namespace std::literals;
 inline void checkContext(std::string_view error, Canvas::ContextID org,
                          SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
-        auto* rc = RenderContext::getPtr();
+        const auto* rc = RenderContext::getPtr();
         const auto* const curr = rc->activeContext();
         if (org != curr) {
             const auto message =
@@ -192,7 +192,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentNumber) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
-    GLenum attachmentID = numberToEnum(attachmentNumber);
+    const GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
     return attachmentID;
@@ -216,7 +216,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture2DArray* texture, int attachmentNumber) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
-    GLenum attachmentID = numberToEnum(attachmentNumber);
+    const GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
     return attachmentID;
@@ -240,7 +240,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int l
 GLenum FrameBufferObject::attachColorTextureLayer(Texture2DArray* texture, int attachmentNumber,
                                                   int layer) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
-    GLenum attachmentID = numberToEnum(attachmentNumber);
+    const GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
     glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
 
@@ -265,7 +265,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture) {
 
 GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentNumber) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
-    GLenum attachmentID = numberToEnum(attachmentNumber);
+    const GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
     glFramebufferTexture(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0);
 
@@ -289,7 +289,7 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer)
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attachmentNumber,
                                                   int layer) {
     IVW_ASSERT(isActive(), "FBO not active when attaching texture");
-    GLenum attachmentID = numberToEnum(attachmentNumber);
+    const GLenum attachmentID = numberToEnum(attachmentNumber);
     registerAttachment(attachmentID, texture->getID());
     glFramebufferTextureLayer(GL_FRAMEBUFFER, attachmentID, texture->getID(), 0, layer);
     return attachmentID;

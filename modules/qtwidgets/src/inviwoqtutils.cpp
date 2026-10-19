@@ -109,7 +109,7 @@ std::ios_base& localizeStream(std::ios_base& stream) {
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
-    auto it = std::find_if(widgets.begin(), widgets.end(), [](const auto& item) {
+    const auto it = std::find_if(widgets.begin(), widgets.end(), [](const auto& item) {
         return item->objectName().compare("InviwoMainWindow") == 0;
     });
     if (it != widgets.end()) {
@@ -134,7 +134,7 @@ void addDockWidgetTabify(QDockWidget* widget, QMainWindow* win, Qt::DockWidgetAr
 }
 
 InviwoEditMenu* getInviwoEditMenu() {
-    for (QWidget* item : QApplication::allWidgets()) {
+    for (const QWidget* item : QApplication::allWidgets()) {
         if (auto* iem = item->findChild<InviwoEditMenu*>()) {
             return iem;
         }
@@ -272,10 +272,10 @@ QPixmap toQPixmap(const TFPropertyConcept& propertyConcept, const QSize& size) {
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
 
-    if (auto* tf = propertyConcept.getTransferFunction()) {
+    if (const auto* tf = propertyConcept.getTransferFunction()) {
         paint(*tf, painter, rect);
     }
-    if (auto* isoValues = propertyConcept.getIsovalues()) {
+    if (const auto* isoValues = propertyConcept.getIsovalues()) {
         paint(*isoValues, painter, rect);
     }
     return pixmap;
@@ -318,7 +318,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
 
     // Check if point is within any desktops rect (with some extra padding applied).
     const bool withinAnyDesktop = [&]() {
-        if (auto* screen = QGuiApplication::screenAt(pos)) {
+        if (const auto* screen = QGuiApplication::screenAt(pos)) {
             static constexpr QMargins padding{0, 0, 10, 10};
             return screen->availableGeometry().marginsRemoved(padding).contains(pos);
         }
@@ -327,7 +327,7 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
 
     if (!withinAnyDesktop) {
         // If the widget is outside visible screen
-        auto* mainWindow = getApplicationMainWindow();
+        const auto* mainWindow = getApplicationMainWindow();
         QPoint appPos(0, 0);
         if (mainWindow) {
             appPos = mainWindow->pos();
@@ -363,8 +363,8 @@ QMenu* addMenu(std::string_view menuName, const std::string& before) {
     return addMenu(menuName, getMenu(before));
 }
 
-QMenu* addMenu(std::string_view menuName, QMenu* before) {
-    if (auto* mainwin = utilqt::getApplicationMainWindow()) {
+QMenu* addMenu(std::string_view menuName, const QMenu* before) {
+    if (const auto* mainwin = utilqt::getApplicationMainWindow()) {
         if (!before) {
             before = getMenu("&Help", false);
         }
@@ -383,14 +383,14 @@ QMenu* addMenu(std::string_view menuName, QMenu* before) {
 }
 
 QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
-    if (auto* mainwin = utilqt::getApplicationMainWindow()) {
-        auto* menuBar = mainwin->menuBar();
+    if (const auto* mainwin = utilqt::getApplicationMainWindow()) {
+        const auto* menuBar = mainwin->menuBar();
         auto menus = menuBar->findChildren<QMenu*>();
 
         std::string menuNoAnd{menuName};
         replaceInString(menuNoAnd, "&", "");
 
-        auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
+        const auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
             std::string title = utilqt::fromQString(m->title());
             replaceInString(title, "&", "");
             return menuNoAnd == title;
@@ -419,7 +419,7 @@ std::shared_ptr<Layer> toLayer(const QImage& image) {
 #else
     const auto qImage = image.convertToFormat(QImage::Format_RGBA8888).flipped(Qt::Vertical);
 #endif
-    auto ram = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(utilqt::toGLM(qImage.size()));
+    const auto ram = std::make_shared<LayerRAMPrecision<glm::u8vec4>>(utilqt::toGLM(qImage.size()));
     const auto ramMemSize =
         glm::compMul(ram->getDimensions()) * ram->getDataFormat()->getSizeInBytes();
 
@@ -439,16 +439,17 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     QMenu* copy = menu.addMenu(QIcon(":svgicons/edit-copy.svg"), "Copy");
     QMenu* save = menu.addMenu(QIcon(":svgicons/save-as.svg"), "Save");
 
-    auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
+    const auto addAction = [&copy, &save](const std::string& name, const Layer* layer,
+                                          bool visible) {
         std::ostringstream oss;
         oss << name << (visible ? " (Visible)" : "");
-        auto* copyAction = copy->addAction(oss.str().c_str());
+        const auto* copyAction = copy->addAction(oss.str().c_str());
         QAction::connect(copyAction, &QAction::triggered, [layer]() {
             rendercontext::activateDefault();
             QApplication::clipboard()->setPixmap(QPixmap::fromImage(utilqt::layerToQImage(*layer)));
         });
 
-        auto* saveAction = save->addAction(oss.str().c_str());
+        const auto* saveAction = save->addAction(oss.str().c_str());
         QAction::connect(saveAction, &QAction::triggered, [layer]() { util::saveLayer(*layer); });
     };
 
@@ -463,7 +464,7 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 }
 
 void addViewActions(QMenu& menu, EventPropagator* ep) {
-    auto prop = [&](auto action) {
+    const auto prop = [&](auto action) {
         return [ep, action]() {
             ViewEvent e{action};
             ep->propagateEvent(&e, nullptr);
@@ -519,7 +520,7 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     network->forEachProcessor([&](Processor* p) {
         if (const auto* exporter = dynamic_cast<const ImageExporter*>(p)) {
             if (p->isSink() && p->isReady()) {
-                if (auto img = exporter->getImage()) {
+                if (const auto img = exporter->getImage()) {
                     if (const auto* layer = img->getColorLayer()) {
                         auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
                         images.emplace_back(p->getDisplayName(), qimg);
@@ -605,7 +606,7 @@ int emToPx(const QFontMetrics& m, double em) {
 std::vector<std::string> getMonoSpaceFonts() {
     std::vector<std::string> fonts;
 
-    for (auto& font : QFontDatabase::families()) {
+    for (const auto& font : QFontDatabase::families()) {
         if (QFontDatabase::isFixedPitch(font)) {
             fonts.push_back(utilqt::fromQString(font));
         }
@@ -617,7 +618,7 @@ std::vector<std::string> getMonoSpaceFonts() {
 size_t getDefaultMonoSpaceFontIndex() {
     const auto fonts = getMonoSpaceFonts();
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
+    const auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
     if (it != fonts.end()) {
         return it - fonts.begin();
     } else {
@@ -724,7 +725,7 @@ QString toQString(const std::filesystem::path& path) {
 }
 
 std::filesystem::path toPath(const QString& str) {
-    auto buffer = str.toUtf8();
+    const auto buffer = str.toUtf8();
     const std::u8string_view u8str{reinterpret_cast<const char8_t*>(buffer.constData()),
                                    static_cast<size_t>(buffer.size())};
     return std::filesystem::path{u8str};

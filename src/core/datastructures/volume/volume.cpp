@@ -216,7 +216,7 @@ dvec3 Volume::getWorldSpaceGradientSpacing() const {
     // bx' = dot(x, b) = b.x
     // cx' = dot(x, c) = c.x
     // and so on.
-    auto signedMax = [](const double& x1, const double& x2) {
+    const auto signedMax = [](const double& x1, const double& x2) {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
@@ -257,7 +257,7 @@ VolumeConfig Volume::config() const {
 void Volume::setConfig(const VolumeConfig& config) {
     if (config.format) setDataFormat(config.format);
 
-    auto setMaybe = [&](const auto& opt, auto&& func) {
+    const auto setMaybe = [&](const auto& opt, auto&& func) {
         if constexpr (std::is_invocable_v<decltype(func), decltype(*this), decltype(*opt)>) {
             if (opt) std::invoke(std::forward<decltype(func)>(func), *this, *opt);
         } else if constexpr (std::is_invocable_v<decltype(func), decltype(*opt)>) {

@@ -60,7 +60,7 @@ namespace detail {
 class IVW_MODULE_OPENGL_API Build {
     bool value_ = true;
     Build() = default;
-    Build(std::nullptr_t) : value_{false} {}
+    explicit Build(std::nullptr_t) : value_{false} {}
 
 public:
     // Allow explicit conversion from anything bool like
@@ -73,7 +73,7 @@ public:
     // clang-format off
     template <typename T, std::enable_if_t<std::is_same_v<T, bool>, int> = 0>
     [[deprecated("Use Shader::Build::Yes or Shader::Build::No, instead of a true or false")]]
-    constexpr Build(T value) noexcept : value_{value} {}
+    constexpr explicit Build(T value) noexcept : value_{value} {}
     // clang-format on
 
     explicit constexpr operator bool() { return value_; }
@@ -103,17 +103,18 @@ public:
 
     using Build = detail::Build;
 
-    Shader(const std::vector<std::pair<ShaderType, std::string>>& items,
-           Build buildShader = Build::Yes);
-    Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
-           Build buildShader = Build::Yes);
-    Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects,
-           Build buildShader = Build::Yes);
+    explicit Shader(const std::vector<std::pair<ShaderType, std::string>>& items,
+                    Build buildShader = Build::Yes);
+    explicit Shader(
+        const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>& items,
+        Build buildShader = Build::Yes);
+    explicit Shader(std::vector<std::unique_ptr<ShaderObject>>& shaderObjects,
+                    Build buildShader = Build::Yes);
 
     /*
      * Will add utilgl::imgIdentityVert() as vertex shader.
      */
-    Shader(std::string_view fragmentFilename, Build buildShader = Build::Yes);
+    explicit Shader(std::string_view fragmentFilename, Build buildShader = Build::Yes);
     Shader(std::string_view vertexFilename, std::string_view fragmentFilename,
            Build buildShader = Build::Yes);
     Shader(std::string_view vertexFilename, std::string_view geometryFilename,

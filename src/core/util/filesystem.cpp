@@ -114,13 +114,13 @@ std::ofstream ofstream(const fs::path& filename, std::ios_base::openmode mode) {
 bool skipByteOrderMark(std::istream& stream) {
     // Check presence of BOM and skip it if it does
     std::array<uint8_t, 3> dataToCheck{0, 0, 0};
-    std::streampos streamPos = stream.tellg();
+    const std::streampos streamPos = stream.tellg();
     stream.read(reinterpret_cast<char*>(dataToCheck.data()), sizeof(dataToCheck));
-    auto bytesRead = stream.gcount();
+    const auto bytesRead = stream.gcount();
 
     // UTF-8 byte order mark
     // https://en.wikipedia.org/wiki/Byte_order_mark
-    std::array<uint8_t, 3> bom = {0xef, 0xbb, 0xbf};
+    const std::array<uint8_t, 3> bom = {0xef, 0xbb, 0xbf};
 
     if (bytesRead == sizeof(dataToCheck) && dataToCheck == bom) {
         // Contains BOM, skip it since it is not part of the data
@@ -193,7 +193,7 @@ fs::path getExecutablePath() {
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
     std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
-    auto pid = getpid();
+    const auto pid = getpid();
     if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path
         throw Exception("Error retrieving executable path");
@@ -231,7 +231,7 @@ fs::path getInviwoBinDir() {
 
 #else
     auto allLibs = getLoadedLibraries();
-    auto it = std::find_if(allLibs.begin(), allLibs.end(), [&](const auto& lib) {
+    const auto it = std::find_if(allLibs.begin(), allLibs.end(), [&](const auto& lib) {
         return lib.string().find("inviwo-core") != std::string::npos;
     });
 
@@ -399,8 +399,8 @@ std::vector<fs::path> getDirectoryContents(const fs::path& path, ListMode mode) 
 
     std::vector<fs::path> res;
 
-    auto begin = std::filesystem::directory_iterator{path};
-    auto end = std::filesystem::directory_iterator{};
+    const auto begin = std::filesystem::directory_iterator{path};
+    const auto end = std::filesystem::directory_iterator{};
 
     switch (mode) {
         case ListMode::Files:
@@ -437,8 +437,8 @@ std::vector<fs::path> getDirectoryContentsRecursively(const fs::path& path, List
 
     std::vector<fs::path> res;
 
-    auto begin = std::filesystem::recursive_directory_iterator{path};
-    auto end = std::filesystem::recursive_directory_iterator{};
+    const auto begin = std::filesystem::recursive_directory_iterator{path};
+    const auto end = std::filesystem::recursive_directory_iterator{};
 
     switch (mode) {
         case ListMode::Files:

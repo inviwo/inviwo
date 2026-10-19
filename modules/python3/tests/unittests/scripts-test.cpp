@@ -54,7 +54,7 @@ namespace inviwo {
 
 namespace {
 std::filesystem::path getPath() {
-    auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
+    const auto path = util::getModuleByTypeOrThrow<Python3Module>().getPath(ModulePath::UnitTests);
     return path / "scripts";
 }
 }  // namespace
@@ -66,20 +66,20 @@ TEST(Python3Scripts, GrabReturnValues) {
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
-        auto pyA = dict["a"];
-        auto pyB = dict["b"];
-        auto pyC = dict["c"];
-        auto pyD = dict["d"];
+        const auto pyA = dict["a"];
+        const auto pyB = dict["b"];
+        const auto pyC = dict["c"];
+        const auto pyD = dict["d"];
 
-        auto cA = pybind11::cast<int>(pyA);
-        auto cB = pybind11::cast<float>(pyB);
-        auto cC = pybind11::cast<std::string>(pyC);
+        const auto cA = pybind11::cast<int>(pyA);
+        const auto cB = pybind11::cast<float>(pyB);
+        const auto cC = pybind11::cast<std::string>(pyC);
 
         EXPECT_EQ(1, cA) << "Return value int";
         EXPECT_FLOAT_EQ(0.2f, cB) << "Return value float";
         EXPECT_STREQ("hello world", cC.c_str()) << "Return value string";
 
-        auto pyList = pybind11::cast<pybind11::list>(pyD);
+        const auto pyList = pybind11::cast<pybind11::list>(pyD);
         EXPECT_EQ(1, pybind11::cast<int>(pyList[0])) << "Return value, int in list";
         EXPECT_EQ(2, pybind11::cast<int>(pyList[1])) << "Return value, int in list";
         EXPECT_STREQ("hello", pybind11::cast<std::string>(pyList[2]).c_str())
@@ -96,10 +96,10 @@ TEST(Python3Scripts, PassValues) {
     auto script = PythonScript::fromFile(getPath() / "passvalues.py");
 
     bool status = false;
-    int a = 1;
-    float b = 0.2f;
-    std::string c = "hello world";
-    std::vector<int> d({2, 3, 4});
+    const int a = 1;
+    const float b = 0.2f;
+    const std::string c = "hello world";
+    const std::vector<int> d({2, 3, 4});
     script.run({{"a", pybind11::cast(a)},
                 {"b", pybind11::cast(b)},
                 {"c", pybind11::cast(c)},
@@ -124,10 +124,10 @@ TEST(Python3Scripts, GLMTest) {
 
     bool status = false;
     script.run([&](pybind11::dict dict) {
-        auto v1 = pybind11::cast<vec3>(dict["v1"]);
-        auto v2 = pybind11::cast<size2_t>(dict["v2"]);
-        auto v3 = pybind11::cast<vec3>(dict["v3"]);
-        auto v4 = pybind11::cast<vec4>(dict["v4"]);
+        const auto v1 = pybind11::cast<vec3>(dict["v1"]);
+        const auto v2 = pybind11::cast<size2_t>(dict["v2"]);
+        const auto v3 = pybind11::cast<vec3>(dict["v3"]);
+        const auto v4 = pybind11::cast<vec4>(dict["v4"]);
 
         auto m1 = pybind11::cast<mat4>(dict["m1"]);
         auto m2 = pybind11::cast<mat3>(dict["m2"]);
@@ -223,7 +223,7 @@ TEST(Python3Scripts, MetaDataTest) {
 
     auto script = PythonScript::fromFile(getPath() / "metadata.py");
 
-    auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataInt8::get());
+    const auto volume = std::make_shared<Volume>(size3_t{2, 2, 2}, DataInt8::get());
     IntProperty prop{"prop", "Prop"};
 
     bool status = false;

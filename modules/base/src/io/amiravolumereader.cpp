@@ -62,7 +62,7 @@ namespace {
  */
 ivec3 parseLatticeDefinition(const std::unordered_map<std::string_view, std::string_view>& defines,
                              const std::filesystem::path& path) {
-    auto it = defines.find("Lattice");
+    const auto it = defines.find("Lattice");
     if (it == defines.end()) {
         throw DataReaderException(SourceContext{}, "Missing Lattice definition: {}", path);
     }
@@ -107,7 +107,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     }
 
     // verify volume parameters
-    if (auto it = header.parameters.find("CoordType"); it == header.parameters.end()) {
+    if (const auto it = header.parameters.find("CoordType"); it == header.parameters.end()) {
         throw DataReaderException(SourceContext{}, "Missing CoordType: {}", path);
     } else if (!iCaseCmp(it->second, "uniform")) {
         throw DataReaderException(SourceContext{},
@@ -119,7 +119,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     auto [bboxMin, bboxMax] = amira::getBoundingBox(header.parameters);
 
     const auto& dataSpec = [&]() {
-        if (auto it = header.dataSpecs.find("Data"); it == header.dataSpecs.end()) {
+        if (const auto it = header.dataSpecs.find("Data"); it == header.dataSpecs.end()) {
             throw DataReaderException(SourceContext{}, "Missing data specifier for Lattice: {}",
                                       path);
         } else {
@@ -138,9 +138,9 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
 
     // locate data section and data matching the lattice identifier
     size_t offset = 0;
-    if (auto dpos = data.find("# Data section follows"); dpos != std::string_view::npos) {
+    if (const auto dpos = data.find("# Data section follows"); dpos != std::string_view::npos) {
         const std::string id = fmt::format("@{}", dataSpec.identifier);
-        if (auto pos = data.find(id, dpos); pos != std::string_view::npos) {
+        if (const auto pos = data.find(id, dpos); pos != std::string_view::npos) {
             // data starts after the lattice identifier followed by a newline character
             offset = data.find('\n', pos) + 1;
         } else {
@@ -157,7 +157,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
                                   path);
     }
 
-    auto volumeRam = createVolumeRAM(size3_t{dim}, format);
+    const auto volumeRam = createVolumeRAM(size3_t{dim}, format);
     std::copy(data.data() + offset, data.data() + offset + bytesToRead,
               static_cast<char*>(volumeRam->getData()));
 
@@ -170,7 +170,7 @@ std::shared_ptr<Volume> AmiraVolumeReader::readData(const std::filesystem::path&
     volume->setOffset(bboxMin);
 
     auto [min, max] = util::volumeMinMax(volumeRam.get());
-    auto compMinMax = dvec2{glm::compMin(min), glm::compMax(max)};
+    const auto compMinMax = dvec2{glm::compMin(min), glm::compMax(max)};
     volume->dataMap.dataRange = compMinMax;
     volume->dataMap.valueRange = compMinMax;
 

@@ -86,7 +86,7 @@ struct ValueWrapper {
         switch (mode) {
             case PropertySerializationMode::Default: {
                 if (d.hasElement(name)) {
-                    auto old = value;
+                    const auto old = value;
                     d.deserialize(name, value);
                     return old != value;
                 } else {
@@ -96,7 +96,7 @@ struct ValueWrapper {
                 }
             }
             case PropertySerializationMode::All: {
-                auto old = value;
+                const auto old = value;
                 d.deserialize(name, value);
                 return old != value;
             }

@@ -161,7 +161,7 @@ void MultichannelRaycaster::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
 
-    size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
+    const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
     for (size_t channel = 0; channel < channels; channel++) {
         utilgl::bindAndSetUniforms(shader_, units, tfs_[channel]);
     }

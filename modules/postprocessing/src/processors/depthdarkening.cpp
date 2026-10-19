@@ -124,7 +124,7 @@ void DepthDarkening::process() {
             inport_.getData()->getDepthLayer()->getRepresentation<LayerRAM>());
         const float* data = layer->getDataTyped();
 
-        auto size = layer->getDimensions().x * layer->getDimensions().y;
+        const auto size = layer->getDimensions().x * layer->getDimensions().y;
 
         vec2 minmax(1, 0);
         minmax =
@@ -137,7 +137,7 @@ void DepthDarkening::process() {
 
         const auto z_n = static_cast<float>(cam_.getNearPlaneDist());
         const auto z_f = static_cast<float>(cam_.getFarPlaneDist());
-        TextureUnit inportTexture0;
+        const TextureUnit inportTexture0;
         utilgl::bindDepthTexture(inport_, inportTexture0.getEnum());
         utilgl::activateTarget(*linearDepth_);
         linearizeDepthShader_.activate();
@@ -154,7 +154,7 @@ void DepthDarkening::process() {
     }
 
     // Pass 2 - Blur depth
-    auto blurredDepth = convolution_.gaussianLowpass(*linearDepth_->getColorLayer(), sigma_);
+    const auto blurredDepth = convolution_.gaussianLowpass(*linearDepth_->getColorLayer(), sigma_);
 
     // Pass 3 - DD
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);

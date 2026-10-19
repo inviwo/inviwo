@@ -166,7 +166,7 @@ Animation& WorkspaceAnimations::insert(size_t index, std::string_view name) {
 }
 
 Animation& WorkspaceAnimations::insert(const_iterator position, std::string_view name) {
-    auto newIt =
+    const auto newIt =
         animations_.insert(position.base(), std::make_unique<Animation>(&animationManager_, name));
     addInternal(newIt);
     return **newIt;
@@ -183,11 +183,11 @@ void WorkspaceAnimations::erase(const_iterator position) {
         return;
     }
     // Upgrade iter
-    auto pos = animations_.begin() + std::distance(animations_.cbegin(), position.base());
+    const auto pos = animations_.begin() + std::distance(animations_.cbegin(), position.base());
 
     if (size() > 1 && find(&mainAnimation_.get()).base() == pos) {
         // The selected one will be removed, select next after
-        auto newMain = pos == animations_.begin() ? pos + 1 : pos - 1;
+        const auto newMain = pos == animations_.begin() ? pos + 1 : pos - 1;
         mainAnimation_.set(**newMain);
     }
     auto anim = std::move(*pos);
@@ -197,14 +197,14 @@ void WorkspaceAnimations::erase(const_iterator position) {
 }
 
 void WorkspaceAnimations::clear() {
-    auto nAnimations = static_cast<int>(size()) - 1;
+    const auto nAnimations = static_cast<int>(size()) - 1;
     for (auto i = nAnimations; i >= 0; i--) {
         erase(i);
     }
 }
 
 void WorkspaceAnimations::setMainAnimation(Animation& anim) {
-    if (auto it = find(&anim); it != end()) {
+    if (const auto it = find(&anim); it != end()) {
         mainAnimation_.set(anim);
     } else {
         add(anim);
@@ -213,7 +213,7 @@ void WorkspaceAnimations::setMainAnimation(Animation& anim) {
 }
 
 size_t WorkspaceAnimations::getMainAnimationIndex() const {
-    auto it = find(&mainAnimation_.get());
+    const auto it = find(&mainAnimation_.get());
     return std::distance(begin(), it);
 }
 

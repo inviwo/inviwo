@@ -116,7 +116,7 @@ std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
 std::vector<Processor*> PCPDataFrameVisualizer::addSourceAndVisualizerNetwork(
     const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, network, origin);
+    const auto sourceAndOutport = addSourceProcessor(filename, network, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, network);
 
     processors.push_back(sourceAndOutport.first);

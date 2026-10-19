@@ -47,7 +47,7 @@ class TextureUnitContainer;
  */
 class IVW_MODULE_BASEGL_API LightComponent : public ShaderComponent {
 public:
-    LightComponent(CameraProperty* camera);
+    explicit LightComponent(CameraProperty* camera);
 
     virtual std::string_view getName() const override;
 

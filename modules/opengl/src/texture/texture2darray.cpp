@@ -64,7 +64,7 @@ Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
 
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-        std::scoped_lock lock{syncMutex};
+        const std::scoped_lock lock{syncMutex};
         if (syncObj != 0) {
             glDeleteSync(syncObj);
             syncObj = 0;
@@ -88,7 +88,7 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
         dimensions_ = rhs.dimensions_;
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
-            std::scoped_lock lock{syncMutex};
+            const std::scoped_lock lock{syncMutex};
             if (syncObj != 0) {
                 glDeleteSync(syncObj);
                 syncObj = 0;

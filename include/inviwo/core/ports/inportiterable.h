@@ -55,7 +55,7 @@ public:
     explicit FlatInportIterator(PortIter pIterBegin, PortIter pIterEnd)
         : portIter_{pIterBegin}, portEnd_{pIterEnd}, dataIndex_{0}, dataSize_{0} {
         if (portIter_ != portEnd_) {
-            auto* ptr = *portIter_;
+            const auto* ptr = *portIter_;
             dataIndex_ = 0;
             dataSize_ = ptr->size();
             maybeAdvanceData();

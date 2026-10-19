@@ -85,14 +85,14 @@ DiscardShortLines::DiscardShortLines()
 
 void DiscardShortLines::process() {
     if (linesIn_.isChanged()) {
-        auto linesPtr = linesIn_.getData();
+        const auto linesPtr = linesIn_.getData();
         auto& lines = *linesPtr;
         if (lines.size() == 0) return;
 
         double maxL = 0;
         double minL = std::numeric_limits<double>::max();
         for (const auto& line : lines) {
-            auto l = line.getLength();
+            const auto l = line.getLength();
             maxL = std::max(maxL, l);
             minL = std::min(minL, l);
         }
@@ -100,23 +100,23 @@ void DiscardShortLines::process() {
         dataMinLength_.set(minL);
         dataMaxLength_.set(maxL);
 
-        auto t = (minLength_.get() - minLength_.getMinValue()) /
-                 (minLength_.getMaxValue() - minLength_.getMinValue());
+        const auto t = (minLength_.get() - minLength_.getMinValue()) /
+                       (minLength_.getMaxValue() - minLength_.getMinValue());
         minLength_.setMinValue(minL);
         minLength_.setMaxValue(maxL);
         minLength_.set(minL + t * (maxL - minL));
     }
 
-    auto linesData = linesIn_.getData();
+    const auto linesData = linesIn_.getData();
     auto& lines = *linesData;
 
-    auto outLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
-    auto filteredLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
+    const auto outLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
+    const auto filteredLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
     auto& outLines = *outLinesData;
     auto& filteredLines = *filteredLinesData;
 
     for (const auto& line : lines) {
-        bool keep = line.getLength() >= minLength_.get();
+        const bool keep = line.getLength() >= minLength_.get();
 
         if (keep) {
             outLines.push_back(line, IntegralLineSet::SetIndex::No);

@@ -191,8 +191,8 @@ constexpr char32_t noTransform(char32_t cp) noexcept { return cp; }
 
 template <StringRange A, StringRange B, typename Transform>
 constexpr auto stringCompare(A&& a, B&& b, Transform transform) {
-    auto ra = codePoints(std::forward<A>(a));
-    auto rb = codePoints(std::forward<B>(b));
+    const auto ra = codePoints(std::forward<A>(a));
+    const auto rb = codePoints(std::forward<B>(b));
     return std::lexicographical_compare_three_way(
         ra.begin(), ra.end(), rb.begin(), rb.end(),
         [&](char32_t x, char32_t y) { return transform(x) <=> transform(y); });

@@ -67,8 +67,8 @@ class IVW_MODULE_QTWIDGETS_API LabelGraphicsItem : public QGraphicsTextItem,
                                                    public LabelGraphicsItemObservable {
 
 public:
-    LabelGraphicsItem(QGraphicsItem* parent, int width = 30,
-                      Qt::Alignment alignment = Qt::AlignLeft | Qt::AlignTop);
+    explicit LabelGraphicsItem(QGraphicsItem* parent, int width = 30,
+                               Qt::Alignment alignment = Qt::AlignLeft | Qt::AlignTop);
     virtual ~LabelGraphicsItem() = default;
 
     QString text() const;

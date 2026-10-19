@@ -174,10 +174,10 @@ void addArrow(ArrowMesh& mesh, IndexBufferRAM& indexBuffer, const ArrowConfig& c
     };
     // base of the arrow
     if (config.headRatio / length < 1.0f) {
-        auto i0 = mesh.addVertex(m * arrowBase[0] + pos, color);
-        auto i1 = mesh.addVertex(m * arrowBase[1] + pos, color);
-        auto i2 = mesh.addVertex(m * arrowBase[2] + pos, color);
-        auto i3 = mesh.addVertex(m * arrowBase[3] + pos, color);
+        const auto i0 = mesh.addVertex(m * arrowBase[0] + pos, color);
+        const auto i1 = mesh.addVertex(m * arrowBase[1] + pos, color);
+        const auto i2 = mesh.addVertex(m * arrowBase[2] + pos, color);
+        const auto i3 = mesh.addVertex(m * arrowBase[3] + pos, color);
         indexBuffer.append({i0, i1, i2, i1, i2, i3});
     }
 
@@ -192,9 +192,9 @@ void addArrow(ArrowMesh& mesh, IndexBufferRAM& indexBuffer, const ArrowConfig& c
         arrowTip[0].y *= widthAdjustment;
         arrowTip[1].y *= widthAdjustment;
 
-        auto i0 = mesh.addVertex(m * arrowTip[0] + pos, color);
-        auto i1 = mesh.addVertex(m * arrowTip[1] + pos, color);
-        auto i2 = mesh.addVertex(m * arrowTip[2] + pos, color);
+        const auto i0 = mesh.addVertex(m * arrowTip[0] + pos, color);
+        const auto i1 = mesh.addVertex(m * arrowTip[1] + pos, color);
+        const auto i2 = mesh.addVertex(m * arrowTip[2] + pos, color);
         indexBuffer.append({i0, i1, i2});
     }
 }
@@ -223,12 +223,12 @@ void addQuiver(ArrowMesh& mesh, IndexBufferRAM& indexBuffer, const ArrowConfig& 
         vec2{std::max(1.0f - config.headRatio / length, 0.0f) + offset.x, hookWidth},
     };
 
-    auto i0 = mesh.addVertex(m * quiver[0] + pos, color);
-    auto i1 = mesh.addVertex(m * quiver[1] + pos, color);
+    const auto i0 = mesh.addVertex(m * quiver[0] + pos, color);
+    const auto i1 = mesh.addVertex(m * quiver[1] + pos, color);
     indexBuffer.append({i0, i1});
     if (config.headRatio > 0.0f && hookWidth > 0.0f) {
-        auto i2 = mesh.addVertex(m * quiver[2] + pos, color);
-        auto i3 = mesh.addVertex(m * quiver[3] + pos, color);
+        const auto i2 = mesh.addVertex(m * quiver[2] + pos, color);
+        const auto i3 = mesh.addVertex(m * quiver[3] + pos, color);
         indexBuffer.append({i1, i2, i1, i3});
     }
 }
@@ -242,21 +242,21 @@ void HedgeHog2D::process() {
 
     const double max = glm::compMax(glm::abs(dataMap.dataRange));
     const double conservativeMax = std::numbers::sqrt2 * max;
-    auto getColor = [this](double t) {
+    const auto getColor = [this](double t) {
         if (tfGroup_.isChecked()) {
             return transferFunction_.get().sample(t);
         }
         return color_.get();
     };
 
-    auto mesh = std::make_shared<ArrowMesh>();
+    const auto mesh = std::make_shared<ArrowMesh>();
     const auto dt = glyphType_.get() == GlyphType::Arrow ? DrawType::Triangles : DrawType::Lines;
-    auto indexBuffer = mesh->addIndexBuffer(dt, ConnectivityType::None);
+    const auto indexBuffer = mesh->addIndexBuffer(dt, ConnectivityType::None);
 
     const vec2 delta{1.0f / vec2{numberOfGlyphs_.get()}};
     const vec2 deltaHalf{delta * 0.5f};
 
-    ImageSampler sampler(inport_.getData());
+    const ImageSampler sampler(inport_.getData());
 
     std::uniform_real_distribution<float> jitterx{-deltaHalf.x, deltaHalf.x};
     std::uniform_real_distribution<float> jittery{-deltaHalf.y, deltaHalf.y};

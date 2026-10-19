@@ -49,7 +49,7 @@ Common functions used in MarchingCubes and MarchingTetrahedron
 namespace marching {
 template <typename T>
 double getValue(const T* src, size3_t pos, size3_t dim, double iso, bool invert) {
-    double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
+    const double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
     return invert ? v - iso : -(v - iso);
 }
 
@@ -70,7 +70,7 @@ template <typename T>
 void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer,
                    std::vector<vec3>& positions, std::vector<vec3>& normals, double iso,
                    bool invert, double dx, double dy, double dz) {
-    auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
+    const auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
         if (n == 1) return {size_t(0)};
         return {size_t(0), n - 1};
     };
@@ -81,12 +81,12 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
     {
         K3DTree<size_t, float> sideVertexTree;
         // Z axis
-        for (auto& k : cubeEdgeIndices(dim.z)) {
+        for (const auto& k : cubeEdgeIndices(dim.z)) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
-                    double x = dx * static_cast<double>(i);
-                    double y = dy * static_cast<double>(j);
-                    double z = dz * static_cast<double>(k);
+                    const double x = dx * static_cast<double>(i);
+                    const double y = dy * static_cast<double>(j);
+                    const double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x + dx, y, z);
@@ -117,11 +117,11 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         K3DTree<size_t, float> sideVertexTree;
         // Y axis
         for (size_t k = 0; k < dim.z - 1; ++k) {
-            for (auto& j : cubeEdgeIndices(dim.y)) {
+            for (const auto& j : cubeEdgeIndices(dim.y)) {
                 for (size_t i = 0; i < dim.x - 1; ++i) {
-                    double x = dx * static_cast<double>(i);
-                    double y = dy * static_cast<double>(j);
-                    double z = dz * static_cast<double>(k);
+                    const double x = dx * static_cast<double>(i);
+                    const double y = dy * static_cast<double>(j);
+                    const double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x + dx, y, z);
@@ -153,10 +153,10 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
         // X axis
         for (size_t k = 0; k < dim.z - 1; ++k) {
             for (size_t j = 0; j < dim.y - 1; ++j) {
-                for (auto& i : cubeEdgeIndices(dim.x)) {
-                    double x = dx * static_cast<double>(i);
-                    double y = dy * static_cast<double>(j);
-                    double z = dz * static_cast<double>(k);
+                for (const auto& i : cubeEdgeIndices(dim.x)) {
+                    const double x = dx * static_cast<double>(i);
+                    const double y = dy * static_cast<double>(j);
+                    const double z = dz * static_cast<double>(k);
 
                     pos[0] = glm::vec3(x, y, z);
                     pos[1] = glm::vec3(x, y + dy, z);

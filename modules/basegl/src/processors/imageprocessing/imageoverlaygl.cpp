@@ -109,7 +109,7 @@ OverlayProperty::OverlayProperty(std::string identifier, std::string displayName
     , viewport_(0, 0, 1, 1)
     , isDeserializing_(false) {
 
-    auto updateCallback = [&]() { updateViewport(); };
+    const auto updateCallback = [&]() { updateViewport(); };
 
     positioningMode_.onChange([&]() {
         pos_.setVisible(positioningMode_.get() == Positioning::Relative);
@@ -169,7 +169,7 @@ void OverlayProperty::deserialize(Deserializer& d) {
 void OverlayProperty::updateViewport() {
     if (isDeserializing_) return;
 
-    vec2 viewDim(viewDimensions_);
+    const vec2 viewDim(viewDimensions_);
 
     // determine size and center position first (absolute coords)
     vec2 pos(viewDim * 0.25f);
@@ -187,7 +187,7 @@ void OverlayProperty::updateViewport() {
     }
 
     // consider anchor position
-    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
+    const vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     pos.x -= shift.x;
     // negate y axis
     pos.y = viewDim.y - (pos.y + shift.y);
@@ -278,7 +278,7 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            bool overlayHandlesEvent =
+            const bool overlayHandlesEvent =
                 (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
                     overlayPort_.propagateEvent(newEvent);
                 }));
@@ -325,7 +325,7 @@ void ImageOverlayGL::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ImageType::ColorDepthPicking);
 
     if (overlayPort_.isReady()) {  // draw overlay
-        utilgl::DepthFuncState depthFunc(GL_ALWAYS);
+        const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
         ivec4 viewport = overlayProperty_.getViewport();
         int borderWidth = 0;
@@ -335,7 +335,8 @@ void ImageOverlayGL::process() {
             viewport += ivec4(-borderWidth, -borderWidth, 2 * borderWidth, 2 * borderWidth);
         }
 
-        utilgl::BlendModeState blendMode(overlayProperty_.getBlendModeGL(), GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::BlendModeState blendMode(overlayProperty_.getBlendModeGL(),
+                                               GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnit colorUnit, depthUnit, pickingUnit;
         shader_.activate();
@@ -348,7 +349,7 @@ void ImageOverlayGL::process() {
 
         utilgl::bindTextures(overlayPort_, colorUnit, depthUnit, pickingUnit);
 
-        utilgl::ViewportState viewportState(viewport);
+        const utilgl::ViewportState viewportState(viewport);
         utilgl::singleDrawImagePlaneRect();
         shader_.deactivate();
     }

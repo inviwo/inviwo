@@ -57,10 +57,10 @@ class DataFormatBase;
  */
 class IVW_MODULE_PYTHON3_API VolumePy : public VolumeRepresentation {
 public:
-    VolumePy(pybind11::array data,
-             const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
-             InterpolationType interpolation = VolumeConfig::defaultInterpolation,
-             const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit VolumePy(pybind11::array data,
+                      const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+                      InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+                      const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
 
     VolumePy(size3_t dimensions, const DataFormatBase* format,
              const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,

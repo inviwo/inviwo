@@ -87,7 +87,7 @@ protected:
 
 // A RAII utility for locking and unlocking the network
 struct IVW_MODULE_ANIMATIONQT_API KeyframeWidgetQtLock {
-    KeyframeWidgetQtLock(KeyframeWidgetQt* keyframe);
+    explicit KeyframeWidgetQtLock(KeyframeWidgetQt* keyframe);
     ~KeyframeWidgetQtLock();
 
     KeyframeWidgetQtLock(const KeyframeWidgetQtLock&) = delete;

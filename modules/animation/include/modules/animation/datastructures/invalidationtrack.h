@@ -55,7 +55,7 @@ class IVW_MODULE_ANIMATION_API InvalidationKeyframe : public BaseKeyframe {
 public:
     using value_type = void;
     InvalidationKeyframe() = default;
-    InvalidationKeyframe(Seconds time);
+    explicit InvalidationKeyframe(Seconds time);
     InvalidationKeyframe(const InvalidationKeyframe&);
     InvalidationKeyframe& operator=(const InvalidationKeyframe&);
     virtual ~InvalidationKeyframe();
@@ -69,7 +69,8 @@ class IVW_MODULE_ANIMATION_API InvalidationKeyframeSequence
     : public BaseKeyframeSequence<InvalidationKeyframe> {
 public:
     InvalidationKeyframeSequence() = default;
-    InvalidationKeyframeSequence(std::vector<std::unique_ptr<InvalidationKeyframe>> keyframes);
+    explicit InvalidationKeyframeSequence(
+        std::vector<std::unique_ptr<InvalidationKeyframe>> keyframes);
     InvalidationKeyframeSequence(const InvalidationKeyframeSequence& rhs) = default;
     InvalidationKeyframeSequence& operator=(const InvalidationKeyframeSequence& that) = default;
     InvalidationKeyframeSequence& operator=(InvalidationKeyframeSequence&& that) = default;
@@ -89,7 +90,7 @@ public:
  */
 class IVW_MODULE_ANIMATION_API InvalidationTrack : public BaseTrack<InvalidationKeyframeSequence> {
 public:
-    InvalidationTrack(ProcessorNetwork* network);
+    explicit InvalidationTrack(ProcessorNetwork* network);
     virtual ~InvalidationTrack();
 
     virtual InvalidationTrack* clone() const override;

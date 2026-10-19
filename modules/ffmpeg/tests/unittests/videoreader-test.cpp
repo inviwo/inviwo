@@ -119,7 +119,7 @@ protected:
 
 TEST_F(VideoReader, GrayscaleFirstFrame) {
     FFmpegLayerReader reader;
-    auto layer = reader.readData(gray);
+    const auto layer = reader.readData(gray);
 
     ASSERT_TRUE(layer);
     EXPECT_EQ(layer->getDimensions(), size2_t(width, height));
@@ -130,7 +130,7 @@ TEST_F(VideoReader, GrayscaleFirstFrame) {
 
 TEST_F(VideoReader, LayersAreFlippedVertically) {
     FFmpegLayerReader reader;
-    auto layer = reader.readData(gray);
+    const auto layer = reader.readData(gray);
 
     // Layers have their origin in the lower left, the first row of a y4m frame is its top row
     EXPECT_DOUBLE_EQ(valueAt(*layer, size2_t{0, 0}), bottomRow);
@@ -139,7 +139,7 @@ TEST_F(VideoReader, LayersAreFlippedVertically) {
 
 TEST_F(VideoReader, ColorFramesAreRGBA) {
     FFmpegLayerReader reader;
-    auto layer = reader.readData(color);
+    const auto layer = reader.readData(color);
 
     ASSERT_TRUE(layer);
     EXPECT_EQ(layer->getDataFormat(), DataVec4UInt8::get());
@@ -150,7 +150,7 @@ TEST_F(VideoReader, ColorFramesAreRGBA) {
 
 TEST_F(VideoReader, IndexOption) {
     FFmpegLayerReader reader;
-    for (auto index : {std::ptrdiff_t{3}, std::ptrdiff_t{1}, std::ptrdiff_t{5}}) {
+    for (const auto index : {std::ptrdiff_t{3}, std::ptrdiff_t{1}, std::ptrdiff_t{5}}) {
         ASSERT_TRUE(reader.setOption(reader::option::index, index));
         EXPECT_DOUBLE_EQ(center(*reader.readData(gray)), lumaOf(static_cast<int>(index)));
     }
@@ -184,7 +184,7 @@ TEST_F(VideoReader, IndexOutOfRangeThrows) {
 
 TEST_F(VideoReader, SequenceReadsAllFrames) {
     FFmpegLayerSequenceReader reader;
-    auto sequence = reader.readData(gray);
+    const auto sequence = reader.readData(gray);
 
     ASSERT_TRUE(sequence);
     ASSERT_EQ(sequence->size(), frames);
@@ -199,7 +199,7 @@ TEST_F(VideoReader, SequenceIndexCountAndStride) {
     ASSERT_TRUE(reader.setOption(reader::option::count, std::ptrdiff_t{2}));
     ASSERT_TRUE(reader.setOption(reader::option::stride, std::ptrdiff_t{2}));
 
-    auto sequence = reader.readData(gray);
+    const auto sequence = reader.readData(gray);
     ASSERT_EQ(sequence->size(), 2);
     EXPECT_DOUBLE_EQ(center(*(*sequence)[0]), lumaOf(1));
     EXPECT_DOUBLE_EQ(center(*(*sequence)[1]), lumaOf(3));
@@ -210,7 +210,7 @@ TEST_F(VideoReader, SequenceCountIsClampedToTheVideoLength) {
     reader.setOption(reader::option::index, std::ptrdiff_t{4});
     reader.setOption(reader::option::count, std::ptrdiff_t{-1});
 
-    auto sequence = reader.readData(gray);
+    const auto sequence = reader.readData(gray);
     EXPECT_EQ(sequence->size(), 2);
 }
 
@@ -230,7 +230,7 @@ TEST_F(VideoReader, VideoInfo) {
 TEST_F(VideoReader, ReadNextFrameEndsWithNullptr) {
     ffmpeg::Video video{gray};
     for (int i = 0; i < frames; ++i) {
-        auto layer = video.readNextFrame();
+        const auto layer = video.readNextFrame();
         ASSERT_TRUE(layer) << "frame " << i;
         EXPECT_DOUBLE_EQ(center(*layer), lumaOf(i));
         EXPECT_EQ(video.currentFrame(), i);
@@ -242,7 +242,7 @@ TEST_F(VideoReader, SeekToTime) {
     ffmpeg::Video video{gray};
     video.seekToTime(ffmpeg::Video::Seconds{0.4});
 
-    auto layer = video.readNextFrame();
+    const auto layer = video.readNextFrame();
     ASSERT_TRUE(layer);
     EXPECT_EQ(video.currentFrame(), 4);
     EXPECT_DOUBLE_EQ(video.currentTime().count(), 0.4);
@@ -252,13 +252,13 @@ TEST_F(VideoReader, SeekToTime) {
 TEST_F(VideoReader, MatchingDestinationLayerIsReused) {
     ffmpeg::Video video{gray};
 
-    auto first = video.readFrame(0);
-    auto second = video.readFrame(1, first);
+    const auto first = video.readFrame(0);
+    const auto second = video.readFrame(1, first);
     EXPECT_EQ(first.get(), second.get());
     EXPECT_DOUBLE_EQ(center(*second), lumaOf(1));
 
-    auto mismatched = std::make_shared<Layer>(size2_t{4, 4}, DataUInt8::get());
-    auto third = video.readFrame(2, mismatched);
+    const auto mismatched = std::make_shared<Layer>(size2_t{4, 4}, DataUInt8::get());
+    const auto third = video.readFrame(2, mismatched);
     EXPECT_NE(third.get(), mismatched.get());
     EXPECT_EQ(third->getDimensions(), size2_t(width, height));
 }

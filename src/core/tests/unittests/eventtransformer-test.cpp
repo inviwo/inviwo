@@ -57,7 +57,7 @@ namespace {
 auto strToLayer(std::string_view str) {
     auto colAndRow = [line = size_t{0},
                       col = size_t{0}](char c) mutable -> std::tuple<char, size_t, size_t> {
-        auto curCol = col;
+        const auto curCol = col;
         if (c == '\n') {
             ++line;
             col = 0;
@@ -91,7 +91,7 @@ auto strToLayer(std::string_view str) {
 
     for (auto [rowNumber, row] :
          util::enumerate(util::as_range(imgRows.rbegin(), imgRows.rend()))) {
-        auto cols = row.substr(upperLeft.x + 1, lowerRight.x - upperLeft.x - 1);
+        const auto cols = row.substr(upperLeft.x + 1, lowerRight.x - upperLeft.x - 1);
         std::ranges::transform(cols, data + rowNumber * dims.x, [](auto c) {
             if (c < '9' && c >= '0') {
                 return static_cast<short>(c - '0');

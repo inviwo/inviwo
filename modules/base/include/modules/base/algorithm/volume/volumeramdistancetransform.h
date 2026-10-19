@@ -122,12 +122,12 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
 
     using int64 = glm::int64;
 
-    auto square = [](auto a) { return a * a; };
+    const auto square = [](auto a) { return a * a; };
 
     progress(0.0);
 
     const auto src = inVolume->getView();
-    auto dst = outDistanceField->getView();
+    const auto dst = outDistanceField->getView();
 
     const i64vec3 srcDim{inVolume->getDimensions()};
     const i64vec3 dstDim{outDistanceField->getDimensions()};
@@ -168,7 +168,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T>* inVolume,
     const util::IndexMapper<3, int64> srcInd(srcDim);
     const util::IndexMapper<3, int64> dstInd(dstDim);
 
-    auto is_feature = [&](const int64 x, const int64 y, const int64 z) {
+    const auto is_feature = [&](const int64 x, const int64 y, const int64 z) {
         return predicate(src[srcInd(x / sm.x, y / sm.y, z / sm.z)]);
     };
 
@@ -333,8 +333,12 @@ void util::volumeDistanceTransform(const Volume* inVolume, VolumeRAMPrecision<U>
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
         using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
 
-        const auto predicateIn = [threshold](const ValueType& val) { return val < threshold; };
-        const auto predicateOut = [threshold](const ValueType& val) { return val > threshold; };
+        const auto predicateIn = [threshold](const ValueType& val) {
+            return static_cast<double>(val) < threshold;
+        };
+        const auto predicateOut = [threshold](const ValueType& val) {
+            return static_cast<double>(val) > threshold;
+        };
 
         const auto normPredicateIn = [threshold](const ValueType& val) {
             return util::glm_convert_normalized<double>(val) < threshold;

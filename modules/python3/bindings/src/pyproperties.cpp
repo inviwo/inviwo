@@ -247,7 +247,7 @@ void exposeProperties(pybind11::module& m) {
         .def("setValues",
              [](TransferFunctionProperty& tp, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
-                 for (auto item : items) {
+                 for (const auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());
                  }
                  tp.get().set(points);
@@ -308,7 +308,7 @@ void exposeProperties(pybind11::module& m) {
         .def("setValues",
              [](IsoValueProperty& ivp, const py::typing::Iterable<TFPrimitiveData>& items) {
                  std::vector<TFPrimitiveData> points;
-                 for (auto item : items) {
+                 for (const auto item : items) {
                      points.emplace_back(item.cast<TFPrimitiveData>());
                  }
                  ivp.get().set(points);

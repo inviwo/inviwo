@@ -49,8 +49,8 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API RangeSliderQt : public QSplitter {
     Q_OBJECT
 public:
-    RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr,
-                  bool showTooltip = false);
+    explicit RangeSliderQt(Qt::Orientation orientation = Qt::Horizontal, QWidget* parent = nullptr,
+                           bool showTooltip = false);
     virtual ~RangeSliderQt() = default;
 
     int minValue() const;

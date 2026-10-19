@@ -61,7 +61,7 @@ CheckBox::CheckBox(std::string_view label, Processor& processor, Renderer& uiRen
     widgetExtent_ = extent;
     action_ = [&]() { log::info("UI checkbox {} toggled: {}", getLabel(), getValue()); };
 
-    std::vector<std::filesystem::path> textureFiles = {
+    const std::vector<std::filesystem::path> textureFiles = {
         "checkbox-fill.png", "checkbox-unchecked.png", "checkbox-checked.png",
         "checkbox-unchecked-halo.png", "checkbox-checked-halo.png"};
     uiTextures_ = uiRenderer_->createUITextures(
@@ -73,12 +73,12 @@ CheckBox::CheckBox(std::string_view label, Processor& processor, Renderer& uiRen
 }
 
 void CheckBox::renderWidget(const ivec2& origin, const size2_t&) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto& uiShader = uiRenderer_->getShader();
+    const auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", uiTextureMap_);
 
@@ -105,10 +105,10 @@ ivec2 CheckBox::computeLabelPos(int descent) const {
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
         const ivec2 extent(getWidgetExtentScaled());
-        ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
+        const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
         // add 1 pixel vertically since the texture is not centered
-        vec2 labelOffset(0.0f, -labelSize.y * 0.5f - 1.0f);
+        const vec2 labelOffset(0.0f, -labelSize.y * 0.5f - 1.0f);
         return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
     }
     return ivec2(0);

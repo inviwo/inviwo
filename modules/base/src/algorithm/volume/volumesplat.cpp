@@ -143,7 +143,7 @@ void splatImpl(std::span<const SplatInput> inputs, const SplatSettings& settings
     nJobs = std::min(nJobs, dims.z);
     if (nJobs == 0) nJobs = 1;
 
-    auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
+    const auto processSlab = [&](std::size_t zStart, std::size_t zStop) {
         return [zStart, zStop, inputs = inputs | std::ranges::to<std::vector>(), indexToWorld,
                 worldToIndex, data, dims, size, weight, error, voxelSizeWorld](
                    const std::function<void(double)>& progress, std::stop_token stop) {
@@ -285,11 +285,11 @@ splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
         }
     }
 
-    auto rep = std::make_shared<VolumeRAMPrecision<float>>(settings.dimensions);
+    const auto rep = std::make_shared<VolumeRAMPrecision<float>>(settings.dimensions);
     std::fill_n(rep->getDataTyped(),
                 settings.dimensions.x * settings.dimensions.y * settings.dimensions.z, 0.0f);
 
-    auto volume = std::make_shared<Volume>(rep);
+    const auto volume = std::make_shared<Volume>(rep);
     volume->setModelMatrix(dmat4{settings.modelMatrix});
     volume->axes = settings.axes;
     volume->dataMap.valueAxis = settings.valueAxis;
@@ -311,7 +311,7 @@ splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
 
     std::vector<std::function<vec2(const std::function<void(double)>&, std::stop_token)>> jobs;
 
-    auto data = rep->getView();
+    const auto data = rep->getView();
 
     switch (settings.kernel) {
         case SplatKernel::Gaussian:
@@ -341,14 +341,14 @@ std::shared_ptr<Volume> splat(const SplatInput& input, const SplatSettings& sett
 
     if (util::getPoolSize() > 0) {
         std::vector<std::future<vec2>> futures;
-        for (auto& job : jobs) {
+        for (const auto& job : jobs) {
             futures.emplace_back(util::dispatchPool([job]() { return job(nullptr, {}); }));
         }
         return collect(futures | std::views::transform([](auto& f) { return f.get(); }) |
                        std::ranges::to<std::vector>());
     } else {
         std::vector<vec2> minMaxes;
-        for (auto& job : jobs) {
+        for (const auto& job : jobs) {
             minMaxes.push_back(job(nullptr, {}));
         }
         return collect(minMaxes);

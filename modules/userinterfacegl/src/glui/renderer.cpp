@@ -96,7 +96,7 @@ Texture2DArray* Renderer::createUITextures(const std::string& name,
     if (auto textures = getUITextures(name)) {
         return textures;
     }
-    auto textures = createUITextureObject(files, sourcePath);
+    const auto textures = createUITextureObject(files, sourcePath);
     uiTextureMap_.insert({name, textures});
     return textures.get();
 }
@@ -129,7 +129,7 @@ TextureQuadRenderer& Renderer::getTextureQuadRenderer() { return quadRenderer_; 
 MeshDrawerGL* Renderer::getMeshDrawer() const { return meshDrawer_.get(); }
 
 Texture2DArray* Renderer::getUITextures(const std::string& name) const {
-    auto it = uiTextureMap_.find(name);
+    const auto it = uiTextureMap_.find(name);
     if (it != uiTextureMap_.end()) {
         return it->second.get();
     } else {
@@ -171,38 +171,38 @@ const vec4& Renderer::getDisabledColor() const { return colorDisabled_; }
 void Renderer::setupRectangleMesh() {
     // set up mesh for drawing a single quad from (0,0) to (1,1) with subdivisions at .45 and
     // .55
-    auto verticesBuffer = util::makeBuffer<vec2>({{0.0f, 0.0f},
-                                                  {0.45f, 0.0f},
-                                                  {0.55f, 0.0f},
-                                                  {1.0f, 0.0f},
-                                                  {0.0f, 0.45f},
-                                                  {0.45f, 0.45f},
-                                                  {0.55f, 0.45f},
-                                                  {1.0f, 0.45f},
-                                                  {0.0f, 0.55f},
-                                                  {0.45f, 0.55f},
-                                                  {0.55f, 0.55f},
-                                                  {1.0f, 0.55f},
-                                                  {0.0f, 1.0f},
-                                                  {0.45f, 1.0f},
-                                                  {0.55f, 1.0f},
-                                                  {1.0f, 1.0f}});
-    auto texCoordsBuffer = util::makeBuffer<vec2>({{0.0f, 1.0f},
-                                                   {0.45f, 1.0f},
-                                                   {0.55f, 1.0f},
-                                                   {1.0f, 1.0f},
-                                                   {0.0f, 0.55f},
-                                                   {0.45f, 0.55f},
-                                                   {0.55f, 0.55f},
-                                                   {1.0f, 0.55f},
-                                                   {0.0f, 0.45f},
-                                                   {0.45f, 0.45f},
-                                                   {0.55f, 0.45f},
-                                                   {1.0f, 0.45f},
-                                                   {0.0f, 0.0f},
-                                                   {0.45f, 0.0f},
-                                                   {0.55f, 0.0f},
-                                                   {1.0f, 0.0f}});
+    const auto verticesBuffer = util::makeBuffer<vec2>({{0.0f, 0.0f},
+                                                        {0.45f, 0.0f},
+                                                        {0.55f, 0.0f},
+                                                        {1.0f, 0.0f},
+                                                        {0.0f, 0.45f},
+                                                        {0.45f, 0.45f},
+                                                        {0.55f, 0.45f},
+                                                        {1.0f, 0.45f},
+                                                        {0.0f, 0.55f},
+                                                        {0.45f, 0.55f},
+                                                        {0.55f, 0.55f},
+                                                        {1.0f, 0.55f},
+                                                        {0.0f, 1.0f},
+                                                        {0.45f, 1.0f},
+                                                        {0.55f, 1.0f},
+                                                        {1.0f, 1.0f}});
+    const auto texCoordsBuffer = util::makeBuffer<vec2>({{0.0f, 1.0f},
+                                                         {0.45f, 1.0f},
+                                                         {0.55f, 1.0f},
+                                                         {1.0f, 1.0f},
+                                                         {0.0f, 0.55f},
+                                                         {0.45f, 0.55f},
+                                                         {0.55f, 0.55f},
+                                                         {1.0f, 0.55f},
+                                                         {0.0f, 0.45f},
+                                                         {0.45f, 0.45f},
+                                                         {0.55f, 0.45f},
+                                                         {1.0f, 0.45f},
+                                                         {0.0f, 0.0f},
+                                                         {0.45f, 0.0f},
+                                                         {0.55f, 0.0f},
+                                                         {1.0f, 0.0f}});
 
     rectangleMesh_ = std::make_shared<Mesh>();
     rectangleMesh_->addBuffer(BufferType::PositionAttrib, verticesBuffer);
@@ -229,10 +229,10 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const std::filesystem::path& sourcePath) const {
     // read in textures
     std::vector<std::shared_ptr<Layer>> textureLayers;
-    auto* factory = InviwoApplication::getPtr()->getDataReaderFactory();
+    const auto* factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(LCString{"png"})) {
         for (const auto& filename : textureFiles) {
-            auto layer = reader->readData(sourcePath / filename);
+            const auto layer = reader->readData(sourcePath / filename);
             textureLayers.push_back(layer);
         }
     } else {
@@ -258,12 +258,12 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
                                                     GL_RGBA8, GL_UNSIGNED_BYTE, GL_LINEAR);
     texture->initialize(nullptr);
 
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     texture->bind();
     for (auto [zIndex, texLayer] : util::enumerate(textureLayers)) {
         auto layerRAM = texLayer->getRepresentation<LayerRAM>();
-        auto glformat = GLFormats::get(layerRAM->getDataFormat()->getId());
+        const auto glformat = GLFormats::get(layerRAM->getDataFormat()->getId());
         // upload data into array texture
         glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, static_cast<GLsizei>(zIndex),
                         static_cast<GLsizei>(texDim.x), static_cast<GLsizei>(texDim.y), 1,

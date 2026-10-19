@@ -43,7 +43,7 @@ class ProcessorNetwork;
 
 class IVW_MODULE_BASE_API ImageToLayerVisualizer : public DataVisualizer {
 public:
-    ImageToLayerVisualizer(InviwoApplication* app);
+    explicit ImageToLayerVisualizer(InviwoApplication* app);
     virtual ~ImageToLayerVisualizer() = default;
 
     virtual std::string getName() const override;

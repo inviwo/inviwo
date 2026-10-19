@@ -48,8 +48,8 @@ namespace animation {
 
 class IVW_MODULE_ANIMATIONQT_API AnimationQtSupplier {
 public:
-    AnimationQtSupplier(AnimationQtModule& animationQtModule);
-    AnimationQtSupplier(InviwoApplication* app);
+    explicit AnimationQtSupplier(AnimationQtModule& animationQtModule);
+    explicit AnimationQtSupplier(InviwoApplication* app);
     AnimationQtSupplier(const AnimationQtSupplier&) = delete;
     AnimationQtSupplier& operator=(const AnimationQtSupplier&) = delete;
     virtual ~AnimationQtSupplier();

@@ -114,13 +114,13 @@ void Mesh2DRenderProcessorGL::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
     shader_.activate();
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    const utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
+    const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const mat4 proj =
         glm::ortho(left_.get(), right_.get(), bottom_.get(), top_.get(), near_.get(), far_.get());
     shader_.setUniform("projectionMatrix", proj);
-    for (auto mesh : inport_) {
+    for (const auto mesh : inport_) {
         utilgl::setShaderUniforms(shader_, *mesh, "geometry");
         shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),

@@ -54,12 +54,12 @@ Button::Button(std::string_view label, Processor& processor, Renderer& uiRendere
     : AbstractButton(label, processor, uiRenderer, extent) {}
 
 void Button::renderWidget(const ivec2& origin, const size2_t&) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
     uiTextures_->bind();
 
     // bind textures
-    auto& uiShader = uiRenderer_->getShader();
+    const auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", uiTextureMap_);
 

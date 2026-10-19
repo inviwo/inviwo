@@ -86,17 +86,17 @@ T haltonSequence(size_t n, size_t base) {
 template <typename T>
 std::shared_ptr<Layer> haltonSequence(size2_t dims, size_t numberOfPoints, size_t baseX = 2,
                                       size_t baseY = 3) {
-    auto layerRam = std::make_shared<LayerRAMPrecision<T>>(LayerReprConfig{
+    const auto layerRam = std::make_shared<LayerRAMPrecision<T>>(LayerReprConfig{
         .dimensions = dims,
         .swizzleMask = swizzlemasks::defaultData(1),
     });
 
     const util::IndexMapper2D index(dims);
-    auto data = layerRam->getView();
+    const auto data = layerRam->getView();
 
     const auto dimsf = vec2(dims - size2_t(1));
     for (size_t i = 1; i <= numberOfPoints; ++i) {
-        auto coord = dimsf * vec2{haltonSequence<T>(i, baseX), haltonSequence<T>(i, baseY)};
+        const auto coord = dimsf * vec2{haltonSequence<T>(i, baseX), haltonSequence<T>(i, baseY)};
         data[index(coord)] = 1;
     }
     return std::make_shared<Layer>(layerRam);
@@ -114,18 +114,18 @@ std::shared_ptr<Layer> haltonSequence(size2_t dims, size_t numberOfPoints, size_
 template <typename T>
 std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size_t baseX = 2,
                                        size_t baseY = 3, size_t baseZ = 5) {
-    auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{
+    const auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{
         .dimensions = dims,
         .swizzleMask = swizzlemasks::defaultData(1),
     });
 
     const util::IndexMapper3D index(dims);
-    auto data = volumeRam->getView();
+    const auto data = volumeRam->getView();
 
     const auto dimsf = vec3(dims - size3_t(1));
     for (size_t i = 1; i <= numberOfPoints; ++i) {
-        auto coord = dimsf * vec3{haltonSequence<T>(i, baseX), haltonSequence<T>(i, baseY),
-                                  haltonSequence<T>(i, baseZ)};
+        const auto coord = dimsf * vec3{haltonSequence<T>(i, baseX), haltonSequence<T>(i, baseY),
+                                        haltonSequence<T>(i, baseZ)};
         data[index(coord)] = 1;
     }
     return std::make_shared<Volume>(volumeRam);
@@ -261,7 +261,7 @@ template <typename T, typename Rand = std::mt19937,
                                                     std::uniform_real_distribution<T>>::type>
 std::shared_ptr<Volume> randomVolume(size3_t dims, Rand& randomNumberGenerator = Rand(),
                                      Dist& distribution = Dist(0, 1)) {
-    auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{
+    const auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{
         .dimensions = dims,
         .swizzleMask = swizzlemasks::defaultData(1),
     });
@@ -292,29 +292,29 @@ std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t start
     auto iterations = endLevel - startLevel + 1;
     float currentPersistance = 1;
     while (currentSize <= size && iterations--) {
-        size2_t layerSize{static_cast<size_t>(currentSize)};
+        const size2_t layerSize{static_cast<size_t>(currentSize)};
         auto dist = std::uniform_real_distribution<float>(-currentPersistance, currentPersistance);
-        auto randomLayer = util::randomLayer<float>(layerSize, randomNumberGenerator, dist);
+        const auto randomLayer = util::randomLayer<float>(layerSize, randomNumberGenerator, dist);
         samplers.push_back(TemplateImageSampler<float, float>(randomLayer.get()));
         levels.push_back(randomLayer);
         currentSize *= 2;
         currentPersistance *= persistence;
     }
 
-    auto layerRam = std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{
+    const auto layerRam = std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{
         .dimensions = dims,
         .swizzleMask = swizzlemasks::defaultData(1),
     });
 
-    auto data = layerRam->getView();
+    const auto data = layerRam->getView();
     const auto repri = 1.0f / static_cast<float>(size);
-    util::IndexMapper2D index(dims);
+    const util::IndexMapper2D index(dims);
     for (size_t y = 0; y < dims.y; y++) {
         for (size_t x = 0; x < dims.x; x++) {
             float v = 0.0f;
             const auto X = static_cast<float>(x) * repri;
             const auto Y = static_cast<float>(y) * repri;
-            for (auto& sampler : samplers) {
+            for (const auto& sampler : samplers) {
                 v += sampler.sample(X, Y);
             }
             v = (v + 1.0f) / 2.0f;
@@ -343,21 +343,21 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
 
     float minDist = static_cast<float>(dims.x);
     minDist /= static_cast<float>(poissonDotsAlongX);  // min pixel distance between samples
-    auto minDist2 = minDist * minDist;
-    size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));
+    const auto minDist2 = minDist * minDist;
+    const size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));
 
-    auto generateRandomPointAround = [&](const glm::i32vec2& point) {
-        auto radius = minDist * (rand(randomNumberGenerator) +
-                                 1);  // random radius between mindist and 2 * mindist
-        auto angle = 2 * std::numbers::pi * rand(randomNumberGenerator);  // random angle
-        auto newX = point.x + radius * std::cos(angle);
-        auto newY = point.y + radius * std::sin(angle);
+    const auto generateRandomPointAround = [&](const glm::i32vec2& point) {
+        const auto radius = minDist * (rand(randomNumberGenerator) +
+                                       1);  // random radius between mindist and 2 * mindist
+        const auto angle = 2 * std::numbers::pi * rand(randomNumberGenerator);  // random angle
+        const auto newX = point.x + radius * std::cos(angle);
+        const auto newY = point.y + radius * std::sin(angle);
         return glm::i32vec2(newX, newY);
     };
 
     std::vector<glm::i32vec2> gridData(glm::compMul(dims), glm::i32vec2{0});
-    util::IndexMapper2D imgIndex(dims);
-    util::IndexMapper2D gridIndex(gridSize);
+    const util::IndexMapper2D imgIndex(dims);
+    const util::IndexMapper2D gridIndex(gridSize);
 
     for (size_t i = 0; i < gridSize.x * gridSize.y; i++) {
         gridData[i] = glm::i32vec2(static_cast<glm::i32>(-2 * minDist));
@@ -372,45 +372,45 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     processList.push_back(firstPoint);
     samplePoints.push_back(firstPoint);
 
-    auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 {
+    const auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 {
         return glm::i32vec2(vec2(p) / minDist);
     };
 
     gridData[gridIndex(toGrid(firstPoint))] = firstPoint;
 
-    int someNumber = 30;
+    const int someNumber = 30;
 
-    auto layerRam = std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{
+    const auto layerRam = std::make_shared<LayerRAMPrecision<float>>(LayerReprConfig{
         .dimensions = dims,
         .swizzleMask = swizzlemasks::defaultData(1),
     });
-    auto layerData = layerRam->getView();
+    const auto layerData = layerRam->getView();
 
     while (processList.size() != 0 && samplePoints.size() < static_cast<size_t>(maxPoints)) {
         std::uniform_int_distribution<size_t> ri(0, processList.size() - 1);
-        auto i = ri(randomNumberGenerator);
-        auto p = processList[i];
+        const auto i = ri(randomNumberGenerator);
+        const auto p = processList[i];
         processList.erase(processList.begin() + i);
 
         for (int j = 0; j < someNumber; j++) {
-            auto newPoint = generateRandomPointAround(p);
+            const auto newPoint = generateRandomPointAround(p);
             if (glm::any(glm::lessThan(newPoint, glm::i32vec2(0))) ||
                 glm::any(glm::greaterThanEqual(newPoint, glm::i32vec2(dims)))) {
                 continue;
             }
 
-            auto newGridPoint = toGrid(newPoint);
+            const auto newGridPoint = toGrid(newPoint);
             bool neighbourhood = false;
 
-            int startX = std::max(0, newGridPoint.x - 2);
-            int startY = std::max(0, newGridPoint.y - 2);
-            int endX = std::min(static_cast<int>(gridSize.x) - 1, newGridPoint.x + 2);
-            int endY = std::min(static_cast<int>(gridSize.y) - 1, newGridPoint.y + 2);
+            const int startX = std::max(0, newGridPoint.x - 2);
+            const int startY = std::max(0, newGridPoint.y - 2);
+            const int endX = std::min(static_cast<int>(gridSize.x) - 1, newGridPoint.x + 2);
+            const int endY = std::min(static_cast<int>(gridSize.y) - 1, newGridPoint.y + 2);
 
             for (int x = startX; x <= endX && !neighbourhood; x++) {
                 for (int y = startY; y <= endY && !neighbourhood; y++) {
-                    auto p2 = gridData[gridIndex(glm::i32vec2(x, y))];
-                    auto dist = glm::distance2(vec2(newPoint), vec2(p2));
+                    const auto p2 = gridData[gridIndex(glm::i32vec2(x, y))];
+                    const auto dist = glm::distance2(vec2(newPoint), vec2(p2));
                     if (dist < minDist2) {
                         neighbourhood = true;
                     }
@@ -419,7 +419,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
             if (!neighbourhood) {
                 processList.push_back(newPoint);
                 samplePoints.push_back(newPoint);
-                auto idx = gridIndex(newGridPoint);
+                const auto idx = gridIndex(newGridPoint);
                 gridData[idx] = newPoint;
                 layerData[imgIndex(newPoint)] = 1;
             }

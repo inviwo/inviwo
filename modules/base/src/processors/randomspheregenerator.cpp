@@ -138,9 +138,9 @@ void RandomSphereGenerator::process() {
     const vec3 extent(scale_.get() * 2.0f);
     const vec3 delta(extent / vec3(gridDim_.get()));
 
-    auto randPos = [&]() { return randVec3(-0.5f, 0.5f); };
-    auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
-    auto randRadius = [&]() { return size_.get() * rand(0.1f, 1.0f); };
+    const auto randPos = [&]() { return randVec3(-0.5f, 0.5f); };
+    const auto randColor = [&]() { return vec4(randVec3(0.5, 1.0), 1); };
+    const auto randRadius = [&]() { return size_.get() * rand(0.1f, 1.0f); };
 
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified() ||
                        enablePicking_.isModified();
@@ -150,11 +150,11 @@ void RandomSphereGenerator::process() {
         const int numSpheres = dim.x * dim.y * dim.z;
         spherePicking_.resize(numSpheres);
 
-        auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+        const auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
 
-        auto vertexRAM = std::make_shared<BufferRAMPrecision<vec3>>(numSpheres);
-        auto colorRAM = std::make_shared<BufferRAMPrecision<vec4>>(numSpheres);
-        auto radiiRAM = std::make_shared<BufferRAMPrecision<float>>(numSpheres);
+        const auto vertexRAM = std::make_shared<BufferRAMPrecision<vec3>>(numSpheres);
+        const auto colorRAM = std::make_shared<BufferRAMPrecision<vec4>>(numSpheres);
+        const auto radiiRAM = std::make_shared<BufferRAMPrecision<float>>(numSpheres);
 
         // keep a reference to vertex position buffer for picking
         positions_ = std::make_shared<Buffer<vec3>>(vertexRAM);
@@ -165,7 +165,7 @@ void RandomSphereGenerator::process() {
                         std::make_shared<Buffer<vec4>>(colorRAM));
         mesh->addBuffer(Mesh::BufferInfo(BufferType::RadiiAttrib), radii_);
         if (enablePicking_.get()) {
-            auto pickingRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(numSpheres);
+            const auto pickingRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(numSpheres);
             auto& data = pickingRAM->getDataContainer();
             // fill in picking IDs
             std::iota(data.begin(), data.end(),
@@ -179,7 +179,7 @@ void RandomSphereGenerator::process() {
         auto& colors = colorRAM->getDataContainer();
         auto& radii = radiiRAM->getDataContainer();
 
-        util::IndexMapper<3, int> indexmapper(dim);
+        const util::IndexMapper<3, int> indexmapper(dim);
         if (jigglePos_.get()) {
             for (int i = 0; i < numSpheres; i++) {
                 vertices[i] = (vec3(indexmapper(i)) + randPos()) * delta + bboxMin;
@@ -202,16 +202,16 @@ float RandomSphereGenerator::rand(const float min, const float max) const {
 }
 
 vec3 RandomSphereGenerator::randVec3(const float min, const float max) const {
-    float x = rand(min, max);
-    float y = rand(min, max);
-    float z = rand(min, max);
+    const float x = rand(min, max);
+    const float y = rand(min, max);
+    const float z = rand(min, max);
     return vec3(x, y, z);
 }
 
 vec3 RandomSphereGenerator::randVec3(const vec3& min, const vec3& max) const {
-    float x = rand(min.x, max.x);
-    float y = rand(min.y, max.y);
-    float z = rand(min.z, max.z);
+    const float x = rand(min.x, max.x);
+    const float y = rand(min.y, max.y);
+    const float z = rand(min.z, max.z);
     return vec3(x, y, z);
 }
 
@@ -221,7 +221,7 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
             p->getEvent()->hash() == MouseEvent::chash()) {
             auto me = p->getEventAs<MouseEvent>();
             if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-                auto delta = getDelta(camera_, p);
+                const auto delta = getDelta(camera_, p);
                 callback(delta);
                 invalidate(InvalidationLevel::InvalidOutput);
                 p->markAsUsed();
@@ -231,7 +231,7 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
 
             auto te = p->getEventAs<TouchEvent>();
             if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
-                auto delta = getDelta(camera_, p);
+                const auto delta = getDelta(camera_, p);
                 callback(delta);
                 invalidate(InvalidationLevel::InvalidOutput);
                 p->markAsUsed();
@@ -241,7 +241,7 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
             auto we = p->getEventAs<WheelEvent>();
             if (radii_) {
                 auto& radii = radii_->getEditableRAMRepresentation()->getDataContainer();
-                auto radius =
+                const auto radius =
                     radii[p->getPickedId()] * (1.0f - 0.05f * static_cast<float>(-we->delta().y));
                 radii[p->getPickedId()] = glm::clamp(radius, scale_ * 0.05f, scale_ * 20.0f);
             }
@@ -257,12 +257,12 @@ vec3 RandomSphereGenerator::getDelta(const Camera& camera, PickingEvent* p) {
     auto prevNDC = p->getPreviousNDC();
 
     // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = p->getPressedDepth();
+    const auto refDepth = p->getPressedDepth();
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+    const auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    const auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
     return (corrWorld - prevWorld);
 }
 

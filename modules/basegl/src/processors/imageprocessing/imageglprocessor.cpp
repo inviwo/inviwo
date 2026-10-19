@@ -57,7 +57,7 @@ class ShaderResource;
 
 namespace detail {
 
-void syncMetaDataAndColorLayerState(ImageInport& inport, Image& dstImage,
+void syncMetaDataAndColorLayerState(const ImageInport& inport, Image& dstImage,
                                     std::optional<SwizzleMask> swizzleMask = std::nullopt) {
     const auto srcImage = inport.getData();
     const auto srcColorLayer = srcImage->getColorLayer();
@@ -70,7 +70,7 @@ void syncMetaDataAndColorLayerState(ImageInport& inport, Image& dstImage,
     dstColorLayer->setInterpolation(inport.getData()->getColorLayer()->getInterpolation());
 }
 
-bool equalColorLayerState(ImageInport& inport, ImageOutport& outport,
+bool equalColorLayerState(const ImageInport& inport, const ImageOutport& outport,
                           std::optional<SwizzleMask> swizzleMask = std::nullopt) {
     const auto source = inport.getData()->getColorLayer();
     auto dest = outport.getData()->getColorLayer();
@@ -135,7 +135,7 @@ void ImageGLProcessor::process() {
 
         if (!outport_.hasEditableData() ||
             detail::needsNewImage(inport_, outport_, dim, dataformat, swizzlemask)) {
-            auto img = std::make_shared<Image>(dim, dataformat);
+            const auto img = std::make_shared<Image>(dim, dataformat);
             detail::syncMetaDataAndColorLayerState(inport_, *img, swizzlemask);
 
             outport_.setData(img);

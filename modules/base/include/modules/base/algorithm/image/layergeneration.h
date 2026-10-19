@@ -69,8 +69,8 @@ std::unique_ptr<Layer> generateLayer(const size2_t& dimensions, const mat3& basi
                                      const Functor& function) {
     using T = decltype(function(dimensions));
 
-    auto ram = std::make_shared<LayerRAMPrecision<T>>(dimensions);
-    auto data = ram->getView();
+    const auto ram = std::make_shared<LayerRAMPrecision<T>>(dimensions);
+    const auto data = ram->getView();
     const IndexMapper2D im(dimensions);
 
     for (size_t y = 0; y < dimensions.y; ++y) {
@@ -80,7 +80,8 @@ std::unique_ptr<Layer> generateLayer(const size2_t& dimensions, const mat3& basi
         }
     }
 
-    auto minmax = util::dataMinMax(data.data(), glm::compMul(dimensions), IgnoreSpecialValues::Yes);
+    const auto minmax =
+        util::dataMinMax(data.data(), glm::compMul(dimensions), IgnoreSpecialValues::Yes);
 
     auto layer = std::make_unique<Layer>(ram);
     layer->setBasis(basis);

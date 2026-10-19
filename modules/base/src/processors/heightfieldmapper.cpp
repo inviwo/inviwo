@@ -123,7 +123,7 @@ HeightFieldMapper::~HeightFieldMapper() {}
 void HeightFieldMapper::process() {
     if (!inport_.isReady()) return;
 
-    auto srcImg = inport_.getData();
+    const auto srcImg = inport_.getData();
     if (!srcImg) {
         log::warn("No valid input image given");
         return;
@@ -131,8 +131,8 @@ void HeightFieldMapper::process() {
 
     // check the number of channels
     const DataFormatBase* format = srcImg->getDataFormat();
-    std::size_t numInputChannels = format->getComponents();
-    size2_t dim = srcImg->getDimensions();
+    const std::size_t numInputChannels = format->getComponents();
+    const size2_t dim = srcImg->getDimensions();
 
     Image* outImg = nullptr;
 
@@ -196,28 +196,28 @@ void HeightFieldMapper::process() {
     }
 
     // rescale data set
-    std::size_t numValues = dim.x * dim.y;
+    const std::size_t numValues = dim.x * dim.y;
     // determine min/max values
-    float minVal = *std::min_element(data, data + numValues);
-    float maxVal = *std::max_element(data, data + numValues);
+    const float minVal = *std::min_element(data, data + numValues);
+    const float maxVal = *std::max_element(data, data + numValues);
 
     switch (scalingModeProp_.get()) {
         case HeightFieldScaling::SeaLevel: {
             // scale heightfield based on sea level and min/max height
-            float sealevel = seaLevel_.get();
-            float aboveSea = maxVal - sealevel;
-            float belowSea = minVal - sealevel;
+            const float sealevel = seaLevel_.get();
+            const float aboveSea = maxVal - sealevel;
+            const float belowSea = minVal - sealevel;
 
-            float factor = maxHeight_.get() / std::max(aboveSea, std::abs(belowSea));
+            const float factor = maxHeight_.get() / std::max(aboveSea, std::abs(belowSea));
             for (std::size_t i = 0; i < numValues; ++i) {
                 data[i] = (data[i] - sealevel) * factor;
             }
         } break;
         case HeightFieldScaling::DataRange: {
             // scale data to [heightRange_.min : heightRange_.max]
-            glm::vec2 range(heightRange_.get());
+            const glm::vec2 range(heightRange_.get());
 
-            float factor = (range.y - range.x) / (maxVal - minVal);
+            const float factor = (range.y - range.x) / (maxVal - minVal);
             for (std::size_t i = 0; i < numValues; ++i) {
                 data[i] = (data[i] - minVal) * factor + range.x;
             }
@@ -225,7 +225,7 @@ void HeightFieldMapper::process() {
         case HeightFieldScaling::FixedRange:
         default:                             {
             // scale data to [0:1] range
-            float delta = 1.0f / (maxVal - minVal);
+            const float delta = 1.0f / (maxVal - minVal);
             for (std::size_t i = 0; i < numValues; ++i) {
                 data[i] = (data[i] - minVal) * delta;
             }

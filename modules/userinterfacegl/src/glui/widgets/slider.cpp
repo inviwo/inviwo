@@ -75,7 +75,7 @@ Slider::Slider(std::string_view label, int value, int minValue, int maxValue, Pr
             glm::clamp(static_cast<int>(round(prevValue_ + convertDeltaToSlider(delta) *
                                                                static_cast<double>(max_ - min_))),
                        min_, max_);
-        bool triggerUpdate = (value_ != newVal);
+        const bool triggerUpdate = (value_ != newVal);
         value_ = newVal;
         return triggerUpdate;
     };
@@ -112,11 +112,11 @@ int Slider::getMinValue() const { return min_; }
 int Slider::getMaxValue() const { return max_; }
 
 void Slider::renderWidget(const ivec2& origin, const size2_t&) {
-    TextureUnit texUnit;
+    const TextureUnit texUnit;
     texUnit.activate();
 
     // bind textures
-    auto& uiShader = uiRenderer_->getShader();
+    const auto& uiShader = uiRenderer_->getShader();
     uiShader.setUniform("arrayTexSampler", texUnit.getUnitNumber());
     uiShader.setUniform("arrayTexMap", uiTextureMap_);
 
@@ -169,9 +169,9 @@ ivec2 Slider::computeLabelPos(int descent) const {
         const ivec2 extent(getWidgetExtentScaled());
         vec2 labelSize(labelExtent_);
         labelSize.y -= descent;
-        ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
+        const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
-        vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
+        const vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
 
         return ivec2(labelOrigin + ivec2(labelOffset + 0.5f));
     }

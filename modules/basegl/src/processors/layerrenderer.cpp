@@ -68,9 +68,9 @@ LayerRenderer::LayerRenderer()
     addPort(outport_);
     addProperties(camera_, trackball_);
 
-    auto verticesBuffer =
+    const auto verticesBuffer =
         util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-    auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
+    const auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
     mesh_.addBuffer(BufferType::PositionAttrib, verticesBuffer);
     mesh_.addBuffer(BufferType::TexCoordAttrib, verticesBuffer);

@@ -77,7 +77,7 @@ private:
         if (connection) QObject::disconnect(connection);
     }
     void connect() {
-        if (T* ptr = get()) {
+        if (const T* ptr = get()) {
             connection = QObject::connect(ptr, &T::destroyed, [this](QObject*) { release(); });
         }
     }

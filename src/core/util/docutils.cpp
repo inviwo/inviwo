@@ -52,7 +52,7 @@ void TableBuilder::tabledata(Document::DocumentHandle& row, const char* const va
 void TableBuilder::tabledata(Document::DocumentHandle& row, Span_t) {
     auto l = row.get({Document::PathComponent::last()});
     if (l) {
-        auto it = l.element().attributes().find("colspan");
+        const auto it = l.element().attributes().find("colspan");
         if (it != l.element().attributes().end()) {
             std::stringstream ss;
             ss << it->second;

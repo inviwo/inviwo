@@ -70,7 +70,7 @@ TEST(InterpolationTest, LinerInterpolationCharVec) {
     using Inter = Interpolation<u8vec3, double>;
 
     // helpers to print numberical values instead of chars incase of error
-    auto expect_eq = [](u8vec3 a, u8vec3 b, std::string msg = "") {
+    const auto expect_eq = [](u8vec3 a, u8vec3 b, std::string msg = "") {
         using u16vec3 = glm::u16vec3;
         if (msg != "") {
             EXPECT_EQ(u16vec3(a), u16vec3(b)) << msg;

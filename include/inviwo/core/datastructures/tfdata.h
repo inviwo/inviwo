@@ -89,7 +89,7 @@ public:
         }
 
         virtual const DataMapper* getDataMap() const override {
-            if (auto data = port->getData()) {
+            if (const auto data = port->getData()) {
                 return TFDataTraits<D>::getDataMap(*data);
             } else {
                 return nullptr;
@@ -98,7 +98,7 @@ public:
 
         virtual HistogramCache::Result calculateHistograms(
             const std::function<HistogramCache::Callback>& whenDone) const override {
-            if (auto data = port->getData()) {
+            if (const auto data = port->getData()) {
                 return TFDataTraits<D>::calculateHistograms(*data, whenDone);
             } else {
                 return {.progress = HistogramCache::Progress::NoData};

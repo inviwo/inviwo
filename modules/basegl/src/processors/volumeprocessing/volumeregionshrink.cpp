@@ -177,7 +177,7 @@ VolumeRegionShrink::VolumeRegionShrink()
 }
 
 void VolumeRegionShrink::process() {
-    auto volume = inport_.getData();
+    const auto volume = inport_.getData();
 
     dataRange_.set(volume->dataMap.dataRange);
     valueRange_.set(volume->dataMap.valueRange);
@@ -212,7 +212,7 @@ void VolumeRegionShrink::process() {
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     fbo_.activate();
-    auto* outGL0 = out[0]->getEditableRepresentation<VolumeGL>();
+    const auto* outGL0 = out[0]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL0->getTexture().get(), 0);
 
     const utilgl::Activate as{&shader_};
@@ -243,7 +243,7 @@ void VolumeRegionShrink::process() {
 
     out[1] = cache_(config);
 
-    auto* outGL1 = out[1]->getEditableRepresentation<VolumeGL>();
+    const auto* outGL1 = out[1]->getEditableRepresentation<VolumeGL>();
     fbo_.attachColorTexture(outGL1->getTexture().get(), 1);
 
     size_t src = 1;

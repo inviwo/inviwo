@@ -159,13 +159,14 @@ void CubeRenderer::process() {
         auto& shader = shaders_.getShader(*mesh);
 
         shader.activate();
-        utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        const utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
         utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultSize_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                           2.0f / outport_.getDimensions().y));
+        shader.setUniform("viewport",
+                          vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                               2.0f / static_cast<float>(outport_.getDimensions().y)));
 
         MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo());

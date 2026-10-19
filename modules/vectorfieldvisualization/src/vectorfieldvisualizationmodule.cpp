@@ -217,7 +217,7 @@ bool VectorFieldVisualizationModule::Converter::updateAllowLooping(TxElement* no
 VectorFieldVisualizationModule::Converter::Converter(int version) : version_(version) {}
 
 bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
-    std::vector<xml::IdentifierReplacement> repl = {
+    const std::vector<xml::IdentifierReplacement> repl = {
         {{xml::Kind::processor("org.inviwo.StreamRibbons"), xml::Kind::inport("Inport")},
          "vectorVolume",
          "sampler"},
@@ -273,14 +273,14 @@ bool VectorFieldVisualizationModule::Converter::integralLineTracerMetaDataProper
     std::vector<xml::ElementMatcher> selectors;
     xml::ElementMatcher popertiesMatcher;
     popertiesMatcher.name = "Properties";
-    for (std::string id : {"PathLines", "StreamLines", "StreamLines2D"}) {
-        auto kind = xml::Kind::processor("org.inviwo." + id);
+    for (const std::string id : {"PathLines", "StreamLines", "StreamLines2D"}) {
+        const auto kind = xml::Kind::processor("org.inviwo." + id);
         selectors.insert(selectors.end(), kind.getMatchers().begin(), kind.getMatchers().end());
         selectors.push_back(popertiesMatcher);
     }
     bool res = false;
     xml::visitMatchingNodes(root, selectors, [&res](TxElement* node) {
-        for (std::string id : {"calculateCurvature", "calculateTortuosity"}) {
+        for (const std::string id : {"calculateCurvature", "calculateTortuosity"}) {
             TxElement prop("Property");
             prop.SetAttribute("type", "org.inviwo.BoolProperty");
             prop.SetAttribute("identifier", id);

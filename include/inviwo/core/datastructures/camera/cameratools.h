@@ -50,7 +50,7 @@ namespace util {
  * @see PerspectiveCamera
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API DoubleRefProperty* getCameraFovProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleRefProperty* getCameraFovProperty(const CameraProperty& cameraProperty);
 
 /**
  * @brief Create a vertical fov property for use in a camera property
@@ -76,7 +76,7 @@ IVW_CORE_API DoubleRefProperty* updateOrCreateCameraFovProperty(
  * @return the width property if found, nullptr otherwise
  * @see OrthographicCamera
  */
-IVW_CORE_API DoubleRefProperty* getCameraWidthProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleRefProperty* getCameraWidthProperty(const CameraProperty& cameraProperty);
 
 /**
  * @brief Create a width property for use in a CameraProperty
@@ -100,7 +100,8 @@ IVW_CORE_API DoubleRefProperty* updateOrCreateCameraWidthProperty(
  * @return the eye offset property if found, nullptr otherwise
  * @see SkewedPerspectiveCamera
  */
-IVW_CORE_API DoubleVec2RefProperty* getCameraEyeOffsetProperty(CameraProperty& cameraProperty);
+IVW_CORE_API DoubleVec2RefProperty* getCameraEyeOffsetProperty(
+    const CameraProperty& cameraProperty);
 
 /**
  * @brief Create an eye offset property for use in a camera property

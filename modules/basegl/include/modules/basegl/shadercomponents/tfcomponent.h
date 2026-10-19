@@ -53,7 +53,7 @@ namespace inviwo {
 
 namespace detail {
 
-IVW_MODULE_BASEGL_API void setUniforms(Shader& shader, const TransferFunctionProperty& tf);
+IVW_MODULE_BASEGL_API void setUniforms(const Shader& shader, const TransferFunctionProperty& tf);
 IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>& dest,
                                           const TransferFunctionProperty& tf);
 

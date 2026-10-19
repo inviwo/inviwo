@@ -56,7 +56,7 @@ namespace inviwo {
 template <typename T>
 class AnglePropertyWidgetQt : public PropertyWidgetQt {
 public:
-    AnglePropertyWidgetQt(OrdinalProperty<T>* property);
+    explicit AnglePropertyWidgetQt(OrdinalProperty<T>* property);
     virtual ~AnglePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
@@ -105,7 +105,7 @@ AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
 
 template <typename T>
 void AnglePropertyWidgetQt<T>::updateFromProperty() {
-    QSignalBlocker block{angleWidget_};
+    const QSignalBlocker block{angleWidget_};
     angleWidget_->setMinMaxAngle(static_cast<double>(getProperty()->getMinValue()),
                                  static_cast<double>(getProperty()->getMaxValue()));
     angleWidget_->setAngle(static_cast<double>(getProperty()->get()));
