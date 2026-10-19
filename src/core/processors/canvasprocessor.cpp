@@ -44,6 +44,9 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <algorithm>
+#include <cmath>
+
 namespace inviwo {
 
 CanvasProcessor::CanvasProcessor(InviwoApplication* app)
@@ -117,7 +120,7 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                         if (const auto it =
                                 std::find_if(exts.begin(), exts.end(),
                                              [](auto& ext) { return ext.extension == "png"; });
-                            it == exts.end()) {
+                            it != exts.end()) {
                             opts.selectedIndex = std::distance(exts.begin(), it);
                         }
 
@@ -300,8 +303,10 @@ size2_t CanvasProcessor::calcScaledSize(size2_t size, float scale) {
     const int minDim = size.x >= size.y ? 1 : 0;
 
     const double ratio = static_cast<double>(size[minDim]) / static_cast<double>(size[maxDim]);
-    size[maxDim] = static_cast<int>(static_cast<double>(size[maxDim]) * scale);
-    size[minDim] = static_cast<int>(static_cast<double>(size[maxDim]) * ratio);
+    size[maxDim] = std::max<size_t>(
+        1, static_cast<size_t>(std::round(static_cast<double>(size[maxDim]) * scale)));
+    size[minDim] = std::max<size_t>(
+        1, static_cast<size_t>(std::round(static_cast<double>(size[maxDim]) * ratio)));
 
     return size;
 }
@@ -389,9 +394,9 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
             sizeChanged();
         } else {
             inport_.propagateEvent(resizeEvent, nullptr);
-            // Make sure this processor is invalidated.
-            invalidate(InvalidationLevel::InvalidOutput);
         }
+        // Make sure this processor is invalidated.
+        invalidate(InvalidationLevel::InvalidOutput);
     } else {
         bool used = event->hasBeenUsed();
         for (auto* inport : getInports()) {

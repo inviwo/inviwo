@@ -162,9 +162,9 @@ void CanvasProcessorWidgetQt::setPosition(ivec2 pos) {
 }
 
 void CanvasProcessorWidgetQt::setDimensions(ivec2 dimensions) {
-    if (dimensions != utilqt::toGLM(Super::size())) {
-        const auto dpr = window()->devicePixelRatio();
-        const ivec2 logicalDim = static_cast<ivec2>(glm::round(dimensions / dpr));
+    const auto dpr = window()->devicePixelRatio();
+    const auto logicalDim = static_cast<ivec2>(glm::round(dimensions / dpr));
+    if (logicalDim != utilqt::toGLM(Super::size())) {
         resize(logicalDim.x, logicalDim.y);  // This will trigger a resize event.
     }
 }

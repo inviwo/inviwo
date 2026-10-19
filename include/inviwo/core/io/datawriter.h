@@ -40,6 +40,10 @@
 
 namespace inviwo {
 
+namespace filesystem {
+class FileHandle;
+}  // namespace filesystem
+
 enum class Overwrite { No, Yes };
 
 /**
@@ -108,6 +112,8 @@ protected:
      */
     std::ofstream open(const std::filesystem::path& path,
                        std::ios_base::openmode mode = std::ios_base::out) const;
+
+    filesystem::FileHandle fopen(const std::filesystem::path& path, const char* mode) const;
 
     virtual bool canWrite(const std::type_index& index) const = 0;
 

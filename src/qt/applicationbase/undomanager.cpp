@@ -66,9 +66,8 @@ public:
         , sessionStart_{clock_t::now()}
         , restored_{[this]() -> std::optional<std::pmr::string> {
             if (std::filesystem::is_regular_file(path_ / "autosave.inv")) {
-                FILE* file = filesystem::fopen(path_ / "autosave.inv", "rb");
+                auto file = filesystem::FileHandle{path_ / "autosave.inv", "rb"};
                 if (!file) return std::nullopt;
-                const util::OnScopeExit closeFile{[file]() { std::fclose(file); }};
 
                 const long length = [&]() {
                     std::fseek(file, 0, SEEK_END);
