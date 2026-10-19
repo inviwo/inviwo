@@ -35,7 +35,7 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <array>
-#include <iosfwd>
+#include <string_view>
 
 namespace inviwo {
 
@@ -66,13 +66,17 @@ IVW_CORE_API std::string_view enumToStr(ImageChannel b);
 IVW_CORE_API std::string_view enumToStr(InterpolationType b);
 IVW_CORE_API std::string_view enumToStr(Wrapping b);
 
-IVW_CORE_API std::istream& operator>>(std::istream& ss, ImageChannel& channel);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, SwizzleMask& mask);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, InterpolationType& interpolation);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping& wrapping);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping1D& wrapping);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping2D& wrapping);
-IVW_CORE_API std::istream& operator>>(std::istream& ss, Wrapping3D& wrapping);
+IVW_CORE_API std::optional<ImageChannel> charToImageChannel(char c);
+
+IVW_CORE_API std::optional<SwizzleMask> strToSwizzleMask(std::string_view str);
+
+IVW_CORE_API std::optional<ImageType> strToImageType(std::string_view str);
+IVW_CORE_API std::optional<LayerType> strToLayerType(std::string_view str);
+IVW_CORE_API std::optional<InterpolationType> strToInterpolationType(std::string_view str);
+IVW_CORE_API std::optional<Wrapping> strToWrapping(std::string_view str);
+IVW_CORE_API std::optional<Wrapping1D> strToWrapping1D(std::string_view str);
+IVW_CORE_API std::optional<Wrapping2D> strToWrapping2D(std::string_view str);
+IVW_CORE_API std::optional<Wrapping3D> strToWrapping3D(std::string_view str);
 
 namespace swizzlemasks {
 constexpr SwizzleMask rgb = {
