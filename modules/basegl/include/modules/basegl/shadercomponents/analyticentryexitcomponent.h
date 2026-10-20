@@ -68,6 +68,10 @@ class IVW_MODULE_BASEGL_API AnalyticEntryExitComponent : public ShaderComponent 
 public:
     enum class Shape : std::uint8_t { Parallelepiped, Sphere };
 
+    explicit AnalyticEntryExitComponent(
+        std::function<glm::dmat4(CoordinateSpace from, CoordinateSpace to)> getTransform,
+        std::string_view cameraName = "camera");
+
     explicit AnalyticEntryExitComponent(VolumeInport& volume,
                                         std::string_view cameraName = "camera");
 
@@ -93,7 +97,7 @@ public:
     FloatProperty radius;
 
 private:
-    VolumeInport* volume_;
+    std::function<glm::dmat4(CoordinateSpace from, CoordinateSpace to)> getTransform_;
     std::string cameraName_;
 };
 
