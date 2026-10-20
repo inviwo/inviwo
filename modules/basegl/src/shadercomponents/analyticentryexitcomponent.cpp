@@ -49,8 +49,9 @@ constexpr std::string_view prefix = "entryExit";
 
 }  // namespace
 
-AnalyticEntryExitComponent::AnalyticEntryExitComponent(VolumeInport& volume,
-                                                       std::string_view cameraName)
+AnalyticEntryExitComponent::AnalyticEntryExitComponent(
+    std::function<glm::dmat4(CoordinateSpace from, CoordinateSpace to)> getTransform,
+    std::string_view cameraName)
     : ShaderComponent()
     , geometry{"geometry", "Entry Exit Geometry",
                "The geometry used to analytically compute the ray entry and exit points"_help}
@@ -86,7 +87,7 @@ AnalyticEntryExitComponent::AnalyticEntryExitComponent(VolumeInport& volume,
     , center{"center", "Center",
              util::ordinalSymmetricVector(vec3{0.5f}, 1.0f).set("Center of the sphere"_help)}
     , radius{"radius", "Radius", util::ordinalLength(0.5f, 1.0f).set("Radius of the sphere"_help)}
-    , volume_{&volume}
+    , getTransform_{std::move(getTransform)}
     , cameraName_{cameraName} {
 
     geometry.addProperties(shape, space, clipToVolume, origin, edge1, edge2, edge3, center, radius);
@@ -105,12 +106,20 @@ AnalyticEntryExitComponent::AnalyticEntryExitComponent(VolumeInport& volume,
     radius.visibilityDependsOn(shape, isSphere);
 }
 
+AnalyticEntryExitComponent::AnalyticEntryExitComponent(VolumeInport& volume,
+                                                       std::string_view cameraName)
+    : AnalyticEntryExitComponent(
+          [vp = &volume](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
+              const auto volume = vp->getData();
+              if (!volume) glm::dmat4{1.0};
+              const auto& ct = volume->getCoordinateTransformer();
+              return ct.getMatrix(from, to);
+          },
+          cameraName) {}
+
 std::string_view AnalyticEntryExitComponent::getName() const { return "analyticentryexit"; }
 
 void AnalyticEntryExitComponent::process(Shader& shader, TextureUnitContainer&) {
-    const auto volume = volume_->getData();
-    if (!volume) return;
-    const auto& ct = volume->getCoordinateTransformer();
 
     // Transformation from the canonical shape, i.e. the unit cube [0,1]^3 or the unit sphere
     // centered at the origin, to the space selected for the geometry.
@@ -128,14 +137,16 @@ void AnalyticEntryExitComponent::process(Shader& shader, TextureUnitContainer&) 
     }();
 
     const dmat4 shapeToWorld =
-        ct.getMatrix(space.getSelectedValue(), CoordinateSpace::World) * shapeToGeometry;
+        getTransform_(space.getSelectedValue(), CoordinateSpace::World) * shapeToGeometry;
 
     const double det = glm::determinant(shapeToWorld);
     const bool valid = det != 0.0 && std::isfinite(det);
 
     shader.setUniform(fmt::format("{}WorldToShape", prefix),
                       valid ? mat4{glm::inverse(shapeToWorld)} : mat4{1.0f});
-    shader.setUniform(fmt::format("{}WorldToTexture", prefix), mat4{ct.getWorldToTextureMatrix()});
+
+    shader.setUniform(fmt::format("{}WorldToTexture", prefix),
+                      mat4{getTransform_(CoordinateSpace::World, CoordinateSpace::Data)});
     shader.setUniform(fmt::format("{}ValidShape", prefix), valid);
     shader.setUniform(fmt::format("{}ClipToVolume", prefix), clipToVolume.get());
 }
