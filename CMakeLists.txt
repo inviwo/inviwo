@@ -71,44 +71,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 enable_testing()
 
-option(IVW_CFG_USE_CCACHE_MSVC "build using cache on windows" OFF)
-if(IVW_CFG_USE_CCACHE_MSVC)
-    # By default Visual Studio generators will use /Zi which is not compatible
-    # with ccache, so tell Visual Studio to use /Z7 instead.
-    message(STATUS "Setting MSVC debug information format to 'Embedded'")
-    set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
-
-    # this expects a copy of ccache.exe to be in CMAKE_BINARY_DIR renamed to cl.exe
-    set(CMAKE_VS_GLOBALS
-        "CLToolExe=cl.exe"
-        "CLToolPath=${CMAKE_BINARY_DIR}"
-        "UseMultiToolTask=true"
-    )
-endif()
-option(IVW_CFG_USE_CCACHE_XCODE "build using cache in xcode" OFF)
-if(IVW_CFG_USE_CCACHE_XCODE)
-    message(STATUS "Configuring ccache for use with XCode")
-    message(STATUS " * CXX = ${CMAKE_CXX_COMPILER}")
-    message(STATUS " * C   = ${CMAKE_C_COMPILER}")
-
-    file(CONFIGURE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/launcher-c   CONTENT [=[#!/bin/sh
-        export CCACHE_SLOPPINESS=clang_index_store
-        exec ccache @CMAKE_C_COMPILER@ "$@"
-    ]=]
-    @ONLY)
-    file(CONFIGURE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx CONTENT [=[#!/bin/sh
-        export CCACHE_SLOPPINESS=clang_index_store
-        exec ccache @CMAKE_CXX_COMPILER@ "$@"
-    ]=]
-    @ONLY)
-    file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/launcher-c ${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx
-         FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
-
-    set(CMAKE_XCODE_ATTRIBUTE_CC          "${CMAKE_CURRENT_BINARY_DIR}/launcher-c")
-    set(CMAKE_XCODE_ATTRIBUTE_CXX         "${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx")
-    set(CMAKE_XCODE_ATTRIBUTE_LD          "${CMAKE_CURRENT_BINARY_DIR}/launcher-c")
-    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS  "${CMAKE_CURRENT_BINARY_DIR}/launcher-cxx")
-endif()
+include(cmake/ccache.cmake)
 
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
