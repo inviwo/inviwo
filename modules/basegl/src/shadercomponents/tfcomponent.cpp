@@ -86,14 +86,14 @@ void setUniforms(const Shader& shader, const TransferFunctionProperty& tf) {
 }  // namespace detail
 
 TFComponent::TFComponent(std::string_view identifier, std::string_view name, Document help,
-                         VolumeInport& volume)
+                         TFData tfdata)
     : ShaderComponent()
     , tf{identifier,
          name,
          std::move(help),
          TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
                            {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
-         &volume,
+         std::move(tfdata),
          InvalidationLevel::InvalidResources} {}
 
 std::string_view TFComponent::getName() const { return tf.getIdentifier(); }

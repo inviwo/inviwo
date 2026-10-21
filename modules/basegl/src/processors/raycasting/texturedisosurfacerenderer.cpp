@@ -245,7 +245,7 @@ TexturedIsosurfaceRenderer::TexturedIsosurfaceRenderer(std::string_view identifi
            volume_.volumePort}
     , tf_{"tf", "Color TF",
           "TF used to texture the iso surface with the data in the 'colorVolume'"_help,
-          texturedComponent_.colorPort}
+          TFData{&texturedComponent_.colorPort}}
     , entryExit_{}
     , background_{*this}
     , camera_{"camera", util::boundingBox(volume_.volumePort)}
