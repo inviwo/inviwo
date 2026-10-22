@@ -52,7 +52,7 @@ namespace inviwo::animation {
  * Returns left keyframe value until reaching right keyframe.
  *
  */
-template <typename Key, typename Result = typename Key::value_type>
+template <typename Key, typename Result = Key::value_type>
 class ConstantInterpolation : public InterpolationTyped<Key, Result> {
 public:
     explicit ConstantInterpolation(InviwoApplication* app = nullptr);
@@ -87,7 +87,7 @@ ConstantInterpolation<Key, Result>* ConstantInterpolation<Key, Result>::clone() 
 
 template <typename Key, typename Result>
 std::string_view ConstantInterpolation<Key, Result>::classIdentifier() {
-    using V = typename Key::value_type;
+    using V = Key::value_type;
     if constexpr (std::is_enum_v<V>) {
         static const std::string identifier =
             fmt::format("org.inviwo.animation.constantinterpolation.enum.{}", util::enumName<V>());
@@ -155,7 +155,7 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
 template <typename Key, typename Result>
 void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    PropertyOwner::serialize(s);
+    Interpolation::serialize(s);
 }
 
 template <typename Key, typename Result>
@@ -169,7 +169,7 @@ void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
                                      "interpolation with a different class identifier: {}",
                                      cid, className);
     }
-    PropertyOwner::deserialize(d);
+    Interpolation::deserialize(d);
 }
 
 }  // namespace inviwo::animation

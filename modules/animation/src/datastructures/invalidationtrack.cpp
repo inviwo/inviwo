@@ -36,9 +36,7 @@
 
 #include <modules/animation/algorithm/animationrange.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 InvalidationKeyframe::InvalidationKeyframe(Seconds time) : BaseKeyframe(time) {}
 InvalidationKeyframe::~InvalidationKeyframe() = default;
@@ -77,15 +75,15 @@ std::string_view InvalidationTrack::classIdentifier() {
 std::string_view InvalidationTrack::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationState state) const {
-    if (!isEnabled() || empty()) return {to, state};
+    if (!isEnabled() || empty()) return {.time = to, .state = state};
 
-    for (auto it = begin(); it != end(); ++it) {
-        if (it->getFirstTime() <= to && it->getLastTime() >= to) {
-            const auto [processorId, propertyPath] = util::splitByFirst(it->path, ".");
-            if (auto processor = network->getProcessorByIdentifier(processorId)) {
+    for (const auto& it : *this) {
+        if (it.getFirstTime() <= to && it.getLastTime() >= to) {
+            const auto [processorId, propertyPath] = util::splitByFirst(it.path, ".");
+            if (auto* processor = network->getProcessorByIdentifier(processorId)) {
                 if (propertyPath.empty()) {
                     processor->invalidate(InvalidationLevel::InvalidOutput);
-                } else if (auto property = processor->getPropertyByPath(propertyPath)) {
+                } else if (auto* property = processor->getPropertyByPath(propertyPath)) {
                     property->propertyModified();
                 } else {
                     log::warn("Unable to find property '{}' of processor '{}'", propertyPath,
@@ -97,9 +95,7 @@ AnimationTimeState InvalidationTrack::operator()(Seconds, Seconds to, AnimationS
         }
     }
 
-    return {to, state};
+    return {.time = to, .state = state};
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

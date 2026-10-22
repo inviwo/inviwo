@@ -65,7 +65,7 @@ public:
     std::vector<std::string> getAvailablePresets(Property* property,
                                                  PropertyPresetTypes types) const;
 
-    void clearPropertyPresets(Property* property);
+    static void clearPropertyPresets(Property* property);
 
     // clear load and save workspace presets
     void clearWorkspacePresets();

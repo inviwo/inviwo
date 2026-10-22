@@ -143,13 +143,13 @@ const std::string& ColumnOptionProperty::getSelectedColumnHeader() const {
     return getSelectedDisplayName();
 }
 
-bool ColumnOptionProperty::isNoneSelected() const { return size() && (getSelectedValue() == -1); }
+bool ColumnOptionProperty::isNoneSelected() const { return !empty() && (getSelectedValue() == -1); }
 
 bool ColumnOptionProperty::hasNoneOption() const { return noneOption_ == AddNoneOption::Yes; }
 
 void ColumnOptionProperty::set(const Property* srcProperty) {
     if (const auto* src = dynamic_cast<const ColumnOptionProperty*>(srcProperty)) {
-        if ((src->opts().empty()) || (opts().empty())) {
+        if (src->opts().empty() || opts().empty()) {
             return;
         }
 

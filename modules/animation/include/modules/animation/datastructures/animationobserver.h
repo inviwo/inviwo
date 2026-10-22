@@ -34,9 +34,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Animation;
 class Track;
@@ -63,6 +61,4 @@ protected:
     void notifyNameChanged(Animation* anim);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

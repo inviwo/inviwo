@@ -37,8 +37,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 const ProcessorMetaData* getMetaData(const Processor* processor) {
     if (processor) {
@@ -55,27 +54,27 @@ ProcessorMetaData* getMetaData(Processor* processor) {
 }
 
 ivec2 getPosition(const Processor* processor) {
-    if (auto meta = getMetaData(processor)) {
+    if (const auto* meta = getMetaData(processor)) {
         return meta->getPosition();
     }
     return {0, 0};
 }
 
 void setPosition(Processor* processor, ivec2 pos) {
-    if (auto meta = getMetaData(processor)) {
+    if (auto* meta = getMetaData(processor)) {
         meta->setPosition(pos);
     }
 }
 
 bool isSelected(const Processor* processor) {
-    if (auto meta = getMetaData(processor)) {
+    if (const auto* meta = getMetaData(processor)) {
         return meta->isSelected();
     }
     return false;
 }
 
 void setSelected(Processor* processor, bool selected) {
-    if (auto meta = getMetaData(processor)) {
+    if (auto* meta = getMetaData(processor)) {
         meta->setSelected(selected);
     }
 }
@@ -100,13 +99,11 @@ InviwoModule* getProcessorModule(std::string_view classIdentifier, InviwoApplica
 std::optional<std::string_view> getProcessorModuleIdentifier(std::string_view classIdentifier,
                                                              InviwoApplication& app) {
 
-    if (auto m = getProcessorModule(classIdentifier, app)) {
+    if (auto* m = getProcessorModule(classIdentifier, app)) {
         return std::string_view{m->getIdentifier()};
     } else {
         return std::nullopt;
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

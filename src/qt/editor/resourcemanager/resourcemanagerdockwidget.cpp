@@ -40,6 +40,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
@@ -83,11 +84,11 @@ public:
     virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override {
         if (parent == QModelIndex{}) {
             return createIndex(row, column, root);
-        } else if (parent.parent() == QModelIndex{}) {
-            if (row < static_cast<int>(manager_->size(static_cast<size_t>(parent.row())))) {
-                return createIndex(row, column, parent.row());
-            }
+        } else if ((parent.parent() == QModelIndex{}) &&
+                   (std::cmp_less(row, manager_->size(static_cast<size_t>(parent.row()))))) {
+            return createIndex(row, column, parent.row());
         }
+
         return {};
     }
     virtual Qt::ItemFlags flags(const QModelIndex&) const override { return Qt::ItemIsEnabled; }
@@ -114,7 +115,7 @@ public:
     }
 
     virtual QVariant headerData(int section, Qt::Orientation, int role) const override {
-        if (role == Qt::DisplayRole && section < static_cast<int>(colNames.size())) {
+        if (role == Qt::DisplayRole && std::cmp_less(section, colNames.size())) {
             return utilqt::toQString(colNames[section]);
         }
         return {};
@@ -135,10 +136,8 @@ public:
                     return utilqt::toQString(resource->desc);
                 } else if (index.column() == Cols::Size) {
                     return static_cast<qulonglong>(resource->sizeInBytes());
-                } else if (index.column() == Cols::Meta) {
-                    if (resource->meta.has_value()) {
-                        return utilqt::toQString(resource->meta->source);
-                    }
+                } else if ((index.column() == Cols::Meta) && (resource->meta.has_value())) {
+                    return utilqt::toQString(resource->meta->source);
                 }
             }
         }
@@ -185,10 +184,8 @@ public:
                 return utilqt::toQString(resource->desc);
             } else if (index.column() == Cols::Size) {
                 return utilqt::toQString(util::formatBytesToString(resource->sizeInBytes()));
-            } else if (index.column() == Cols::Meta) {
-                if (resource->meta.has_value()) {
-                    return utilqt::toQString(resource->meta->source);
-                }
+            } else if ((index.column() == Cols::Meta) && (resource->meta.has_value())) {
+                return utilqt::toQString(resource->meta->source);
             }
         }
         return {};

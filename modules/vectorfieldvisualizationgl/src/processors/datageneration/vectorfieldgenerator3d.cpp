@@ -99,7 +99,7 @@ VectorFieldGenerator3D::VectorFieldGenerator3D()
     outport_.setIdentifier("outport");
 }
 
-VectorFieldGenerator3D::~VectorFieldGenerator3D() {}
+VectorFieldGenerator3D::~VectorFieldGenerator3D() = default;
 
 void VectorFieldGenerator3D::initializeShader(Shader& shader) {
     shader.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y,z)", xValue_.get());

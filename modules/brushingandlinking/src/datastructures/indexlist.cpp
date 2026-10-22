@@ -83,7 +83,7 @@ bool IndexList::contains(uint32_t idx) const {
 
 bool IndexList::removeSources(const std::vector<std::string>& sources) {
     size_t modified = 0u;
-    for (auto& source : sources) {
+    for (const auto& source : sources) {
         modified += indicesBySource_.erase(source);
     }
     indicesDirty_ |= (modified != 0);

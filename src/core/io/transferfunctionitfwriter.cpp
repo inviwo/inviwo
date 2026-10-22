@@ -30,6 +30,7 @@
 #include <inviwo/core/io/transferfunctionitfwriter.h>
 #include <inviwo/core/io/serialization/serializer.h>
 
+#include <algorithm>
 #include <string>
 #include <memory_resource>
 #include <filesystem>
@@ -39,7 +40,7 @@ namespace inviwo {
 constexpr int transferFunctionVersion = 1;
 
 TransferFunctionITFWriter::TransferFunctionITFWriter() {
-    addExtension({"itf", "Inviwo Transfer Function"});
+    addExtension({.extension = "itf", .description = "Inviwo Transfer Function"});
 }
 
 TransferFunctionITFWriter* TransferFunctionITFWriter::clone() const {
@@ -65,7 +66,7 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionITFWriter::writeData
     serializer.write(xml);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
+    std::ranges::copy(xml, buffer->begin());
     return buffer;
 }
 

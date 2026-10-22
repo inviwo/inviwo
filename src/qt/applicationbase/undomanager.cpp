@@ -42,6 +42,7 @@
 #include <QTouchEvent>
 #include <QTimer>
 
+#include <algorithm>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -159,13 +160,12 @@ private:
 
         std::vector<std::filesystem::path> files{it, end(it)};
 
-        std::sort(files.begin(), files.end(),
-                  [](const std::filesystem::path& a, const std::filesystem::path& b) {
-                      return std::filesystem::last_write_time(a) >
-                             std::filesystem::last_write_time(b);
-                  });
+        std::ranges::sort(
+            files, [](const std::filesystem::path& a, const std::filesystem::path& b) {
+                return std::filesystem::last_write_time(a) > std::filesystem::last_write_time(b);
+            });
 
-        std::for_each(files.begin() + std::min(files.size(), size_t{maxSaves}), files.end(),
+        std::for_each(files.begin() + std::min(files.size(), maxSaves), files.end(),
                       [](const std::filesystem::path& a) { std::filesystem::remove(a); });
     }
 
@@ -193,11 +193,11 @@ UndoManager::UndoManager(WorkspaceManager* wm, ProcessorNetwork* network,
 
     undoAction_ = new QAction(QIcon(":/svgicons/undo.svg"), QAction::tr("&Undo"), this);
     undoAction_->setShortcut(QKeySequence::Undo);
-    undoAction_->connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
+    QAction::connect(undoAction_, &QAction::triggered, [this]() { undoState(); });
 
     redoAction_ = new QAction(QIcon(":/svgicons/redo.svg"), QAction::tr("&Redo"), this);
     redoAction_->setShortcut(QKeySequence::Redo);
-    redoAction_->connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
+    QAction::connect(redoAction_, &QAction::triggered, [this]() { redoState(); });
 
     clearHandle_ = manager_->onClear([&]() {
         clear();
@@ -289,7 +289,7 @@ QAction* UndoManager::getUndoAction() const { return undoAction_; }
 QAction* UndoManager::getRedoAction() const { return redoAction_; }
 
 bool UndoManager::hasRestore() const {
-    if (auto& str = autoSaver_->getRestored()) {
+    if (const auto& str = autoSaver_->getRestored()) {
         return !str->empty();
     }
     return false;
@@ -320,7 +320,7 @@ bool UndoManager::eventFilter(QObject*, QEvent* e) {
                 return true;
             }
             case QEvent::TouchEnd: {
-                auto te = static_cast<QTouchEvent*>(e);
+                auto* te = static_cast<QTouchEvent*>(e);
                 return util::all_of(te->points(), [](const QTouchEvent::TouchPoint& tp) {
                     return tp.state() == QEventPoint::Released;
                 });

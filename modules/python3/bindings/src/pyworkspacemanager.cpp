@@ -117,26 +117,23 @@ void exposeWorkspaceManager(const pybind11::module& m) {
         .def_property_readonly("modified", &WorkspaceManager::isModified)
         .def(
             "onModified",
-            [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                return WorkspaceManagerOnModifiedCallbackHolder{
-                    wm->onModified(std::move(callback))};
+            [](WorkspaceManager* wm, const std::function<void(bool)>& callback) {
+                return WorkspaceManagerOnModifiedCallbackHolder{wm->onModified(callback)};
             },
             py::arg("callback"),
             "Register a callback invoked whenever the modified state changes (called every "
             "time setModified is invoked).")
         .def(
             "onModifiedChanged",
-            [](WorkspaceManager* wm, std::function<void(bool)> callback) {
-                return WorkspaceManagerOnModifiedCallbackHolder{
-                    wm->onModifiedChanged(std::move(callback))};
+            [](WorkspaceManager* wm, const std::function<void(bool)>& callback) {
+                return WorkspaceManagerOnModifiedCallbackHolder{wm->onModifiedChanged(callback)};
             },
             py::arg("callback"),
             "Register a callback invoked only when the modified state transitions.")
         .def(
             "onClear",
-            [](WorkspaceManager* wm, std::function<void()> callback) {
-                return WorkspaceManagerOnClearChangedCallbackHolder{
-                    wm->onClear(std::move(callback))};
+            [](WorkspaceManager* wm, const std::function<void()>& callback) {
+                return WorkspaceManagerOnClearChangedCallbackHolder{wm->onClear(callback)};
             },
             py::arg("callback"), "Register a callback invoked when the workspace is cleared.")
         .def(

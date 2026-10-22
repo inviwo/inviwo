@@ -90,8 +90,8 @@ public:
  */
 template <typename InportType, typename OutportSequenceType>
 class SequenceCompositeSink : public SequenceCompositeSinkBase {
-    using InportData = typename InportType::type;
-    using OutportSequenceData = typename OutportSequenceType::type;
+    using InportData = InportType::type;
+    using OutportSequenceData = OutportSequenceType::type;
     static_assert(std::is_same_v<InportData, typename OutportSequenceData::type>,
                   "InportType and OutportSequenceType must work with the same data type");
 
@@ -151,9 +151,9 @@ private:
 template <typename InportType, typename OutportSequenceType>
 struct ProcessorTraits<SequenceCompositeSink<InportType, OutportSequenceType>> {
     static ProcessorInfo getProcessorInfo() {
-        using inType = typename InportType::type;
-        using sequenceType = typename OutportSequenceType::type;
-        using outType = typename sequenceType::type;
+        using inType = InportType::type;
+        using sequenceType = OutportSequenceType::type;
+        using outType = sequenceType::type;
         static_assert(std::is_same_v<inType, outType>, "type mismatch");
         const auto name = fmt::format("{} Meta Sink", DataTraits<inType>::dataName());
         const auto id = util::appendIfNotEmpty(PortTraits<InportType>::classIdentifier(),

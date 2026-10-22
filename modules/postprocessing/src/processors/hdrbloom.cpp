@@ -102,7 +102,7 @@ HdrBloom::HdrBloom()
         return HdrBloom::FBOTex{
             {}, {size_ / pow(size_t{2}, i + 1), GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}};
     })}
-    , bright_{{}, {size_, GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}} {
+    , bright_{.fbo = {}, .tex = {size_, GL_RGBA, GL_RGBA16F, GL_HALF_FLOAT, GL_LINEAR}} {
 
     addPort(inport_);
     addPort(outport_);
@@ -120,7 +120,7 @@ HdrBloom::HdrBloom()
     FrameBufferObject::deactivateFBO();
 }
 
-HdrBloom::~HdrBloom() {}
+HdrBloom::~HdrBloom() = default;
 
 void HdrBloom::process() {
     if (inport_.isChanged()) {
@@ -130,7 +130,7 @@ void HdrBloom::process() {
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
             const auto dim = outport_.getData()->getDimensions();
-            Image* img = new Image(dim, format);
+            auto* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
             img->getColorLayer()->setSwizzleMask(swizzleMask);

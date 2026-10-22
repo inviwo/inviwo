@@ -44,9 +44,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 std::pair<dvec3, dvec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes) {
@@ -69,9 +67,8 @@ std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh) {
     dvec3 worldMax(std::numeric_limits<float>::lowest());
 
     const auto& buffers = mesh.getBuffers();
-    const auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
-        return buff.first.type == BufferType::PositionAttrib;
-    });
+    const auto it = std::ranges::find_if(
+        buffers, [](const auto& buff) { return buff.first.type == BufferType::PositionAttrib; });
     if (it != buffers.end() && it->second->getSize() > 0) {
         const auto minmax = util::bufferMinMax(it->second.get());
 
@@ -85,6 +82,4 @@ std::pair<dvec3, dvec3> axisAlignedBoundingBox(const Mesh& mesh) {
     return {worldMin, worldMax};
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

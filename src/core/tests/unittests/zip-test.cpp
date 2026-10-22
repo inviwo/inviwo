@@ -45,31 +45,35 @@
 #include <utility>
 
 template <size_t n, typename... T>
-typename std::enable_if<(n >= sizeof...(T))>::type print_tuple(std::ostream&,
-                                                               const std::tuple<T...>&) {}
+static void print_tuple(std::ostream&, const std::tuple<T...>&)
+    requires(n >= sizeof...(T))
+{}
 
 template <size_t n, typename... T>
-typename std::enable_if<(n > 0 && n < sizeof...(T))>::type print_tuple(
-    std::ostream& os, const std::tuple<T...>& tup) {
+static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+    requires(n > 0 && n < sizeof...(T))
+{
     os << ", " << std::get<n>(tup);
     print_tuple<n + 1>(os, tup);
 }
 
 template <size_t n, typename... T>
-typename std::enable_if<(n == 0)>::type print_tuple(std::ostream& os, const std::tuple<T...>& tup) {
+static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+    requires(n == 0)
+{
     os << std::get<n>(tup);
     print_tuple<n + 1>(os, tup);
 }
 
 template <typename... T>
-std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
+static std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
     os << "[";
     print_tuple<0>(os, tup);
     return os << "]";
 }
 
 template <typename... T>
-std::ostream& operator<<(std::ostream& os, const inviwo::util::detailzip::proxy<T...>& p) {
+static std::ostream& operator<<(std::ostream& os, const inviwo::util::detailzip::proxy<T...>& p) {
     os << "[";
     print_tuple<0>(os, p.data);
     return os << "]";
@@ -90,7 +94,9 @@ struct S {
     constexpr explicit S(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-::std::ostream& operator<<(::std::ostream& os, const S& s) { return os << "S(" << s.a_ << ")"; }
+static ::std::ostream& operator<<(::std::ostream& os, const S& s) {
+    return os << "S(" << s.a_ << ")";
+}
 
 // default type
 struct D {
@@ -107,7 +113,9 @@ struct D {
     constexpr explicit D(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-::std::ostream& operator<<(::std::ostream& os, const D& d) { return os << "D(" << d.a_ << ")"; }
+static ::std::ostream& operator<<(::std::ostream& os, const D& d) {
+    return os << "D(" << d.a_ << ")";
+}
 
 constexpr const std::array<int, 5> ints{{1, 2, 3, 4, 5}};
 constexpr const std::array<D, 5> ds{{D{10}, D{20}, D{30}, D{40}, D{50}}};
@@ -115,8 +123,8 @@ constexpr const std::array<D, 5> ds{{D{10}, D{20}, D{30}, D{40}, D{50}}};
 namespace inviwo {
 
 template <typename Zipped>
-void forwadTest(Zipped&& iter) {
-    using Iter = typename std::decay_t<decltype(iter)>::iterator;
+static void forwadTest(Zipped&& iter) {
+    using Iter = std::decay_t<decltype(iter)>::iterator;
     using util::detailzip::proxy;
 
     // Iterator default constructible
@@ -174,7 +182,7 @@ void forwadTest(Zipped&& iter) {
 }
 
 template <typename Zipped>
-void bidirectionalTest(Zipped&& iter) {
+static void bidirectionalTest(Zipped&& iter) {
     using util::detailzip::proxy;
     {
         auto i = iter.begin();
@@ -185,7 +193,7 @@ void bidirectionalTest(Zipped&& iter) {
         const auto ref0 = proxy<int, D>{3, D{30}};
         EXPECT_EQ(ref0, *i);
 
-        using Iter = typename std::decay_t<decltype(iter)>::iterator;
+        using Iter = std::decay_t<decltype(iter)>::iterator;
         // BidirectionalIterator requirements
         const Iter& i4 = --i;
 
@@ -228,11 +236,11 @@ void bidirectionalTest(Zipped&& iter) {
 }
 
 template <typename Zipped>
-void randomAccessTest(Zipped&& iter) {
+static void randomAccessTest(Zipped&& iter) {
     using util::detailzip::proxy;
-    using Iter = typename std::decay_t<decltype(iter)>::iterator;
+    using Iter = std::decay_t<decltype(iter)>::iterator;
     // RandomAccessIterator requirements
-    using DT = typename Iter::difference_type;
+    using DT = Iter::difference_type;
 
     for (DT n = 0; n < static_cast<DT>(ints.size()); ++n) {
 

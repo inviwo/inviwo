@@ -69,6 +69,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QAbstractNativeEventFilter>
@@ -101,13 +102,12 @@ struct IVW_QTEDITOR_API FileAssociationCommand {
      * @param callback      A callback that will be called whenever the command is executed and
                             Inviwo is running
      */
-    FileAssociationCommand(const std::string& command, const std::string& cmdLineArg,
-                           const std::string& ddeCommand,
+    FileAssociationCommand(std::string command, std::string cmdLineArg, std::string ddeCommand,
                            std::function<void(const std::filesystem::path&)> callback)
-        : command_{command}
-        , cmdLineArg_{cmdLineArg}
-        , ddeCommand_{ddeCommand}
-        , callback_{callback} {}
+        : command_{std::move(command)}
+        , cmdLineArg_{std::move(cmdLineArg)}
+        , ddeCommand_{std::move(ddeCommand)}
+        , callback_{std::move(callback)} {}
     std::string command_;
     std::string cmdLineArg_;
     std::string ddeCommand_;

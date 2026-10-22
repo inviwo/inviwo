@@ -47,25 +47,24 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 
     load();
 
-    for (auto prop : linkProperties_.getProperties()) {
+    for (auto* prop : linkProperties_.getProperties()) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         propertyMap_.emplace(prop->getIdentifier(), static_cast<BoolProperty*>(prop));
         prop->setVisible(false);
     }
 
-    for (auto& property : factory->getKeyView()) registerProperty(property);
+    for (const auto& property : factory->getKeyView()) registerProperty(property);
 
     factory->addObserver(this);
 }
 
 void LinkSettings::onRegister(PropertyFactoryObject* p) {
-    const auto property = p->getClassIdentifier();
+    const auto& property = p->getClassIdentifier();
     registerProperty(property);
 }
 
 void LinkSettings::registerProperty(std::string_view property) {
-    const bool enabled =
-        (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0 ? true : false;
+    const bool enabled = (property == PropertyTraits<CameraProperty>::classIdentifier()) != 0;
     // Have to check we already have a property from deserialization.
     const auto ids = "link" + dotSeperatedToPascalCase(property);
 

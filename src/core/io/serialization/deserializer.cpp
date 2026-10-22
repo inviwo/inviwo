@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <ranges>
+#include <utility>
 
 #include <inviwo/core/io/serialization/ticpp.h>
 
@@ -172,7 +173,9 @@ void Deserializer::deserialize(std::string_view key, unsigned char& data,
     data = static_cast<unsigned char>(val);
 }
 
-void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
+void Deserializer::setExceptionHandler(ExceptionHandler handler) {
+    exceptionHandler_ = std::move(handler);
+}
 
 void Deserializer::convertVersion(VersionConverter* converter) { converter->convert(rootElement_); }
 

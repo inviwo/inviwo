@@ -31,6 +31,8 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <algorithm>
+
 namespace inviwo::util {
 
 bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly) {
@@ -50,19 +52,19 @@ std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sort
     if (!hasTimestamps(seq)) {
         return std::make_pair(0.0, 1.0);
     }
-    double start, end;
-    start = getTimestamp(seq.front());
+
     if (sorted) {
-        end = getTimestamp(seq.back());
+        return std::make_pair(getTimestamp(seq.front()), getTimestamp(seq.back()));
     } else {
-        end = start;
+        auto start = getTimestamp(seq.front());
+        auto end = start;
         for (const auto v : seq) {
             const auto t = getTimestamp(v);
             start = std::min(start, t);
             end = std::max(end, t);
         }
+        return std::make_pair(start, end);
     }
-    return std::make_pair(start, end);
 }
 
 bool isSorted(const VolumeSequence& seq) {
@@ -85,12 +87,12 @@ VolumeSequence sortSequence(const VolumeSequence& seq) {
         sorted.push_back(item);
     }
 
-    std::sort(sorted.begin(), sorted.end(),
-              [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
-                  const auto t1 = getTimestamp(a);
-                  const auto t2 = getTimestamp(b);
-                  return t1 < t2;
-              });
+    std::ranges::sort(
+        sorted, [](const std::shared_ptr<const Volume>& a, const std::shared_ptr<const Volume>& b) {
+            const auto t1 = getTimestamp(a);
+            const auto t2 = getTimestamp(b);
+            return t1 < t2;
+        });
     return VolumeSequence{sorted};
 }
 
@@ -102,7 +104,7 @@ std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolum
         if (t < 0) {
             return std::make_pair(seq.front(), seq.front());
         }
-        size_t i = static_cast<size_t>(static_cast<double>(seq.size() - 1) * t);
+        auto i = static_cast<size_t>(static_cast<double>(seq.size() - 1) * t);
         i = glm::clamp(i, static_cast<size_t>(0), seq.size() - 1);
         auto i2 = i + 1;
         if (i2 >= seq.size() - 1u) {
@@ -111,7 +113,7 @@ std::pair<std::shared_ptr<const Volume>, std::shared_ptr<const Volume>> getVolum
         return std::make_pair(seq[i], seq[i2]);
     } else if (sorted) {
         // find first volume with timestamp greater than t
-        auto it = std::find_if(seq.begin(), seq.end(), [t](const std::shared_ptr<const Volume>& v) {
+        auto it = std::ranges::find_if(seq, [t](const std::shared_ptr<const Volume>& v) {
             const auto vt = getTimestamp(v);
             return t < vt;
         });

@@ -47,9 +47,7 @@
 #include <numbers>
 #include <bit>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * Compute the @p n th point of the Halton sequence with base @p base on the open range (0 1).
@@ -134,7 +132,7 @@ std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size
 namespace detail {
 struct RandomNumberRangeValues {
     template <typename T>
-    inline static constexpr T min() {
+    static constexpr T min() {
         if constexpr (std::is_floating_point_v<T>) {
             return 0;
         } else {
@@ -143,7 +141,7 @@ struct RandomNumberRangeValues {
     }
 
     template <typename T>
-    inline static constexpr T max() {
+    static constexpr T max() {
         if constexpr (std::is_floating_point_v<T>) {
             return 1;
         } else {
@@ -173,10 +171,10 @@ inline static T randomNumber(RNG& rng, T min = detail::RandomNumberRangeValues::
  * Fills a data container of type T with numberOfElements random numbers using the given random
  * number generator and distribution
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
     std::generate(data, data + numberOfElements,
@@ -187,10 +185,10 @@ void randomSequence(T* data, size_t numberOfElements, Rand& randomNumberGenerato
  * Fills a span of type T with numberOfElements random numbers using the given random
  * number generator and distribution
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 void randomSequence(std::span<T> data, Rand& randomNumberGenerator = Rand(),
                     Dist& distribution = Dist(0, 1)) {
     std::generate(data.begin(), data.end(), [&]() { return distribution(randomNumberGenerator); });
@@ -208,10 +206,10 @@ void randomSequence(std::span<T> data, Rand& randomNumberGenerator = Rand(),
  * @param distribution the distribution to use for the random numbers
  * @return LayerRAM with white noise
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<LayerRAMPrecision<T>> randomLayerRAM(size2_t dims,
                                                      Rand& randomNumberGenerator = Rand(),
                                                      Dist& distribution = Dist(0, 1)) {
@@ -234,10 +232,10 @@ std::shared_ptr<LayerRAMPrecision<T>> randomLayerRAM(size2_t dims,
  * std::uniform_int/real_distribution between zero and one
  * @see randomLayerRAM
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<Layer> randomLayer(size2_t dims, Rand& randomNumberGenerator = Rand(),
                                    Dist& distribution = Dist(0, 1)) {
     auto layer =
@@ -255,10 +253,10 @@ std::shared_ptr<Layer> randomLayer(size2_t dims, Rand& randomNumberGenerator = R
  * @param distribution the distribution to use for the random numbers, defaults to
  * std::uniform_int/real_distribution between zero and one
  */
-template <typename T, typename Rand = std::mt19937,
-          typename Dist = typename std::conditional<std::is_integral<T>::value,
-                                                    std::uniform_int_distribution<T>,
-                                                    std::uniform_real_distribution<T>>::type>
+template <
+    typename T, typename Rand = std::mt19937,
+    typename Dist = std::conditional_t<std::is_integral_v<T>, std::uniform_int_distribution<T>,
+                                       std::uniform_real_distribution<T>>>
 std::shared_ptr<Volume> randomVolume(size3_t dims, Rand& randomNumberGenerator = Rand(),
                                      Dist& distribution = Dist(0, 1)) {
     const auto volumeRam = std::make_shared<VolumeRAMPrecision<T>>(VolumeReprConfig{
@@ -341,7 +339,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     std::uniform_int_distribution<int> ry(0, static_cast<int>(dims.y));
     std::uniform_real_distribution<float> rand(0, 1);
 
-    float minDist = static_cast<float>(dims.x);
+    auto minDist = static_cast<float>(dims.x);
     minDist /= static_cast<float>(poissonDotsAlongX);  // min pixel distance between samples
     const auto minDist2 = minDist * minDist;
     const size2_t gridSize = size2_t(1) + size2_t(vec2(dims) * (1.0f / minDist));
@@ -372,9 +370,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     processList.push_back(firstPoint);
     samplePoints.push_back(firstPoint);
 
-    const auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 {
-        return glm::i32vec2(vec2(p) / minDist);
-    };
+    const auto toGrid = [minDist](glm::i32vec2 p) -> glm::i32vec2 { return {vec2(p) / minDist}; };
 
     gridData[gridIndex(toGrid(firstPoint))] = firstPoint;
 
@@ -386,7 +382,7 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     });
     const auto layerData = layerRam->getView();
 
-    while (processList.size() != 0 && samplePoints.size() < static_cast<size_t>(maxPoints)) {
+    while (!processList.empty() && samplePoints.size() < maxPoints) {
         std::uniform_int_distribution<size_t> ri(0, processList.size() - 1);
         const auto i = ri(randomNumberGenerator);
         const auto p = processList[i];
@@ -428,6 +424,4 @@ std::shared_ptr<Layer> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
     return std::make_shared<Layer>(layerRam);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

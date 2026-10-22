@@ -36,28 +36,26 @@
 #include <utility>
 #include <optional>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 
 template <typename Tag, typename Iter>
-struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_category>::value> {};
+struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
-using require_t = typename require<Tag, Iter>::type;
+using require_t = require<Tag, Iter>::type;
 
 }  // namespace detail
 
 template <typename Transform, typename Iter>
 struct TransformIterator {
-    using difference_type = typename std::iterator_traits<Iter>::difference_type;
-    using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
+    using difference_type = std::iterator_traits<Iter>::difference_type;
+    using iterator_category = std::iterator_traits<Iter>::iterator_category;
 
     using base_iterator = Iter;
-    using base_value = typename std::iterator_traits<Iter>::value_type;
-    using base_reference = typename std::iterator_traits<Iter>::reference;
-    using base_pointer = typename std::iterator_traits<Iter>::pointer;
+    using base_value = std::iterator_traits<Iter>::value_type;
+    using base_reference = std::iterator_traits<Iter>::reference;
+    using base_pointer = std::iterator_traits<Iter>::pointer;
 
     using reference = std::invoke_result_t<Transform, base_reference>;
     using value_type = std::remove_reference_t<reference>;
@@ -69,7 +67,7 @@ struct TransformIterator {
         : transform_{Transform{}}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
         : transform_{std::move(transform)}, iterator_(iterator) {
-        static_assert(std::is_same<base_reference, decltype(*std::declval<Iter>())>::value, "");
+        static_assert(std::is_same_v<base_reference, decltype(*std::declval<Iter>())>);
     }
     TransformIterator(const TransformIterator& rhs) = default;
     TransformIterator(TransformIterator&& rhs) = default;
@@ -200,6 +198,4 @@ auto transformRange(Range& range, Transform&& transform) {
                           makeTransformIterator(transform, end(range)));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -80,9 +80,10 @@
 namespace inviwo {
 
 namespace {
-pybind11::object prompt(std::string title, std::string message, std::string defaultResponse = "") {
+pybind11::object prompt(const std::string& title, const std::string& message,
+                        const std::string& defaultResponse = "") {
 
-    bool ok;
+    bool ok = false;
     const QString text = QInputDialog::getText(
         nullptr, title.c_str(), message.c_str(), QLineEdit::Normal, defaultResponse.c_str(), &ok,
         Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
@@ -110,7 +111,7 @@ auto createPythonQtModule(pybind11::module_ inviwopy) {
         .def("setStyleSheetFile", &utilqt::setStyleSheetFile)
         .def("execWithTimer",
              []() {
-                 auto timer = new QTimer(qApp);
+                 auto* timer = new QTimer(qApp);
                  QObject::connect(timer, &QTimer::timeout, []() {
                      try {
                          py::exec("lambda x: 1");
@@ -217,7 +218,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
     , abortPythonEvaluation_{false}
     , menu_([&]() -> std::unique_ptr<PythonMenu> {
-        if (auto win = utilqt::getApplicationMainWindow()) {
+        if (auto* win = utilqt::getApplicationMainWindow()) {
             return std::make_unique<PythonMenu>(getPath(), app, win);
         } else {
             return nullptr;

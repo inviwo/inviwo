@@ -43,7 +43,7 @@ public:
     virtual ~OpenGLQtCapabilities();
     virtual void printInfo() override;
     virtual void retrieveStaticInfo() override {}
-    std::vector<int> getGLVersion();
+    static std::vector<int> getGLVersion();
 };
 
 }  // namespace inviwo

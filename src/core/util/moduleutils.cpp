@@ -32,9 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/modulemanager.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 ModuleManager& getModuleManager(InviwoApplication* app) { return app->getModuleManager(); }
 
@@ -66,7 +64,7 @@ std::filesystem::path getModulePath(const InviwoModule* module, ModulePath pathT
 }
 
 std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier) {
-    if (auto m = getModuleByIdentifier(app, identifier)) {
+    if (auto* m = getModuleByIdentifier(app, identifier)) {
         return m->getPath();
     } else {
         throw Exception(SourceContext{}, R"(Could not locate module "{}")", identifier);
@@ -79,7 +77,7 @@ std::filesystem::path getModulePath(std::string_view identifier) {
 std::filesystem::path getModulePath(InviwoApplication* app, std::string_view identifier,
                                     ModulePath pathType) {
     std::filesystem::path path;
-    if (auto m = getModuleByIdentifier(app, identifier)) {
+    if (auto* m = getModuleByIdentifier(app, identifier)) {
         path = m->getPath(pathType);
         if (path.empty() || path == m->getPath()) {
             // if the result of getPath(pathType) is identical with getPath(),
@@ -98,6 +96,4 @@ std::filesystem::path getModulePath(std::string_view identifier, ModulePath path
     return getModulePath(InviwoApplication::getPtr(), identifier, pathType);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

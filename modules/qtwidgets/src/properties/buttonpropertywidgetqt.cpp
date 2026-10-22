@@ -48,12 +48,12 @@ namespace inviwo {
 class Property;
 
 ButtonPropertyWidgetQt::ButtonPropertyWidgetQt(ButtonProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property), property_(property), button_(new QPushButton()) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(0);
-    button_ = new QPushButton();
+
     button_->setText(utilqt::toQString(property_->getDisplayName()));
     connect(button_, &QPushButton::released, this, [&]() {
         if (!property_->getReadOnly()) {
@@ -84,7 +84,7 @@ std::unique_ptr<QMenu> ButtonPropertyWidgetQt::getContextMenu() {
 
     auto renameAction = menu->addAction(tr("&Rename"));
     connect(renameAction, &QAction::triggered, this, [this]() {
-        bool ok;
+        bool ok = false;
         const auto displayname = utilqt::toQString(property_->getDisplayName());
         const auto name = utilqt::fromQString(QInputDialog::getText(
             nullptr, "Rename", "Name of Property", QLineEdit::Normal, displayname, &ok));

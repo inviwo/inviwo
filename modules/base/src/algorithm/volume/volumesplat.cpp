@@ -300,7 +300,7 @@ splatJobs(std::span<const SplatInput> inputs, const SplatSettings& settings) {
     const std::function<std::shared_ptr<Volume>(std::vector<vec2>)> collect =
         [volume](const std::vector<vec2>& minMaxes) {
             vec2 minMax{std::numeric_limits<float>::max(), std::numeric_limits<float>::lowest()};
-            for (auto& val : minMaxes) {
+            for (const auto& val : minMaxes) {
                 minMax.x = std::min(minMax.x, val.x);
                 minMax.y = std::max(minMax.y, val.y);
             }

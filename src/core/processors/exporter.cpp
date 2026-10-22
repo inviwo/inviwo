@@ -43,7 +43,7 @@ std::vector<std::filesystem::path> util::exportAllFiles(
 
     std::vector<std::filesystem::path> exportedFiles;
     network.forEachProcessor([&](Processor* p) {
-        if (auto exporter = dynamic_cast<const Exporter*>(p)) {
+        if (const auto* exporter = dynamic_cast<const Exporter*>(p)) {
             if (!p->isValid()) {
                 throw Exception(SourceContext{}, "Processor {} is not valid, no file exported",
                                 p->getIdentifier());
@@ -56,7 +56,7 @@ std::vector<std::filesystem::path> util::exportAllFiles(
             StrBuffer name;
             if (nameTemplate.empty()) {
                 name.append("{}", p->getIdentifier());
-            } else if (nameTemplate.find("UPN") != std::string::npos) {
+            } else if (nameTemplate.contains("UPN")) {
                 auto [before, after] = util::splitByFirst(nameTemplate, "UPN");
                 name.append("{}{}{}", before, p->getIdentifier(), after);
             } else {

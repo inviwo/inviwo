@@ -59,9 +59,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <string_view>
 #include <vector>
 
-namespace inviwo {
-
-namespace cimgutil {
+namespace inviwo::cimgutil {
 
 template <typename T>
 const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_library::CImg<T>& img,
@@ -75,29 +73,29 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
     const char* ext = safeExt.c_str();
     if (!cimg_library::cimg::strcasecmp(ext, ".cpp") ||
         !cimg_library::cimg::strcasecmp(ext, ".hpp") ||
-        !cimg_library::cimg::strcasecmp(ext, ".h") || !cimg_library::cimg::strcasecmp(ext, ".c"))
+        !cimg_library::cimg::strcasecmp(ext, ".h") || !cimg_library::cimg::strcasecmp(ext, ".c")) {
         return img.save_cpp(handle);
 
     // 2d binary formats
-    else if (!cimg_library::cimg::strcasecmp(ext, ".bmp"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".bmp")) {
         return img.save_bmp(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".jpg") ||
-             !cimg_library::cimg::strcasecmp(ext, ".jpeg") ||
-             !cimg_library::cimg::strcasecmp(ext, ".jpe") ||
-             !cimg_library::cimg::strcasecmp(ext, ".jfif") ||
-             !cimg_library::cimg::strcasecmp(ext, ".jif"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".jpg") ||
+               !cimg_library::cimg::strcasecmp(ext, ".jpeg") ||
+               !cimg_library::cimg::strcasecmp(ext, ".jpe") ||
+               !cimg_library::cimg::strcasecmp(ext, ".jfif") ||
+               !cimg_library::cimg::strcasecmp(ext, ".jif")) {
         return img.save_jpeg(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".rgb"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".rgb")) {
         return img.save_rgb(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".rgba"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".rgba")) {
         return img.save_rgba(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".pgm") ||
-             !cimg_library::cimg::strcasecmp(ext, ".ppm") ||
-             !cimg_library::cimg::strcasecmp(ext, ".pnm"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".pgm") ||
+               !cimg_library::cimg::strcasecmp(ext, ".ppm") ||
+               !cimg_library::cimg::strcasecmp(ext, ".pnm")) {
         return img.save_pnm(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".pnk"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".pnk")) {
         return img.save_pnk(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, ".pfm"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".pfm")) {
         return img.save_pfm(handle);
     // these do not provide a FILE* stream interface:
     // else if (!cimg_library::cimg::strcasecmp(ext, ".exr"))
@@ -107,10 +105,11 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
     //    return img.save_tiff(handle);
 
     // 3d binary formats
-    else if (!cimg_library::cimg::strcasecmp(ext, ".raw"))
+    } else if (!cimg_library::cimg::strcasecmp(ext, ".raw")) {
         return img.save_raw(handle);
-    else
+    } else {
         throw cimg_library::CImgIOException("unsupported format");
+    }
 }
 
 template <typename T>
@@ -145,6 +144,4 @@ std::vector<unsigned char> saveCImgToBuffer(const cimg_library::CImg<T>& img,
     return res;
 }
 
-}  // namespace cimgutil
-
-}  // namespace inviwo
+}  // namespace inviwo::cimgutil

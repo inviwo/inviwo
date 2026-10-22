@@ -131,12 +131,12 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
                     [&]() {
                         OptionPropertyState<FileExtension> state;
                         const auto exts = util::getDataWriterFactory(app)->getKeyView();
-                        std::transform(exts.begin(), exts.end(), std::back_inserter(state.options),
-                                       [](const auto& ext) {
-                                           return OptionPropertyOption<FileExtension>{ext};
-                                       });
-                        const auto it = std::find_if(exts.begin(), exts.end(),
-                                                     [&](auto& e) { return e.extension == "png"; });
+                        std::ranges::transform(exts, std::back_inserter(state.options),
+                                               [](const auto& ext) {
+                                                   return OptionPropertyOption<FileExtension>{ext};
+                                               });
+                        const auto it = std::ranges::find_if(
+                            exts, [&](auto& e) { return e.extension == "png"; });
                         if (it != exts.end()) {
                             state.selectedIndex = std::distance(exts.begin(), it);
                         }
@@ -188,7 +188,7 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
 
     const auto& recorders = manager.getRecorderFactories();
 
-    for (auto& key : recorders.getKeyView()) {
+    for (const auto& key : recorders.getKeyView()) {
         auto* recorderFactory = recorders.getFactoryObject(key);
 
         renderOptions.addProperty(recorderFactory->options(), false);
@@ -312,8 +312,8 @@ void AnimationController::tick() {
 
     // Get active time window for playing
     // init with sub-window, overwrite with full window if necessary
-    Seconds firstTime = Seconds(playWindow.get()[0]);
-    Seconds lastTime = Seconds(playWindow.get()[1]);
+    auto firstTime = Seconds(playWindow.get()[0]);
+    auto lastTime = Seconds(playWindow.get()[1]);
     if (playWindowMode.get() == 0) {
         // Full animation window
         firstTime = animation_->getFirstTime();
@@ -422,24 +422,21 @@ void AnimationController::render() {
                         }
                     }
                 }
-                if (const auto* exporter = dynamic_cast<Exporter*>(p)) {
-                    if (exportOptions_.isChecked()) {
-                        auto base = exportBaseName_.get();
-                        replaceInString(base, "UPN", p->getIdentifier());
+                if (const auto* exporter = dynamic_cast<Exporter*>(p);
+                    exporter && exportOptions_.isChecked()) {
+                    auto base = exportBaseName_.get();
+                    replaceInString(base, "UPN", p->getIdentifier());
 
-                        const auto digits =
-                            std::max(fmt::formatted_size("{}", numFrames), size_t{4});
+                    const auto digits = std::max(fmt::formatted_size("{}", numFrames), size_t{4});
 
-                        recordingFunctors.emplace_back(
-                            [exporter, writer = exportWriter_.get(),
-                             dir = exportOutputDirectory_.get(), base,
-                             overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
-                             counter = size_t{0}, digits]() mutable {
-                                const auto name = fmt::format("{}{:0{}}", base, counter, digits);
-                                exporter->exportFile(dir, name, {writer}, overwrite);
-                                ++counter;
-                            });
-                    }
+                    recordingFunctors.emplace_back(
+                        [exporter, writer = exportWriter_.get(), dir = exportOutputDirectory_.get(),
+                         base, overwrite = exportOverwrite_ ? Overwrite::Yes : Overwrite::No,
+                         counter = size_t{0}, digits]() mutable {
+                            const auto name = fmt::format("{}{:0{}}", base, counter, digits);
+                            exporter->exportFile(dir, name, {writer}, overwrite);
+                            ++counter;
+                        });
                 }
             }
         });
@@ -502,7 +499,7 @@ void AnimationController::eval(Seconds oldTime, Seconds newTime) {
 }
 
 void AnimationController::setAnimation(Animation& animation) {
-    auto oldAnim = animation_;
+    auto* oldAnim = animation_;
     animation_ = &animation;
 
     notifyAnimationChanged(this, oldAnim, animation_);

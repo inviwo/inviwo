@@ -29,6 +29,8 @@
 
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view AdvancedMaterialProperty::getClassIdentifier() const { return classIdentifier; }
@@ -37,7 +39,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(std::string_view identifier,
                                                    std::string_view displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , phaseFunctionProp("phaseFunction", "Phase function", InvalidationLevel::Valid)
     , indexOfRefractionProp("IOR", "Index of refraction", 1.f, 1.f, 20.f)
     , roughnessProp("roughness", "Roughness", 0.1f, 0.01f, 1.f)
@@ -85,7 +87,7 @@ AdvancedMaterialProperty* AdvancedMaterialProperty::clone() const {
     return new AdvancedMaterialProperty(*this);
 }
 
-AdvancedMaterialProperty::~AdvancedMaterialProperty() {}
+AdvancedMaterialProperty::~AdvancedMaterialProperty() = default;
 
 vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
     const ShadingFunctionKind shadingType = getPhaseFunctionEnum();
@@ -190,23 +192,23 @@ void AdvancedMaterialProperty::deserialize(Deserializer& d) {
     phaseFunctionChanged();
 }
 
-float AdvancedMaterialProperty::HenyehGreensteinToSchlick(float g) const {
+float AdvancedMaterialProperty::HenyehGreensteinToSchlick(float g) {
     // Should work for intermediate values of k in Schlick
     return 1.55f * g - 0.55f * g * g * g;
     // return 1.5f*g-(1.f-1.5f)*g*g*g;
 }
 
-float AdvancedMaterialProperty::roughnessToShininess(float m) const {
-    return 2.f / (std::max(1e-4f, m * m)) - 2.f;
+float AdvancedMaterialProperty::roughnessToShininess(float m) {
+    return 2.f / std::max(1e-4f, m * m) - 2.f;
 }
 
-float AdvancedMaterialProperty::WardParameterMapping(float x) const { return std::max(x, 1e-4f); }
+float AdvancedMaterialProperty::WardParameterMapping(float x) { return std::max(x, 1e-4f); }
 
-vec2 AdvancedMaterialProperty::BCParameterMapping(const vec2& bc) const {
+vec2 AdvancedMaterialProperty::BCParameterMapping(const vec2& bc) {
     return bc * vec2(13000.f, 1.f);
 }
 
-float AdvancedMaterialProperty::getIndexOfRefractionTerm(float n1, float n2) const {
+float AdvancedMaterialProperty::getIndexOfRefractionTerm(float n1, float n2) {
     // Compute index of refraction (IOR) f0 = ((n1-n2)/(n1+n2))^2
     return std::pow((n1 - n2) / (n1 + n2), 2.f);
 }

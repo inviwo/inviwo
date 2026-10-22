@@ -43,10 +43,12 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <algorithm>
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <limits>
 #include <numbers>
+#include <utility>
 
 namespace inviwo {
 
@@ -56,14 +58,15 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
                                Document help, std::function<std::optional<dmat4>()> getBoundingBox,
                                dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel, semantics}
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics)}
     , factory_{InviwoApplication::getPtr()->getCameraFactory()}
     , cameraType_("cameraType", "Camera Type",
                   [&]() {
                       auto opts = OptionPropertyState<std::string>{};
                       const auto keys = factory_->getKeyView();
-                      for (auto& key : keys) opts.options.emplace_back(key);
-                      const auto it = std::find(keys.begin(), keys.end(), "PerspectiveCamera");
+                      for (const auto& key : keys) opts.options.emplace_back(key);
+                      const auto it = std::ranges::find(keys, "PerspectiveCamera");
                       opts.selectedIndex = it != keys.end() ? std::distance(keys.begin(), it) : 0;
                       opts.help =
                           "The type of camera to use, defaults to a Perspective camera"_help;
@@ -141,9 +144,9 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     : CameraProperty(
           identifier, displayName,
           [&]() -> std::function<std::optional<dmat4>()> {
-              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+              if (auto* vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
-              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+              } else if (auto* mp = dynamic_cast<MeshInport*>(inport)) {
                   return util::boundingBox(*mp);
               } else {
                   return nullptr;
@@ -186,7 +189,7 @@ const Camera& CameraProperty::get() const { return *camera_; }
 Camera& CameraProperty::get() { return *camera_; }
 
 void CameraProperty::set(const Property* srcProperty) {
-    if (const auto src = dynamic_cast<const CameraProperty*>(srcProperty)) {
+    if (const auto* const src = dynamic_cast<const CameraProperty*>(srcProperty)) {
         const NetworkLock lock(this);
         const auto aspect = getAspectRatio();
 
@@ -334,7 +337,7 @@ dvec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 }
 
 void CameraProperty::invokeEvent(Event* event) {
-    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
+    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
         aspectSupplier_ = true;
         const auto canvasSize = resizeEvent->size();
         // Do not set aspect ratio if canvas size is 0 in any dimension.
@@ -343,7 +346,7 @@ void CameraProperty::invokeEvent(Event* event) {
             const double height{static_cast<double>(canvasSize[1])};
             setAspectRatio(width / height);
         }
-    } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
+    } else if (auto* ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
                                     [&](ViewEvent::FlipView) { flipView(); },
                                     [&](ViewEvent::FlipUp) { flipUp(); },
@@ -356,9 +359,8 @@ void CameraProperty::invokeEvent(Event* event) {
 }
 
 Property* CameraProperty::getCameraProperty(const std::string& identifier) const {
-    const auto it =
-        std::find_if(cameraProperties_.begin(), cameraProperties_.end(),
-                     [&](auto property) { return property->getIdentifier() == identifier; });
+    const auto it = std::ranges::find_if(
+        cameraProperties_, [&](auto property) { return property->getIdentifier() == identifier; });
     if (it != cameraProperties_.end()) {
         return *it;
     } else {
@@ -374,7 +376,7 @@ void CameraProperty::addCamerapProperty(std::unique_ptr<Property> camprop) {
 
 CameraProperty& CameraProperty::setCurrentStateAsDefault() {
     defaultCamera_.reset(camera_->clone());
-    Property::setCurrentStateAsDefault();
+    CompositeProperty::setCurrentStateAsDefault();
     for (auto& elem : properties_) {
         elem->setCurrentStateAsDefault();
     }

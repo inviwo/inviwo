@@ -35,9 +35,9 @@
 
 namespace inviwo {
 
-PropertyWidgetFactory::PropertyWidgetFactory() {}
+PropertyWidgetFactory::PropertyWidgetFactory() = default;
 
-PropertyWidgetFactory::~PropertyWidgetFactory() {}
+PropertyWidgetFactory::~PropertyWidgetFactory() = default;
 
 bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* propertyWidget) {
     const auto className = propertyWidget->getClassIdentifier();
@@ -45,7 +45,7 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
     sameKeys = widgetMap_.equal_range(className);
 
-    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
+    for (auto it = sameKeys.first; it != sameKeys.second; ++it) {
         if (semantics == it->second->getSematics()) {
             log::warn(
                 "Adding a PropertyWidget for a Property ({}) and semantics ({}) that is already "
@@ -71,13 +71,13 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
     sameKeys = widgetMap_.equal_range(property->getClassIdentifierForWidget());
 
-    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
+    for (auto it = sameKeys.first; it != sameKeys.second; ++it) {
         if (semantics == it->second->getSematics()) {
             return it->second->create(property);
         }
     }
 
-    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
+    for (auto it = sameKeys.first; it != sameKeys.second; ++it) {
         if (PropertySemantics::Default == it->second->getSematics()) {
             log::warn(
                 "Requested property widget semantics ({}) for property ({}, {}) does not exist, "
@@ -102,8 +102,9 @@ std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForPro
     sameKeys = widgetMap_.equal_range(property->getClassIdentifier());
     std::vector<PropertySemantics> semantics;
 
-    for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it)
+    for (auto it = sameKeys.first; it != sameKeys.second; ++it) {
         semantics.push_back(it->second->getSematics());
+    }
 
     return semantics;
 }

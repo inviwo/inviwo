@@ -34,9 +34,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class DemoController;
 
@@ -51,6 +49,4 @@ protected:
     void notifyStateChanged(DemoController* controller);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

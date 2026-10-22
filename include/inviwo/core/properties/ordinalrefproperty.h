@@ -120,7 +120,7 @@ template <typename T>
 class OrdinalRefProperty : public Property {
 public:
     using value_type = T;
-    using component_type = typename util::value_type<T>::type;
+    using component_type = util::value_type<T>::type;
 
     OrdinalRefProperty(
         std::string_view identifier, std::string_view displayName, Document help = {},
@@ -206,7 +206,7 @@ public:
     ConstraintBehavior getMaxConstraintBehaviour() const;
 
     const T& getIncrement() const;
-    void setIncrement(const T& value);
+    void setIncrement(const T& newInc);
 
     void set(const OrdinalRefProperty* srcProperty);
     virtual void set(const Property* src) override;
@@ -647,7 +647,7 @@ template <typename T>
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::resetToDefaultState() {
     bool modified = false;
     if (const auto value = fallbackValue_.lock()) {
-        modified |= value->reset();
+        modified |= (*value).reset();
     }
     modified |= minValue_.reset();
     modified |= maxValue_.reset();

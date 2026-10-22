@@ -139,7 +139,7 @@ ffmpeg::OutputFormat MovieExport::getOutputFormat() const {
     if (guessFormat()) {
         return ffmpeg::OutputFormat::guess(file_.get());
     } else {
-        return ffmpeg::OutputFormat(format_.getSelectedValue());
+        return {format_.getSelectedValue()};
     }
 }
 

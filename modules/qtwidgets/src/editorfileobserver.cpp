@@ -43,14 +43,16 @@
 #include <QMessageBox>
 #include <QWidget>
 #include <Qt>
+#include <utility>
 
-namespace inviwo {
+namespace inviwo::utilqt {
 
-namespace utilqt {
-
-EditorFileObserver::EditorFileObserver(QWidget* parent, const QString& title,
+EditorFileObserver::EditorFileObserver(QWidget* parent, QString title,
                                        const std::filesystem::path& filename)
-    : QObject(parent), FileObserver(util::getInviwoApplication()), parent_(parent), title_(title) {
+    : QObject(parent)
+    , FileObserver(util::getInviwoApplication())
+    , parent_(parent)
+    , title_(std::move(title)) {
     if (parent_) {
         parent_->installEventFilter(this);
     }
@@ -79,10 +81,10 @@ void EditorFileObserver::setFileName(const std::filesystem::path& filename) {
 const std::filesystem::path& EditorFileObserver::getFileName() const { return filename_; }
 
 void EditorFileObserver::setModifiedCallback(std::function<void(bool)> cb) {
-    modifiedCallback_ = cb;
+    modifiedCallback_ = std::move(cb);
 }
 void EditorFileObserver::setReloadFileCallback(std::function<void()> cb) {
-    reloadFileCallback_ = cb;
+    reloadFileCallback_ = std::move(cb);
 }
 
 void EditorFileObserver::fileChanged(const std::filesystem::path&) {
@@ -132,9 +134,7 @@ void EditorFileObserver::queryReloadFile() {
 
 bool EditorFileObserver::widgetIsFocused() const {
     auto children = parent_->findChildren<QWidget*>();
-    return std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
+    return std::ranges::any_of(children, [](auto w) { return w->hasFocus(); });
 }
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

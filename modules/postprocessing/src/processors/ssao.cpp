@@ -198,7 +198,7 @@ SSAO::SSAO()
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
             swizzleMask != outport_.getData()->getColorLayer()->getSwizzleMask()) {
             const auto dim = outport_.getData()->getDimensions();
-            Image* img = new Image(dim, format);
+            auto* img = new Image(dim, format);
             img->copyMetaDataFrom(*inport_.getData());
             // forward swizzle mask of the input
             img->getColorLayer()->setSwizzleMask(swizzleMask);
@@ -276,10 +276,10 @@ void SSAO::process() {
 
     auto persp_camera = dynamic_cast<PerspectiveCamera*>(&camera_.get());
     if (persp_camera) {
-        projParam_.ortho = 0;
+        projParam_.ortho = false;
         projParam_.fov = static_cast<float>(glm::radians(persp_camera->getFovy()));
     } else {
-        projParam_.ortho = 1;
+        projParam_.ortho = true;
         projParam_.orthoheight = static_cast<float>(height);
     }
 
@@ -322,10 +322,10 @@ void SSAO::initHbao() {
         hbaoRandom[i].z = rand2;
         hbaoRandom[i].w = 0;
 #define SCALE ((1 << 15))
-        hbaoRandomShort[i * 4 + 0] = (signed short)(SCALE * hbaoRandom[i].x);
-        hbaoRandomShort[i * 4 + 1] = (signed short)(SCALE * hbaoRandom[i].y);
-        hbaoRandomShort[i * 4 + 2] = (signed short)(SCALE * hbaoRandom[i].z);
-        hbaoRandomShort[i * 4 + 3] = (signed short)(SCALE * hbaoRandom[i].w);
+        hbaoRandomShort[i * 4 + 0] = static_cast<signed short>(SCALE * hbaoRandom[i].x);
+        hbaoRandomShort[i * 4 + 1] = static_cast<signed short>(SCALE * hbaoRandom[i].y);
+        hbaoRandomShort[i * 4 + 2] = static_cast<signed short>(SCALE * hbaoRandom[i].z);
+        hbaoRandomShort[i * 4 + 3] = static_cast<signed short>(SCALE * hbaoRandom[i].w);
 #undef SCALE
     }
 
@@ -397,15 +397,15 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     const float* P = &proj.matrix[0][0];
 
     const vec4 projInfoPerspective{
-        2.0f / (P[4 * 0 + 0]),                  // (x) * (R - L)/N
-        2.0f / (P[4 * 1 + 1]),                  // (y) * (T - B)/N
+        2.0f / P[4 * 0 + 0],                    // (x) * (R - L)/N
+        2.0f / P[4 * 1 + 1],                    // (y) * (T - B)/N
         -(1.0f - P[4 * 2 + 0]) / P[4 * 0 + 0],  // L/N
         -(1.0f + P[4 * 2 + 1]) / P[4 * 1 + 1],  // B/N
     };
 
     vec4 projInfoOrtho{
-        2.0f / (P[4 * 0 + 0]),                  // ((x) * R - L)
-        2.0f / (P[4 * 1 + 1]),                  // ((y) * T - B)
+        2.0f / P[4 * 0 + 0],                    // ((x) * R - L)
+        2.0f / P[4 * 1 + 1],                    // ((y) * T - B)
         -(1.0f + P[4 * 3 + 0]) / P[4 * 0 + 0],  // L
         -(1.0f - P[4 * 3 + 1]) / P[4 * 1 + 1],  // B
     };
@@ -414,12 +414,13 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     hbaoUboData_.projOrtho = useOrtho;
     hbaoUboData_.projInfo = useOrtho ? projInfoOrtho : projInfoPerspective;
 
-    float projScale;
-    if (useOrtho) {
-        projScale = float(height) / (projInfoOrtho[1]);
-    } else {
-        projScale = float(height) / (tanf(proj.fov * 0.5f) * 2.0f);
-    }
+    float projScale = [&]() {
+        if (useOrtho) {
+            return static_cast<float>(height) / projInfoOrtho[1];
+        } else {
+            return static_cast<float>(height) / (tanf(proj.fov * 0.5f) * 2.0f);
+        }
+    }();
 
     // radius
     const float meters2viewspace = 1.0f;
@@ -438,11 +439,13 @@ void SSAO::prepareHbaoData(const ProjectionParam& proj, int width, int height) {
     const int quarterHeight = ((height + 3) / 4);
 
     hbaoUboData_.InvQuarterResolution =
-        vec2(1.0f / float(quarterWidth), 1.0f / float(quarterHeight));
-    hbaoUboData_.InvFullResolution = vec2(1.0f / float(width), 1.0f / float(height));
+        vec2(1.0f / static_cast<float>(quarterWidth), 1.0f / static_cast<float>(quarterHeight));
+    hbaoUboData_.InvFullResolution =
+        vec2(1.0f / static_cast<float>(width), 1.0f / static_cast<float>(height));
 
     for (int i = 0; i < HBAO_RANDOM_ELEMENTS; i++) {
-        hbaoUboData_.float2Offsets[i] = vec4(float(i % 4) + 0.5f, float(i / 4) + 0.5f, 0, 0);
+        hbaoUboData_.float2Offsets[i] =
+            vec4(static_cast<float>(i % 4) + 0.5f, static_cast<float>(i / 4) + 0.5f, 0, 0);
         hbaoUboData_.jitters[i] = hbaoRandom[i];
     }
 }
@@ -539,7 +542,7 @@ void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int widt
 
     // Uniforms
     glUniform1f(locations_.hbaoBlurSharpness, sharpness / meters2viewspace);
-    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 1.0f / float(width), 0);
+    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 1.0f / static_cast<float>(width), 0);
     glUniform1i(locations_.hbaoBlurTexSource, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -557,7 +560,7 @@ void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int widt
 
     // Uniforms
     glUniform1f(locations_.hbaoBlurSharpness, sharpness / meters2viewspace);
-    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 0, 1.0f / float(height));
+    glUniform2f(locations_.hbaoBlurInvResolutionDirection, 0, 1.0f / static_cast<float>(height));
     glUniform1i(locations_.hbaoBlurTexSource, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);

@@ -79,8 +79,8 @@ public:
 
     BufferObject(const BufferObject& rhs);
     BufferObject(BufferObject&& rhs);
-    BufferObject& operator=(const BufferObject& other);
-    BufferObject& operator=(BufferObject&& other);
+    BufferObject& operator=(const BufferObject& rhs);
+    BufferObject& operator=(BufferObject&& rhs);
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
 
@@ -174,7 +174,7 @@ public:
      */
     template <typename T>
     void upload(const T& cont, SizePolicy policy = SizePolicy::GrowOnly) {
-        using ValueType = typename T::value_type;
+        using ValueType = T::value_type;
         const auto sizeInBytes = static_cast<GLsizeiptr>(sizeof(ValueType) * cont.size());
         upload(cont.data(), sizeInBytes, policy);
     }
@@ -186,12 +186,12 @@ public:
 private:
     void initialize(const void* data, GLsizeiptr sizeInBytes);
 
-    GLuint id_;
+    GLuint id_{};
     GLenum usageGL_;
     GLenum target_;
     GLFormat glFormat_;
-    GLsizeiptr sizeInBytes_;
-    GLsizeiptr capacityInBytes_;
+    GLsizeiptr sizeInBytes_{};
+    GLsizeiptr capacityInBytes_{};
 };
 
 inline GLFormat BufferObject::getGLFormat() const { return glFormat_; }

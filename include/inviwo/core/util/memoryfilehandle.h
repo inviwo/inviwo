@@ -34,9 +34,7 @@
 #include <cstdio>
 #include <vector>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief RAII class for providing a FILE stream handle to a buffer in memory.
@@ -88,10 +86,8 @@ public:
 private:
     void initBuffer();
     const unsigned char magicCode_ = 0xaf;
-    FILE* handle_;
+    FILE* handle_{};
     std::vector<unsigned char> buffer_;
 };
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

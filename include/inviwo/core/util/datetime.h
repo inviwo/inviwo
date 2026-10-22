@@ -42,8 +42,8 @@ namespace inviwo {
 #include <warn/ignore/unused-function>
 
 inline std::string currentDateTime() {
-    const time_t currentDateTime = time(0);
-    struct tm dateTimeStruct;
+    const time_t currentDateTime = time(nullptr);
+    struct tm dateTimeStruct{};
     char dateTimeBuffer[20];
     dateTimeStruct = *localtime(&currentDateTime);
     strftime(dateTimeBuffer, sizeof(dateTimeBuffer), "%Y%m%d_%H%M%S", &dateTimeStruct);

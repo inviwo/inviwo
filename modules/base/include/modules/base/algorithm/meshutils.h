@@ -194,7 +194,7 @@ IVW_MODULE_BASE_API std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::
 
 template <typename Callback>
 void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Triangles) {
         throw Exception(SourceContext{}, "Only works for triangles, got {}", info.dt);
     }
@@ -220,7 +220,7 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     }
 
     else if (info.ct == ConnectivityType::Fan) {
-        const uint32_t a = static_cast<uint32_t>(ram.front());
+        const auto a = static_cast<uint32_t>(ram.front());
         for (size_t i = 1; i < ram.size(); ++i) {
             std::invoke(callback, a, ram[i], ram[i + 1]);
         }
@@ -252,7 +252,7 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
 
 template <typename Callback>
 void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback&& callback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
         throw Exception(SourceContext{}, "Only works for lines, got {}", info.dt);
     }
@@ -303,7 +303,7 @@ template <typename LineStartCallback, typename LinePointCallback, typename LineE
 void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
                  LineStartCallback&& lineStartCallback, LinePointCallback&& linePointCallback,
                  LineEndCallback&& lineEndCallback) {
-    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    const auto& ram = ib.getRAMRepresentation()->getDataContainer();
     if (info.dt != DrawType::Lines) {
         throw Exception(SourceContext{}, "Only works for lines, got {}", info.dt);
     }
@@ -323,16 +323,16 @@ void forEachLine(const Mesh::MeshInfo& info, const IndexBuffer& ib,
 
     else if (info.ct == ConnectivityType::Strip) {
         std::invoke(lineStartCallback);
-        for (size_t i = 0; i < ram.size(); ++i) {
-            std::invoke(linePointCallback, ram[i]);
+        for (unsigned int i : ram) {
+            std::invoke(linePointCallback, i);
         }
         std::invoke(lineEndCallback);
     }
 
     else if (info.ct == ConnectivityType::Loop) {
         std::invoke(lineStartCallback);
-        for (size_t i = 0; i < ram.size(); ++i) {
-            std::invoke(linePointCallback, ram[i]);
+        for (unsigned int i : ram) {
+            std::invoke(linePointCallback, i);
         }
         std::invoke(linePointCallback, ram.front());
         std::invoke(lineEndCallback);

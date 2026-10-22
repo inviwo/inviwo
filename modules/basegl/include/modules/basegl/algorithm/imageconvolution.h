@@ -50,7 +50,7 @@ public:
         shader_.onReload(C);
     }
     ImageConvolution() : shader_("img_convolution.frag", Shader::Build::No) {}
-    virtual ~ImageConvolution() {}
+    virtual ~ImageConvolution() = default;
 
     std::shared_ptr<Image> convolution(const Layer& layer, std::function<float(vec2)> kernelWeight,
                                        const float& kernelScale, ivec2 kernelSize);

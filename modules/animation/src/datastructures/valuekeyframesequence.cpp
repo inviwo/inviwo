@@ -29,9 +29,7 @@
 
 #include <modules/animation/datastructures/valuekeyframesequence.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationWillChange(
     ValueKeyframeSequence* seq) {
@@ -47,6 +45,4 @@ void ValueKeyframeSequenceObserverble::notifyValueKeyframeSequenceInterpolationD
     });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

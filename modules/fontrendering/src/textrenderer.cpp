@@ -151,7 +151,7 @@ void TextRenderer::setFont(const std::filesystem::path& fontPath) {
     FT_Set_Pixel_Sizes(fontface_, 0, fontSize_);
 }
 
-std::string_view::const_iterator TextRenderer::validateString(std::string_view str) const {
+std::string_view::const_iterator TextRenderer::validateString(std::string_view str) {
     // check input string for invalid utf8 encoding, process only valid part
     auto end = utf8::find_invalid(str.begin(), str.end());
     if (end != str.end()) {
@@ -252,7 +252,7 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
     shader_->setUniform("tex", texUnit);
     shader_->setUniform("color", color);
 
-    auto rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
+    const auto* rect = SharedOpenGLResources::getPtr()->imagePlaneRect();
     const utilgl::Enable<MeshGL> enable(rect);
 
     ivec2 glyphPos{0};
@@ -341,7 +341,8 @@ void TextRenderer::renderToTexture(const TextTextureObject& texObject, std::stri
 void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture, const size2_t& origin,
                                    const size2_t& size, std::string_view str, const vec4& color,
                                    bool clearTexture) {
-    renderToTexture({texture, computeBoundingBox(str)}, origin, size, str, color, clearTexture);
+    renderToTexture({.texture = texture, .bbox = computeBoundingBox(str)}, origin, size, str, color,
+                    clearTexture);
 }
 
 std::tuple<utilgl::DepthMaskState, utilgl::GlBoolState, utilgl::BlendModeState, utilgl::ActivateFBO>
@@ -355,7 +356,7 @@ TextRenderer::setupRenderState(std::shared_ptr<Texture2D> texture, std::optional
     if (texture != currTexture_) {
         // attach new texture as a render target, no depth texture
         fbo_.attachTexture(texture.get(), GL_COLOR_ATTACHMENT0);
-        currTexture_ = texture;
+        currTexture_ = std::move(texture);
     }
     if (clearColor) {
         const utilgl::ClearColor clear{*clearColor};
@@ -414,7 +415,7 @@ void TextRenderer::renderToTexture(std::shared_ptr<Texture2D> texture,
     const auto state = setupRenderState(
         texture, clearTexture ? std::optional<vec4>{vec4{0.0}} : std::optional<vec4>{});
 
-    for (auto& elem : entries) {
+    for (const auto& elem : entries) {
         // set up viewport
         const utilgl::ViewportState viewport(elem.texPos.x, elem.texPos.y, elem.texExtent.x,
                                              elem.texExtent.y);
@@ -501,7 +502,8 @@ std::pair<bool, TextRenderer::GlyphEntry> TextRenderer::addGlyph(FontCache& fc,
     const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
     const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
 
-    GlyphEntry glyphEntry = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+    GlyphEntry glyphEntry = {
+        .advance = advance, .size = bitmapSize, .bearing = bitmapPos, .texAtlasPos = ivec2(-1)};
 
     const ivec2 glyphExtent(glyphEntry.size + 2 * glyphMargin_);
     const ivec2 texDims(fc.glyphTex->getDimensions());
@@ -572,7 +574,7 @@ TextRenderer::FontCache& TextRenderer::getFontCache() {
 }
 
 void TextRenderer::createDefaultGlyphAtlas() {
-    if (glyphAtlas_.find(getFontTuple()) != glyphAtlas_.end()) {
+    if (glyphAtlas_.contains(getFontTuple())) {
         // glyph atlas already exists
         return;
     }
@@ -590,7 +592,8 @@ void TextRenderer::createDefaultGlyphAtlas() {
         const ivec2 bitmapSize(fontface_->glyph->bitmap.width, fontface_->glyph->bitmap.rows);
         const ivec2 bitmapPos(fontface_->glyph->bitmap_left, fontface_->glyph->bitmap_top);
 
-        fc.glyphMap[c] = {advance, bitmapSize, bitmapPos, ivec2(-1)};
+        fc.glyphMap[c] = {
+            .advance = advance, .size = bitmapSize, .bearing = bitmapPos, .texAtlasPos = ivec2(-1)};
     }
 
     fc.glyphTex = createAtlasTexture(fc);
@@ -622,7 +625,7 @@ std::shared_ptr<Texture2D> TextRenderer::createAtlasTexture(FontCache& fc) {
     std::iota(indices.begin(), indices.end(), 32u);
 
     // sort labels according to width then height
-    std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
+    std::ranges::sort(indices, [&](auto a, auto b) {
         const auto& extA(fc.glyphMap[a].size);
         const auto& extB(fc.glyphMap[b].size);
 
@@ -740,8 +743,9 @@ TextTextureObject createTextTextureObject(TextRenderer& textRenderer, std::strin
             std::array<GLenum, 2>{{GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER}});
         tex->initialize(nullptr);
     }
-    textRenderer.renderToTexture({tex, bbox}, size2_t(0u), bbox.glyphsExtent, text, fontColor);
-    return {tex, bbox};
+    textRenderer.renderToTexture({.texture = tex, .bbox = bbox}, size2_t(0u), bbox.glyphsExtent,
+                                 text, fontColor);
+    return {.texture = tex, .bbox = bbox};
 }
 
 std::shared_ptr<Texture2D> createTextTexture(TextRenderer& textRenderer, std::string text,

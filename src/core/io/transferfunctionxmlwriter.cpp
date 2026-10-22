@@ -36,10 +36,12 @@
 
 #include <fmt/format.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 TransferFunctionXMLWriter::TransferFunctionXMLWriter() {
-    addExtension({"xml", "XML Transfer Function"});
+    addExtension({.extension = "xml", .description = "XML Transfer Function"});
 }
 
 TransferFunctionXMLWriter* TransferFunctionXMLWriter::clone() const {
@@ -93,7 +95,7 @@ std::unique_ptr<std::vector<unsigned char>> TransferFunctionXMLWriter::writeData
     const auto xml = toXML(*data);
 
     auto buffer = std::make_unique<std::vector<unsigned char>>(xml.size());
-    std::copy(xml.begin(), xml.end(), buffer->begin());
+    std::ranges::copy(xml, buffer->begin());
     return buffer;
 }
 

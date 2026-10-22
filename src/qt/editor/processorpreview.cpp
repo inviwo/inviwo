@@ -59,11 +59,11 @@ QImage utilqt::generatePreview(std::string_view classIdentifier, const Processor
         if (const auto processor = factory->createShared(classIdentifier)) {
             return utilqt::generatePreview(*processor);
         } else {
-            return QImage();
+            return {};
         }
     } catch (Exception&) {
         // We will just ignore this...
-        return QImage();
+        return {};
     }
 }
 
@@ -145,7 +145,7 @@ QImage utilqt::generatePreview(Processor& processor) {
         return image;
     } catch (Exception&) {
         // We will just ignore this...
-        return QImage();
+        return {};
     }
 }
 
@@ -190,7 +190,7 @@ QImage utilqt::generateProcessorPreview(Processor& processor, double opacity) {
         return image;
     } catch (Exception&) {
         // We will just ignore this...
-        return QImage();
+        return {};
     }
 }
 

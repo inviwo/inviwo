@@ -44,9 +44,7 @@
 #include <array>
 #include <cstdlib>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suffix,
                                const char* mode) {
@@ -149,6 +147,4 @@ void TempFileHandle::cleanup() {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

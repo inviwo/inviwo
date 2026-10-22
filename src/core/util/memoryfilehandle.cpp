@@ -31,9 +31,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 MemoryFileHandle::MemoryFileHandle(size_t bufferSize) : buffer_(bufferSize, magicCode_) {
     initBuffer();
@@ -64,7 +62,7 @@ MemoryFileHandle::operator FILE*() { return handle_; }
 
 void MemoryFileHandle::reset() {
     fflush(handle_);
-    std::fill(buffer_.begin(), buffer_.end(), magicCode_);
+    std::ranges::fill(buffer_, magicCode_);
 }
 
 void MemoryFileHandle::resize(size_t bufferSize) {
@@ -100,7 +98,7 @@ bool MemoryFileHandle::checkForOverflow() const {
     if (pos < buffer_.size()) {
         int i = 1;
         while ((i + pos < buffer_.size()) && (i <= 8) && !overflowDetected) {
-            overflowDetected = ((buffer_[pos + i]) != magicCode_);
+            overflowDetected = (buffer_[pos + i] != magicCode_);
             ++i;
         }
     }
@@ -117,6 +115,4 @@ void MemoryFileHandle::initBuffer() {
     setvbuf(handle_, reinterpret_cast<char*>(buffer_.data()), _IOFBF, buffer_.size());
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

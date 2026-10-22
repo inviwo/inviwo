@@ -36,6 +36,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 
 #include <string>
+#include <utility>
 
 #include <fmt/base.h>
 
@@ -46,7 +47,7 @@ class TextureUnitContainer;
 
 CameraComponent::CameraComponent(std::string_view name,
                                  std::function<std::optional<dmat4>()> boundingBox)
-    : ShaderComponent(), camera(std::string(name), "Camera", boundingBox) {}
+    : ShaderComponent(), camera(name, "Camera", std::move(boundingBox)) {}
 
 std::string_view CameraComponent::getName() const { return camera.getIdentifier(); }
 
@@ -67,7 +68,9 @@ uniform CameraParameters {0};
 }  // namespace
 
 auto CameraComponent::getSegments() -> std::vector<Segment> {
-    return {Segment{fmt::format(uniforms, getName()), placeholder::uniform, 500}};
+    return {Segment{.snippet = fmt::format(uniforms, getName()),
+                    .placeholder = placeholder::uniform,
+                    .priority = 500}};
 }
 
 }  // namespace inviwo

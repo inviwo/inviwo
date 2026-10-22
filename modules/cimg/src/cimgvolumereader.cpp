@@ -46,6 +46,7 @@
 #include <modules/cimg/cimgutils.h>
 
 #include <type_traits>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -66,8 +67,7 @@ std::shared_ptr<Volume> CImgVolumeReader::readData(const std::filesystem::path& 
     return std::make_shared<Volume>(volumeDisk);
 }
 
-void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
-                                     std::string_view key) const {
+void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
@@ -75,8 +75,8 @@ void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
     }
 }
 
-CImgVolumeRAMLoader::CImgVolumeRAMLoader(const std::filesystem::path& sourceFile)
-    : sourceFile_{sourceFile} {}
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(std::filesystem::path sourceFile)
+    : sourceFile_{std::move(sourceFile)} {}
 
 CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const { return new CImgVolumeRAMLoader(*this); }
 

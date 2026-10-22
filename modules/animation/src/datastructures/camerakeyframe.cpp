@@ -43,9 +43,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CameraKeyframe::CameraKeyframe(Seconds time) : BaseKeyframe{time} {}
 
@@ -95,6 +93,4 @@ bool operator==(const CameraKeyframe& a, const CameraKeyframe& b) {
 }
 bool operator!=(const CameraKeyframe& a, const CameraKeyframe& b) { return !(a == b); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -50,7 +50,7 @@ class SharedLibrary;
 class IVW_CORE_API ModuleContainer {
 public:
     explicit ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo);
-    ModuleContainer(const std::filesystem::path& libFile, bool runtimeReload);
+    ModuleContainer(std::filesystem::path libFile, bool runtimeReload);
 
     ModuleContainer(const ModuleContainer&) = delete;
     ModuleContainer& operator=(const ModuleContainer&) = delete;
@@ -84,7 +84,7 @@ public:
     void setReloadCallback(InviwoApplication* app, std::function<void(ModuleContainer&)> callback);
 
 private:
-    static bool isLoaded(const std::filesystem::path& file);
+    static bool isLoaded(const std::filesystem::path& path);
     static std::filesystem::path getTmpDir();
 
     std::filesystem::path libFile_;

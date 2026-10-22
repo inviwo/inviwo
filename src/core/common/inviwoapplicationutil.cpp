@@ -34,9 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 InviwoApplication* getInviwoApplication() { return InviwoApplication::getPtr(); }
 
@@ -58,6 +56,4 @@ InviwoApplication* getInviwoApplication(PropertyOwner* owner) {
 
 bool isInviwoApplicationInitialized() { return InviwoApplication::isInitialized(); }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

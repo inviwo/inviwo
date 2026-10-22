@@ -270,8 +270,8 @@ std::shared_ptr<Mesh> AmiraMeshReader::readData(const std::filesystem::path& pat
         if (!indexSpec.has_value()) {
             throw DataReaderException(SourceContext{}, "{}: {}", indexSpec.error(), path);
         }
-        auto mesh =
-            std::make_shared<Mesh>(Mesh::MeshInfo{DrawType::Triangles, ConnectivityType::None});
+        auto mesh = std::make_shared<Mesh>(
+            Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::None});
         parseTriangleIndices(*mesh,
                              std::string_view{data}.substr(
                                  locateData(indexSpec->first, indexSpec->second.identifier)),

@@ -32,12 +32,16 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #include <glm/gtx/component_wise.hpp>
+#include <utility>
 
 namespace inviwo {
 
-RawVolumeRAMLoader::RawVolumeRAMLoader(const std::filesystem::path& rawFile, size_t offset,
+RawVolumeRAMLoader::RawVolumeRAMLoader(std::filesystem::path rawFile, size_t offset,
                                        ByteOrder byteOrder, Compression compression)
-    : rawFile_{rawFile}, offset_{offset}, byteOrder_{byteOrder}, compression_{compression} {}
+    : rawFile_{std::move(rawFile)}
+    , offset_{offset}
+    , byteOrder_{byteOrder}
+    , compression_{compression} {}
 
 RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 

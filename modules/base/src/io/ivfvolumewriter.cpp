@@ -119,7 +119,7 @@ void writeIvfVolume(const Volume& data, const std::filesystem::path& filePath,
     DataWriter::checkOverwrite(rawPath, overwrite);
 
     const auto fileName = filePath.stem().string();
-    const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
+    const auto* vr = data.getRepresentation<VolumeRAM>();
 
     std::pmr::monotonic_buffer_resource mbr{1024 * 4};
     Serializer s{filePath, InviwoVolume, InviwoVolumeVersion, &mbr};

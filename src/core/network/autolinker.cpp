@@ -84,13 +84,13 @@ void AutoLinker::update(ProcessorNetwork& network, Processor& target, Processor*
 
         std::vector<Property*> candidates;
         if (linkSettings->isLinkable(targetProperty)) {
-            std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                         std::back_inserter(candidates), isGlobalAutoLinkAble(targetProperty));
+            std::ranges::copy_if(sourceProperties, std::back_inserter(candidates),
+                                 isGlobalAutoLinkAble(targetProperty));
         }
 
         for (const auto& item : targetProperty->getAutoLinkToProperty()) {
-            std::copy_if(sourceProperties.begin(), sourceProperties.end(),
-                         std::back_inserter(candidates), isLocalAutoLinkAble(item));
+            std::ranges::copy_if(sourceProperties, std::back_inserter(candidates),
+                                 isLocalAutoLinkAble(item));
         }
 
         if (!candidates.empty()) {
@@ -103,14 +103,14 @@ void AutoLinker::sortAutoLinkCandidates() {
     util::PropertyDistanceSorter distSorter;
     for (auto& item : autoLinkCandidates_) {
         distSorter.setTarget(item.first);
-        std::sort(item.second.begin(), item.second.end(), distSorter);
+        std::ranges::sort(item.second, distSorter);
     }
 }
 
 void AutoLinker::addLinksToClosestCandidates(ProcessorNetwork& network, bool bidirectional) {
     const NetworkLock lock(&network);
     sortAutoLinkCandidates();
-    for (auto& item : getAutoLinkCandidates()) {
+    for (const auto& item : getAutoLinkCandidates()) {
         const auto existingSources = network.getPropertiesLinkedTo(item.first);
         if (std::ranges::find(existingSources, item.second.front()) == existingSources.end()) {
             network.addLink(item.second.front(), item.first);

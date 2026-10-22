@@ -86,23 +86,23 @@ namespace inviwo {
 ShaderWidget::ShaderWidget(ShaderObject* obj, QWidget* parent)
     : InviwoDockWidget(utilqt::toQString(obj->getFileName()) + "[*]", parent, "ShaderEditorWidget")
     , obj_{obj}
-    , shaderObjOnChange_{obj->onChange([this](ShaderObject*) { shaderObjectChanged(); })} {
+    , shaderObjOnChange_{obj->onChange([this](ShaderObject*) { shaderObjectChanged(); })}
+    , shaderCode_(new CodeEdit{this}) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(50, 70)));  // default size
     setFloating(true);
     setSticky(false);
 
-    QMainWindow* mainWindow = new QMainWindow();
+    auto* mainWindow = new QMainWindow();
     mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("ShaderWidgetToolBar");
     mainWindow->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     setWidget(mainWindow);
 
-    shaderCode_ = new CodeEdit{this};
     auto settings = InviwoApplication::getPtr()->getSettingsByType<GLSLSyntaxHighlight>();
     codeCallbacks_ = utilqt::setGLSLSyntaxHighlight(shaderCode_->syntaxHighlighter(), *settings);
 
@@ -283,7 +283,7 @@ void ShaderWidget::updateState() {
     if (checked) {
         const auto lines = std::count(code.begin(), code.end(), '\n') + 1;
         std::string::size_type width = 0;
-        for (size_t l = 0; l < static_cast<size_t>(lines); ++l) {
+        for (size_t l = 0; std::cmp_less(l, lines); ++l) {
             const auto info = obj_->resolveLine(l);
             const auto pos = info.first.find_last_of('/');
             width = std::max(width, info.first.size() - (pos + 1));  // note string::npos+1==0
@@ -340,8 +340,7 @@ inline void ShaderWidget::queryReloadFile() {
     }
 
     auto children = findChildren<QWidget*>();
-    const auto focus =
-        std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
+    const auto focus = std::ranges::any_of(children, [](auto w) { return w->hasFocus(); });
     if (focus && fileChangedInBackground_ && !reloadQueryInProgress_) {
         const util::KeepTrueWhileInScope guard{&reloadQueryInProgress_};
         const std::string msg =

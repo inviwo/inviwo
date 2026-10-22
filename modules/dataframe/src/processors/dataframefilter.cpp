@@ -130,11 +130,10 @@ void DataFrameFilter::process() {
         return;
     }
 
-    if (brushingMode_.isModified()) {
-        if ((brushingMode_ == BrushingMode::None) || (brushingMode_ == BrushingMode::FilterOnly)) {
-            // unset any previous local filtering
-            brushing_.filter(getIdentifier(), BitSet());
-        }
+    if (brushingMode_.isModified() &&
+        ((brushingMode_ == BrushingMode::None) || (brushingMode_ == BrushingMode::FilterOnly))) {
+        // unset any previous local filtering
+        brushing_.filter(getIdentifier(), BitSet());
     }
 
     auto rows = dataframe::selectRows(*df, createFilters());
@@ -159,7 +158,8 @@ void DataFrameFilter::process() {
 namespace detail {
 
 template <typename T>
-decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_view identifier) {
+static decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent,
+                                                   std::string_view identifier) {
     if (auto p = dynamic_cast<T*>(parent->getPropertyByIdentifier(identifier))) {
         return p->get();
     } else {
@@ -172,7 +172,7 @@ decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_v
 
 dataframefilters::Filters DataFrameFilter::createFilters() const {
     auto startsWith = [](std::string_view str, std::string_view prefix) {
-        return str.substr(0, prefix.size()) == prefix;
+        return str.starts_with(prefix);
     };
 
     const auto parse = [&](const auto& filterProp, auto& itemFilters) {

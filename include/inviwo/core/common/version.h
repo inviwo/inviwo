@@ -33,6 +33,7 @@
 
 #include <inviwo/core/util/exception.h>
 
+#include <algorithm>
 #include <string>
 #include <iosfwd>
 #include <tuple>
@@ -129,8 +130,8 @@ private:
             size_t rhsBegin = 0;
 
             while (true) {
-                const size_t lhsEnd = lhsPre.find_first_of(".", lhsBegin);
-                const size_t rhsEnd = rhsPre.find_first_of(".", rhsBegin);
+                const size_t lhsEnd = lhsPre.find_first_of('.', lhsBegin);
+                const size_t rhsEnd = rhsPre.find_first_of('.', rhsBegin);
 
                 const auto lhsPart = lhsPre.substr(lhsBegin, lhsEnd - lhsBegin);
                 const auto rhsPart = rhsPre.substr(rhsBegin, rhsEnd - rhsBegin);
@@ -191,7 +192,7 @@ constexpr Version::Version(std::string_view version) {
 
     size_t begin = 0;
     size_t end = majorMinorPatch.find('.', 0);
-    for (auto e : v) {
+    for (auto* e : v) {
         const auto num = majorMinorPatch.substr(begin, end - begin);
         if (auto val = toNumber(num)) {
             *e = *val;
@@ -204,9 +205,9 @@ constexpr Version::Version(std::string_view version) {
         end = majorMinorPatch.find('.', begin);
     }
 
-    const auto preReleaseBegin = version.find_first_of("-", 0);
+    const auto preReleaseBegin = version.find_first_of('-', 0);
     if (preReleaseBegin != std::string_view::npos) {
-        auto preReleaseEnd = version.find_first_of("+", preReleaseBegin);
+        auto preReleaseEnd = version.find_first_of('+', preReleaseBegin);
         if (preReleaseEnd == std::string_view::npos) {
             preReleaseEnd = version.size();
         }
@@ -217,17 +218,17 @@ constexpr Version::Version(std::string_view version) {
                             "Pre-release version string too long: len('{}') >= {} ", preRelease,
                             preReleaseBuffer.size());
         }
-        std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
+        std::ranges::copy(preRelease, preReleaseBuffer.begin());
     }
 
-    const auto buildBegin = version.find_first_of("+", 0);
+    const auto buildBegin = version.find_first_of('+', 0);
     if (buildBegin != std::string_view::npos) {
         const auto build = version.substr(buildBegin + 1);
         if (build.size() > buildBuffer.size() - 1) {
             throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ",
                             build, buildBuffer.size());
         }
-        std::copy(build.begin(), build.end(), buildBuffer.begin());
+        std::ranges::copy(build, buildBuffer.begin());
     }
 }
 
@@ -243,8 +244,8 @@ constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int 
         throw Exception(SourceContext{}, "Build version string too long: len('{}') >= {} ", build,
                         buildBuffer.size());
     }
-    std::copy(preRelease.begin(), preRelease.end(), preReleaseBuffer.begin());
-    std::copy(build.begin(), build.end(), buildBuffer.begin());
+    std::ranges::copy(preRelease, preReleaseBuffer.begin());
+    std::ranges::copy(build, buildBuffer.begin());
 }
 
 constexpr bool Version::semanticVersionEqual(const Version& other) const {

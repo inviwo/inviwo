@@ -209,7 +209,7 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image> {
 public:
     ImageOutport(std::string_view identifier, Document help,
                  const DataFormatBase* format = DataVec4UInt8::get(),
-                 HandleResizeEvents value = HandleResizeEvents::Yes);
+                 HandleResizeEvents handleResizeEvents = HandleResizeEvents::Yes);
     ImageOutport(std::string_view identifier, const DataFormatBase* format = DataVec4UInt8::get(),
                  bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, bool handleResizeEvents);

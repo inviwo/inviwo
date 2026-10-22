@@ -29,10 +29,12 @@
 
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
 
+#include <utility>
+
 namespace inviwo {
 PropertyWidgetFactoryObject::PropertyWidgetFactoryObject(std::string_view className,
-                                                         const PropertySemantics& semantics)
-    : className_(className), semantics_(semantics) {}
+                                                         PropertySemantics semantics)
+    : className_(className), semantics_(std::move(semantics)) {}
 
 const std::string& PropertyWidgetFactoryObject::getClassIdentifier() const { return className_; }
 

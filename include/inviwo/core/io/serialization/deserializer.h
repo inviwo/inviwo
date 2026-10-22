@@ -261,7 +261,7 @@ public:
                      std::string_view itemKey = "item");
 
     template <typename T, size_t N>
-    void deserialize(std::string_view key, std::array<T, N>& sContainer,
+    void deserialize(std::string_view key, std::array<T, N>& cont,
                      std::string_view itemKey = "item");
 
     enum class Result { NoChange, Modified, NotFound };
@@ -331,18 +331,17 @@ public:
      *              }});
      * ```
      */
-    template <typename C, typename T = typename C::value_type, typename... Funcs>
+    template <typename C, typename T = C::value_type, typename... Funcs>
         requires deserializer::IndexableFunctions<T, deserializer::IndexFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IndexFunctions<Funcs...> f);
 
-    template <typename C, typename T = typename C::value_type, typename... Funcs>
+    template <typename C, typename T = C::value_type, typename... Funcs>
         requires deserializer::IdentifiableFunctions<T, deserializer::IdentifierFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::IdentifierFunctions<Funcs...> f);
 
-    template <typename C, typename K = typename C::key_type, typename T = typename C::mapped_type,
-              typename... Funcs>
+    template <typename C, typename K = C::key_type, typename T = C::mapped_type, typename... Funcs>
         requires deserializer::MappableFunctions<K, T, deserializer::MapFunctions<Funcs...>>
     void deserialize(std::string_view key, C& container, std::string_view itemKey,
                      deserializer::MapFunctions<Funcs...> f);
@@ -356,15 +355,15 @@ public:
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // integers, strings, reals
-    template <typename T, typename std::enable_if<std::is_integral<T>::value ||
-                                                      util::is_floating_point<T>::value ||
-                                                      util::is_string<T>::value,
-                                                  int>::type = 0>
+    template <typename T,
+              std::enable_if_t<std::is_integral_v<T> || util::is_floating_point<T>::value ||
+                                   util::is_string<T>::value,
+                               int> = 0>
     void deserialize(std::string_view key, T& data,
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // Enum types
-    template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+    template <typename T, std::enable_if_t<std::is_enum_v<T>, int> = 0>
     bool deserialize(std::string_view key, T& data,
                      const SerializationTarget& target = SerializationTarget::Node);
 
@@ -374,11 +373,11 @@ public:
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
-    template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
+    template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int> = 0>
     void deserialize(std::string_view key, Vec& data);
 
     // glm matrix types
-    template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type = 0>
+    template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int> = 0>
     void deserialize(std::string_view key, Mat& data);
 
     // bitsets
@@ -564,10 +563,9 @@ size_t Deserializer::forEachChild(std::string_view key, const F& fun, bool retri
 }
 
 // integers, strings, reals
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value || util::is_floating_point<T>::value ||
-                                      util::is_string<T>::value,
-                                  int>::type>
+template <typename T, std::enable_if_t<std::is_integral_v<T> || util::is_floating_point<T>::value ||
+                                           util::is_string<T>::value,
+                                       int>>
 void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
     static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
@@ -584,9 +582,9 @@ void Deserializer::deserialize(std::string_view key, T& data, const Serializatio
 }
 
 // enum types
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
+template <typename T, std::enable_if_t<std::is_enum_v<T>, int>>
 bool Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
-    using ET = typename std::underlying_type<T>::type;
+    using ET = std::underlying_type_t<T>;
     ET tmpdata{static_cast<ET>(data)};
     deserialize(key, tmpdata, target);
     if (data != static_cast<T>(tmpdata)) {
@@ -608,7 +606,7 @@ void Deserializer::deserialize(std::string_view key, flags::flags<T>& data,
 }
 
 // glm vector types
-template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
+template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int>>
 void Deserializer::deserialize(std::string_view key, Vec& data) {
     if (const NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
@@ -623,7 +621,7 @@ void Deserializer::deserialize(std::string_view key, Vec& data) {
 }
 
 // glm matrix types
-template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
+template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int>>
 void Deserializer::deserialize(std::string_view key, Mat& data) {
     constexpr std::array<std::string_view, 4> rows{"row0", "row1", "row2", "row3"};
     constexpr std::array<std::string_view, 4> cols{"col0", "col1", "col2", "col3"};
@@ -939,7 +937,7 @@ void Deserializer::deserialize(std::string_view key, std::unordered_map<K, V, H,
 
 template <typename T, bool Shared>
 auto Deserializer::getRegisteredType(std::string_view className) const {
-    for (auto base : registeredFactories_) {
+    for (auto* base : registeredFactories_) {
         if (base->hasKey(className)) {
             if (auto factory = dynamic_cast<Factory<T, std::string_view>*>(base)) {
                 if constexpr (Shared) {
@@ -976,13 +974,13 @@ bool Deserializer::objectNeedsRecreation(const T& data) {
 
 template <typename T, bool Shared>
 auto Deserializer::getNonRegisteredType() {
-    if constexpr (std::is_default_constructible_v<T>)
+    if constexpr (std::is_default_constructible_v<T>) {
         if constexpr (Shared) {
             return std::make_shared<T>();
         } else {
             return std::make_unique<T>();
         }
-    else {
+    } else {
         if constexpr (Shared) {
             return std::shared_ptr<T>();
         } else {
@@ -1087,7 +1085,7 @@ template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, T*& data) {
     static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
-    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+    static_assert(std::is_base_of_v<Base, T>, "T should be derived from Base");
 
     if (Base* ptr = data) {
         deserialize(key, ptr);
@@ -1105,7 +1103,7 @@ void Deserializer::deserializeAs(std::string_view key, T*& data) {
 
 template <class Base, class T>
 void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data) {
-    static_assert(std::is_base_of<Base, T>::value, "T should be derived from Base");
+    static_assert(std::is_base_of_v<Base, T>, "T should be derived from Base");
     static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     if (Base* ptr = data.get()) {

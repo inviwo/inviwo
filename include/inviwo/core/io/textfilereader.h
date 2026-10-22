@@ -41,7 +41,7 @@ namespace inviwo {
  */
 class IVW_CORE_API TextFileReader {
 public:
-    explicit TextFileReader(const std::filesystem::path& filePath);
+    explicit TextFileReader(std::filesystem::path filePath);
     ~TextFileReader() = default;
 
     /**

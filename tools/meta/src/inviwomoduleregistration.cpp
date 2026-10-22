@@ -34,14 +34,15 @@
 #include <streambuf>
 #include <regex>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include <fmt/format.h>
 
 namespace inviwo::meta {
 
-InviwoModuleRegistration::InviwoModuleRegistration(const std::filesystem::path& aModulecpp)
-    : modulecpp{aModulecpp} {
+InviwoModuleRegistration::InviwoModuleRegistration(std::filesystem::path aModulecpp)
+    : modulecpp{std::move(aModulecpp)} {
     std::ifstream ifs{modulecpp};
     if (!ifs) throw util::makeError("Unable to open module file '{}'", modulecpp.generic_string());
     file = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -52,9 +53,10 @@ void InviwoModuleRegistration::addInclude(const std::filesystem::path& incPath) 
     const std::vector incMatches(std::sregex_iterator(file.begin(), file.end(), reInclude),
                                  std::sregex_iterator());
 
-    if (incMatches.empty())
+    if (incMatches.empty()) {
         throw util::makeError("Could not find any includes statments in '{}'",
                               modulecpp.generic_string());
+    }
 
     if (std::find_if(incMatches.begin(), incMatches.end(), [&](auto& m) {
             return m.str(1) == incPath.generic_string();

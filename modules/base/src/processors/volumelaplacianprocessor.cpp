@@ -86,7 +86,7 @@ VolumeLaplacianProcessor::VolumeLaplacianProcessor()
 
 void VolumeLaplacianProcessor::process() {
     const auto invol = inport_.getData();
-    inVolume_.updateForNewVolume(*invol.get(), util::OverwriteState::Yes);
+    inVolume_.updateForNewVolume(*invol, util::OverwriteState::Yes);
     inVolume_.setReadOnly(true);
 
     const auto calc = [volume = invol, postProcessing = postProcessing_.get(),
@@ -95,7 +95,7 @@ void VolumeLaplacianProcessor::process() {
     };
 
     outport_.clear();
-    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+    dispatchOne(calc, [this](const std::shared_ptr<Volume>& result) {
         outVolume_.updateForNewVolume(*result, util::OverwriteState::Yes);
         outVolume_.updateVolume(*result);
         outport_.setData(result);

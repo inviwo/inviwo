@@ -34,12 +34,12 @@
 #include <fmt/ostream.h>
 #include <cmath>
 
-namespace inviwo {
-namespace colorbrewer {
+namespace inviwo::colorbrewer {
 
 std::vector<colorbrewer::Family> getFamilies() {
     using Index = std::underlying_type_t<Family>;
     std::vector<Family> res;
+    res.reserve(static_cast<Index>(Family::NumberOfColormapFamilies));
     for (Index i = 0; i < static_cast<Index>(Family::NumberOfColormapFamilies); ++i) {
         res.push_back(static_cast<Family>(i));
     }
@@ -87,10 +87,13 @@ std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
         getMinNumberOfColorsForFamily(static_cast<Family>(familyIndex));
 
     std::vector<Colormap> v;
-    for (int i = 0; i < numColormapsInThisFamily; i++)
+    v.reserve(numColormapsInThisFamily);
+    for (int i = 0; i < numColormapsInThisFamily; i++) {
         v.emplace_back(static_cast<Colormap>(accumulated + i));
+    }
 
     std::vector<std::vector<dvec4>> ret;
+    ret.reserve(v.size());
     for (const auto& c : v) {
         ret.emplace_back(getColormap(c));
     }
@@ -101,8 +104,9 @@ std::vector<std::vector<dvec4>> getColormaps(const Family& family) {
 std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category& category) {
     std::map<Family, std::vector<std::vector<dvec4>>> v;
 
-    for (const auto& family : getFamiliesForCategory(category))
+    for (const auto& family : getFamiliesForCategory(category)) {
         v.emplace(family, getColormaps(family));
+    }
 
     return v;
 }
@@ -201,6 +205,4 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
     return tf;
 }
 
-}  // namespace colorbrewer
-
-}  // namespace inviwo
+}  // namespace inviwo::colorbrewer

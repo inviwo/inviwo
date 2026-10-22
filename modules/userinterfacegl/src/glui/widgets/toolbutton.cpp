@@ -58,6 +58,7 @@
 
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -80,7 +81,7 @@ ToolButton::ToolButton(const std::filesystem::path& filename, Processor& process
 ToolButton::ToolButton(std::shared_ptr<Texture2D> labelImage, Processor& processor,
                        Renderer& uiRenderer, const ivec2& extent)
     : AbstractButton("", processor, uiRenderer, extent)
-    , labelImage_(labelImage)
+    , labelImage_(std::move(labelImage))
     , quadRenderer_(Shader("rendertexturequad.vert", "labelui.frag")) {
     setLabelVisible(false);
 }
@@ -89,7 +90,7 @@ void ToolButton::setImage(const std::filesystem::path& filename) {
     labelImage_ = loadImage(filename);
 }
 
-void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = texture; }
+void ToolButton::setImage(std::shared_ptr<Texture2D> texture) { labelImage_ = std::move(texture); }
 
 void ToolButton::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);

@@ -40,9 +40,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * KeyframeSequence for ButtonProperty. Button will be pressed when passing over keyframe.
@@ -51,7 +49,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API ButtonKeyframeSequence
     : public BaseKeyframeSequence<ButtonKeyframe> {
 public:
-    using key_type = typename BaseKeyframeSequence<ButtonKeyframe>::key_type;
+    using key_type = BaseKeyframeSequence<ButtonKeyframe>::key_type;
     ButtonKeyframeSequence() = default;
     explicit ButtonKeyframeSequence(std::vector<std::unique_ptr<ButtonKeyframe>> keyframes);
     ButtonKeyframeSequence(const ButtonKeyframeSequence& rhs) = default;
@@ -67,6 +65,4 @@ public:
     void operator()(Seconds from, Seconds to, bool& pressed) const;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

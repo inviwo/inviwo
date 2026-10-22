@@ -32,15 +32,13 @@
 
 #include <filesystem>
 
-namespace inviwo {
-
-namespace pyutil {
+namespace inviwo::pyutil {
 
 IVW_MODULE_PYTHON3_API void addModulePath(const std::filesystem::path& path);
 IVW_MODULE_PYTHON3_API void removeModulePath(const std::filesystem::path& path);
 
 struct IVW_MODULE_PYTHON3_API ModulePath {
-    explicit ModulePath(const std::filesystem::path& path);
+    explicit ModulePath(std::filesystem::path path);
     ModulePath(const ModulePath&) = delete;
     ModulePath(ModulePath&&) = default;
     ModulePath& operator=(const ModulePath&) = delete;
@@ -50,6 +48,4 @@ struct IVW_MODULE_PYTHON3_API ModulePath {
 private:
     std::filesystem::path path_;
 };
-}  // namespace pyutil
-
-}  // namespace inviwo
+}  // namespace inviwo::pyutil

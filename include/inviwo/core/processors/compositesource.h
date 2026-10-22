@@ -76,7 +76,7 @@ public:
 template <typename InportType, typename OutportType>
 class CompositeSource : public CompositeSourceBase {
 public:
-    static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
+    static_assert(std::is_same_v<typename InportType::type, typename OutportType::type>,
                   "InportType and OutportType must work with the same data type");
     CompositeSource();
     CompositeSource(const CompositeSource&) = delete;
@@ -108,9 +108,9 @@ private:
 template <typename InportType, typename OutportType>
 struct ProcessorTraits<CompositeSource<InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportType::type;
-        using outtype = typename InportType::type;
-        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
+        using intype = InportType::type;
+        using outtype = InportType::type;
+        static_assert(std::is_same_v<intype, outtype>, "type mismatch");
         const auto name = fmt::format("{} Meta Source", DataTraits<intype>::dataName());
         const auto id = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
                                                CompositeSourceBase::identifierSuffix());

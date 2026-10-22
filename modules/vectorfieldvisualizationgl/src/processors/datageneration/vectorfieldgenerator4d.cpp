@@ -144,7 +144,7 @@ void VectorFieldGenerator4D::process() {
     const size3_t dim{size_.get()};
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     for (size_t i = 0; i < size_.get().w; ++i) {
-        float t = static_cast<float>(i);
+        auto t = static_cast<float>(i);
         t /= size_.get().w - 1;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
 
@@ -155,7 +155,7 @@ void VectorFieldGenerator4D::process() {
         volume->setMetaData<DoubleMetaData>("duration", dt);
 
         TextureUnitContainer cont;
-        utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
+        utilgl::bindAndSetUniforms(shader_, cont, *volume, "volume");
 
         shader_.setUniform("t", t);
         utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);

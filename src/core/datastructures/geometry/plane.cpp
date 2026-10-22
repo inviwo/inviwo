@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/geometry/plane.h>
 
+#include <algorithm>
 #include <glm/gtx/perpendicular.hpp>
 #include <array>
 
@@ -51,9 +52,8 @@ mat4 Plane::inPlaneBasis() const {
                                 glm::perp(vec3{0.0f, 1.0f, 0.0}, normal_),
                                 glm::perp(vec3{0.0f, 0.0f, 1.0}, normal_)};
 
-    const auto a1 = glm::normalize(*std::max_element(
-        perp.begin(), perp.end(),
-        [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
+    const auto a1 = glm::normalize(*std::ranges::max_element(
+        perp, [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
     const auto a2 = glm::cross(normal_, a1);
 
     return glm::translate(point_) *
@@ -68,7 +68,7 @@ Plane Plane::transform(const mat4& transform) const {
     const auto newPos = vec3(transform * vec4(point_, 1.0));
     const auto normalTransform = glm::transpose(glm::inverse(transform));
     const auto newNormal = glm::normalize(vec3(normalTransform * vec4(normal_, 0.0)));
-    return Plane(newPos, newNormal);
+    return {newPos, newNormal};
 }
 
 std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) const {
@@ -119,6 +119,6 @@ std::optional<float> Plane::getIntersectionWeight(const vec3& start, const vec3&
     return std::nullopt;
 }
 
-std::string Plane::getDataInfo() const { return "Plane"; }
+std::string_view Plane::getDataInfo() { return "Plane"; }
 
 }  // namespace inviwo

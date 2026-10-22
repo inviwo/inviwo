@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 
     splashScreen.show();
     splashScreen.showMessage("Loading application...");
-    qtApp.processEvents();
+    QApplication::processEvents();
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
 
@@ -119,23 +119,23 @@ int main(int argc, char** argv) {
                                           inviwoApp.getSystemSettings().moduleSearchPaths_.get(),
                                           clp.getModuleSearchPaths());
 
-    qtApp.processEvents();
+    QApplication::processEvents();
 
     // Do this after registerModules if some arguments were added
     clp.parse();
 
-    qtApp.processEvents();  // Update GUI
+    QApplication::processEvents();  // Update GUI
     splashScreen.showMessage("Loading workspace...");
-    qtApp.processEvents();
+    QApplication::processEvents();
     mainWin.showWindow();
-    qtApp.processEvents();  // Make sure the gui is done loading before loading workspace
+    QApplication::processEvents();  // Make sure the gui is done loading before loading workspace
 
     mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
     splashScreen.finish(&mainWin);
 
-    qtApp.processEvents();
+    QApplication::processEvents();
     clp.processCallbacks();  // run any command line callbacks from modules.
-    qtApp.processEvents();
+    QApplication::processEvents();
 
     const inviwo::util::OnScopeExit clearNetwork(
         [&]() { inviwoApp.getProcessorNetwork()->clear(); });
@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     if (auto numErrors = logCounter->getErrorCount()) {
         inviwo::log::warn("{} errors generated during startup", numErrors);
     }
-    logCounter.reset();
+    logCounter = nullptr;
 
     // process last arguments
     if (clp.getQuitApplicationAfterStartup()) {
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
 
     while (true) {
         try {
-            return qtApp.exec();
+            return QApplication::exec();
         } catch (const inviwo::Exception& e) {
             inviwo::log::exception(e);
             const auto message = fmt::format("{}\nApplication state might be corrupted, be warned.",

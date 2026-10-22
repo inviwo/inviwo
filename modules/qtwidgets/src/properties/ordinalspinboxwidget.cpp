@@ -48,7 +48,7 @@ BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget()
     setFocusPolicy(editor_->focusPolicy());
     setFocusProxy(editor_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
 
     QSizePolicy sp = editor_->sizePolicy();
     sp.setHorizontalPolicy(QSizePolicy::Minimum);

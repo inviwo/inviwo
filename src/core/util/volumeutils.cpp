@@ -30,9 +30,7 @@
 #include <inviwo/core/util/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 bool hasMargins(const std::shared_ptr<const Volume>& volume) {
     return (volume && volume->getMetaData<BoolMetaData>("marginsEnabled", false));
@@ -44,9 +42,9 @@ bool isBricked(const std::shared_ptr<const Volume>& volume) {
 
 size3_t getBrickDimensions(const std::shared_ptr<const Volume>& volume) {
     if (!volume) {
-        return size3_t(1, 1, 1);
+        return {1, 1, 1};
     }
-    return size3_t(volume->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1)));
+    return {volume->getMetaData<IntVec3MetaData>("brickDim", ivec3(1, 1, 1))};
 }
 
 std::pair<vec3, vec3> getVolumeMargins(const std::shared_ptr<const Volume>& volume) {
@@ -76,9 +74,7 @@ size3_t getVolumeDimensions(const std::shared_ptr<const Volume>& volume) {
     if (hasMargins(volume)) {
         // volume has margins enabled
         // adjust start and end texture coordinate accordingly
-        vec3 marginsBottomLeft;
-        vec3 marginsTopRight;
-        std::tie(marginsBottomLeft, marginsTopRight) = getVolumeMargins(volume);
+        auto [marginsBottomLeft, marginsTopRight] = getVolumeMargins(volume);
 
         if (glm::any(greaterThan(marginsBottomLeft, vec3(0.0f))) ||
             glm::any(greaterThan(marginsTopRight, vec3(0.0f)))) {
@@ -98,6 +94,4 @@ double voxelVolume(const Volume& volume) {
     return glm::dot(glm::cross(a, b), c);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

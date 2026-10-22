@@ -128,7 +128,7 @@ template <typename T>
 std::vector<Histogram1D> calculateHistograms(std::span<const T> data, const DataMapper& dataMap,
                                              size_t bins) {
     // a double type with the same extent as T
-    using D = typename util::same_extent<T, double>::type;
+    using D = util::same_extent<T, double>::type;
     constexpr size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
 
     D min(std::numeric_limits<double>::max());

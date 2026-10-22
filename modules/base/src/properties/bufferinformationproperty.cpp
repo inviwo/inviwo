@@ -45,6 +45,7 @@
 
 #include <cstddef>
 #include <limits>
+#include <utility>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ BufferInformationProperty::BufferInformationProperty(std::string_view identifier
                                                      std::string_view displayName,
                                                      InvalidationLevel invalidationLevel,
                                                      PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , format_("format", "Format", "")
     , size_("size", "Size", 0, 0, std::numeric_limits<size_t>::max(), 1,
             InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
@@ -103,7 +104,7 @@ MeshBufferInformationProperty::MeshBufferInformationProperty(std::string_view id
                                                              std::string_view displayName,
                                                              InvalidationLevel invalidationLevel,
                                                              PropertySemantics semantics)
-    : BufferInformationProperty(identifier, displayName, invalidationLevel, semantics)
+    : BufferInformationProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , type_("type", "Type")
     , location_("location", "Location", -1, std::numeric_limits<int>::min(),
                 std::numeric_limits<int>::max(), 1, InvalidationLevel::InvalidOutput,
@@ -142,7 +143,7 @@ IndexBufferInformationProperty::IndexBufferInformationProperty(std::string_view 
                                                                std::string_view displayName,
                                                                InvalidationLevel invalidationLevel,
                                                                PropertySemantics semantics)
-    : BufferInformationProperty(identifier, displayName, invalidationLevel, semantics)
+    : BufferInformationProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , drawType_("defaultDrawType", "Draw Type")
     , connectivity_("defaultConnectivity", "Connectivity") {
 

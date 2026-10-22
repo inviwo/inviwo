@@ -33,6 +33,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 std::string_view enumToStr(OutportDeterminesSize ods) {
@@ -124,20 +126,19 @@ void ImageOutport::clear() {
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
 size2_t ImageOutport::getLargestReqDim() const {
-    if (requestedDimensions_.empty()) return size2_t(1, 1);
+    if (requestedDimensions_.empty()) return {1, 1};
 
-    return std::max_element(requestedDimensions_.begin(), requestedDimensions_.end(),
-                            [](const auto& a, const auto& b) {
-                                return a.second.x * a.second.y < b.second.x * b.second.y;
-                            })
+    return std::ranges::max_element(requestedDimensions_,
+                                    [](const auto& a, const auto& b) {
+                                        return a.second.x * a.second.y < b.second.x * b.second.y;
+                                    })
         ->second;
 }
 
 void ImageOutport::pruneCache() {
     std::vector<size2_t> registeredDimensions;
-    std::transform(requestedDimensions_.begin(), requestedDimensions_.end(),
-                   std::back_inserter(registeredDimensions),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(requestedDimensions_, std::back_inserter(registeredDimensions),
+                           [](const auto& item) { return item.second; });
     cache_.prune(registeredDimensions);
 }
 
@@ -224,12 +225,13 @@ void ImageOutport::setDimensions(const size2_t& newDimension) {
 }
 
 size2_t ImageOutport::getDimensions() const {
-    if (image_)
+    if (image_) {
         return image_->getDimensions();
-    else if (data_)
+    } else if (data_) {
         return data_->getDimensions();
-    else
+    } else {
         return getLargestReqDim();
+    }
 }
 
 std::shared_ptr<Image> ImageOutport::getEditableData() const {

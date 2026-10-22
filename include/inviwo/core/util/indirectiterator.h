@@ -33,20 +33,18 @@
 #include <type_traits>
 #include <memory>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace detail_indirect {
 template <typename Tag, typename Iter>
-struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_category>::value> {};
+struct require : std::enable_if<std::is_base_of_v<Tag, typename Iter::iterator_category>> {};
 template <typename Tag, typename Iter>
-using require_t = typename require<Tag, Iter>::type;
+using require_t = require<Tag, Iter>::type;
 
 template <typename Iterator>
 struct is_const_iterator {
-    typedef typename std::iterator_traits<Iterator>::pointer pointer;
-    static constexpr bool value = std::is_const<typename std::remove_pointer<pointer>::type>::value;
+    using pointer = std::iterator_traits<Iterator>::pointer;
+    static constexpr bool value = std::is_const_v<std::remove_pointer_t<pointer>>;
 };
 
 template <typename T>
@@ -65,7 +63,7 @@ struct add_const_to_reference<T&&> {
 };
 
 template <typename T>
-using add_const_to_reference_t = typename add_const_to_reference<T>::type;
+using add_const_to_reference_t = add_const_to_reference<T>::type;
 
 // a utility to get a raw pointer as a const or mutable
 template <bool asConst>
@@ -134,21 +132,21 @@ struct asPointer<false> {
  */
 template <typename Iter, bool PropagateConst = true>
 struct IndirectIterator {
-    using difference_type = typename std::iterator_traits<Iter>::difference_type;
-    using iterator_category = typename std::iterator_traits<Iter>::iterator_category;
+    using difference_type = std::iterator_traits<Iter>::difference_type;
+    using iterator_category = std::iterator_traits<Iter>::iterator_category;
 
-    using base_value = typename std::iterator_traits<Iter>::value_type;
+    using base_value = std::iterator_traits<Iter>::value_type;
     using value_type = std::remove_reference_t<decltype(*std::declval<base_value>())>;
 
     static constexpr bool is_const =
         std::conditional_t<PropagateConst, detail_indirect::is_const_iterator<Iter>,
                            std::false_type>::value;
 
-    using base_pointer = typename std::iterator_traits<Iter>::pointer;
+    using base_pointer = std::iterator_traits<Iter>::pointer;
     using pointer =
         decltype(detail_indirect::asPointer<is_const>::get(*std::declval<base_pointer>()));
 
-    using base_reference = typename std::iterator_traits<Iter>::reference;
+    using base_reference = std::iterator_traits<Iter>::reference;
     using reference = std::conditional_t<
         is_const,
         detail_indirect::add_const_to_reference_t<decltype(*std::declval<base_reference>())>,
@@ -161,10 +159,10 @@ struct IndirectIterator {
     constexpr IndirectIterator(Iter iterator) noexcept(std::is_nothrow_move_constructible_v<Iter>)
         : iterator_(std::move(iterator)) {}
 
-    template <typename OtherIter,
-              typename = std::enable_if_t<std::is_convertible_v<OtherIter, Iter>>>
+    template <typename OtherIter>
     constexpr IndirectIterator(IndirectIterator<OtherIter> iterator) noexcept(
         std::is_nothrow_move_constructible_v<Iter>)
+        requires(std::is_convertible_v<OtherIter, Iter>)
         : iterator_(std::move(iterator.base())) {}
 
     constexpr IndirectIterator(const IndirectIterator&) noexcept(
@@ -227,7 +225,7 @@ struct IndirectIterator {
     constexpr reference operator*() const { return **iterator_; }
 
     constexpr pointer operator->() const {
-        return detail_indirect::asPointer<is_const>::get(*(iterator_.operator->()));
+        return detail_indirect::asPointer<is_const>::get(*iterator_.operator->());
     }
 
     constexpr const Iter& base() const& { return iterator_; }
@@ -273,6 +271,4 @@ IndirectIterator<Iter, PropagateConst> makeIndirectIterator(Iter iter) noexcept(
     return IndirectIterator<Iter, PropagateConst>(std::move(iter));
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

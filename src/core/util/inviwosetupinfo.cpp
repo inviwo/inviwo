@@ -34,6 +34,8 @@
 #include <inviwo/core/common/modulemanager.h>
 #include <inviwo/core/network/processornetwork.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 void InviwoSetupInfo::ModuleSetupInfo::serialize(Serializer& s) const {
@@ -132,8 +134,7 @@ const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleForProcessor(
     std::string_view processorClassIdentifier) const {
     for (const auto& module : modules_) {
-        const auto it =
-            std::find(module.processors.begin(), module.processors.end(), processorClassIdentifier);
+        const auto it = std::ranges::find(module.processors, processorClassIdentifier);
         if (it != module.processors.end()) {
             return &module;
         }

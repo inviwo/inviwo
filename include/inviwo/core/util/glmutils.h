@@ -106,19 +106,19 @@ struct value_type {
 };
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct value_type<glm::vec<L, T, Q>> {
-    using type = typename glm::vec<L, T, Q>::value_type;
+    using type = glm::vec<L, T, Q>::value_type;
 };
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct value_type<glm::mat<C, R, T, Q>> {
-    using type = typename glm::mat<C, R, T, Q>::value_type;
+    using type = glm::mat<C, R, T, Q>::value_type;
 };
 template <typename T, glm::qualifier Q>
 struct value_type<glm::tquat<T, Q>> {
-    using type = typename glm::tquat<T, Q>::value_type;
+    using type = glm::tquat<T, Q>::value_type;
 };
 
 template <typename T>
-using value_type_t = typename value_type<T>::type;
+using value_type_t = value_type<T>::type;
 
 /**
  * Construct a type with the same extents as the given type but with a different value type
@@ -141,7 +141,7 @@ struct same_extent<glm::tquat<T, Q>, U> {
 };
 
 template <typename T, typename U>
-using same_extent_t = typename same_extent<T, U>::type;
+using same_extent_t = same_extent<T, U>::type;
 
 template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
           glm::qualifier Q = glm::defaultp>
@@ -151,7 +151,7 @@ struct glmtype {
 
 template <typename T, glm::qualifier P>
 struct glmtype<T, 1, 1, P> {
-    typedef T type;
+    using type = T;
 };
 
 template <typename T, glm::length_t L, glm::qualifier P>
@@ -161,14 +161,14 @@ struct glmtype<T, L, 1, P> {
 
 template <typename T = double, glm::length_t C = 1, glm::length_t R = 1,
           glm::qualifier Q = glm::defaultp>
-using glmtype_t = typename glmtype<T, C, R, Q>::type;
+using glmtype_t = glmtype<T, C, R, Q>::type;
 
 }  // namespace util
 
 template <unsigned int Dim, typename Type>
-using Matrix = typename util::glmtype<Type, Dim, Dim>::type;
+using Matrix = util::glmtype<Type, Dim, Dim>::type;
 
 template <unsigned int Dim, typename Type>
-using Vector = typename util::glmtype<Type, Dim, 1>::type;
+using Vector = util::glmtype<Type, Dim, 1>::type;
 
 }  // namespace inviwo

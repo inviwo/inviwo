@@ -48,7 +48,7 @@ public:
     friend class PickingManager;
     using Callback = std::function<void(PickingEvent*)>;
 
-    explicit PickingAction(size_t start, size_t size = 1);
+    explicit PickingAction(size_t id, size_t size = 1);
     virtual ~PickingAction();
 
     /**
@@ -112,7 +112,7 @@ private:
     size_t capacity_;
 
     Callback action_;
-    Processor* processor_;
+    Processor* processor_{};
 
     bool enabled_ = true;
 };

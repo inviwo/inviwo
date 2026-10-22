@@ -55,9 +55,7 @@
 
 #include <fmt/base.h>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameColumnToColorVector::processorInfo_{
@@ -78,8 +76,9 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     , colors_("colors", "resulting vector of colors matching the selected DataFrame column"_help)
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
     , tf_("tf", "Color Mapping", "mapping data values to colors via a transfer function"_help,
-          TransferFunction(
-              {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}})) {
+          TransferFunction({{.pos = 0.0f, .color = vec4(1, 0, 0, 1)},
+                            {.pos = 0.5f, .color = vec4(1, 1, 0, 1)},
+                            {.pos = 1.0f, .color = vec4(0, 1, 0, 1)}})) {
 
     addPort(dataFrame_);
     addPort(colors_);
@@ -98,8 +97,8 @@ void DataFrameColumnToColorVector::process() {
                     const auto colors = std::make_shared<std::vector<vec4>>();
                     auto& vec = buf->getDataContainer();
                     const auto minMax = std::minmax_element(vec.begin(), vec.end());
-                    const double minV = static_cast<double>(*minMax.first);
-                    const double maxV = static_cast<double>(*minMax.second);
+                    const auto minV = static_cast<double>(*minMax.first);
+                    const auto maxV = static_cast<double>(*minMax.second);
                     const double range = (maxV - minV);
 
                     for (const auto& v : vec) {
@@ -111,6 +110,4 @@ void DataFrameColumnToColorVector::process() {
                 }));
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

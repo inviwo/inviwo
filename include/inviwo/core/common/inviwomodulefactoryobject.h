@@ -49,7 +49,7 @@ enum class ProtectedModule : bool { on, off };
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObject(std::string_view name, Version version, std::string_view description,
-                              const std::filesystem::path& srcPath, Version inviwoCoreVersion,
+                              std::filesystem::path srcPath, Version inviwoCoreVersion,
                               std::vector<std::string> dependencies,
                               std::vector<Version> dependenciesVersion,
                               std::vector<std::string> aliases, std::vector<LicenseInfo> licenses,

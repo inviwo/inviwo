@@ -35,9 +35,7 @@
 #include <cxxabi.h>
 #endif
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::string demangle(const char* name) {
 #if defined(__clang__) || defined(__GNUC__)
@@ -67,6 +65,4 @@ std::string parseTypeIdName(const char* name) {
     return removeFromString(removeFromString(str, '*'), ' ');
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

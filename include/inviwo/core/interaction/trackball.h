@@ -100,13 +100,12 @@ public:
      */
     void setLook(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp);
 
-    dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNormalizedDeviceCoord,
-                                               const dvec3& toNormalizedDeviceCoord);
+    dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNDC, const dvec3& toNDC);
 
 protected:
     enum class Direction { Up = 0, Down, Left, Right };
 
-    dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
+    static dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
     void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);
     dvec3 getBoundedTranslation(const dvec3& lookFrom, const dvec3& lookTo, dvec3 translation);
     double getBoundedZoom(const dvec3& lookFrom, const dvec3& zoomTo, double zoom);
@@ -167,12 +166,12 @@ protected:
     dvec3 lastNDC_;
     dvec3 pressNDC_;
 
-    double trackBallWorldSpaceRadius_;
+    double trackBallWorldSpaceRadius_{};
 
     static constexpr double radius = 0.5f;  ///< Radius in normalized screen space [0 1]^2
     static constexpr double stepSize = 0.05f;
 
-    glm::dquat lastRot_;
+    glm::dquat lastRot_{};
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;

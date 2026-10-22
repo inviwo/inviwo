@@ -77,14 +77,14 @@ public:
         auto range = app_->getModuleManager().getInviwoModules();
         if (pos >= 0) {
             if (pos < size()) {
-                return *(std::next(range.begin(), pos));
+                return *std::next(range.begin(), pos);
             } else {
                 throw pybind11::index_error();
             }
         } else {
             const auto ind = size() + pos;
             if (ind >= 0) {
-                return *(std::next(range.begin(), ind));
+                return *std::next(range.begin(), ind);
             } else {
                 throw pybind11::index_error();
             }
@@ -123,7 +123,7 @@ private:
     InviwoApplication* app_;
 };
 
-void exposeModuleIdentifierWrapper(const pybind11::module& m, const std::string& name) {
+static void exposeModuleIdentifierWrapper(const pybind11::module& m, const std::string& name) {
     namespace py = pybind11;
 
     py::classh<ModuleIdentifierWrapper>(m, name.c_str())

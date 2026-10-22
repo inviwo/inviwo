@@ -99,8 +99,8 @@ private:
     void initHbao();
     void initFramebuffers(int width, int height);
     void prepareHbaoData(const ProjectionParam& proj, int width, int height);
-    void drawLinearDepth(GLuint texDepth, const ProjectionParam& proj);
-    void drawHbaoClassic(GLuint fboOut, GLuint texDepth, const ProjectionParam& proj, int width,
+    void drawLinearDepth(GLuint depthTex, const ProjectionParam& proj);
+    void drawHbaoClassic(GLuint fboOut, GLuint depthTex, const ProjectionParam& proj, int width,
                          int height);
     void drawHbaoBlur(GLuint fboOut, const ProjectionParam& proj, int width, int height);
 
@@ -181,8 +181,8 @@ private:
         */
     } locations_;
 
-    ProjectionParam projParam_;
-    HBAOData hbaoUboData_;
+    ProjectionParam projParam_{};
+    HBAOData hbaoUboData_{};
 };
 
 }  // namespace inviwo

@@ -71,6 +71,7 @@
 #include <glm/common.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace inviwo {
 class Event;
@@ -116,8 +117,8 @@ VolumeSliceExtractor::VolumeSliceExtractor()
     , transferFunction_(
           "transferFunction", "Transfer Function",
           "Defines the transfer function for mapping voxel values to color and opacity"_help,
-          TransferFunction(
-              {{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+          TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 1.0f)},
+                            {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
           &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", "Offset alpha values in transfer function"_help,
                      0.0f, {0.0f, ConstraintBehavior::Editable},
@@ -176,7 +177,7 @@ void VolumeSliceExtractor::shiftSlice(int shift) {
 
 namespace detail {
 
-size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
+static size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) {
     using enum CartesianCoordinateAxis;
     switch (axis) {
         default: return {volumeDims.z, volumeDims.y};
@@ -186,7 +187,7 @@ size2_t sliceDimensions(const size3_t volumeDims, CartesianCoordinateAxis axis) 
     }
 }
 
-Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const auto wrapping = v->getOwner()->getWrapping();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -197,7 +198,7 @@ Wrapping2D getWrapping(const VolumeRepresentation* v, CartesianCoordinateAxis ax
     }
 }
 
-mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dmat3 basis = v->getOwner()->getBasis();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -208,7 +209,7 @@ mat2 getBasis(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     }
 }
 
-vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
+static vec2 getOffset(const VolumeRepresentation* v, CartesianCoordinateAxis axis) {
     const dvec3 offset = v->getOwner()->getOffset();
     using enum CartesianCoordinateAxis;
     switch (axis) {
@@ -231,8 +232,8 @@ struct SliceState {
 };
 
 template <typename T, typename D, typename Func>
-std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrprecision,
-                                            const SliceState& state, Func f) {
+static std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrprecision,
+                                                   const SliceState& state, Func f) {
     const T* voldata = vrprecision->getDataTyped();
     const auto& voldim = vrprecision->getDimensions();
 
@@ -298,8 +299,8 @@ std::shared_ptr<Image> extractSliceInternal(const VolumeRAMPrecision<T>* vrpreci
 }
 
 template <typename T, typename V = util::value_type_t<T>>
-std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
-                                    const SliceState& state, bool useTF) {
+static std::shared_ptr<Image> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
+                                           const SliceState& state, bool useTF) {
 
     if (useTF) {
         using D = glm::vec<4, V>;
@@ -328,7 +329,7 @@ void VolumeSliceExtractor::process() {
     const auto vol = inport_.getData();
 
     if (tfGroup_.isChecked() &&
-        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
+        std::cmp_greater_equal(channel_.get(), vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
                         "Channel for TF mapping is greater than the available channels {} >= {}",
                         channel_.get() + 1, vol->getDataFormat()->getComponents());
@@ -357,10 +358,14 @@ void VolumeSliceExtractor::process() {
             break;
     }
 
-    detail::SliceState state{sliceAlongAxis_,      static_cast<size_t>(sliceNumber_.get() - 1),
-                             &imageCache_,         flipHorizontal_,
-                             flipVertical_,        &transferFunction_.get(),
-                             tfAlphaOffset_.get(), channel_.get()};
+    detail::SliceState state{.axis = sliceAlongAxis_,
+                             .slice = static_cast<size_t>(sliceNumber_.get() - 1),
+                             .cache = &imageCache_,
+                             .flipHorizontal = flipHorizontal_,
+                             .flipVertical = flipVertical_,
+                             .tf = &transferFunction_.get(),
+                             .alphaOffset = tfAlphaOffset_.get(),
+                             .channel = channel_.get()};
 
     std::shared_ptr<Image> image;
 
@@ -409,10 +414,11 @@ void VolumeSliceExtractor::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
 void VolumeSliceExtractor::eventGestureShiftSlice(Event* event) {
     const GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-    if (gestureEvent->deltaPos().y < 0)
+    if (gestureEvent->deltaPos().y < 0) {
         shiftSlice(1);
-    else if (gestureEvent->deltaPos().y > 0)
+    } else if (gestureEvent->deltaPos().y > 0) {
         shiftSlice(-1);
+    }
 }
 
 }  // namespace inviwo

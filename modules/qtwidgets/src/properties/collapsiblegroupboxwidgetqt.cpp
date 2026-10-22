@@ -186,7 +186,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
 
     updateFocusPolicy();
 
-    QHBoxLayout* heading = new QHBoxLayout();
+    auto* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(getSpacing());
     heading->addWidget(btnCollapse_);
@@ -195,7 +195,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     heading->addWidget(checkBox_);
     heading->addWidget(resetButton_);
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    auto* layout = new QVBoxLayout();
     setSpacingAndMargins(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -371,15 +371,13 @@ const std::vector<PropertyWidgetQt*>& CollapsibleGroupBoxWidgetQt::getPropertyWi
 }
 
 PropertyWidgetQt* CollapsibleGroupBoxWidgetQt::widgetForProperty(Property* property) const {
-    if (const auto it = std::find(properties_.begin(), properties_.end(), property);
-        it != properties_.end()) {
+    if (const auto it = std::ranges::find(properties_, property); it != properties_.end()) {
         return *(propertyWidgets_.begin() + std::distance(properties_.begin(), it));
     }
     return nullptr;
 }
 Property* CollapsibleGroupBoxWidgetQt::propertyForWidget(PropertyWidgetQt* widget) const {
-    if (const auto it = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
-        it != propertyWidgets_.end()) {
+    if (const auto it = std::ranges::find(propertyWidgets_, widget); it != propertyWidgets_.end()) {
         return *(properties_.begin() + std::distance(propertyWidgets_.begin(), it));
     }
     return nullptr;
@@ -475,7 +473,10 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* /*prop*/, size_
     if (propertyWidget) {
         if (isChildRemovable()) {
             const int widgetIndex = propertyWidgetGroupLayout_->indexOf(propertyWidget);
-            int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+            int row = 0;
+            int col = 0;
+            int rowSpan = 0;
+            int colSpan = 0;
             propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                         &colSpan);
 
@@ -510,9 +511,9 @@ void CollapsibleGroupBoxWidgetQt::onSetSemantics(Property* prop, const PropertyS
         setUpdatesEnabled(true);
     });
 
-    const auto pit = std::find(properties_.begin(), properties_.end(), prop);
-    const auto wit = std::find_if(propertyWidgets_.begin(), propertyWidgets_.end(),
-                                  [&](auto w) { return w->getProperty() == prop; });
+    const auto pit = std::ranges::find(properties_, prop);
+    const auto wit =
+        std::ranges::find_if(propertyWidgets_, [&](auto w) { return w->getProperty() == prop; });
 
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
         if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
@@ -565,7 +566,10 @@ void CollapsibleGroupBoxWidgetQt::onSetVisible(Property* property, bool visible)
         for (auto&& elem : util::zip(properties_, propertyWidgets_)) {
             if (elem.first() == property) {
                 const int widgetIndex = propertyWidgetGroupLayout_->indexOf(elem.second());
-                int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+                int row = 0;
+                int col = 0;
+                int rowSpan = 0;
+                int colSpan = 0;
                 propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                             &colSpan);
 
@@ -648,21 +652,19 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     auto moveDownBtn = createButton("moveListItemDownButton", "Move down");
     connect(moveUpBtn, &QToolButton::clicked, this, [prop]() {
         if (auto owner = prop->getOwner()) {
-            if (const auto it = owner->find(prop); it != owner->cend()) {
-                if (it != owner->cbegin()) {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
-                    owner->move(prop, std::distance(owner->cbegin(), it) - 1);
-                }
+            if (const auto it = owner->find(prop);
+                (it != owner->cend()) && (it != owner->cbegin())) {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+                owner->move(prop, std::distance(owner->cbegin(), it) - 1);
             }
         }
     });
     connect(moveDownBtn, &QToolButton::clicked, this, [prop]() {
         if (auto owner = prop->getOwner()) {
-            if (const auto it = owner->find(prop); it != owner->cend()) {
-                if (it + 1 != owner->cend()) {
-                    RenderContext::getPtr()->activateDefaultRenderContext();
-                    owner->move(prop, std::distance(owner->cbegin(), it) + 1);
-                }
+            if (const auto it = owner->find(prop);
+                (it != owner->cend()) && (it + 1 != owner->cend())) {
+                RenderContext::getPtr()->activateDefaultRenderContext();
+                owner->move(prop, std::distance(owner->cbegin(), it) + 1);
             }
         }
     });
@@ -781,7 +783,10 @@ void CollapsibleGroupBoxWidgetQt::insertPropertyWidget(PropertyWidgetQt* propert
                 const int widgetIndex = propertyWidgetGroupLayout_->indexOf(w);
                 if (widgetIndex > -1) {
                     // move widget from previous layout to new layout
-                    int row = 0, col = 0, rowSpan = 0, colSpan = 0;
+                    int row = 0;
+                    int col = 0;
+                    int rowSpan = 0;
+                    int colSpan = 0;
                     propertyWidgetGroupLayout_->getItemPosition(widgetIndex, &row, &col, &rowSpan,
                                                                 &colSpan);
                     layout->addWidget(w, insertRow, 0, rowSpan, colSpan);

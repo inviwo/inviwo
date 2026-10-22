@@ -35,6 +35,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iterator>
+#include <utility>
 
 namespace inviwo {
 
@@ -158,7 +159,7 @@ std::string FilePatternProperty::getFilePattern() const {
     if (!pattern_.get().empty()) {
         return pattern_.get().front().filename().string();
     } else {
-        return std::string();
+        return {};
     }
 }
 
@@ -172,15 +173,15 @@ std::filesystem::path FilePatternProperty::getFilePatternPath() const {
 
 std::vector<std::filesystem::path> FilePatternProperty::getFileList() const {
     std::vector<std::filesystem::path> fileList;
-    std::transform(files_.begin(), files_.end(), std::back_inserter(fileList),
-                   [](const auto& elem) { return std::get<1>(elem); });
+    std::ranges::transform(files_, std::back_inserter(fileList),
+                           [](const auto& elem) { return std::get<1>(elem); });
     return fileList;
 }
 
 std::vector<int> FilePatternProperty::getFileIndices() const {
     std::vector<int> indexList;
-    std::transform(files_.begin(), files_.end(), std::back_inserter(indexList),
-                   [](const auto& elem) { return std::get<0>(elem); });
+    std::ranges::transform(files_, std::back_inserter(indexList),
+                           [](const auto& elem) { return std::get<0>(elem); });
     return indexList;
 }
 
@@ -217,14 +218,14 @@ void FilePatternProperty::updateFileList() {
             auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            const bool hasDigits = (strPattern.find('#') != std::string::npos);
+            const bool hasDigits = (strPattern.contains('#'));
             const bool hasWildcard =
                 hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 
             if (!hasWildcard) {
                 // look for exact match
                 if (util::contains(fileList, pattern)) {
-                    files_.push_back(std::make_tuple(-1, item));
+                    files_.emplace_back(-1, item);
                 }
             } else if (hasDigits) {
                 ivec2 indexRange{-1, std::numeric_limits<int>::max()};
@@ -244,7 +245,7 @@ void FilePatternProperty::updateFileList() {
                         found = true;
                         // check index
                         if ((index >= indexRange.x) && (index <= indexRange.y)) {
-                            files_.push_back(std::make_tuple(index, filePath / file));
+                            files_.emplace_back(index, filePath / file);
                         }
                     }
                 }
@@ -253,7 +254,7 @@ void FilePatternProperty::updateFileList() {
                 // apply range selection, assume file names are sorted
                 if (rangeSelection_.isChecked()) {
                     const ivec2 indexRange(minIndex_.get(), maxIndex_.get());
-                    if (indexRange.y < static_cast<int>(fileList.size())) {
+                    if (std::cmp_less(indexRange.y, fileList.size())) {
                         // remove all files after the maximum index
                         fileList.erase(
                             fileList.begin() + std::max(static_cast<std::size_t>(indexRange.y + 1),
@@ -268,7 +269,7 @@ void FilePatternProperty::updateFileList() {
                 for (const auto& file : fileList) {
                     if (filesystem::wildcardStringMatch(strPattern, file.generic_string())) {
                         // match found
-                        files_.push_back(std::make_tuple(-1, filePath / file));
+                        files_.emplace_back(-1, filePath / file);
                     }
                 }
             }
@@ -292,10 +293,10 @@ std::string FilePatternProperty::getFormattedFileList() const {
 void FilePatternProperty::sort() {
     if (!sort_.get()) return;
 
-    std::sort(files_.begin(), files_.end());
+    std::ranges::sort(files_);
 }
 
-std::string FilePatternProperty::guessFilePattern() const {
+std::string_view FilePatternProperty::guessFilePattern() {
     log::error("not implemented yet");
     return "";
 }

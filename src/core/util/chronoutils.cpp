@@ -31,36 +31,34 @@
 #include <sstream>
 #include <iomanip>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 std::string msToString(double ms, bool includeZeros, bool spacing) {
     const std::string space = (spacing ? " " : "");
     std::stringstream ss;
     bool follows = false;
 
-    const size_t days = static_cast<size_t>(ms / (1000.0 * 3600.0 * 24.0));
+    const auto days = static_cast<size_t>(ms / (1000.0 * 3600.0 * 24.0));
     if (days > 0 || (follows && includeZeros)) {
         follows = true;
         ss << days << space << "d";
         ms -= static_cast<double>(3600 * 1000 * 24 * days);
     }
-    const size_t hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
+    const auto hours = static_cast<size_t>(ms / (1000.0 * 3600.0));
     if (hours > 0 || (follows && includeZeros)) {
         if (follows) ss << " ";
         follows = true;
         ss << hours << space << "h";
         ms -= static_cast<double>(3600 * 1000 * hours);
     }
-    const size_t minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
+    const auto minutes = static_cast<size_t>(ms / (1000.0 * 60.0));
     if (minutes > 0 || (follows && includeZeros)) {
         if (follows) ss << " ";
         follows = true;
         ss << minutes << space << "min";
         ms -= static_cast<double>(60 * 1000 * minutes);
     }
-    const size_t seconds = static_cast<size_t>(ms / 1000.0);
+    const auto seconds = static_cast<size_t>(ms / 1000.0);
     // combine seconds and milliseconds, iff there already something added to the string stream
     // _or_ there are more than one second
     if (seconds > 0 || (follows && includeZeros)) {
@@ -75,6 +73,4 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     return ss.str();
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

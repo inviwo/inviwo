@@ -45,9 +45,9 @@ template <typename PairType>
 class ZipPairMatcherImpl : public ::testing::MatcherInterface<PairType> {
 
 public:
-    typedef GTEST_REMOVE_REFERENCE_AND_CONST_(PairType) RawPairType;
-    typedef typename RawPairType::first_type FirstType;
-    typedef typename RawPairType::second_type SecondType;
+    using RawPairType = GTEST_REMOVE_REFERENCE_AND_CONST_(PairType);
+    using FirstType = RawPairType::first_type;
+    using SecondType = RawPairType::second_type;
 
     template <typename FirstMatcher, typename SecondMatcher>
     ZipPairMatcherImpl(FirstMatcher first_matcher, SecondMatcher second_matcher)
@@ -99,12 +99,12 @@ private:
     void ExplainSuccess(const std::string& first_explanation, const std::string& second_explanation,
                         ::testing::MatchResultListener* listener) const {
         *listener << "whose both fields match";
-        if (first_explanation != "") {
+        if (!first_explanation.empty()) {
             *listener << ", where the first field is a value " << first_explanation;
         }
-        if (second_explanation != "") {
+        if (!second_explanation.empty()) {
             *listener << ", ";
-            if (first_explanation != "") {
+            if (!first_explanation.empty()) {
                 *listener << "and ";
             } else {
                 *listener << "where ";

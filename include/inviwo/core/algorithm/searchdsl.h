@@ -51,7 +51,7 @@ public:
         std::string name;
         std::string shortcut;
         std::string description;
-        bool global;
+        bool global{};
         std::function<bool(std::string_view, const std::any&, const Ts&...)> match;
         std::function<std::any(std::string_view)> onToken = nullptr;
     };
@@ -156,7 +156,7 @@ private:
     void addToken(std::string_view key, std::string_view str) {
         if (str.size() >= 2 && str.front() == '"' && str.back() == '"') {
             str = str.substr(1, str.size() - 2);
-        } else if (str.size() >= 1 && str.front() == '"') {
+        } else if (!str.empty() && str.front() == '"') {
             str = str.substr(1);
         }
         if (const auto it = map_.find(key); it != map_.end()) {

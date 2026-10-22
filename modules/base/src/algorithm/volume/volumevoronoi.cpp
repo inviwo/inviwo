@@ -55,12 +55,11 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 namespace detail {
 template <Wrapping X, Wrapping Y, Wrapping Z>
-auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
+static auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
     auto delta = b - a;
 
     if constexpr (X == Wrapping::Repeat) {
@@ -84,7 +83,7 @@ auto distance2(const vec3& a, const vec3& b, const mat3& dataToModelMatrix) {
 }  // namespace detail
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-void voronoiSegmentationImpl(
+static void voronoiSegmentationImpl(
     const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
     const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
     VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
@@ -108,7 +107,7 @@ void voronoiSegmentationImpl(
 }
 
 template <Wrapping X, Wrapping Y, Wrapping Z>
-void weightedVoronoiSegmentationImpl(
+static void weightedVoronoiSegmentationImpl(
     const size3_t volumeDimensions, const mat4& indexToDataMatrix, const mat4& dataToModelMatrix,
     const std::vector<std::pair<unsigned short, vec3>>& seedPointsWithIndices,
     const std::vector<float>& weights, VolumeRAMPrecision<unsigned short>& voronoiVolumeRep) {
@@ -139,7 +138,7 @@ std::shared_ptr<Volume> voronoiSegmentation(
     const std::vector<std::pair<uint32_t, vec3>>& seedPointsWithIndices, const Wrapping3D& wrapping,
     const std::optional<std::vector<float>>& weights) {
 
-    if (seedPointsWithIndices.size() == 0) {
+    if (seedPointsWithIndices.empty()) {
         throw Exception("No seed points, cannot create volume voronoi segmentation");
     }
 
@@ -160,9 +159,8 @@ std::shared_ptr<Volume> voronoiSegmentation(
     voronoiVolume->setInterpolation(InterpolationType::Nearest);
     voronoiVolume->setWrapping(wrapping);
 
-    const auto [itMin, itMax] =
-        std::minmax_element(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                            [](const auto& a, const auto& b) { return a.first < b.first; });
+    const auto [itMin, itMax] = std::ranges::minmax_element(
+        seedPointsWithIndices, [](const auto& a, const auto& b) { return a.first < b.first; });
 
     voronoiVolume->dataMap.dataRange =
         dvec2{static_cast<double>(itMin->first), static_cast<double>(itMax->first)};
@@ -177,13 +175,12 @@ std::shared_ptr<Volume> voronoiSegmentation(
         seedPointsWithIndices.size()};
 
     const auto modelToDataMatrix = glm::inverse(dataToModelMatrix);
-    std::transform(seedPointsWithIndices.begin(), seedPointsWithIndices.end(),
-                   dataSeedPointsWithIndices.begin(),
-                   [&modelToDataMatrix](const std::pair<uint32_t, vec3>& pair) {
-                       return std::pair<uint32_t, vec3>{
-                           static_cast<unsigned short>(pair.first),
-                           vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
-                   });
+    std::ranges::transform(seedPointsWithIndices, dataSeedPointsWithIndices.begin(),
+                           [&modelToDataMatrix](const std::pair<uint32_t, vec3>& pair) {
+                               return std::pair<uint32_t, vec3>{
+                                   static_cast<unsigned short>(pair.first),
+                                   vec3{modelToDataMatrix * vec4{pair.second, 1.0f}}};
+                           });
 
     if (weights.has_value()) {
         using Functor = void (*)(const size3_t, const mat4&, const mat4&,
@@ -246,5 +243,4 @@ std::shared_ptr<Volume> voronoiSegmentation(
     return voronoiVolume;
 }
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

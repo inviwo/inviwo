@@ -105,10 +105,10 @@ namespace util {
 
 template <typename T>
 constexpr NumericType getNumericType() {
-    return (util::is_floating_point<T>::value
-                ? NumericType::Float
-                : (std::is_signed<T>::value ? NumericType::SignedInteger
-                                            : NumericType::UnsignedInteger));
+    return (
+        util::is_floating_point<T>::value
+            ? NumericType::Float
+            : (std::is_signed_v<T> ? NumericType::SignedInteger : NumericType::UnsignedInteger));
 }
 
 /**
@@ -137,7 +137,7 @@ struct wrap<Wrapper, List<Ts...>> {
 }  // namespace detail
 
 template <template <typename> typename Wrapper, typename List>
-using wrap = typename detail::wrap<Wrapper, List>::type;
+using wrap = detail::wrap<Wrapper, List>::type;
 
 }  // namespace util
 

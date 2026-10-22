@@ -91,21 +91,24 @@ void vecx(py::module& m, std::string_view prefix, std::string_view name, std::st
         .def(py::init<Vec>())
         .def(py::init<>())
         .def(py::init([](py::array_t<T> arr) {
-            if (arr.ndim() != 1)
+            if (arr.ndim() != 1) {
                 throw std::invalid_argument{
                     fmt::format("Invalid ndim: got {}, expected {}", arr.ndim(), 1)};
-            if (arr.shape(0) != Dim)
+            }
+            if (arr.shape(0) != Dim) {
                 throw std::invalid_argument{
                     fmt::format("Invalid shape: got {}, expected {}", arr.shape(0), Dim)};
+            }
 
             Vec res;
             std::copy(arr.data(0), arr.data(0) + Dim, glm::value_ptr(res));
             return res;
         }))
         .def(py::init([](py::list list) {
-            if (list.size() != Dim)
+            if (list.size() != Dim) {
                 throw std::invalid_argument{
                     fmt::format("Invalid size: got {}, expected {}", list.size(), Dim)};
+            }
 
             Vec res;
             for (int i = 0; i < Dim; ++i) {

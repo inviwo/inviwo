@@ -41,14 +41,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 
-namespace inviwo {
-namespace marching {
+namespace inviwo::marching {
 
 glm::vec3 interpolate(const glm::vec3& p0, double v0, const glm::vec3& p1, double v1) {
     if (v0 == v1) {
         return p0;
     }
-    const float t = static_cast<float>(v0 / (v0 - v1));
+    const auto t = static_cast<float>(v0 / (v0 - v1));
     return p0 + t * (p1 - p0);
 }
 
@@ -104,7 +103,7 @@ size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& position
     if (!nearest || (glm::distance2(nearestPos(), pos) > glm::epsilon<float>())) {
         nearest = vertexTree.insert(pos, positions.size());
         positions.push_back(pos);
-        normals.push_back(vec3(0, 0, 0));
+        normals.emplace_back(0, 0, 0);
     }
     return nearest->get();
 }
@@ -134,5 +133,4 @@ void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer
     normals[i2] += n;
 }
 
-}  // namespace marching
-}  // namespace inviwo
+}  // namespace inviwo::marching

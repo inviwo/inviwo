@@ -40,12 +40,13 @@
 #include <modules/opengl/texture/textureutils.h>
 
 #include <type_traits>
+#include <utility>
 
 namespace inviwo {
 class DataFormatBase;
 
 LayerGL::LayerGL(std::shared_ptr<Texture2D> tex, LayerType type)
-    : LayerRepresentation{type}, texture_{tex} {
+    : LayerRepresentation{type}, texture_{std::move(tex)} {
     IVW_ASSERT(texture_, "Texture should never be nullptr");
 }
 
@@ -122,7 +123,7 @@ bool LayerGL::copyRepresentationsTo(LayerRepresentation* /*targetLayerGL*/) cons
     return false;
 }
 
-std::type_index LayerGL::getTypeIndex() const { return std::type_index(typeid(LayerGL)); }
+std::type_index LayerGL::getTypeIndex() const { return {typeid(LayerGL)}; }
 
 void LayerGL::setDimensions(size2_t dimensions) {
     texture_->unbind();

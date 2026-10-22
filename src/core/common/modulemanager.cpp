@@ -41,6 +41,7 @@
 #include <inviwo/core/common/inviwocommondefines.h>
 #include <inviwo/core/network/workspacemanager.h>
 
+#include <algorithm>
 #include <string>
 #include <functional>
 #include <ranges>
@@ -82,7 +83,7 @@ void topologicalSort(std::vector<ModuleContainer>& containers) {
         helper(helper, containers, item.identifier(), visited, tmpVisited, sorted);
     }
     // Sort modules according to dependency graph
-    std::sort(containers.begin(), containers.end(), [&](const auto& a, const auto& b) {
+    std::ranges::sort(containers, [&](const auto& a, const auto& b) {
         return std::ranges::find(sorted, a.identifier()) <
                std::ranges::find(sorted, b.identifier());
     });
@@ -107,6 +108,7 @@ bool ModuleManager::isRuntimeModuleReloadingEnabled() {
 void ModuleManager::registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo,
                                     const std::function<void(std::string_view)>& progressCallback) {
     std::vector<ModuleContainer> inviwoModules;
+    inviwoModules.reserve(mfo.size());
     for (auto& obj : mfo) {
         inviwoModules.emplace_back(std::move(obj));
     }
@@ -183,7 +185,7 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
     std::vector<std::string> enabledModules;
     std::copy(std::istream_iterator<std::string>(enabledModulesFile),
               std::istream_iterator<std::string>(), std::back_inserter(enabledModules));
-    std::for_each(std::begin(enabledModules), std::end(enabledModules), toLower);
+    std::ranges::for_each(enabledModules, toLower);
 
     return [enabledModules](std::string_view name) { return util::contains(enabledModules, name); };
 }
@@ -299,8 +301,7 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
     const auto valid = [&](const std::filesystem::path& file) {
         const auto name = file.filename().generic_string();
         return libraryTypes.contains(file.extension()) &&
-               (name.find("inviwo-module") != std::string::npos ||
-                name.find("inviwo-core") != std::string::npos);
+               (name.contains("inviwo-module") || name.contains("inviwo-core"));
     };
 
     std::vector<ModuleContainer> modules;
@@ -411,7 +412,7 @@ bool ModuleManager::checkDependencies(const InviwoModuleFactoryObject& obj) cons
     // same core version.
     for (const auto& [name, version] : obj.dependencies) {
 
-        if (auto depObj = getFactoryObject(name)) {
+        if (auto* depObj = getFactoryObject(name)) {
             if (!getModuleByIdentifier(depObj->name)) {
                 fmt::format_to(std::back_inserter(err),
                                "\nModule dependency: {} failed to register", depObj->name);
@@ -477,7 +478,7 @@ std::vector<std::string> ModuleManager::deregisterDependentModules(
 
 void ModuleManager::setModuleLocator(
     std::function<std::filesystem::path(const InviwoModule&)> moduleLocator) {
-    moduleLocator_ = moduleLocator;
+    moduleLocator_ = std::move(moduleLocator);
 }
 std::filesystem::path ModuleManager::locateModule(const InviwoModule& m) const {
     if (moduleLocator_) {

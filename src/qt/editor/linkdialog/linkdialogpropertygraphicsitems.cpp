@@ -28,6 +28,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVector2D>
@@ -97,18 +98,18 @@ void LinkDialogPropertyGraphicsItem::updatePositions() {
 }
 
 bool LinkDialogPropertyGraphicsItem::propertyVisible() const {
-    if (auto p = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(parentItem())) {
+    if (auto* p = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(parentItem())) {
         if (!p->isExpanded()) return false;
         if (!p->propertyVisible()) return false;
     }
     bool show = false;
-    if (auto s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
+    if (auto* s = qobject_cast<LinkDialogGraphicsScene*>(scene())) {
         show = s->isShowingHidden();
     }
     return item_->getVisible() || !connections_.empty() || show;
 }
 
-bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return subProperties_.size() > 0; }
+bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return !subProperties_.empty(); }
 
 int LinkDialogPropertyGraphicsItem::getLevel() const { return parent()->getLevel() + 1; }
 
@@ -146,13 +147,12 @@ size_t LinkDialogPropertyGraphicsItem::getConnectionGraphicsItemCount() const {
 
 size_t LinkDialogPropertyGraphicsItem::getConnectionIndex(
     const DialogConnectionGraphicsItem* item) const {
-    return std::find(connections_.begin(), connections_.end(), item) - connections_.begin();
+    return std::ranges::find(connections_, item) - connections_.begin();
 }
 
 void LinkDialogPropertyGraphicsItem::removeConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
-    connections_.erase(std::remove(connections_.begin(), connections_.end(), cItem),
-                       connections_.end());
+    connections_.erase(std::ranges::remove(connections_, cItem).begin(), connections_.end());
 
     if (connections_.empty()) {
         LinkDialogTreeItem* item = this;
@@ -169,10 +169,9 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const 
 
     switch (getSide()) {
         case LinkDialogTreeItem::Side::Left:
-            return QRectF(centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2),
-                          arrowDim);
+            return {centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2), arrowDim};
         case LinkDialogTreeItem::Side::Right:
-            return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
+            return {centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim};
         default: return {};
     }
 }
@@ -185,7 +184,7 @@ QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(
 QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
                                                     const QVariant& value) {
     if (change == QGraphicsItem::ItemScenePositionHasChanged) {
-        for (auto connection : connections_) {
+        for (auto* connection : connections_) {
             connection->updateShape();
         }
     }
@@ -224,10 +223,10 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 
     std::vector<LinkDialogPropertyGraphicsItem*> subProps;
 
-    for (auto& elem : subProperties_) {
+    for (const auto& elem : subProperties_) {
         subProps.push_back(elem);
         const auto props = elem->getSubPropertyItemList(recursive);
-        for (auto& prop : props) subProps.push_back(prop);
+        for (const auto& prop : props) subProps.push_back(prop);
     }
 
     return subProps;
@@ -290,7 +289,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p,
     p->save();
 
     const auto isBidirectional = [](DialogConnectionGraphicsItem* item) {
-        auto net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
+        auto* net = item->getPropertyLink().getSource()->getOwner()->getProcessor()->getNetwork();
 
         return net->isLinkedBidirectional(item->getPropertyLink().getSource(),
                                           item->getPropertyLink().getDestination());

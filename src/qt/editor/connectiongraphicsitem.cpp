@@ -36,6 +36,7 @@
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsDropShadowEffect>
@@ -76,8 +77,8 @@ QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endP
     double min = 37 - startOff * 2;
     min = std::min(min, std::sqrt(o.x() * o.x() + o.y() * o.y()));
     static const double max = 40.0;
-    if (delta < min) delta = min;
-    if (delta > max) delta = max;
+    delta = std::max(delta, min);
+    delta = std::min(delta, max);
 
     const QPointF off(0, delta);
     const QPointF ctrlPoint1 = curveStart + off;

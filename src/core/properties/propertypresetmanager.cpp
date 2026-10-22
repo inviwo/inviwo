@@ -65,8 +65,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
     switch (type) {
         case PropertyPresetType::Property: {
             auto pmap = getPropertyPresets(property);
-            const auto it = std::find_if(pmap.begin(), pmap.end(),
-                                         [&](const auto& pair) { return pair.first == name; });
+            const auto it =
+                std::ranges::find_if(pmap, [&](const auto& pair) { return pair.first == name; });
             if (it != pmap.end()) {
                 const std::pmr::string xml{it->second};
                 apply(property, xml);
@@ -75,8 +75,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Workspace: {
-            const auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
-                                         [&](const auto& item) { return item.name == name; });
+            const auto it = std::ranges::find_if(
+                workspacePresets_, [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end() &&
                 it->classIdentifier == property->getClassIdentifier()) {
                 apply(property, it->data);
@@ -85,8 +85,8 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Application: {
-            const auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
-                                         [&](const auto& item) { return item.name == name; });
+            const auto it = std::ranges::find_if(
+                appPresets_, [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end() && it->classIdentifier == property->getClassIdentifier()) {
                 apply(property, it->data);
                 return true;
@@ -118,8 +118,8 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Workspace: {
-            const auto it = std::find_if(workspacePresets_.begin(), workspacePresets_.end(),
-                                         [&](const auto& item) { return item.name == name; });
+            const auto it = std::ranges::find_if(
+                workspacePresets_, [&](const auto& item) { return item.name == name; });
             if (it != workspacePresets_.end()) {
                 it->classIdentifier = property->getClassIdentifier();
                 it->data = xml;
@@ -129,8 +129,8 @@ void PropertyPresetManager::savePreset(const std::string& name, Property* proper
             break;
         }
         case PropertyPresetType::Application: {
-            const auto it = std::find_if(appPresets_.begin(), appPresets_.end(),
-                                         [&](const auto& item) { return item.name == name; });
+            const auto it = std::ranges::find_if(
+                appPresets_, [&](const auto& item) { return item.name == name; });
             if (it != appPresets_.end()) {
                 it->classIdentifier = property->getClassIdentifier();
                 it->data = xml;
@@ -168,7 +168,7 @@ bool PropertyPresetManager::removePreset(const std::string& name, PropertyPreset
 
 void PropertyPresetManager::appendPropertyPresets(Property* target, Property* source) {
     auto& pmap = getPropertyPresets(target);
-    for (const auto item : getPropertyPresets(source)) {
+    for (const auto& item : getPropertyPresets(source)) {
         pmap[item.first] = item.second;
     }
 }
@@ -178,18 +178,18 @@ std::vector<std::string> PropertyPresetManager::getAvailablePresets(
     std::vector<std::string> result;
     if (types & PropertyPresetType::Property) {
         auto pmap = getPropertyPresets(property);
-        std::transform(pmap.begin(), pmap.end(), std::back_inserter(result),
-                       [&](const auto& pair) { return pair.first; });
+        std::ranges::transform(pmap, std::back_inserter(result),
+                               [&](const auto& pair) { return pair.first; });
     }
     if (types & PropertyPresetType::Workspace) {
-        for (auto& item : workspacePresets_) {
+        for (const auto& item : workspacePresets_) {
             if (item.classIdentifier == property->getClassIdentifier()) {
                 result.push_back(item.name);
             }
         }
     }
     if (types & PropertyPresetType::Application) {
-        for (auto& item : appPresets_) {
+        for (const auto& item : appPresets_) {
             if (item.classIdentifier == property->getClassIdentifier()) {
                 result.push_back(item.name);
             }

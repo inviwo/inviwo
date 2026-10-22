@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <inviwo/meta/creator.hpp>
 #include <inviwo/meta/paths.hpp>
 #include <inviwo/meta/util.hpp>
@@ -81,7 +82,7 @@ void Creator::createProcessor(const fs::path& processorPath) const {
     generate(processorPath, "processor");
 }
 
-json::json Creator::createSettings(const InviwoModule& im, std::string_view fileName) const {
+json::json Creator::createSettings(const InviwoModule& im, std::string_view fileName) {
     using clock = std::chrono::system_clock;
     const auto now = clock::to_time_t(clock::now());
     const auto year = 1900 + std::localtime(&now)->tm_year;
@@ -209,7 +210,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 
     log(" * Creating folders:");
     if (!opts.dryrun) fs::create_directories(path);
-    for (auto [dir, desc] : im.dirs()) {
+    for (const auto& [dir, desc] : im.dirs()) {
         log(dir.generic_string(), desc);
         if (!opts.dryrun && !fs::exists(path / dir)) {
             fs::create_directories(path / dir);
@@ -226,7 +227,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
         {"depends", path / "depends"},
         {"testmain", path / "tests" / "unittests" / (name + "-unittest-main")}};
 
-    for (auto [key, file] : files) {
+    for (const auto& [key, file] : files) {
         generate(im, file, key);
     }
 }
@@ -252,11 +253,11 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
 
     auto file = templates_["file"];
 
-    if (auto sources = im.findGroup(*file.source->cmakeGroup)) {
+    if (auto* sources = im.findGroup(*file.source->cmakeGroup)) {
         auto& args = sources->arguments;
         args.erase(++args.begin(), args.end());
     }
-    if (auto headers = im.findGroup(*file.header->cmakeGroup)) {
+    if (auto* headers = im.findGroup(*file.header->cmakeGroup)) {
         auto& args = headers->arguments;
         args.erase(++args.begin(), args.end());
     }
@@ -272,14 +273,14 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
         const auto ext = std::regex(R"(^ext/)");
 
         return std::regex_search(p, test) || std::regex_search(p, ext) ||
-               std::any_of(filters.begin(), filters.end(), [&](const std::string& f) {
+               std::ranges::any_of(filters, [&](const std::string& f) {
                    return std::regex_search(p, std::regex(f));
                });
     };
 
     std::set<fs::path> oldFolders;
     log(" * Moving files:");
-    for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
+    for (const auto& item : fs::recursive_directory_iterator(oldIm.path())) {
         const auto relpath = fs::relative(item.path(), oldIm.path());
         if (filter(relpath)) continue;
 
@@ -292,7 +293,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
             fs::remove(item.path());
             oldFolders.insert(relpath.parent_path());
 
-            im.addFileToGroup(*(file.source->cmakeGroup), im.srcPath() / relpath);
+            im.addFileToGroup(*file.source->cmakeGroup, im.srcPath() / relpath);
 
             const auto oldinc = relpath.filename().replace_extension(".h").generic_string();
             const auto newinc = im.getHeaderInclude(replace_extension(dst, ".h"));
@@ -310,7 +311,7 @@ void Creator::updateModule(const fs::path& modulePath, std::string_view org,
             fs::remove(item.path());
             oldFolders.insert(relpath.parent_path());
 
-            im.addFileToGroup(*(file.header->cmakeGroup), im.incPath() / relpath);
+            im.addFileToGroup(*file.header->cmakeGroup, im.incPath() / relpath);
         }
     }
 

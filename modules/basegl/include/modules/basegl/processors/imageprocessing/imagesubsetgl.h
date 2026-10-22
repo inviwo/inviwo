@@ -71,9 +71,9 @@ private:
     void handleMousePan(MouseEvent* event);
     void handleTouchEvent(TouchEvent* event);
 
-    dvec2 pressedPos_;
-    size2_t rangePressedX_;
-    size2_t rangePressedY_;
+    dvec2 pressedPos_{};
+    size2_t rangePressedX_{};
+    size2_t rangePressedY_{};
 
     Shader shader_;
     TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexCoordBuffer<2>> rect_;

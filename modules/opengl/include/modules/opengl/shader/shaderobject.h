@@ -55,8 +55,7 @@ namespace inviwo {
 namespace utilgl {
 IVW_MODULE_OPENGL_API void parseShaderSource(
     std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements,
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource);
 }  // namespace utilgl
 

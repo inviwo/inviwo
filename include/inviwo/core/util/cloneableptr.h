@@ -32,9 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <memory>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 /**
  * @brief A resource handle for classes that should be cloned on copy and assignment
  */
@@ -55,7 +53,7 @@ public:
     void reset(T* ptr = nullptr);
     T* get() const;
 
-    typename std::add_lvalue_reference<T>::type operator*() const;
+    std::add_lvalue_reference_t<T> operator*() const;
     T* operator->() const;
     explicit operator bool() const;
 
@@ -94,7 +92,7 @@ T* cloneable_ptr<T>::operator->() const {
 }
 
 template <typename T>
-typename std::add_lvalue_reference<T>::type cloneable_ptr<T>::operator*() const {
+std::add_lvalue_reference_t<T> cloneable_ptr<T>::operator*() const {
     return ptr_.operator*();
 }
 
@@ -113,6 +111,4 @@ T* inviwo::util::cloneable_ptr<T>::get() const {
     return ptr_.get();
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

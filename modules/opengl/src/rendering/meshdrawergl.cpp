@@ -48,11 +48,11 @@ MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
-    return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo());
+    return {meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo()};
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject(const Mesh* mesh) {
-    return DrawObject(mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo());
+    return {mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo()};
 }
 
 void MeshDrawerGL::draw() {
@@ -61,14 +61,14 @@ void MeshDrawerGL::draw() {
         return;
     }
 
-    auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
+    const auto* meshGL = meshToDraw_->getRepresentation<MeshGL>();
     const utilgl::Enable<MeshGL> enable(meshGL);
 
     const std::size_t numIndexBuffers = meshGL->getIndexBufferCount();
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            auto indexBuffer = meshGL->getIndexBuffer(i);
+            const auto* indexBuffer = meshGL->getIndexBuffer(i);
             const auto numIndices = indexBuffer->getSize();
             if (numIndices > 0) {
                 indexBuffer->bind();
@@ -85,7 +85,7 @@ void MeshDrawerGL::draw() {
 }
 
 void MeshDrawerGL::draw(DrawMode drawMode) {
-    auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
+    const auto* meshGL = meshToDraw_->getRepresentation<MeshGL>();
     const utilgl::Enable<MeshGL> enable(meshGL);
 
     const auto drawModeGL = getGLDrawMode(drawMode);
@@ -94,7 +94,7 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            auto indexBuffer = meshGL->getIndexBuffer(i);
+            const auto* indexBuffer = meshGL->getIndexBuffer(i);
             const auto numIndices = indexBuffer->getSize();
             if (numIndices > 0) {
                 indexBuffer->bind();
@@ -318,7 +318,7 @@ void MeshDrawerGL::DrawObject::drawOnly(std::function<bool(const Mesh::MeshInfo&
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
+            const auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
             if (filter(mi)) {
                 drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(mi));
             }
@@ -334,7 +334,7 @@ void MeshDrawerGL::DrawObject::drawOnlyInstanced(std::function<bool(const Mesh::
     if (numIndexBuffers > 0) {
         // draw mesh using the index buffers
         for (std::size_t i = 0; i < numIndexBuffers; ++i) {
-            auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
+            const auto& mi = meshGL_->getMeshInfoForIndexBuffer(i);
             if (filter(mi)) {
                 drawElements(*meshGL_->getIndexBuffer(i), getGLDrawMode(mi), instances);
             }

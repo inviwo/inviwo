@@ -53,8 +53,8 @@ NetworkEdge::NetworkEdge(const PortConnection& connection)
     : srcPath{connection.getOutport()->getPath()}, dstPath{connection.getInport()->getPath()} {}
 
 PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
-    auto outport = net.getOutport(srcPath);
-    auto inport = net.getInport(dstPath);
+    auto* outport = net.getOutport(srcPath);
+    auto* inport = net.getInport(dstPath);
 
     constexpr std::string_view err =
         "Could not create Connection from:\nOutport '{}'\nto\nInport '{}'\n{}";
@@ -76,8 +76,8 @@ PortConnection NetworkEdge::toConnection(const ProcessorNetwork& net) const {
 }
 
 PropertyLink NetworkEdge::toLink(const ProcessorNetwork& net) const {
-    auto sprop = net.getProperty(srcPath);
-    auto dprop = net.getProperty(dstPath);
+    auto* sprop = net.getProperty(srcPath);
+    auto* dprop = net.getProperty(dstPath);
 
     constexpr std::string_view err =
         "Could not create Property Link from:\nSource '{}'\nto\nDestination '{}'\n{}";

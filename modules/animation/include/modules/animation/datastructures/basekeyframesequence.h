@@ -45,16 +45,14 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Keyframe;
 
 template <std::derived_from<Keyframe> Key>
 class BaseKeyframeSequence : public KeyframeSequence, public KeyframeObserver {
 public:
     using key_type = Key;
-    using value_type = typename Key::value_type;
+    using value_type = Key::value_type;
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Key>>::const_iterator>;
@@ -150,7 +148,7 @@ BaseKeyframeSequence<Key>& BaseKeyframeSequence<Key>::operator=(
         }
         for (size_t i = std::min(keyframes_.size(), that.keyframes_.size());
              i < that.keyframes_.size(); i++) {
-            keyframes_.push_back(std::make_unique<Key>(*(that.keyframes_[i])));
+            keyframes_.push_back(std::make_unique<Key>(*that.keyframes_[i]));
             notifyKeyframeAdded(keyframes_.back().get(), this);
         }
         while (keyframes_.size() > that.keyframes_.size()) {
@@ -342,6 +340,4 @@ void BaseKeyframeSequence<Key>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

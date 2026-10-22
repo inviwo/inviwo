@@ -57,7 +57,7 @@ void util::setThreadDescription(const std::string_view desc) {
     if (setThreadDescription) {
         setThreadDescription(::GetCurrentThread(), util::toWstring(desc).c_str());
     }
-#elif defined(__APPLE__)
+#elifdef __APPLE__
     // Apple only supports setting the name on the same thread
     const std::string name(desc.substr(0, 15));  // limit to 15 + null characters
     pthread_setname_np(name.c_str());

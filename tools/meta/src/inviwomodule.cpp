@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <inviwo/meta/inviwomodule.hpp>
 #include <inviwo/meta/inviwomoduleregistration.hpp>
 #include <inviwo/meta/util.hpp>
@@ -35,14 +36,15 @@
 #include <streambuf>
 #include <regex>
 #include <sstream>
+#include <utility>
 
 #include <fmt/format.h>
 
 namespace inviwo::meta {
 
-InviwoModule::InviwoModule(const std::filesystem::path& path, Config config,
+InviwoModule::InviwoModule(std::filesystem::path path, Config config,
                            std::optional<std::string_view> contents)
-    : config_{config}, path_{path}, cmf_{[&]() {
+    : config_{std::move(config)}, path_{std::move(path)}, cmf_{[&]() {
         if (contents) {
             return cmake::CMakeFile(*contents);
         } else {
@@ -131,7 +133,7 @@ std::filesystem::path InviwoModule::findShortestRelativePath(
 }
 
 cmake::Command* InviwoModule::findGroup(std::string_view group) {
-    const auto it = std::find_if(cmf_.begin(), cmf_.end(), [&](auto& cmd) {
+    const auto it = std::ranges::find_if(cmf_, [&](auto& cmd) {
         return cmd.identifier == "set" && cmd.begin() != cmd.end() && cmd.begin()->value == group;
     });
     if (it != cmf_.end()) {
@@ -154,8 +156,7 @@ void InviwoModule::addFileToGroup(std::string_view group, const std::filesystem:
         auto& cmd = *it;
         const auto pstr = p.generic_string();
 
-        const auto pit =
-            std::find_if(cmd.begin(), cmd.end(), [&](auto& arg) { return arg.value == pstr; });
+        const auto pit = std::ranges::find_if(cmd, [&](auto& arg) { return arg.value == pstr; });
         if (pit != cmd.end()) {
             throw util::makeError("Error: File '{}' already in group '{}'", pstr, group);
         }
@@ -185,7 +186,7 @@ void InviwoModule::sortArgs(cmake::Command& cmd) {
     std::vector<std::string> args;
     std::transform(++cmd.begin(), cmd.end(), std::back_inserter(args),
                    [](const cmake::Argument& arg) { return arg.value; });
-    std::sort(args.begin(), args.end());
+    std::ranges::sort(args);
 
     std::vector<cmake::ArgElement> arguments;
     arguments.emplace_back(*cmd.begin());
@@ -193,7 +194,7 @@ void InviwoModule::sortArgs(cmake::Command& cmd) {
     for (const auto& arg : args) {
         addArg(arguments, arg);
     }
-    cmd.arguments = arguments;
+    cmd.arguments = std::move(arguments);
 }
 
 void InviwoModule::addArg(std::vector<cmake::ArgElement>& args, std::string_view arg) {
@@ -216,8 +217,8 @@ void InviwoModule::registerProcessor(std::string_view name, const std::filesyste
 }
 
 std::optional<std::string> InviwoModule::findModuleName(const cmake::CMakeFile& cmf) {
-    const auto it = std::find_if(cmf.begin(), cmf.end(),
-                                 [](auto& cmd) { return cmd.identifier == "ivw_module"; });
+    const auto it =
+        std::ranges::find_if(cmf, [](auto& cmd) { return cmd.identifier == "ivw_module"; });
     if (it != cmf.end() && it->begin() != it->end()) {
         return it->begin()->value;
     }
@@ -234,17 +235,15 @@ InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& inpath,
     const std::filesystem::path srccore = inviwoRepo / "src" / "core";
     const std::filesystem::path srcqt = inviwoRepo / "src" / "qt" / "editor";
 
-    if (std::mismatch(inccore.begin(), inccore.end(), path.begin(), path.end()).first ==
-            inccore.end() ||
-        std::mismatch(srccore.begin(), srccore.end(), path.begin(), path.end()).first ==
-            srccore.end()) {
+    if (std::ranges::mismatch(inccore, path).in1 == inccore.end() ||
+        std::ranges::mismatch(srccore, path).in1 == srccore.end()) {
 
-        return InviwoModule(inviwoRepo, InviwoConf{});
+        return {inviwoRepo, InviwoConf{}};
     }
-    if (std::mismatch(incqt.begin(), incqt.end(), path.begin(), path.end()).first == incqt.end() ||
-        std::mismatch(srcqt.begin(), srcqt.end(), path.begin(), path.end()).first == srcqt.end()) {
+    if (std::ranges::mismatch(incqt, path).in1 == incqt.end() ||
+        std::ranges::mismatch(srcqt, path).in1 == srcqt.end()) {
 
-        return InviwoModule(inviwoRepo, QtEditorConf{});
+        return {inviwoRepo, QtEditorConf{}};
     }
 
     const auto findOrg = [](const std::filesystem::path& modulePath,

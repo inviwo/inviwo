@@ -166,10 +166,10 @@ bool BitSet::empty() const { return roaring_->isEmpty(); }
 
 void BitSet::clear() { roaring::api::roaring_bitmap_clear(&roaring_->roaring); }
 
-bool BitSet::isSubsetOf(const BitSet& b) const { return roaring_->isSubset(*(b.roaring_)); }
+bool BitSet::isSubsetOf(const BitSet& b) const { return roaring_->isSubset(*b.roaring_); }
 
 bool BitSet::isStrictSubsetOf(const BitSet& b) const {
-    return roaring_->isStrictSubset(*(b.roaring_));
+    return roaring_->isStrictSubset(*b.roaring_);
 }
 
 bool BitSet::set(const BitSet& b) {
@@ -223,69 +223,67 @@ bool BitSet::operator==(const BitSet& b) const { return roaring_->operator==(*b.
 
 bool BitSet::operator!=(const BitSet& b) const { return !operator==(b); }
 
-bool BitSet::intersect(const BitSet& b) const { return roaring_->intersect(*(b.roaring_)); }
+bool BitSet::intersect(const BitSet& b) const { return roaring_->intersect(*b.roaring_); }
 
 size_t BitSet::orCardinality(const BitSet& b) const {
-    return roaring_->and_cardinality(*(b.roaring_));
+    return roaring_->and_cardinality(*b.roaring_);
 }
 
 size_t BitSet::andCardinality(const BitSet& b) const {
-    return roaring_->and_cardinality(*(b.roaring_));
+    return roaring_->and_cardinality(*b.roaring_);
 }
 
 size_t BitSet::andNotCardinality(const BitSet& b) const {
-    return roaring_->and_cardinality(*(b.roaring_));
+    return roaring_->and_cardinality(*b.roaring_);
 }
 
 size_t BitSet::xorCardinality(const BitSet& b) const {
-    return roaring_->and_cardinality(*(b.roaring_));
+    return roaring_->and_cardinality(*b.roaring_);
 }
 
-double BitSet::jaccardIndex(const BitSet& b) const {
-    return roaring_->jaccard_index(*(b.roaring_));
-}
+double BitSet::jaccardIndex(const BitSet& b) const { return roaring_->jaccard_index(*b.roaring_); }
 
 BitSet& BitSet::operator&=(const BitSet& b) {
-    roaring_->operator&=(*(b.roaring_));
+    roaring_->operator&=(*b.roaring_);
     return *this;
 }
 
 BitSet BitSet::operator&(const BitSet& b) const {
     BitSet result;
-    *result.roaring_ = roaring_->operator&(*(b.roaring_));
+    *result.roaring_ = roaring_->operator&(*b.roaring_);
     return result;
 }
 
 BitSet& BitSet::operator-=(const BitSet& b) {
-    roaring_->operator-=(*(b.roaring_));
+    roaring_->operator-=(*b.roaring_);
     return *this;
 }
 
 BitSet BitSet::operator-(const BitSet& b) const {
     BitSet result;
-    *result.roaring_ = roaring_->operator-(*(b.roaring_));
+    *result.roaring_ = roaring_->operator-(*b.roaring_);
     return result;
 }
 
 BitSet& BitSet::operator|=(const BitSet& b) {
-    roaring_->operator|=(*(b.roaring_));
+    roaring_->operator|=(*b.roaring_);
     return *this;
 }
 
 BitSet BitSet::operator|(const BitSet& b) const {
     BitSet result;
-    *result.roaring_ = roaring_->operator|(*(b.roaring_));
+    *result.roaring_ = roaring_->operator|(*b.roaring_);
     return result;
 }
 
 BitSet& BitSet::operator^=(const BitSet& b) {
-    roaring_->operator^=(*(b.roaring_));
+    roaring_->operator^=(*b.roaring_);
     return *this;
 }
 
 BitSet BitSet::operator^(const BitSet& b) const {
     BitSet result;
-    *result.roaring_ = roaring_->operator^(*(b.roaring_));
+    *result.roaring_ = roaring_->operator^(*b.roaring_);
     return result;
 }
 

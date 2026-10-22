@@ -305,7 +305,7 @@ BasisProperty& BasisProperty::resetToDefaultState() {
     return *this;
 }
 
-void BasisProperty::updateEntity(SpatialEntity& volume) {
+void BasisProperty::updateEntity(SpatialEntity& volume) const {
     volume.setModelMatrix(getBasisAndOffset());
 }
 

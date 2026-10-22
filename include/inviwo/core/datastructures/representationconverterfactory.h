@@ -67,7 +67,7 @@ public:
 template <typename BaseRepr>
 class RepresentationConverterFactory : public BaseRepresentationConverterFactory {
 public:
-    using ConverterID = typename RepresentationConverter<BaseRepr>::ConverterID;
+    using ConverterID = RepresentationConverter<BaseRepr>::ConverterID;
     using RepMap = std::unordered_map<ConverterID, RepresentationConverter<BaseRepr>*>;
     using PackageMap =
         std::unordered_multimap<ConverterID,
@@ -112,8 +112,9 @@ auto RepresentationConverterFactory<BaseRepr>::getConverters() const -> const Re
 template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(
     RepresentationConverter<BaseRepr>* converter) {
-    if (!util::insert_unique(converters_, converter->getConverterID(), converter))
+    if (!util::insert_unique(converters_, converter->getConverterID(), converter)) {
         throw(ConverterException("Converter with supplied ID already registered"));
+    }
 
     return true;
 }

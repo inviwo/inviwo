@@ -278,10 +278,9 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (overlayInteraction_.get() && overlayPort_.isConnected()) {
-            const bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
-                    overlayPort_.propagateEvent(newEvent);
-                }));
+            const bool overlayHandlesEvent = viewManager_.propagateEvent(
+                event,
+                [&](Event* newEvent, size_t /*ind*/) { overlayPort_.propagateEvent(newEvent); });
 
             if ((overlayHandlesEvent && !passThroughEvent_.get()) || event->hasBeenUsed()) {
                 return;
@@ -338,7 +337,9 @@ void ImageOverlayGL::process() {
         const utilgl::BlendModeState blendMode(overlayProperty_.getBlendModeGL(),
                                                GL_ONE_MINUS_SRC_ALPHA);
 
-        TextureUnit colorUnit, depthUnit, pickingUnit;
+        TextureUnit colorUnit;
+        TextureUnit depthUnit;
+        TextureUnit pickingUnit;
         shader_.activate();
         shader_.setUniform("color_", colorUnit.getUnitNumber());
         shader_.setUniform("depth_", depthUnit.getUnitNumber());

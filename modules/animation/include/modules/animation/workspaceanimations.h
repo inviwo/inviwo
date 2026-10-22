@@ -102,9 +102,8 @@ public:
     const Animation& operator[](size_t i) const;
 
     using const_iterator =
-        util::IndirectIterator<typename std::vector<std::unique_ptr<Animation>>::const_iterator>;
-    using iterator =
-        util::IndirectIterator<typename std::vector<std::unique_ptr<Animation>>::iterator>;
+        util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::const_iterator>;
+    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Animation>>::iterator>;
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -157,7 +156,7 @@ private:
                                     Animation* newAnim) override;
 
     // Add observers and fire onChanged_
-    void addInternal(typename std::vector<std::unique_ptr<Animation>>::iterator animation);
+    void addInternal(std::vector<std::unique_ptr<Animation>>::iterator aniIt);
 
     // AnimationObserver overloads
     virtual void onTrackAdded(Track*) override;

@@ -371,7 +371,7 @@ void Mesh::append(const Mesh& mesh) {
     }
     size_t size = buffers_[0].second->getSize();
     for (size_t i = 0; i < buffers_.size(); ++i) {
-        buffers_[i].second->append(*(mesh.buffers_[i].second));
+        buffers_[i].second->append(*mesh.buffers_[i].second);
     }
     for (const auto& [meshInfo, indbuffer] : mesh.indices_) {
         const auto& inds = indbuffer->getRAMRepresentation()->getDataContainer();

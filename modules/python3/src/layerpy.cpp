@@ -47,13 +47,14 @@
 #include <type_traits>
 
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace inviwo {
 
 namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
-    if (!(ndim == 2 || ndim == 3)) {
+    if (ndim != 2 && ndim != 3) {
         throw Exception("Ndims must be either 2 or 3, with 1 <= size[2] <= 4");
     }
     return pyutil::getDataFormat(ndim == 2 ? 1 : data.shape(2), data);
@@ -67,7 +68,7 @@ LayerPy::LayerPy(pybind11::array data, LayerType type, const SwizzleMask& swizzl
     , swizzleMask_{swizzleMask}
     , interpolation_{interpolation}
     , wrapping_{wrapping}
-    , data_{data}
+    , data_{std::move(data)}
     , dims_{data_.shape(1), data_.shape(0)} {
 
     gil_.reset();
@@ -121,7 +122,7 @@ LayerPy::~LayerPy() {
 
 LayerPy* LayerPy::clone() const { return new LayerPy(*this); }
 
-std::type_index LayerPy::getTypeIndex() const { return std::type_index(typeid(LayerPy)); }
+std::type_index LayerPy::getTypeIndex() const { return {typeid(LayerPy)}; }
 
 void LayerPy::setDimensions(size2_t dimensions) {
     if (dimensions != dims_) {
@@ -158,9 +159,9 @@ std::shared_ptr<LayerPy> LayerRAM2PyConverter::createFrom(
     std::shared_ptr<const LayerRAM> source) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    const pybind11::array data = source->dispatch<pybind11::array>([](auto lr) {
+    const auto data = source->dispatch<pybind11::array>([](auto lr) {
         using ValueType = util::PrecisionValueType<decltype(lr)>;
-        using CompType = typename util::value_type<ValueType>::type;
+        using CompType = util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = lr->getDimensions();

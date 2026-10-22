@@ -29,9 +29,7 @@
 
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 WidgetFactoryObject::WidgetFactoryObject(std::string_view className) : className_(className) {}
 
@@ -39,6 +37,4 @@ WidgetFactoryObject::~WidgetFactoryObject() = default;
 
 std::string_view WidgetFactoryObject::getClassIdentifier() const { return className_; }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

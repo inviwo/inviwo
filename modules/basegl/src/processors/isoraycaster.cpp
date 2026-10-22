@@ -43,6 +43,7 @@
 
 #include <memory>
 #include <sstream>
+#include <utility>
 
 namespace inviwo {
 class Deserializer;
@@ -100,7 +101,7 @@ void ISORaycaster::initializeResources() {
 
 void ISORaycaster::process() {
     if (const size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-        channel_ >= static_cast<int>(channels)) {
+        std::cmp_greater_equal(channel_.get(), channels)) {
         throw Exception(SourceContext{}, "Channel is greater than the available channels {} >= {}",
                         channel_.get() + 1, channels);
     }

@@ -38,6 +38,8 @@
 #include <inviwo/core/util/staticstring.h>
 #include <modules/basegl/datastructures/splittersettings.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view SplitterProperty::getClassIdentifier() const { return classIdentifier; }
@@ -45,7 +47,8 @@ std::string_view SplitterProperty::getClassIdentifier() const { return classIden
 SplitterProperty::SplitterProperty(std::string_view identifier, std::string_view displayName,
                                    bool checked, splitter::Style style, vec4 color, vec4 bgColor,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, checked, invalidationLevel,
+                            std::move(semantics))
     , style_("style", "Style",
              {{"handle", "Handle", splitter::Style::Handle},
               {"divider", "Divider", splitter::Style::Divider},

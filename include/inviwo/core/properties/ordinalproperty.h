@@ -131,7 +131,7 @@ template <typename T>
 class OrdinalProperty : public Property {
 public:
     using value_type = T;
-    using component_type = typename util::value_type<T>::type;
+    using component_type = util::value_type<T>::type;
 
     OrdinalProperty(
         std::string_view identifier, std::string_view displayName, Document help,
@@ -222,7 +222,7 @@ public:
     ConstraintBehavior getMaxConstraintBehaviour() const;
 
     const T& getIncrement() const;
-    void setIncrement(const T& value);
+    void setIncrement(const T& newInc);
 
     void set(const OrdinalProperty* srcProperty);
     virtual void set(const Property* src) override;
@@ -406,7 +406,7 @@ OrdinalPropertyState<T> ordinalScale(const T& value = T{0}, const U& max = U{100
  * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
  * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
  */
-template <typename M, typename U = typename M::value_type>
+template <typename M, typename U = M::value_type>
     requires isMatrix<M>
 OrdinalPropertyState<M> ordinalMatrix(const M& value = {0}, const U& minMax = U{100}) {
     using V = util::value_type_t<M>;
@@ -448,7 +448,7 @@ OrdinalPropertyState<M> ordinalMatrix(const M& value = {0}, const U& minMax = U{
  * @param minMax used to construct the range of the property like min = util::filled<M>(-minMax),
  * max = util::filled<M>(minMax). The constraint behavior will be Ignore.
  */
-template <typename M, typename T = typename M::value_type, typename U = T>
+template <typename M, typename T = M::value_type, typename U = T>
     requires isMatrix<M>
 OrdinalPropertyState<M> ordinalFilledMatrix(const T& value = {0}, const U& minMax = U{100}) {
     using V = util::value_type_t<M>;

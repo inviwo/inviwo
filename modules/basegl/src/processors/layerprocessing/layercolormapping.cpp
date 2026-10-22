@@ -55,8 +55,8 @@ LayerColorMapping::LayerColorMapping()
           "The transfer function used for mapping input to output values including the "
           "alpha channel."_help,
           TransferFunction{{
-              {0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)},
-              {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)},
+              {.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+              {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)},
           }},
           &inport_) {
     addProperties(enabled_, channel_, transferFunction_);

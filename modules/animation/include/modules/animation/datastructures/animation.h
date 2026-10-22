@@ -67,9 +67,9 @@ class IVW_MODULE_ANIMATION_API Animation : public AnimationObservable,
                                            public TrackObserver,
                                            public PropertyOwnerObserver {
 public:
-    using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::iterator>;
+    using iterator = util::IndirectIterator<std::vector<std::unique_ptr<Track>>::iterator>;
     using const_iterator =
-        util::IndirectIterator<typename std::vector<std::unique_ptr<Track>>::const_iterator>;
+        util::IndirectIterator<std::vector<std::unique_ptr<Track>>::const_iterator>;
     /**
      * Creates an empty Animation.
      * AnimationManager is required only for the Property-based adding convenience functions:
@@ -82,8 +82,7 @@ public:
      * @param animationManager used for creating PropertyTrack/KeyframeSequence/Keyframe.
      * @param name default Animation
      */
-    explicit Animation(AnimationManager* animationManager = nullptr,
-                       std::string_view name = "Animation");
+    explicit Animation(AnimationManager* am = nullptr, std::string_view name = "Animation");
     Animation(const Animation&);
     Animation(Animation&&) = default;
     Animation& operator=(const Animation& that);
@@ -171,7 +170,7 @@ public:
      * or end() if not found.
      * @see BasePropertyTrack
      */
-    iterator findTrack(Property* withMe);
+    iterator findTrack(Property* property);
 
     /**
      * Check if any track of TrackType has been added.

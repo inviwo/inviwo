@@ -70,9 +70,9 @@ Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimen
     initialize(nullptr);
     if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glDeleteSync(syncObj);
-            syncObj = 0;
+            syncObj = nullptr;
         }
 
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
@@ -95,9 +95,9 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
         initialize(nullptr);
         if (OpenGLCapabilities::getOpenGLVersion() >= 430) {  // GPU memcpy
             const std::scoped_lock lock{syncMutex};
-            if (syncObj != 0) {
+            if (syncObj != nullptr) {
                 glDeleteSync(syncObj);
-                syncObj = 0;
+                syncObj = nullptr;
             }
 
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,

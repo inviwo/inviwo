@@ -40,18 +40,20 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
 
+#include <algorithm>
 #include <sstream>
 #include <unordered_map>
 
 #include <glm/gtc/type_precision.hpp>
+#include <utility>
 
 namespace inviwo {
 
 IndexColumn::IndexColumn(std::string_view header, std::shared_ptr<Buffer<std::uint32_t>> buffer)
-    : TemplateColumn<std::uint32_t>(header, buffer) {}
+    : TemplateColumn<std::uint32_t>(header, std::move(buffer)) {}
 
 IndexColumn::IndexColumn(std::string_view header, std::vector<std::uint32_t> data)
-    : TemplateColumn<std::uint32_t>(header, data) {}
+    : TemplateColumn<std::uint32_t>(header, std::move(data)) {}
 
 IndexColumn::IndexColumn(const IndexColumn& rhs, std::span<const std::uint32_t> rowSelection)
     : TemplateColumn<std::uint32_t>(rhs, rowSelection) {}
@@ -157,7 +159,7 @@ std::optional<dvec2> CategoricalColumn::getCustomRange() const { return range_; 
 
 dvec2 CategoricalColumn::getDataRange() const {
     const auto& cont = buffer_->getRAMRepresentation()->getDataContainer();
-    auto&& [minIt, maxIt] = std::minmax_element(cont.begin(), cont.end());
+    auto&& [minIt, maxIt] = std::ranges::minmax_element(cont);
     return {*minIt, *maxIt};
 }
 

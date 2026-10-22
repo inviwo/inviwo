@@ -251,7 +251,7 @@ void DepthOfField::process() {
         dispatchFront([weakSelf = weak_from_this(), maxEvalCount, focusDepth]() {
             if (const auto self = std::dynamic_pointer_cast<DepthOfField>(weakSelf.lock())) {
                 if (auto* SkewedCamera =
-                        dynamic_cast<SkewedPerspectiveCamera*>(&(self->camera_.get()))) {
+                        dynamic_cast<SkewedPerspectiveCamera*>(&self->camera_.get())) {
                     self->moveCamera(SkewedCamera, maxEvalCount, focusDepth);
                 } else {
                     self->invalidate(InvalidationLevel::InvalidOutput);
@@ -291,7 +291,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
             lightField_ = std::make_shared<Volume>(dimLightField, DataFormat<vec4>::get());
             lightFieldDepth_ = std::make_shared<Volume>(dimLightField, DataFormat<float>::get());
         }
-        float* lightFieldDepthData = static_cast<float*>(
+        auto* lightFieldDepthData = static_cast<float*>(
             lightFieldDepth_->getEditableRepresentation<VolumeRAM>()->getData());
         std::fill(lightFieldDepthData,
                   lightFieldDepthData + dimLightField.x * dimLightField.y * dimLightField.z, -1.f);
@@ -305,9 +305,9 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
         if (!haltonImg_ || haltonImg_->getDimensions().x != simViewCountApprox_.get()) {
             haltonImg_ = std::make_shared<Image>(size2_t(simViewCountApprox_.get(), 1),
                                                  DataFormat<float>::get());
-            float* haltonData = static_cast<float*>(
+            auto* haltonData = static_cast<float*>(
                 haltonImg_->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-            std::copy(haltonX_.begin(), haltonX_.end(), haltonData);
+            std::ranges::copy(haltonX_, haltonData);
         }
 
     } else {
@@ -330,7 +330,7 @@ void DepthOfField::setupRecursion(size2_t dim, size_t maxEvalCount,
 
     // Update focus depth and aperture ranges based on the depths in the scene, ignoring
     // background points and including the current value.
-    const float* inputDepthData = static_cast<const float*>(
+    const auto* inputDepthData = static_cast<const float*>(
         img->getRepresentation<ImageRAM>()->getDepthLayerRAM()->getData());
     const auto minmax = std::accumulate(
         inputDepthData, inputDepthData + dim.x * dim.y, std::make_pair(1.0f, 0.0f),
@@ -378,7 +378,7 @@ double DepthOfField::calculateFocusDepth() {
 
 vec2 DepthOfField::calculatePeripheralCameraPos(int evalCount, int maxEvalCount) {
     if (evalCount == 0) {
-        return vec2(0.0f, 0.0f);
+        return {0.0f, 0.0f};
     } else {
         const double currAngle = 2.0 * std::numbers::pi * (static_cast<double>(evalCount) - 0.5) /
                                  static_cast<double>(maxEvalCount - 1);
@@ -421,7 +421,7 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
 
     addToLightFieldShader_.setUniform("nearClip", static_cast<float>(camera_.getNearPlaneDist()));
     addToLightFieldShader_.setUniform("farClip", static_cast<float>(camera_.getFarPlaneDist()));
-    addToLightFieldShader_.setUniform("evalCount", static_cast<int>(evalCount_));
+    addToLightFieldShader_.setUniform("evalCount", evalCount_);
     addToLightFieldShader_.setUniform("aperture", static_cast<float>(aperture_.get()));
     addToLightFieldShader_.setUniform("nViews", static_cast<int>(viewCountApprox_.get()));
     addToLightFieldShader_.setUniform("nSimViews", static_cast<int>(simViewCountApprox_.get()));
@@ -444,8 +444,8 @@ void DepthOfField::warpToLightfieldGPU(TextureUnitContainer& cont, double fovy, 
     } else {
         // Warp peripheral views to a circle segment of simulated views to fill visibility holes
         // left after warping the central view.
-        const double segmentWidth =
-            double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
+        const double segmentWidth = static_cast<double>(simViewCountApprox_.get()) /
+                                    static_cast<double>(viewCountApprox_.get() - 1);
         const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
         const int stop = static_cast<int>(evalCount_ * segmentWidth);
         addToLightFieldShader_.setUniform("segmentStart", start);
@@ -460,8 +460,8 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
                                        double focusDepth, size2_t dim, vec2 cameraPos) {
     const LayerRAM* inColor = img->getRepresentation<ImageRAM>()->getColorLayerRAM();
     const LayerRAM* inDepth = img->getRepresentation<ImageRAM>()->getDepthLayerRAM();
-    VolumeRAM* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
-    VolumeRAM* lightFieldDepth = lightFieldDepth_->getEditableRepresentation<VolumeRAM>();
+    auto* lightField = lightField_->getEditableRepresentation<VolumeRAM>();
+    auto* lightFieldDepth = lightFieldDepth_->getEditableRepresentation<VolumeRAM>();
 
     for (size_t x = 0; x < dim.x; x++) {
         for (size_t y = 0; y < dim.y; y++) {
@@ -484,8 +484,8 @@ void DepthOfField::warpToLightfieldCPU(std::shared_ptr<const Image> img, double 
             } else {
                 // Warp peripheral views to a circle segment of simulated views to fill
                 // visibility holes left after warping the central view.
-                const double segmentWidth =
-                    double(simViewCountApprox_.get()) / double(viewCountApprox_.get() - 1);
+                const double segmentWidth = static_cast<double>(simViewCountApprox_.get()) /
+                                            static_cast<double>(viewCountApprox_.get() - 1);
                 const int start = static_cast<int>((evalCount_ - 1) * segmentWidth);
                 const int stop = static_cast<int>(evalCount_ * segmentWidth);
                 for (int i = start; i < stop; i++) {
@@ -501,8 +501,8 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
                         VolumeRAM* lightField, VolumeRAM* lightFieldDepth, double fovy,
                         double focusDepth) {
     const double radius = aperture_.get() / 2.0 * sqrt(haltonX_[viewIndex]);
-    const double angle =
-        double(viewIndex) / double(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
+    const double angle = static_cast<double>(viewIndex) /
+                         static_cast<double>(simViewCountApprox_.get()) * 2.0 * std::numbers::pi;
     const vec2 simCameraPos = radius * vec2(glm::cos(angle), glm::sin(angle));
 
     const vec2 disparity = (1.0 / zWorld - 1.0 / focusDepth) * (cameraPos - simCameraPos);
@@ -511,10 +511,11 @@ void DepthOfField::warp(vec2 cameraPos, vec2 screenPos, vec4 color, double zWorl
         screenPos + disparity * dimLightField.y / (2.0 * std::tan(fovy / 2.0));
     const ivec3 pos(round(simScreenpos.x), round(simScreenpos.y),
                     viewCountApprox_.get() + viewIndex);
-    if (pos.x < 0 || pos.x >= static_cast<int>(dimLightField.x) || pos.y < 0 ||
-        pos.y >= static_cast<int>(dimLightField.y) || pos.z < 0 ||
-        pos.z >= static_cast<int>(dimLightField.z))
+    if (pos.x < 0 || std::cmp_greater_equal(pos.x, dimLightField.x) || pos.y < 0 ||
+        std::cmp_greater_equal(pos.y, dimLightField.y) || pos.z < 0 ||
+        std::cmp_greater_equal(pos.z, dimLightField.z)) {
         return;
+    }
 
     const double currDepth = lightFieldDepth->getAsDouble(pos);
     if (currDepth < 0 || currDepth > zWorld + 0.01) {

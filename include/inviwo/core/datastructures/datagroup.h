@@ -84,7 +84,7 @@ public:
 protected:
     DataGroup() = default;
     DataGroup(const DataGroup<Self, Repr>& rhs);
-    DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& rhs);
+    DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& that);
 
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
@@ -95,21 +95,19 @@ private:
 };
 
 namespace detail {
-template <typename Repr, typename T,
-          typename std::enable_if<!std::is_abstract<T>::value &&
-                                      std::is_default_constructible<T>::value &&
-                                      std::is_base_of<Repr, T>::value,
-                                  int>::type = 0>
-std::shared_ptr<T> createGroupRepresentation() {
+template <typename Repr, typename T>
+std::shared_ptr<T> createGroupRepresentation()
+    requires(!std::is_abstract_v<T> && std::is_default_constructible_v<T> &&
+             std::is_base_of_v<Repr, T>)
+{
     return std::make_shared<T>();
 }
 
-template <typename Repr, typename T,
-          typename std::enable_if<std::is_abstract<T>::value ||
-                                      !std::is_default_constructible<T>::value ||
-                                      !std::is_base_of<Repr, T>::value,
-                                  int>::type = 0>
-std::shared_ptr<T> createGroupRepresentation() {
+template <typename Repr, typename T>
+std::shared_ptr<T> createGroupRepresentation()
+    requires(std::is_abstract_v<T> || !std::is_default_constructible_v<T> ||
+             !std::is_base_of_v<Repr, T>)
+{
     return std::shared_ptr<T>();
 }
 }  // namespace detail
@@ -152,7 +150,7 @@ void DataGroup<Self, Repr>::clearRepresentations() {
 template <typename Self, typename Repr>
 template <typename T>
 T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
-    static_assert(std::is_base_of<Repr, T>::value,
+    static_assert(std::is_base_of_v<Repr, T>,
                   "Can only ask for representations that derive from the base representation");
 
     // check if a representation exists and return it

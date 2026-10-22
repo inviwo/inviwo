@@ -41,13 +41,11 @@
 class QEvent;
 class QWidget;
 
-namespace inviwo {
-
-namespace utilqt {
+namespace inviwo::utilqt {
 
 class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
-    explicit EditorFileObserver(QWidget* parent, const QString& title = "Editor",
+    explicit EditorFileObserver(QWidget* parent, QString title = "Editor",
                                 const std::filesystem::path& filename = {});
     virtual ~EditorFileObserver() = default;
 
@@ -82,6 +80,4 @@ private:
     bool ignoreNextUpdate_ = false;
 };
 
-}  // namespace utilqt
-
-}  // namespace inviwo
+}  // namespace inviwo::utilqt

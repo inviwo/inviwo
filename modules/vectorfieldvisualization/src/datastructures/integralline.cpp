@@ -38,6 +38,7 @@
 #include <algorithm>
 
 #include <glm/common.hpp>
+#include <utility>
 
 namespace inviwo {
 class BufferBase;
@@ -66,11 +67,11 @@ void IntegralLine::addMetaDataBuffer(const std::string& name, std::shared_ptr<Bu
     if (it != metaData_.end()) {
         throw Exception(SourceContext{}, "Meta data with name already exists: {}", name);
     }
-    metaData_[name] = buffer;
+    metaData_[name] = std::move(buffer);
 }
 
 void IntegralLine::reverse() {
-    std::reverse(positions_.begin(), positions_.end());
+    std::ranges::reverse(positions_);
     for (const auto& m : metaData_) {
         util::reverse(*m.second);
     }
@@ -87,7 +88,8 @@ bool IntegralLine::hasMetaData(const std::string& name) const {
 
 std::vector<std::string> IntegralLine::getMetaDataKeys() const {
     std::vector<std::string> keys;
-    for (auto& m : metaData_) {
+    keys.reserve(metaData_.size());
+    for (const auto& m : metaData_) {
         keys.push_back(m.first);
     }
     return keys;
@@ -122,7 +124,8 @@ dvec3 IntegralLine::getPointAtDistance(double d) const {
         return positions_.front();
     }
 
-    double distPrev = 0, distNext = 0;
+    double distPrev = 0;
+    double distNext = 0;
     auto next = positions_.begin();
     auto prev = next;
     while (distNext < d) {

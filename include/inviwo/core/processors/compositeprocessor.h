@@ -130,17 +130,17 @@ public:
      * the sub network. Changes in the subProperty will be reflected in the superProperty and vice
      * versa.
      */
-    Property* addSuperProperty(Property* subProperty);
+    Property* addSuperProperty(Property* orgProp);
 
     /**
      * Get the super property for sub property 'subProperty' given there is one, nullptr otherwise.
      */
-    Property* getSuperProperty(Property* subProperty);
+    Property* getSuperProperty(Property* orgProp);
 
     /**
      * Remove the super property for sub property 'subProperty'.
      */
-    void removeSuperProperty(Property* subProperty);
+    void removeSuperProperty(Property* orgProp);
 
     /**
      * Get the sub property for super property 'superProperty'.
@@ -179,11 +179,11 @@ private:
     void unregisterProperty(Property* prop);
 
     // PropertyObserver overrides
-    virtual void onSetIdentifier(Property* property, const std::string& identifier) override;
-    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
-    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
-    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetIdentifier(Property* orgProp, const std::string& identifier) override;
+    virtual void onSetDisplayName(Property* orgProp, const std::string& displayName) override;
+    virtual void onSetSemantics(Property* orgProp, const PropertySemantics& semantics) override;
+    virtual void onSetReadOnly(Property* orgProp, bool readonly) override;
+    virtual void onSetVisible(Property* orgProp, bool visible) override;
 
     // ProcessorNetworkObserver overrides
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override;

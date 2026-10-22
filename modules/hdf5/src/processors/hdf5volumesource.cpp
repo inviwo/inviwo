@@ -49,9 +49,7 @@
 #include <numeric>
 #include <limits>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 const ProcessorInfo HDF5ToVolume::processorInfo_{
     "org.inviwo.hdf5.ToVolume",               // Class identifier
@@ -206,6 +204,4 @@ void HDF5ToVolume::deserialize(Deserializer& d) {
     deserialized_ = true;
 }
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

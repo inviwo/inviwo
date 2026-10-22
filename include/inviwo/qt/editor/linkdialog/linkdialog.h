@@ -38,7 +38,7 @@ class Processor;
 
 class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
 public:
-    LinkDialog(Processor* src, Processor* dest, QWidget* parent);
+    LinkDialog(Processor* src, Processor* dstProcessor, QWidget* parent);
     virtual ~LinkDialog() = default;
 
     virtual QSize sizeHint() const;

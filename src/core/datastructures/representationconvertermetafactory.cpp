@@ -33,9 +33,10 @@ namespace inviwo {
 
 bool RepresentationConverterMetaFactory::registerObject(
     BaseRepresentationConverterFactory* factory) {
-    if (!util::insert_unique(map_, factory->getBaseReprId(), factory))
+    if (!util::insert_unique(map_, factory->getBaseReprId(), factory)) {
         throw(ConverterException(
             "RepresentationConverterFactory with supplied ID already registered"));
+    }
     return true;
 }
 

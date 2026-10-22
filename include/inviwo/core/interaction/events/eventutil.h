@@ -38,9 +38,7 @@
 #include <tuple>
 #include <utility>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename... Args>
 void printEvent(fmt::memory_buffer& buff, std::string_view event, const Args&... args) {
@@ -60,6 +58,4 @@ void printEvent(fmt::memory_buffer& buff, std::string_view event, const Args&...
         ...);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

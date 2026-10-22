@@ -111,10 +111,16 @@ vec3 rayDirection = normalize(exitPoint - entryPoint);
 
 auto EntryExitComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
-    return {{fmt::format(uniforms, entryPort_.getIdentifier()), placeholder::uniform, 100},
-            {fmt::format(uniforms, exitPort_.getIdentifier()), placeholder::uniform, 101},
-            {std::string{surfaceNormalUniforms}, placeholder::uniform, 102},
-            {std::string{setup}, placeholder::setup, 100}};
+    return {{.snippet = fmt::format(uniforms, entryPort_.getIdentifier()),
+             .placeholder = placeholder::uniform,
+             .priority = 100},
+            {.snippet = fmt::format(uniforms, exitPort_.getIdentifier()),
+             .placeholder = placeholder::uniform,
+             .priority = 101},
+            {.snippet = std::string{surfaceNormalUniforms},
+             .placeholder = placeholder::uniform,
+             .priority = 102},
+            {.snippet = std::string{setup}, .placeholder = placeholder::setup, .priority = 100}};
 }
 
 }  // namespace inviwo

@@ -92,12 +92,10 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 class SequenceEditorFactory;
 class TrackWidgetQtFactory;
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtAnimationResources {
@@ -147,12 +145,12 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
 
     using namespace animation;
 
-    if (auto win = utilqt::getApplicationMainWindow()) {
+    if (auto* win = utilqt::getApplicationMainWindow()) {
         const QString animationMenuName("Animation");
         QMenu* menu = nullptr;
         // Find view menu
         auto menus = win->menuBar()->findChildren<QMenu*>();
-        const auto viewMenuIt = std::find_if(menus.begin(), menus.end(), [](auto& m) {
+        const auto viewMenuIt = std::ranges::find_if(menus, [](auto& m) {
             return m->title().compare(QObject::tr("&View"), Qt::CaseInsensitive) == 0;
         });
 
@@ -169,7 +167,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
             QObject::connect(menu_.get(), &QObject::destroyed, [&](QObject*) { menu_.release(); });
         }
 
-        const auto addWidgetLazy = [&](QString name, Qt::DockWidgetArea area, auto factory) {
+        const auto addWidgetLazy = [&](const QString& name, Qt::DockWidgetArea area, auto factory) {
             auto* action = menu->addAction(name);
             action->setCheckable(true);
             QObject::connect(action, &QAction::triggered, [action, win, area, menu, factory]() {

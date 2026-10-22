@@ -36,9 +36,7 @@
 #include <modules/animation/datastructures/callbackkeyframe.h>
 #include <modules/animation/datastructures/callbackkeyframesequence.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CallbackTrack::CallbackTrack() : BaseTrack<CallbackKeyframeSequence>{"Callback Track", 0} {}
 
@@ -48,10 +46,8 @@ std::string_view CallbackTrack::classIdentifier() { return "org.inviwo.animation
 std::string_view CallbackTrack::getClassIdentifier() const { return classIdentifier(); }
 
 AnimationTimeState CallbackTrack::operator()(Seconds from, Seconds to, AnimationState state) const {
-    if (!isEnabled() || empty()) return {to, state};
+    if (!isEnabled() || empty()) return {.time = to, .state = state};
     return animateRange(begin(), end(), from, to, state);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

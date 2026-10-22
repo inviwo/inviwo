@@ -46,7 +46,6 @@ class DataFrame;
  */
 class IVW_MODULE_DATAFRAME_API CSVWriter : public DataWriterType<DataFrame> {
 public:
-public:
     CSVWriter();
     CSVWriter(const CSVWriter&) = default;
     CSVWriter& operator=(const CSVWriter&) = default;
@@ -63,7 +62,7 @@ public:
     bool exportIndexCol = false;
     bool separateVectorTypesIntoColumns = true;
 
-    void writeData(const DataFrame* data, std::ostream& os) const;
+    void writeData(const DataFrame* data, std::ostream& file) const;
 };
 
 }  // namespace inviwo

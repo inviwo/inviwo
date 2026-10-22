@@ -29,6 +29,7 @@
 
 #include <benchmark/benchmark.h>
 
+#include <algorithm>
 #include <string_view>
 #include <string>
 #include <array>
@@ -57,6 +58,7 @@ const std::vector<int> left_ = []() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> left;
+    left.reserve(lenLeft);
     for (int i = 0; i < lenLeft; ++i) {
         left.push_back(i % maxValue);
     }
@@ -70,7 +72,7 @@ const std::vector<int> right_ = []() {
     std::uniform_int_distribution<> distrib(1, maxValue);
     std::vector<int> right;
     right.resize(lenRight);
-    std::generate(right.begin(), right.end(), [&]() { return distrib(gen); });
+    std::ranges::generate(right, [&]() { return distrib(gen); });
     return right;
 }();
 
@@ -230,7 +232,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
 
     const auto columnData = [&]() {
         std::vector<int> data(size);
-        std::generate(data.begin(), data.end(), [&]() { return distrib(gen); });
+        std::ranges::generate(data, [&]() { return distrib(gen); });
         return data;
     };
 
@@ -242,7 +244,7 @@ std::shared_ptr<DataFrame> createDataFrame(int size, int max) {
     return df;
 }
 
-static void SelectRowsDataFrame(benchmark::State& st) {
+void SelectRowsDataFrame(benchmark::State& st) {
     const auto df = createDataFrame(static_cast<int>(st.range(0)), 100);
 
     dataframefilters::Filters filters;
@@ -252,7 +254,7 @@ static void SelectRowsDataFrame(benchmark::State& st) {
     filters.exclude.push_back(filters::intMatch(2, filters::NumberComp::Greater, 20));
 
     for (const auto _ : st) {
-        auto result = dataframe::selectRows(*df.get(), filters);
+        auto result = dataframe::selectRows(*df, filters);
         benchmark::DoNotOptimize(result);
     }
 }

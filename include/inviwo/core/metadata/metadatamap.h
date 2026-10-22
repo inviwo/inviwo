@@ -76,7 +76,7 @@ private:
 template <typename T>
     requires std::derived_from<T, MetaData>
 T* MetaDataMap::add(std::string_view key, std::unique_ptr<T> metaData) {
-    auto ptr = metaData.get();
+    auto* ptr = metaData.get();
     metaData_[std::string{key}] = std::move(metaData);
     return ptr;
 }

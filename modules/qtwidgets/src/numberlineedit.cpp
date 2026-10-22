@@ -36,6 +36,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iterator>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 
@@ -98,7 +99,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, size_t fontHash,
         it = widthToDigits_
                  .insert({fontHash,
                           []() {
-                              std::array<int, 513> ret;
+                              std::array<int, 513> ret{};
                               ret.fill(-1);
                               return ret;
                           }()})
@@ -167,13 +168,17 @@ void NumberLineEditPrivate::updateLocale() {
 
 QLocale NumberLineEditPrivate::getLocale() const { return locale_; }
 
-std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_(new NumberLineEditPrivate);
+std::unique_ptr<NumberLineEditPrivate> NumberLineEdit::nlePrivate_ =
+    std::make_unique<NumberLineEditPrivate>();
 
 NumberLineEdit::NumberLineEdit(QWidget* parent) : NumberLineEdit(false, parent) {}
 
 NumberLineEdit::NumberLineEdit(bool intMode, QWidget* parent)
-    : QDoubleSpinBox(parent), integerMode_(intMode), minimumWidth_{utilqt::emToPx(this, 4)} {
-    validator_ = new QDoubleValidator(this);
+    : QDoubleSpinBox(parent)
+    , integerMode_(intMode)
+    , minimumWidth_{utilqt::emToPx(this, 4)}
+    , validator_(new QDoubleValidator(this)) {
+
     validator_->setNotation(QDoubleValidator::ScientificNotation);
     lineEdit()->setValidator(validator_);
     // need a high precision in QDoubleSpinBox since min and max values are rounded using the

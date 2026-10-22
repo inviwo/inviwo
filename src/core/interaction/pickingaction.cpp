@@ -31,6 +31,8 @@
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <utility>
+
 namespace inviwo {
 
 PickingAction::PickingAction(size_t id, size_t size) : start_(id), size_(size), capacity_(size) {}
@@ -68,7 +70,7 @@ bool PickingAction::isEnabled() const { return enabled_; }
 
 void PickingAction::setEnabled(bool enabled) { enabled_ = enabled; }
 
-void PickingAction::setAction(Callback action) { action_ = action; }
+void PickingAction::setAction(Callback action) { action_ = std::move(action); }
 
 void PickingAction::operator()(PickingEvent* event) const { action_(event); }
 

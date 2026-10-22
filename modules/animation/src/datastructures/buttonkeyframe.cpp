@@ -34,9 +34,7 @@
 
 #include <chrono>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 ButtonKeyframe::ButtonKeyframe(Seconds time) : BaseKeyframe(time) {}
 
@@ -51,6 +49,4 @@ void ButtonKeyframe::operator()(Seconds from, Seconds to, bool& pressed) const {
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

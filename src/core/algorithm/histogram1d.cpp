@@ -54,7 +54,7 @@ std::vector<double> calculatePercentiles(const std::vector<size_t>& hist, dvec2 
 
 Statistics calculateHistogramStats(const std::vector<size_t>& hist) {
     std::vector<size_t> sorted = hist;
-    std::sort(sorted.begin(), sorted.end());
+    std::ranges::sort(sorted);
     const size_t sum = std::accumulate(hist.begin(), hist.end(), size_t{0});
     const size_t sum2 =
         std::accumulate(hist.begin(), hist.end(), 0, [](size_t a, size_t b) { return a + b * b; });

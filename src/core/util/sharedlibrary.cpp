@@ -48,12 +48,12 @@
 #include <dlfcn.h>
 #endif
 
-#if defined(__unix__)
+#ifdef __unix__
 #include <elf.h>  // To retrieve rpath
 #include <link.h>
 #endif
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
 

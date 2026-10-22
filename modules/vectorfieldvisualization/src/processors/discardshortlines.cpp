@@ -86,7 +86,7 @@ DiscardShortLines::DiscardShortLines()
 void DiscardShortLines::process() {
     if (linesIn_.isChanged()) {
         const auto linesPtr = linesIn_.getData();
-        auto& lines = *linesPtr;
+        const auto& lines = *linesPtr;
         if (lines.size() == 0) return;
 
         double maxL = 0;
@@ -108,7 +108,7 @@ void DiscardShortLines::process() {
     }
 
     const auto linesData = linesIn_.getData();
-    auto& lines = *linesData;
+    const auto& lines = *linesData;
 
     const auto outLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());
     const auto filteredLinesData = std::make_shared<IntegralLineSet>(lines.getModelMatrix());

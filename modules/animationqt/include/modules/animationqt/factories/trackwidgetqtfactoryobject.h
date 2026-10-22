@@ -33,15 +33,13 @@
 #include <memory>
 #include <string>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Track;
 class TrackWidgetQt;
 
 class IVW_MODULE_ANIMATIONQT_API TrackWidgetQtFactoryObject {
 public:
-    explicit TrackWidgetQtFactoryObject(const std::string& classIdentifier);
+    explicit TrackWidgetQtFactoryObject(std::string classIdentifier);
     virtual ~TrackWidgetQtFactoryObject() = default;
 
     virtual std::unique_ptr<TrackWidgetQt> create(Track&) const = 0;
@@ -66,6 +64,4 @@ public:
     }
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -81,7 +81,8 @@ INVIWO_PYBIND_MODULE(ivwbase, m) {
             for (const auto i : iterable) {
                 points.push_back(i.cast<inviwo::TFPrimitiveData>());
             }
-            const inviwo::util::SawToothOptions opts{points, range, delta, shift, low};
+            const inviwo::util::SawToothOptions opts{
+                .points = points, .range = range, .delta = delta, .shift = shift, .low = low};
             return inviwo::util::tfSawTooth(opts);
         },
         py::arg("points"), py::arg("range") = glm::dvec2{0.0, 1.0}, py::arg("delta") = 0.01,

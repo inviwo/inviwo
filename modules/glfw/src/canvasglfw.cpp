@@ -203,13 +203,15 @@ int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 void CanvasGLFW::setWindowSize(ivec2 size) { glfwSetWindowSize(glWindow_, size.x, size.y); }
 
 ivec2 CanvasGLFW::getWindowSize() const {
-    int width, height;
+    int width = 0;
+    int height = 0;
     glfwGetWindowSize(glWindow_, &width, &height);
     return {width, height};
 }
 
 ivec2 CanvasGLFW::getFramebufferSize() const {
-    int width, height;
+    int width = 0;
+    int height = 0;
     glfwGetFramebufferSize(glWindow_, &width, &height);
     return {width, height};
 }
@@ -222,7 +224,8 @@ void CanvasGLFW::setWindowPosition(ivec2 pos) {
 }
 
 ivec2 CanvasGLFW::getWindowPosition() const {
-    int x, y;
+    int x = 0;
+    int y = 0;
     glfwGetWindowPos(glWindow_, &x, &y);
     return {x, y};
 }
@@ -240,7 +243,7 @@ void CanvasGLFW::setFullScreen(bool fullscreen) {
         glfwGetWindowPos(glWindow_, &oldPos_[0], &oldPos_[1]);
         glfwGetWindowSize(glWindow_, &oldSize_[0], &oldSize_[1]);
 
-        int monitorCount;
+        int monitorCount = 0;
         GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
 
         GLFWmonitor* target = *monitors;  // Start with the primary monitor;
@@ -267,7 +270,7 @@ CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
 
 ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
     const auto check_error = []() {
-        const char* description;
+        const char* description = nullptr;
         int code = glfwGetError(&description);
         if (description) {
             throw Exception(SourceContext{}, "GLFW Error: {} {}", code, description);
@@ -275,7 +278,7 @@ ivec2 CanvasGLFW::movePointOntoDesktop(ivec2 pos, ivec2 size) {
     };
 
     try {
-        int count;
+        int count = 0;
         GLFWmonitor* const* monitors = glfwGetMonitors(&count);
         check_error();
 

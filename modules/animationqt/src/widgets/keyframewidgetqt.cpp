@@ -55,9 +55,7 @@
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 KeyframeWidgetQt::KeyframeWidgetQt(Keyframe& keyframe, QGraphicsItem* parent)
     : QGraphicsItem(parent), keyframe_(keyframe) {
@@ -113,7 +111,7 @@ void KeyframeWidgetQt::onKeyframeTimeChanged(Keyframe*, Seconds) {
 }
 
 QRectF KeyframeWidgetQt::boundingRect() const {
-    return QRectF(-keyframeWidth / 2.0f, -keyframeHeight / 2.0f, keyframeWidth, keyframeHeight);
+    return {-keyframeWidth / 2.0f, -keyframeHeight / 2.0f, keyframeWidth, keyframeHeight};
 }
 
 QVariant KeyframeWidgetQt::itemChange(GraphicsItemChange change, const QVariant& value) {
@@ -154,6 +152,4 @@ KeyframeWidgetQtLock::~KeyframeWidgetQtLock() {
     if (keyframe_) keyframe_->unlock();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -85,9 +85,11 @@ SplitterRenderer::SplitterRenderer(Processor* processor)
                     util::makeBuffer(std::vector<vec2>{vec2(0.0f)}));
 }
 
-void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) { invalidate_ = callback; }
+void SplitterRenderer::setInvalidateAction(InvalidateCallback callback) {
+    invalidate_ = std::move(callback);
+}
 
-void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = callback; }
+void SplitterRenderer::setDragAction(DragCallback callback) { dragAction_ = std::move(callback); }
 
 void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direction direction,
                               std::span<const float> pos, size2_t canvasDims) {
@@ -193,7 +195,7 @@ void SplitterRenderer::render(const SplitterSettings& settings, splitter::Direct
     shader_.deactivate();
 
     if ((hoveredSplitter_ > -1) && (settings.getTriangleSize() > 0) &&
-        (static_cast<int>(pos.size()) > hoveredSplitter_)) {
+        (std::cmp_greater(pos.size(), hoveredSplitter_))) {
         triShader_.activate();
         triShader_.setUniform("position", pos[hoveredSplitter_]);
         triShader_.setUniform("trafo", mTri);
@@ -256,24 +258,24 @@ void SplitterRenderer::handlePickingEvent(PickingEvent* e) {
                 e->markAsUsed();
             }
         }
-    } else if (auto touchEvent = e->getEventAs<TouchEvent>()) {
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto& touchPoint = touchEvent->touchPoints().front();
+    } else if (auto touchEvent = e->getEventAs<TouchEvent>();
+               touchEvent && (touchEvent->touchPoints().size() == 1)) {
+        // allow interaction only for a single touch point
+        const auto& touchPoint = touchEvent->touchPoints().front();
 
-            if (touchPoint.state() == TouchState::Started) {
-                hoveredSplitter_ = pickId;
-                triggerUpdate = true;
-            } else if (touchPoint.state() == TouchState::Finished) {
-                hoveredSplitter_ = -1;
-                triggerUpdate = true;
-            } else if (touchPoint.state() == TouchState::Updated) {
-                moveAction(touchPoint.pos());
-                triggerUpdate = true;
-                e->markAsUsed();
-            }
+        if (touchPoint.state() == TouchState::Started) {
+            hoveredSplitter_ = pickId;
+            triggerUpdate = true;
+        } else if (touchPoint.state() == TouchState::Finished) {
+            hoveredSplitter_ = -1;
+            triggerUpdate = true;
+        } else if (touchPoint.state() == TouchState::Updated) {
+            moveAction(touchPoint.pos());
+            triggerUpdate = true;
+            e->markAsUsed();
         }
     }
+
     if (triggerUpdate && invalidate_) {
         invalidate_();
     }

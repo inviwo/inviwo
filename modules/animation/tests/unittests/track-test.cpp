@@ -60,8 +60,7 @@
 
 #include <filesystem>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 TEST(AnimationTests, FloatInterpolation) {
 
@@ -467,10 +466,10 @@ TEST(AnimationTests, TrackSerializationTest) {
         TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
         trackFactory.registerObject(&floatTFO);
 
-        auto floatProcessor = static_cast<TestProcessor*>(
+        auto* floatProcessor = static_cast<TestProcessor*>(
             net.addProcessor(std::make_unique<TestProcessor>("float", "Float")));
         PropertyTrack<FloatProperty, ValueKeyframe<float>> floatTrack(
-            &(floatProcessor->floatProperty));
+            &floatProcessor->floatProperty);
 
         std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
         fseq.push_back(std::make_unique<ValueKeyframe<float>>(Seconds{1.0}, 0.0f));
@@ -505,7 +504,7 @@ TEST(AnimationTests, TrackSerializationTest) {
         d.deserialize("Network", net);
         d.deserialize("Track", track);
 
-        auto floatTrack2 =
+        auto* floatTrack2 =
             dynamic_cast<PropertyTrack<FloatProperty, ValueKeyframe<float>>*>(track.get());
         EXPECT_NE(nullptr, floatTrack2);
 
@@ -547,7 +546,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
         TrackFactoryObjectTemplate<PropertyTrack<FloatProperty, ValueKeyframe<float>>> floatTFO;
         trackFactory.registerObject(&floatTFO);
 
-        auto floatProcessor = static_cast<TestProcessor*>(
+        auto* floatProcessor = static_cast<TestProcessor*>(
             net.addProcessor(std::make_unique<TestProcessor>("float", "Float")));
 
         std::vector<std::unique_ptr<ValueKeyframe<float>>> fseq;
@@ -559,7 +558,7 @@ TEST(AnimationTests, AnimationSerializationTest) {
 
         {
             auto floatTrack = std::make_unique<PropertyTrack<FloatProperty, ValueKeyframe<float>>>(
-                &(floatProcessor->floatProperty));
+                &floatProcessor->floatProperty);
             floatTrack->add(std::move(floatSequence));
             animation.add(std::move(floatTrack));
         }
@@ -624,6 +623,4 @@ TEST(AnimationTests, AnimationSerializationTest) {
     processorFactory.unRegisterObject(&testPFO);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -106,7 +106,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setCornerWidget(new QWidget());
 
-    auto editmenu = mainwindow_->getInviwoEditMenu();
+    auto* editmenu = mainwindow_->getInviwoEditMenu();
 
     editActionsHandle_ = editmenu->registerItem(std::make_shared<MenuItem>(
         this,
@@ -115,8 +115,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                 case MenuItemType::cut:   return !editor_->selectedItems().empty();
                 case MenuItemType::copy:  return !editor_->selectedItems().empty();
                 case MenuItemType::paste: {
-                    auto clipboard = QApplication::clipboard();
-                    auto mimeData = clipboard->mimeData();
+                    auto* clipboard = QApplication::clipboard();
+                    const auto* mimeData = clipboard->mimeData();
                     if (mimeData->formats().contains(
                             utilqt::toQString(NetworkEditor::getMimeTag()))) {
                         return true;
@@ -146,8 +146,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                     return;
                 }
                 case MenuItemType::paste: {
-                    auto clipboard = QApplication::clipboard();
-                    if (auto mimeData = clipboard->mimeData()) {
+                    auto* clipboard = QApplication::clipboard();
+                    if (const auto* mimeData = clipboard->mimeData()) {
                         editor_->paste(*mimeData);
                     }
                     return;
@@ -196,8 +196,8 @@ void NetworkEditorView::fitNetwork() {
     const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
     setTransform(QTransform::fromScale(scale, scale), false);
 
-    if (const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork()) {
-        if (network->getProcessors().size() > 0) {
+    if (auto* const network = mainwindow_->getInviwoApplication()->getProcessorNetwork()) {
+        if (!network->getProcessors().empty()) {
             const auto br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             setSceneRect(growSceneRect(br));
             fitInView(br, Qt::KeepAspectRatio);
@@ -287,8 +287,8 @@ void NetworkEditorView::mouseReleaseEvent(QMouseEvent* e) {
 void NetworkEditorView::mouseMoveEvent(QMouseEvent* e) {
     if ((e->buttons() & Qt::LeftButton) && dragPos_) {
         const auto delta = e->pos() - dragPos_.value();
-        auto hBar = horizontalScrollBar();
-        auto vBar = verticalScrollBar();
+        auto* hBar = horizontalScrollBar();
+        auto* vBar = verticalScrollBar();
         hBar->setValue(hBar->value() - delta.x());
         vBar->setValue(vBar->value() - delta.y());
         dragPos_ = e->pos();

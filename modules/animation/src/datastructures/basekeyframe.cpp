@@ -37,9 +37,7 @@
 
 #include <chrono>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
 
@@ -132,6 +130,4 @@ void BaseKeyframe::deserialize(Deserializer& d) {
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

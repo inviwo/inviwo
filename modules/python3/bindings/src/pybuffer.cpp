@@ -58,14 +58,14 @@ struct BufferRAMHelper {
     template <typename DataFormat>
     auto operator()(pybind11::module& m) {
         namespace py = pybind11;
-        using T = typename DataFormat::type;
+        using T = DataFormat::type;
 
         std::string className = fmt::format("Buffer{}", DataFormat::str());
         py::classh<Buffer<T, BufferTarget::Data>, BufferBase>(m, className.c_str())
             .def(py::init<size_t>(), py::arg("size"))
             .def(py::init<size_t, BufferUsage>(), py::arg("size"),
                  py::arg("usage") = BufferUsage::Static)
-            .def(py::init([](py::array data, BufferUsage usage) {
+            .def(py::init([](const py::array& data, BufferUsage usage) {
                      pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
                      const auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Data>>(
                          data.shape(0), usage);
@@ -78,7 +78,7 @@ struct BufferRAMHelper {
         py::classh<Buffer<T, BufferTarget::Index>, BufferBase>(m, className.c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>())
-            .def(py::init([](py::array data, BufferUsage usage) {
+            .def(py::init([](const py::array& data, BufferUsage usage) {
                      pyutil::checkDataFormat<1>(DataFormat::get(), data.shape(0), data);
                      const auto ram = std::make_shared<BufferRAMPrecision<T, BufferTarget::Index>>(
                          data.shape(0), usage);
@@ -149,9 +149,9 @@ void exposeBuffer(pybind11::module& m) {
                 }
 
                 auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
+                return {pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1)};
             },
-            [](BufferBase* buffer, py::array data) {
+            [](BufferBase* buffer, const py::array& data) {
                 auto rep = buffer->getEditableRepresentation<BufferRAM>();
                 pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
 

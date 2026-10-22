@@ -40,9 +40,7 @@
 
 #include <fmt/format.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @struct BuildInfo
@@ -62,7 +60,7 @@ struct IVW_CORE_API BuildInfo {
         std::string sha;
         std::string repo;
         std::filesystem::path repoDir;
-        bool dirty;
+        bool dirty{};
     };
 
     std::vector<ModulesDir> modulesDirs;
@@ -79,6 +77,4 @@ struct IVW_CORE_API BuildInfo {
  */
 IVW_CORE_API const std::optional<BuildInfo>& getBuildInfo();
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

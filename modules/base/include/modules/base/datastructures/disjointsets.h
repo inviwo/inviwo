@@ -81,7 +81,7 @@ private:
 
 template <typename T>
 inline DisjointSets<T>::DisjointSets(T size) : array_(size, T{-1}) {
-    static_assert(std::is_signed<T>::value, "T must be a signed type");
+    static_assert(std::is_signed_v<T>, "T must be a signed type");
     IVW_ASSERT(size > 0, "Size should be greater than 0");
 }
 

@@ -169,7 +169,7 @@ void InputSelector<Inport, Outport>::portSettings() {}
 template <typename Inport, typename Outport>
 struct ProcessorTraits<InputSelector<Inport, Outport>> {
     static ProcessorInfo getProcessorInfo() {
-        using DataType = typename Inport::type;
+        using DataType = Inport::type;
         return {fmt::format("{}.InputSelector",
                             DataTraits<DataType>::classIdentifier()),  // Class identifier
                 fmt::format("{} Input Selector", DataTraits<DataType>::dataName()),  // Display name

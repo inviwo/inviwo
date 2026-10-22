@@ -71,7 +71,7 @@ public:
     /**
      * Unbind the VAO by binding id 0
      */
-    void unbind() const;
+    static void unbind();
 
     /**
      * @brief Check if this VAO is currently bound
@@ -91,7 +91,7 @@ public:
      * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
      * @see attachBufferObjectForce maxSize
      */
-    void attachBufferObject(const BufferObject* obj, GLuint location,
+    void attachBufferObject(const BufferObject* bufferObject, GLuint location,
                             BindingType bindingType = BindingType::Native);
 
     /**
@@ -101,7 +101,7 @@ public:
      * @throw RangeException  if @p location is invalid. That is @p location >= maxSize().
      * @see attachBufferObject maxSize
      */
-    void attachBufferObjectEnforce(const BufferObject* obj, GLuint location,
+    void attachBufferObjectEnforce(const BufferObject* bufferObject, GLuint location,
                                    BindingType bindingType = BindingType::Native);
 
     /**
@@ -122,7 +122,7 @@ public:
      * hardware. The result corresponds to \c GL_MAX_VERTEX_ATTRIBS.
      * @return maximum number of buffers that can be attached to this BufferObjectArray
      */
-    size_t maxSize() const;
+    static size_t maxSize();
 
 private:
     mutable GLuint id_ = 0;

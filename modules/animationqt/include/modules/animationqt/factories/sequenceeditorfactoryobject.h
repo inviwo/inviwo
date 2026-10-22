@@ -33,9 +33,7 @@
 #include <memory>
 #include <string>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class AnimationManager;
 class KeyframeSequence;
 class SequenceEditorWidget;
@@ -43,7 +41,7 @@ class Track;
 
 class IVW_MODULE_ANIMATIONQT_API SequenceEditorFactoryObject {
 public:
-    explicit SequenceEditorFactoryObject(const std::string& classIdentifier);
+    explicit SequenceEditorFactoryObject(std::string classIdentifier);
     virtual ~SequenceEditorFactoryObject() = default;
 
     virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&,
@@ -70,6 +68,4 @@ public:
     }
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

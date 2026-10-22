@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-std::vector<std::uint32_t> getIndices(const std::size_t count) {
+static std::vector<std::uint32_t> getIndices(const std::size_t count) {
     std::mt19937 gen;
     gen.seed(1);
     std::uniform_int_distribution<std::uint32_t> distrib(0, 4096);
@@ -175,8 +175,8 @@ TEST(bitset, minmax) {
 
     const auto b = BitSet(indices.begin(), indices.end());
 
-    EXPECT_EQ(*std::min_element(indices.begin(), indices.end()), b.min());
-    EXPECT_EQ(*std::max_element(indices.begin(), indices.end()), b.max());
+    EXPECT_EQ(*std::ranges::min_element(indices), b.min());
+    EXPECT_EQ(*std::ranges::max_element(indices), b.max());
 }
 
 TEST(bitset, serialization) {

@@ -59,7 +59,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <functional>
 #include <string>
 #include <string_view>
@@ -132,9 +132,9 @@ void ImageSubsetGL::process() {
     const ivec2 offset{rangeX_.get().x, rangeY_.get().x};
     const ivec2 dim = ivec2{rangeX_.get().y, rangeY_.get().y} - offset;
     const auto inputDim = inport_.getData()->getDimensions();
-    if (dim == ivec2(inputDim))
+    if (dim == ivec2(inputDim)) {
         outport_.setData(inport_.getData());
-    else {
+    } else {
         const auto image = inport_.getData();
         const auto outImage = std::make_shared<Image>(dim, image->getDataFormat());
         // pass meta data on
@@ -144,7 +144,9 @@ void ImageSubsetGL::process() {
 
         TextureUnit::setZeroUnit();
 
-        TextureUnit colorUnit, depthUnit, pickingUnit;
+        TextureUnit colorUnit;
+        TextureUnit depthUnit;
+        TextureUnit pickingUnit;
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
         shader_.activate();

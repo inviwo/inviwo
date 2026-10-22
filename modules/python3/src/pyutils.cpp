@@ -44,10 +44,9 @@
 #include <array>
 #include <string_view>
 #include <filesystem>
+#include <utility>
 
-namespace inviwo {
-
-namespace pyutil {
+namespace inviwo::pyutil {
 
 void addModulePath(const std::filesystem::path& path) {
     namespace py = pybind11;
@@ -75,10 +74,10 @@ void removeModulePath(const std::filesystem::path& path) {
     py::module::import("sys").attr("path").attr("remove")(pathConv);
 }
 
-ModulePath::ModulePath(const std::filesystem::path& path) : path_{path} { addModulePath(path_); }
+ModulePath::ModulePath(std::filesystem::path path) : path_{std::move(path)} {
+    addModulePath(path_);
+}
 
 ModulePath::~ModulePath() { removeModulePath(path_); }
 
-}  // namespace pyutil
-
-}  // namespace inviwo
+}  // namespace inviwo::pyutil

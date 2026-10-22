@@ -39,6 +39,7 @@
 
 #include <inviwo/qt/editor/workspacemodelroles.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QStyledItemDelegate>
@@ -91,7 +92,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
         const auto& image = [&]() {
             const QVariant annotations = utilqt::getData(index, Role::Annotations);
             if (annotations.isValid()) {
-                const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
+                const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(annotations);
                 return workspaceInfo.annotations->getPrimaryCanvasQImage();
             } else {
                 return WorkspaceAnnotationsQt::getMissingImage();
@@ -157,7 +158,7 @@ void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
 }
 
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
-    if (!index.isValid()) return QSize();
+    if (!index.isValid()) return {};
 
     if (utilqt::getData(index, Role::Type) == Type::File) {
         auto option = o;
@@ -185,11 +186,12 @@ QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metr
         directories.erase(directories.begin());
     }
 
-    std::reverse(directories.begin(), directories.end());
+    std::ranges::reverse(directories);
 
     std::vector<int> widthDirs;
-    std::transform(directories.begin(), directories.end(), std::back_inserter(widthDirs),
-                   [&](const auto& dir) { return metrics.boundingRect("/" + dir).width(); });
+    std::ranges::transform(directories, std::back_inserter(widthDirs), [&](const auto& dir) {
+        return metrics.boundingRect("/" + dir).width();
+    });
 
     const int widthDots = metrics.boundingRect("/...").width();
 
@@ -227,7 +229,7 @@ WorkspaceTreeView::WorkspaceTreeView(QAbstractItemModel* theModel, QWidget* pare
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
-#if defined(WIN32)
+#ifdef WIN32
     // Scrolling on Windows is set to scroll per item by default. Also need to adjust the step size
     // since the default appears to be based on the number of items in the view.
     setVerticalScrollMode(ScrollPerPixel);

@@ -164,7 +164,7 @@ public:
     void ensureVisible(const std::vector<Processor*>& processors) const;
     void ensureVisible(const QGraphicsItem* item) const;
 
-    static std::string getMimeTag();
+    static std::string_view getMimeTag();
     void resetAllTimeMeasurements();
 
     void showLinkDialog(Processor* processor1, Processor* processor2);
@@ -208,7 +208,7 @@ protected:
                           const std::function<void(std::string_view)>& set);
 
     // Override for tooltips
-    virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
+    virtual void helpEvent(QGraphicsSceneHelpEvent* e) override;
 
     // override these event drag functions since QGraphicsScene will set the drop action of the
     // event to Qt::IgnoreAction if the event is not accepted by the scene
@@ -261,7 +261,7 @@ private:
 
     // Get QGraphicsItems
     template <typename T>
-    T* getGraphicsItemAt(const QPointF pos) const;
+    T* getGraphicsItemAt(QPointF pos) const;
 
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
@@ -308,8 +308,8 @@ private:
 template <typename T>
 T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
-    for (int i = 0; i < graphicsItems.size(); i++) {
-        if (auto item = qgraphicsitem_cast<T*>(graphicsItems[i])) return item;
+    for (auto& graphicsItem : graphicsItems) {
+        if (auto* item = qgraphicsitem_cast<T*>(graphicsItem)) return item;
     }
     return nullptr;
 }

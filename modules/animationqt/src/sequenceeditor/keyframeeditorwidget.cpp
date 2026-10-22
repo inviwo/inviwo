@@ -47,19 +47,18 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
-    : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
+    : QWidget(parent)
+    , keyframe_(keyframe)
+    , sequenceEditorWidget_(parent)
+    , layout_(new QHBoxLayout())
+    , timeSpinner_(new DoubleValueDragSpinBox()) {
 
     setObjectName("KeyframeEditorWidget");
 
     keyframe.addObserver(this);
 
-    layout_ = new QHBoxLayout();
-
-    timeSpinner_ = new DoubleValueDragSpinBox();
     timeSpinner_->setValue(keyframe.getTime().count());
     timeSpinner_->setSingleStep(0.1);
     timeSpinner_->setDecimals(3);
@@ -75,8 +74,8 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
 
     layout_->addWidget(timeSpinner_);
 
-    if (auto propTrack = dynamic_cast<BasePropertyTrack*>(&parent->getTrack())) {
-        auto baseProperty = propTrack->getProperty();
+    if (auto* propTrack = dynamic_cast<BasePropertyTrack*>(&parent->getTrack())) {
+        auto* baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setPropertyFromKeyframe(property_.get(), &keyframe);
         property_->onChange([p = property_.get(), t = propTrack, k = &keyframe_]() {
@@ -87,12 +86,12 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe& keyframe, SequenceEditorWid
         auto propWidget = util::getPropertyWidgetFactory()->create(property_.get());
         propertyWidget_ = static_cast<PropertyWidgetQt*>(propWidget.release());
 
-        if (auto label = propertyWidget_->findChild<EditableLabelQt*>()) {
+        if (auto* label = propertyWidget_->findChild<EditableLabelQt*>()) {
             label->setVisible(false);
         }
         layout_->addWidget(propertyWidget_);
 
-    } else if (auto ctrlKey = dynamic_cast<ControlKeyframe*>(&keyframe)) {
+    } else if (auto* ctrlKey = dynamic_cast<ControlKeyframe*>(&keyframe)) {
 
         actionWidget_ = new QComboBox();
         actionWidget_->addItems({"Pause", "Jump To"});
@@ -146,6 +145,4 @@ void KeyframeEditorWidget::onKeyframeSelectionChanged(Keyframe*) {
     sequenceEditorWidget_->updateVisibility();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

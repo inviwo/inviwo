@@ -210,8 +210,8 @@ VolumeSliceGL::VolumeSliceGL()
     , channel_("channel", "Channel", "Channel used to for transfer function lookups"_help,
                util::enumeratedOptions("Channel", 4))
     , transferFunction_("transferFunction", "Transfer Function",
-                        TransferFunction({{0.0, vec4(0.0f, 0.0f, 0.0f, 1.0f)},
-                                          {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+                        TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 1.0f)},
+                                          {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
                         &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
     , sampleQuery_("sampleQuery", "Sampling Query", false)
@@ -470,7 +470,6 @@ void VolumeSliceGL::planeSettingsChanged() {
     inverseSliceRotation_ = glm::inverse(rotation);
 
     invalidateMesh();
-    return;
 }
 
 void VolumeSliceGL::process() {
@@ -490,7 +489,7 @@ void VolumeSliceGL::process() {
 
     if (const auto vol = inport_.getData();
         vol && tfGroup_.isChecked() &&
-        channel_ >= static_cast<int>(vol->getDataFormat()->getComponents())) {
+        std::cmp_greater_equal(channel_.get(), vol->getDataFormat()->getComponents())) {
         throw Exception(SourceContext{},
                         "Channel for TF mapping is greater than the available channels {} >= {}",
                         channel_.get() + 1, vol->getDataFormat()->getComponents());
@@ -645,7 +644,7 @@ void VolumeSliceGL::shiftSlice(int shift) {
             break;
         }
         default:
-        case 3: {
+        case 3:  {
             vec3 newPos = planePosition_.get() +
                           static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
             newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
@@ -673,10 +672,8 @@ vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) 
     vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
                     glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
 
-    if (clamp) {
-        if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
-            pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
-        }
+    if (clamp && ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f))) {
+        pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
     }
 
     vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
@@ -687,7 +684,7 @@ vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) 
     if (clamp) {
         newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
     }
-    return vec3(newpos);
+    return {newpos};
 }
 
 void VolumeSliceGL::updateMaxSliceNumber() {
@@ -697,15 +694,15 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     const NetworkLock lock(this);
 
     const size3_t dims{inport_.getData()->getDimensions()};
-    if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.x, sliceX_.getMaxValue())) {
         sliceX_.setMaxValue(static_cast<int>(dims.x));
         sliceX_.set(static_cast<int>(dims.x) / 2);
     }
-    if (static_cast<int>(dims.y) != sliceY_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.y, sliceY_.getMaxValue())) {
         sliceY_.setMaxValue(static_cast<int>(dims.y));
         sliceY_.set(static_cast<int>(dims.y) / 2);
     }
-    if (static_cast<int>(dims.z) != sliceZ_.getMaxValue()) {
+    if (std::cmp_not_equal(dims.z, sliceZ_.getMaxValue())) {
         sliceZ_.setMaxValue(static_cast<int>(dims.z));
         sliceZ_.set(static_cast<int>(dims.z) / 2);
     }

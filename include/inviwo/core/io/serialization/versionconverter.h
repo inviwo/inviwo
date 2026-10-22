@@ -73,7 +73,7 @@ public:
     template <typename T>
     TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     explicit TraversingVersionConverter(std::function<bool(TxElement*)> fun);
-    virtual ~TraversingVersionConverter() {}
+    virtual ~TraversingVersionConverter() = default;
 
     /**
      * Traverse all child nodes starting at @p root. The function provided in the constructor will
@@ -261,7 +261,7 @@ public:
     const std::vector<ElementMatcher>& getMatchers() const;
 
 private:
-    Kind(const std::string& name, const std::string& list, const std::string& type);
+    Kind(std::string name, std::string list, std::string type);
 
     std::vector<ElementMatcher> matchers_;
     std::string name_;
@@ -307,7 +307,7 @@ IVW_CORE_API bool changeIdentifier(TxElement* root, const std::vector<Kind>& pat
  *	Helper class for changeIdentifiers
  */
 struct IVW_CORE_API IdentifierReplacement {
-    IdentifierReplacement(const std::vector<Kind>& p, const std::string& oi, const std::string& ni);
+    IdentifierReplacement(const std::vector<Kind>& p, std::string oi, std::string ni);
 
     IdentifierReplacement(const IdentifierReplacement&) = default;
     IdentifierReplacement& operator=(const IdentifierReplacement&) = default;

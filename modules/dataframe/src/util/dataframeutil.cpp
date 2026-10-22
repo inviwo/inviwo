@@ -67,9 +67,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace dataframe {
+namespace inviwo::dataframe {
 
 std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> buffer,
                                              ivec2 range) {
@@ -182,9 +180,9 @@ std::shared_ptr<DataFrame> appendRows(const DataFrame& top, const DataFrame& bot
 
 namespace detail {
 
-void columnCheck(const DataFrame& left, const DataFrame& right,
-                 const std::vector<std::pair<std::string, std::string>>& keyColumns,
-                 Literal context) {
+static void columnCheck(const DataFrame& left, const DataFrame& right,
+                        const std::vector<std::pair<std::string, std::string>>& keyColumns,
+                        Literal context) {
     for (const auto& [leftCol, rightCol] : keyColumns) {
         const auto indexCol1 = left.getColumn(leftCol);
         const auto indexCol2 = right.getColumn(rightCol);
@@ -218,7 +216,7 @@ void columnCheck(const DataFrame& left, const DataFrame& right,
 }
 
 template <typename T, bool firstMatchOnly, typename Cont>
-std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Cont& right) {
+static std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Cont& right) {
     std::unordered_map<T, std::vector<std::uint32_t>> matches;
     for (auto&& [r, value] : util::enumerate<std::uint32_t>(right)) {
         if constexpr (firstMatchOnly) {
@@ -240,8 +238,8 @@ std::vector<std::vector<std::uint32_t>> matchingRows(const Cont& left, const Con
  * @brief for each row in leftCol return a list of matching row indices in rightCol
  */
 template <bool firstMatchOnly = false>
-std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Column> leftCol,
-                                                        std::shared_ptr<const Column> rightCol) {
+static std::vector<std::vector<std::uint32_t>> getMatchingRows(
+    std::shared_ptr<const Column> leftCol, std::shared_ptr<const Column> rightCol) {
     if (auto catCol1 = dynamic_cast<const CategoricalColumn*>(leftCol.get())) {
         // need to match values of categorical columns instead of indices stored in buffer
         auto catCol2 = dynamic_cast<const CategoricalColumn*>(rightCol.get());
@@ -265,7 +263,7 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(std::shared_ptr<const Co
     }
 }
 
-std::vector<std::vector<std::uint32_t>> getMatchingRows(
+static std::vector<std::vector<std::uint32_t>> getMatchingRows(
     const DataFrame& left, const DataFrame& right,
     const std::vector<std::pair<std::string, std::string>>& keyColumns) {
 
@@ -310,8 +308,8 @@ std::vector<std::vector<std::uint32_t>> getMatchingRows(
     return rows;
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
@@ -320,9 +318,9 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
     }
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::uint32_t>& rows, const std::vector<std::string>& keyColumns,
-                bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::uint32_t>& rows,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
@@ -331,9 +329,9 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
     }
 }
 
-void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
-                const std::vector<std::optional<std::uint32_t>>& rows,
-                const std::vector<std::string>& keyColumns, bool skipKeyCol) {
+static void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
+                       const std::vector<std::optional<std::uint32_t>>& rows,
+                       const std::vector<std::string>& keyColumns, bool skipKeyCol) {
     for (const auto& srcCol : srcDataFrame) {
         if (srcCol->getColumnType() == ColumnType::Index) continue;
         if (skipKeyCol && util::contains(keyColumns, srcCol->getHeader())) continue;
@@ -410,11 +408,11 @@ std::shared_ptr<DataFrame> innerJoin(
     IVW_ASSERT(rowsLeft.size() == rowsRight.size(), "incorrect number of matching row indices");
 
     std::vector<std::string> leftKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
-                   [](const auto& item) { return item.first; });
+    std::ranges::transform(keyColumns, std::back_inserter(leftKeys),
+                           [](const auto& item) { return item.first; });
     std::vector<std::string> rightKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(keyColumns, std::back_inserter(rightKeys),
+                           [](const auto& item) { return item.second; });
 
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
@@ -474,11 +472,11 @@ std::shared_ptr<DataFrame> leftJoin(
         });
 
     std::vector<std::string> leftKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(leftKeys),
-                   [](const auto& item) { return item.first; });
+    std::ranges::transform(keyColumns, std::back_inserter(leftKeys),
+                           [](const auto& item) { return item.first; });
     std::vector<std::string> rightKeys;
-    std::transform(keyColumns.begin(), keyColumns.end(), std::back_inserter(rightKeys),
-                   [](const auto& item) { return item.second; });
+    std::ranges::transform(keyColumns, std::back_inserter(rightKeys),
+                           [](const auto& item) { return item.second; });
 
     auto dataframe = std::make_shared<DataFrame>();
     dataframe->dropColumn(0);
@@ -517,7 +515,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
         }
 
         for (auto df = dataFrames.begin() + 1; df != dataFrames.end(); ++df) {
-            for (const auto& col : *df->get()) {
+            for (const auto& col : **df) {
                 if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
                 const auto it = columnType.find(col->getHeader());
                 if (it == columnType.end()) {
@@ -526,13 +524,11 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                                     "one of the others",
                                     col->getHeader());
                 }
-                if (it->second != col->getBuffer()->getDataFormat()) {
-                    if (it == columnType.end()) {
-                        throw Exception(SourceContext{},
-                                        "Column {} has different format in DataFrames ({}, {})",
-                                        col->getHeader(), it->second->getString(),
-                                        col->getBuffer()->getDataFormat()->getString());
-                    }
+                if ((it->second != col->getBuffer()->getDataFormat()) && (it == columnType.end())) {
+                    throw Exception(SourceContext{},
+                                    "Column {} has different format in DataFrames ({}, {})",
+                                    col->getHeader(), it->second->getString(),
+                                    col->getBuffer()->getDataFormat()->getString());
                 }
             }
         }
@@ -550,7 +546,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
             });
     }
     for (const auto& data : dataFrames) {
-        for (auto col : *(data.get())) {
+        for (auto col : *data) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
 
             columns[col->getHeader()]
@@ -584,7 +580,7 @@ std::vector<std::uint32_t> selectRows(const Column& col,
                 [](const std::function<bool(int64_t)>&) { return false; },
                 [](const std::function<bool(double)>&) { return false; }};
             const auto op = [&](const auto& f) { return std::visit(test, f.filter); };
-            if (std::any_of(filters.begin(), filters.end(), op)) {
+            if (std::ranges::any_of(filters, op)) {
                 rows.push_back(row);
             }
         }
@@ -645,7 +641,7 @@ std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
     }
 
     if (filterCols.size() == 1) {
-        const auto& col = *dataframe.getColumn(filterCols.begin()->first).get();
+        const auto& col = *dataframe.getColumn(filterCols.begin()->first);
         return (BitSet(selectRows(col, filterCols.begin()->second.include)) -
                 BitSet(selectRows(col, filterCols.begin()->second.exclude)))
             .toVector();
@@ -653,7 +649,7 @@ std::vector<std::uint32_t> selectRows(const DataFrame& dataframe,
     BitSet include;
     BitSet exclude;
     for (auto&& [colIndex, f] : filterCols) {
-        const auto& col = *dataframe.getColumn(colIndex).get();
+        const auto& col = *dataframe.getColumn(colIndex);
         include.add(selectRows(col, f.include));
         exclude.add(selectRows(col, f.exclude));
     }
@@ -674,6 +670,4 @@ std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
     return doc;
 }
 
-}  // namespace dataframe
-
-}  // namespace inviwo
+}  // namespace inviwo::dataframe

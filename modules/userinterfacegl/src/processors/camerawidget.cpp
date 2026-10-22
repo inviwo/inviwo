@@ -374,13 +374,13 @@ void CameraWidget::initializeResources() {
 std::tuple<std::unique_ptr<Image>, ImageGL*> CameraWidget::createWidgetImage(
     const ivec2& widgetSize) {
     auto img = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
-    auto rep = img->getEditableRepresentation<ImageGL>();
+    auto* rep = img->getEditableRepresentation<ImageGL>();
 
     return {std::move(img), rep};
 }
 
 void CameraWidget::updateWidgetTexture(const ivec2& widgetSize) {
-    if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
+    if (!widgetImage_ || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
         std::tie(widgetImage_, widgetImageGL_) = createWidgetImage(widgetSize);
     }
     // enable fbo for rendering only the widget
@@ -446,7 +446,9 @@ void CameraWidget::drawWidgetTexture() {
     const utilgl::ViewportState viewportState(viewport);
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
 
-    TextureUnit colorTexUnit, depthTexUnit, pickingTexUnit;
+    TextureUnit colorTexUnit;
+    TextureUnit depthTexUnit;
+    TextureUnit pickingTexUnit;
     const utilgl::Activate as{&overlayShader_};
 
     overlayShader_.setUniform("color_", colorTexUnit);
@@ -677,7 +679,7 @@ void CameraWidget::loadMesh() {
     });
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
-        if (auto mesh = meshes_[i].get()) {
+        if (const auto* mesh = meshes_[i].get()) {
             meshDrawers_[i] = std::make_unique<MeshDrawerGL>(mesh);
         }
     }
@@ -778,22 +780,38 @@ std::vector<ButtonGroupProperty::Button> CameraWidget::buttons() {
     };
 
     return {{
-        {std::nullopt, ":svgicons/camera-left.svg", "Rotate camera to the left",
-         [step] { step(Interaction::Yaw, true); }},
-        {std::nullopt, ":svgicons/camera-up.svg", "Rotate camera upward",
-         [step] { step(Interaction::Pitch, true); }},
-        {std::nullopt, ":svgicons/camera-down.svg", "Rotate camera downward",
-         [step] { step(Interaction::Pitch, false); }},
-        {std::nullopt, ":svgicons/camera-right.svg", "Rotate camera to the right",
-         [step] { step(Interaction::Yaw, false); }},
-        {std::nullopt, ":svgicons/camera-dolly-closer.svg", "Dolly closer",
-         [step] { step(Interaction::Zoom, false); }},
-        {std::nullopt, ":svgicons/camera-dolly-away.svg", "Dolly away",
-         [step] { step(Interaction::Zoom, true); }},
-        {std::nullopt, ":svgicons/camera-roll-left.svg", "Camera Roll Left",
-         [step] { step(Interaction::Roll, true); }},
-        {std::nullopt, ":svgicons/camera-roll-right.svg", "Camera Roll Right",
-         [step] { step(Interaction::Roll, false); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-left.svg",
+         .tooltip = "Rotate camera to the left",
+         .action = [step] { step(Interaction::Yaw, true); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-up.svg",
+         .tooltip = "Rotate camera upward",
+         .action = [step] { step(Interaction::Pitch, true); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-down.svg",
+         .tooltip = "Rotate camera downward",
+         .action = [step] { step(Interaction::Pitch, false); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-right.svg",
+         .tooltip = "Rotate camera to the right",
+         .action = [step] { step(Interaction::Yaw, false); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-dolly-closer.svg",
+         .tooltip = "Dolly closer",
+         .action = [step] { step(Interaction::Zoom, false); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-dolly-away.svg",
+         .tooltip = "Dolly away",
+         .action = [step] { step(Interaction::Zoom, true); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-roll-left.svg",
+         .tooltip = "Camera Roll Left",
+         .action = [step] { step(Interaction::Roll, true); }},
+        {.name = std::nullopt,
+         .icon = ":svgicons/camera-roll-right.svg",
+         .tooltip = "Camera Roll Right",
+         .action = [step] { step(Interaction::Roll, false); }},
     }};
 }
 
@@ -844,7 +862,7 @@ void CameraWidget::Animator::animate() {
                     std::copysign(swing.amplitude, swing.current) *
                     util::ease(
                         std::clamp(std::abs(swing.current) / std::abs(swing.amplitude), 0.0, 1.0),
-                        {swing.easing, EasingMode::out});
+                        {.type = swing.easing, .mode = EasingMode::out});
 
                 // Rotate LookFrom around LookTo using axis
                 const auto rotation = dmat3(glm::rotate(-glm::radians(angle), swing.axis));
@@ -958,12 +976,9 @@ void CameraWidget::Animate::willInvokeEvent(Event* e) {
         if (me->state() == MouseState::Press) {
             interactionStart();
         }
-    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
-        if (!ke->hasBeenUsed()) {
-            if (ke->state() == KeyState::Press) {
-                interactionStart();
-            }
-        }
+    } else if (const auto* ke = e->getAs<KeyboardEvent>();
+               ke && (!ke->hasBeenUsed()) && (ke->state() == KeyState::Press)) {
+        interactionStart();
     }
 }
 
@@ -972,12 +987,9 @@ void CameraWidget::Animate::didInvokeEvent(Event* e) {
         if (me->state() == MouseState::Release && me->buttonState() == MouseButton::None) {
             interactionStop();
         }
-    } else if (const auto* ke = e->getAs<KeyboardEvent>()) {
-        if (!ke->hasBeenUsed()) {
-            if (ke->state() == KeyState::Release) {
-                interactionStop();
-            }
-        }
+    } else if (const auto* ke = e->getAs<KeyboardEvent>();
+               ke && (!ke->hasBeenUsed()) && (ke->state() == KeyState::Release)) {
+        interactionStop();
     }
 }
 

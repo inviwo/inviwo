@@ -36,9 +36,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Animation;
 class AnimationController;
@@ -56,13 +54,11 @@ public:
 class IVW_MODULE_ANIMATION_API AnimationControllerObservable
     : public Observable<AnimationControllerObserver> {
 protected:
-    void notifyStateChanged(AnimationController* controller, AnimationState prevState,
+    void notifyStateChanged(AnimationController* controller, AnimationState oldState,
                             AnimationState newState);
     void notifyTimeChanged(AnimationController* controller, Seconds oldTime, Seconds newTime);
     void notifyAnimationChanged(AnimationController* controller, Animation* oldAnimation,
                                 Animation* newAnimation);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

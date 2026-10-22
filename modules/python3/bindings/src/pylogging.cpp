@@ -45,6 +45,7 @@
 
 namespace inviwo {
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/attributes>
 // Allow implementing a Logger in Python by overriding the virtual log function
@@ -113,7 +114,9 @@ void exposeLogging(pybind11::module& m) {
             py::arg("logger"))
         .def(
             "unregisterLogger",
-            [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->unregisterLogger(logger); },
+            [](LogCentral* lc, std::shared_ptr<Logger> logger) {
+                lc->unregisterLogger(std::move(logger));
+            },
             py::arg("logger"))
         .def_property("verbosity", &LogCentral::getVerbosity, &LogCentral::setVerbosity)
         .def_property("logStacktrace", &LogCentral::getLogStacktrace, &LogCentral::setLogStacktrace)

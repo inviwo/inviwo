@@ -89,7 +89,7 @@ void writeDatVolume(const Volume& data, const std::filesystem::path& filePath,
     auto fileName = filePath.stem().string();
     // Write the .dat file content
     std::stringstream ss;
-    const VolumeRAM* vr = data.getRepresentation<VolumeRAM>();
+    const auto* vr = data.getRepresentation<VolumeRAM>();
     const glm::dmat3 basis = glm::transpose(data.getBasis());
     const glm::dvec3 offset = data.getOffset();
     const glm::dmat4 wtm = glm::transpose(data.getWorldMatrix());

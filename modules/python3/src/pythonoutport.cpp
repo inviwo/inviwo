@@ -69,7 +69,7 @@ pybind11::object PythonOutport::getData() const { return data_; }
 
 void PythonOutport::clear() { data_ = pybind11::object{}; }
 
-void PythonOutport::setData(pybind11::object data) { data_ = data; }
+void PythonOutport::setData(pybind11::object data) { data_ = std::move(data); }
 
 bool PythonOutport::hasData() const { return !data_.is_none(); }
 

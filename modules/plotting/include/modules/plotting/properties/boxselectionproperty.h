@@ -42,9 +42,7 @@
 #include <string>
 #include <string_view>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 /**
  * @brief Settings for rectangle selection/filtering
  */
@@ -71,6 +69,4 @@ public:
     void update(BoxSelectionData& data) const;
 };
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

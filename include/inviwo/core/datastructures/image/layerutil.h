@@ -34,9 +34,7 @@
 
 #include <limits>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename T>
 glm::vec<4, T> applySwizzleMask(const glm::vec<4, T>& value, const SwizzleMask& swizzlemask) {
@@ -54,13 +52,11 @@ glm::vec<4, T> applySwizzleMask(const glm::vec<4, T>& value, const SwizzleMask& 
         }
     };
 
-    glm::vec<4, T> result;
+    glm::vec<4, T> result{};
     for (size_t i = 0; i < 4; ++i) {
         result[i] = swizzle(swizzlemask[i]);
     }
     return result;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

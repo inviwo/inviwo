@@ -46,17 +46,15 @@
 #include <windows.h>
 #else
 #include <sys/ioctl.h>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #endif
 
 namespace inviwo {
 
 ConsoleLogger::ConsoleLogger() : useColor(true) {
-    if (const auto* term = std::getenv("TERM")) {
-        if (std::string_view{term} == "dumb") {
-            useColor = false;
-        }
+    if (const auto* term = std::getenv("TERM"); term && (std::string_view{term} == "dumb")) {
+        useColor = false;
     }
 }
 ConsoleLogger::~ConsoleLogger() = default;
@@ -104,7 +102,7 @@ void ConsoleLogger::log(std::string_view logSource, [[maybe_unused]] LogLevel lo
         }
     }
 
-    struct winsize w;
+    struct winsize w{};
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     const auto width = w.ws_col;
 #endif

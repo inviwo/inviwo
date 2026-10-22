@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/threadutil.h>
 
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <algorithm>
@@ -109,10 +110,9 @@ void TimerThread::TimerLoop() {
         if (sort_) {
             // Sort could be done at insert
             // but probably this thread has time to do
-            std::sort(timers_.begin(), timers_.end(),
-                      [](const TimerInfo& ti1, const TimerInfo& ti2) {
-                          return ti1.timePoint_ > ti2.timePoint_;
-                      });
+            std::ranges::sort(timers_, [](const TimerInfo& ti1, const TimerInfo& ti2) {
+                return ti1.timePoint_ > ti2.timePoint_;
+            });
             sort_ = false;
         }
 
@@ -227,7 +227,9 @@ void Delay::cancel() { controlblock_.reset(); }
 void Delay::setDefaultDelay(Milliseconds delay) { defaultDelay_ = delay; }
 auto Delay::getDefaultDelay() const -> Milliseconds { return defaultDelay_; }
 
-void Delay::setDefaultCallback(std::function<void()> callback) { defaultCallback_ = callback; }
+void Delay::setDefaultCallback(std::function<void()> callback) {
+    defaultCallback_ = std::move(callback);
+}
 std::function<void()> Delay::getDefaultCallback() const { return defaultCallback_; }
 
 namespace util {

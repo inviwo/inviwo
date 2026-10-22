@@ -57,7 +57,7 @@ public:
     static constexpr std::string_view classIdentifier{"OrthographicCamera"};
 
     virtual void updateFrom(const Camera& source) override;
-    virtual void configureProperties(CameraProperty& cameraProperty, bool attach) override;
+    virtual void configureProperties(CameraProperty& cp, bool attach) override;
 
     double getWidth() const;
     void setWidth(double width);

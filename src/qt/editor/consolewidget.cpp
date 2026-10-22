@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
@@ -210,9 +211,9 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     const auto cols = tableView_->horizontalHeader()->count();
 
-    auto viewColGroup = new QMenu(this);
+    auto* viewColGroup = new QMenu(this);
     for (int i = 0; i < cols; ++i) {
-        auto viewCol =
+        auto* viewCol =
             new QAction(model_.getName(static_cast<LogTableModelEntry::ColumnID>(i)), this);
         viewCol->setCheckable(true);
         viewCol->setChecked(!tableView_->isColumnHidden(i));
@@ -226,7 +227,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         tableView_->horizontalHeader()->addAction(viewCol);
         viewColGroup->addAction(viewCol);
     }
-    auto visibleColumnsAction = new QAction("Visible Columns", this);
+    auto* visibleColumnsAction = new QAction("Visible Columns", this);
     visibleColumnsAction->setMenu(viewColGroup);
 
     tableView_->horizontalHeader()->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -242,7 +243,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setDefaultSectionSize(1);
     tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
-    QHBoxLayout* statusBar = new QHBoxLayout();
+    auto* statusBar = new QHBoxLayout();
     statusBar->setObjectName("StatusBar");
 
     const auto makeIcon = [](const QString& file, bool checkable = false) {
@@ -261,8 +262,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     const auto makeToolButton = [this, statusBar, makeIcon](const QString& label,
                                                             const QString& file,
                                                             bool checkable = true) {
-        auto button = new QToolButton(this);
-        auto action = new QAction(makeIcon(file, checkable), label, this);
+        auto* button = new QToolButton(this);
+        auto* action = new QAction(makeIcon(file, checkable), label, this);
         action->setCheckable(checkable);
         if (checkable) action->setChecked(true);
 
@@ -276,7 +277,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         applyRowHeights(0, tableView_->verticalHeader()->count());
     };
 
-    auto levelGroup = new QMenu(this);
+    auto* levelGroup = new QMenu(this);
     for (auto& level : levels) {
         level.action =
             makeToolButton(QString::fromStdString(level.name), QString::fromStdString(level.icon));
@@ -286,10 +287,10 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         levelGroup->addAction(level.action);
         connect(level.action, &QAction::toggled, levelCallback);
     }
-    auto viewAction = new QAction("Log Level", this);
+    auto* viewAction = new QAction("Log Level", this);
     viewAction->setMenu(levelGroup);
 
-    auto clearButton = new QToolButton(this);
+    auto* clearButton = new QToolButton(this);
     clearButton->setDefaultAction(clearAction_);
     statusBar->addWidget(clearButton);
     statusBar->addSpacing(5);
@@ -298,7 +299,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     threadPoolInfo_ = new QLabel("Pool: 0 Queued Jobs / 0 Threads", this);
     statusBar->addWidget(threadPoolInfo_);
-    auto timer = new QTimer(this);
+    auto* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, threadPoolInfo_, [this]() {
         const auto threads = mainWindow_->getInviwoApplication()->getThreadPool().getSize();
         const auto queueSize = mainWindow_->getInviwoApplication()->getThreadPool().getQueueSize();
@@ -316,7 +317,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addWidget(filterPattern_, 1);
     statusBar->addSpacing(5);
 
-    auto clearFilter = new QAction(makeIcon("find-clear"), "C&lear Filter", this);
+    auto* clearFilter = new QAction(makeIcon("find-clear"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
 
     connect(filterPattern_, &QLineEdit::textChanged, [this, clearFilter](const QString& text) {
@@ -331,7 +332,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         applyRowHeights(0, tableView_->verticalHeader()->count());
     });
 
-    auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
+    auto* filterAction = new QAction(makeIcon("find"), "&Filter", this);
     filterAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
@@ -341,12 +342,12 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     // add actions for context menu
     const auto createSeparator = [this]() {
-        auto separator = new QAction(this);
+        auto* separator = new QAction(this);
         separator->setSeparator(true);
         return separator;
     };
 
-    auto copyAction = new QAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"), this);
+    auto* copyAction = new QAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"), this);
     copyAction->setEnabled(true);
     connect(copyAction, &QAction::triggered, this,
             [this]() { copy(tableView_->selectionModel()); });
@@ -361,14 +362,14 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->addAction(filterAction);
     tableView_->addAction(clearFilter);
 
-    QVBoxLayout* layout = new QVBoxLayout();
+    auto* layout = new QVBoxLayout();
     layout->addWidget(tableView_);
     layout->addLayout(statusBar);
 
     const auto space = utilqt::emToPx(this, 3 / 9.0);
     layout->setContentsMargins(space, 0, 0, space);
 
-    QWidget* w = new QWidget();
+    auto* w = new QWidget();
     w->setLayout(layout);
     setWidget(w);
 
@@ -484,7 +485,7 @@ void ConsoleWidget::clear() {
 void ConsoleWidget::updateIndicators(LogLevel level) {
     auto it = util::find_if(levels, [&](const auto& l) { return l.level == level; });
     if (it != levels.end()) {
-        it->label->setText(fmt::to_string(++(it->count)).c_str());
+        it->label->setText(fmt::to_string(++it->count).c_str());
     }
 }
 
@@ -704,7 +705,7 @@ QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int
         case Qt::Horizontal: {
             switch (role) {
                 case Qt::DisplayRole:
-                    return section < static_cast<int>(LogTableModelEntry::size())
+                    return std::cmp_less(section, LogTableModelEntry::size())
                                ? getName(static_cast<LogTableModelEntry::ColumnID>(section))
                                : QVariant{};
                 case Qt::TextAlignmentRole: return Qt::AlignLeft;
@@ -735,7 +736,7 @@ Qt::ItemFlags LogTableModel::flags(const QModelIndex& index) const {
     return flags;
 }
 
-QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) const {
+QString LogTableModel::getName(LogTableModelEntry::ColumnID ind) {
     switch (ind) {
         case LogTableModelEntry::ColumnID::Date:     return {"Date"};
         case LogTableModelEntry::ColumnID::Time:     return {"Time"};

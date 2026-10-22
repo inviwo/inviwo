@@ -53,9 +53,9 @@ public:
                    GLenum filtering, const SwizzleMask& swizzleMask = swizzlemasks::rgba,
                    const std::array<GLenum, 2>& wrapping = {GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE},
                    GLint level = 0);
-    Texture2DArray(const Texture2DArray& other);
+    Texture2DArray(const Texture2DArray& rhs);
     Texture2DArray(Texture2DArray&& other);
-    Texture2DArray& operator=(const Texture2DArray& other);
+    Texture2DArray& operator=(const Texture2DArray& rhs);
     Texture2DArray& operator=(Texture2DArray&& other);
     virtual ~Texture2DArray();
 

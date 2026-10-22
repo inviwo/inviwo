@@ -53,9 +53,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PersistenceDiagramPlotProcessor::processorInfo_{
@@ -136,7 +134,7 @@ void PersistenceDiagramPlotProcessor::process() {
         const auto dfSize = dataframe->getNumberOfRows();
 
         const auto iCol = dataframe->getIndexColumn();
-        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         const auto filteredIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
@@ -144,8 +142,9 @@ void PersistenceDiagramPlotProcessor::process() {
         vec.reserve(dfSize - filteredIndicies.size());
 
         const auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
-        std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
+        std::ranges::copy_if(seq, std::back_inserter(vec), [&](const auto& id) {
+            return !brushingPort_.isFiltered(indexCol[id]);
+        });
 
         if (backgroundPort_.hasData()) {
             persistenceDiagramPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(),
@@ -175,10 +174,10 @@ void PersistenceDiagramPlotProcessor::onYAxisChange() {
     if (!dataFrame_.hasData()) return;
     const auto data = dataFrame_.getData();
 
-    if (death_.size() > 0 && death_.get() > 0) {
+    if (!death_.empty() && death_.get() > 0) {
         persistenceDiagramPlot_.setYAxis(data->getColumn(death_.get()),
                                          PersistenceDiagramPlotGL::Type::Death);
-    } else if (persistence_.size() > 0 && persistence_.get() > 0) {
+    } else if (!persistence_.empty() && persistence_.get() > 0) {
         persistenceDiagramPlot_.setYAxis(data->getColumn(persistence_.get()),
                                          PersistenceDiagramPlotGL::Type::Persistence);
     } else {
@@ -198,6 +197,4 @@ void PersistenceDiagramPlotProcessor::onColorChange() {
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

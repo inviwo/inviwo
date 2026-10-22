@@ -71,7 +71,7 @@ public:
 };
 
 template <typename T>
-class Transformer<T, typename std::enable_if<util::is_floating_point<T>::value>::type> {
+class Transformer<T, std::enable_if_t<util::is_floating_point<T>::value>> {
 public:
     static T sliderToValue(MinMaxProperty<T>* p, int val) {
         return (static_cast<T>(val) / steps()) * (p->getRangeMax() - p->getRangeMin()) +
@@ -135,7 +135,7 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property) {
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(label_);
 
@@ -145,8 +145,8 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     setFocusPolicy(min_->focusPolicy());
     setFocusProxy(min_);
 
-    QHBoxLayout* hSliderLayout = new QHBoxLayout();
-    QWidget* sliderWidget = new QWidget();
+    auto* hSliderLayout = new QHBoxLayout();
+    auto* sliderWidget = new QWidget();
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 

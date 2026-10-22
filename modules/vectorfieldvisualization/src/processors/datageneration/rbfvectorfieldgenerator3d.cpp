@@ -131,7 +131,7 @@ RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-RBFVectorFieldGenerator3D::~RBFVectorFieldGenerator3D() {}
+RBFVectorFieldGenerator3D::~RBFVectorFieldGenerator3D() = default;
 
 void RBFVectorFieldGenerator3D::process() {
     if (useSameSeed_.get()) {
@@ -142,7 +142,7 @@ void RBFVectorFieldGenerator3D::process() {
     const vec3 offset = vec3(-1);
 
     std::vector<std::pair<dvec3, dvec3>> samples(seeds_.get());
-    std::generate(samples.begin(), samples.end(), [&]() {
+    std::ranges::generate(samples, [&]() {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         const auto z = x_(mt_);
@@ -164,8 +164,12 @@ void RBFVectorFieldGenerator3D::process() {
     }
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(seeds_.get(), seeds_.get());
-    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get()), by(seeds_.get()), bz(seeds_.get());
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get()), xz(seeds_.get());
+    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd by(seeds_.get());
+    Eigen::VectorXd bz(seeds_.get());
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd xy(seeds_.get());
+    Eigen::VectorXd xz(seeds_.get());
 
     int row = 0;
     for (const auto& a : samples) {
@@ -193,7 +197,7 @@ void RBFVectorFieldGenerator3D::process() {
     volume->setBasis(basis);
     volume->setOffset(offset);
 
-    auto data = static_cast<vec3*>(volume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto* data = static_cast<vec3*>(volume->getEditableRepresentation<VolumeRAM>()->getData());
 
     int i = 0;
     for (size_t z = 0; z < size_.get().z; z++) {

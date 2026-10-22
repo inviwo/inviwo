@@ -55,9 +55,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace utilgl {
+namespace inviwo::utilgl {
 
 void setShaderUniforms(Shader& shader, const Volume& volume, std::string_view samplerID) {
     const auto& ct = volume.getCoordinateTransformer();
@@ -127,6 +125,4 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Volume
     cont.push_back(std::move(unit));
 }
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl

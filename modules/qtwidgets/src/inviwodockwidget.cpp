@@ -50,7 +50,8 @@ class QShowEvent;
 
 namespace inviwo {
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget(title, parent) {
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
+    : QDockWidget(title, parent), dockWidgetTitleBar_(new InviwoDockWidgetTitleBar(this)) {
 
     setObjectName(title);
 #ifdef __APPLE__
@@ -58,7 +59,6 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent) : QDockWidget
 #endif
 
     // adding custom title bar to dock widget
-    dockWidgetTitleBar_ = new InviwoDockWidgetTitleBar(this);
     setTitleBarWidget(dockWidgetTitleBar_);
 
     QObject::connect(dockWidgetTitleBar_, &InviwoDockWidgetTitleBar::stickyFlagChanged, this,
@@ -99,13 +99,13 @@ void InviwoDockWidget::setContents(QLayout* layout) {
         delete oldWidget;
     }
 
-    QWidget* centralWidget = new QWidget();
+    auto* centralWidget = new QWidget();
     centralWidget->setLayout(layout);
     setWidget(centralWidget);
 }
 
 void InviwoDockWidget::getState(UnorderedStringMap<QVariant>& state) const {
-    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+    state.insert_range(std::to_array<UnorderedStringMap<QVariant>::value_type>({
         {"sticky", isSticky()},
         {"floating", isFloating()},
         {"pos", pos()},

@@ -64,9 +64,9 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool 
     , minSeparation_(0)
     , formatTooltip_{[](int /*handle*/, int pos) { return fmt::to_string(pos); }} {
 
-    QFrame* left = new QFrame(this);
-    QFrame* middle = new QFrame(this);
-    QFrame* right = new QFrame(this);
+    auto* left = new QFrame(this);
+    auto* middle = new QFrame(this);
+    auto* right = new QFrame(this);
 
     addWidget(left);
     addWidget(middle);
@@ -125,9 +125,7 @@ void RangeSliderQt::setMinValue(int minVal) {
     if (value_.x != minVal) {
         value_.x = minVal;
 
-        if (value_.x > range_.y - minSeparation_) {
-            value_.x = range_.y - minSeparation_;
-        }
+        value_.x = std::min(value_.x, range_.y - minSeparation_);
 
         if (value_.y - value_.x < minSeparation_) {
             value_.y = value_.x + minSeparation_;
@@ -140,9 +138,7 @@ void RangeSliderQt::setMinValue(int minVal) {
 void RangeSliderQt::setMaxValue(int maxVal) {
     if (value_.y != maxVal) {
         value_.y = maxVal;
-        if (value_.y < range_.x + minSeparation_) {
-            value_.y = range_.x + minSeparation_;
-        }
+        value_.y = std::max(value_.y, range_.x + minSeparation_);
 
         if (value_.y - value_.x < minSeparation_) {
             value_.x = value_.y - minSeparation_;

@@ -55,6 +55,7 @@
 #include <unordered_set>
 
 #include <glm/fwd.hpp>
+#include <utility>
 #include <fmt/base.h>
 
 namespace inviwo {
@@ -65,7 +66,7 @@ ColormapProperty::ColormapProperty(std::string_view identifier, std::string_view
                                    ColormapType selectedCategory,
                                    colorbrewer::Family selectedFamily, size_t numColors,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , type("type", "Type",
            {{"continous", "Continuous", ColormapType::Continuous},
             {"categorical", "Categorical", ColormapType::Categorical}})
@@ -92,10 +93,12 @@ ColormapProperty::ColormapProperty(std::string_view identifier, std::string_view
     colormap.setCurrentStateAsDefault();
 
     diverging.visibilityDependsOn(
-        type, [](auto prop) -> bool { return prop == ColormapType::Continuous; });
-    divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
+        type, [](const auto& prop) -> bool { return prop == ColormapType::Continuous; });
+    divergenceMidPoint.visibilityDependsOn(diverging,
+                                           [](const auto& prop) -> bool { return prop; });
     // Always discrete for categorical data
-    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continuous; });
+    discrete.visibilityDependsOn(type,
+                                 [](const auto& prop) { return prop == ColormapType::Continuous; });
 
     addProperty(type);
     addProperty(colormap);
@@ -125,10 +128,12 @@ ColormapProperty::ColormapProperty(const ColormapProperty& rhs)
     });
 
     diverging.visibilityDependsOn(
-        type, [](auto prop) -> bool { return prop == ColormapType::Continuous; });
-    divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
+        type, [](const auto& prop) -> bool { return prop == ColormapType::Continuous; });
+    divergenceMidPoint.visibilityDependsOn(diverging,
+                                           [](const auto& prop) -> bool { return prop; });
     // Always discrete for categorical data
-    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continuous; });
+    discrete.visibilityDependsOn(type,
+                                 [](const auto& prop) { return prop == ColormapType::Continuous; });
 
     addProperty(type);
     addProperty(colormap);

@@ -43,9 +43,7 @@ class QRectF;
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Keyframe;
 
@@ -99,6 +97,4 @@ private:
     KeyframeWidgetQt* keyframe_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

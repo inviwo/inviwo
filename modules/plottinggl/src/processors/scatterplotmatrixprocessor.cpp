@@ -134,7 +134,7 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     , mouseEvent_(
           "mouseEvent", "Mouse Event",
           [&](Event* e) {
-              if (auto me = dynamic_cast<MouseEvent*>(e)) {
+              if (auto* me = dynamic_cast<MouseEvent*>(e)) {
                   auto p = ivec2(me->posNormalized() * dvec2(static_cast<double>(numParams_)));
                   if (p.x == p.y) {
                       color_.setSelectedValue(visibleIDToColumnID_[p.x]);
@@ -163,7 +163,8 @@ ScatterPlotMatrixProcessor::ScatterPlotMatrixProcessor()
     color_.onChange([&]() {
         if (dataFrame_.hasData()) {
             const auto index = color_.getSelectedValue();
-            auto colorCol = index >= 0 ? dataFrame_.getData()->getColumn(index).get() : nullptr;
+            const auto* colorCol =
+                index >= 0 ? dataFrame_.getData()->getColumn(index).get() : nullptr;
             for (auto& p : plots_) {
                 p->setColorData(colorCol);
             }
@@ -217,7 +218,8 @@ void ScatterPlotMatrixProcessor::process() {
 
         indexToRowMap_ = [&]() {
             const auto iCol = dataFrame_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            const auto& indexCol =
+                iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
             indexToRow.reserve(indexCol.size());
             for (auto&& [row, index] : util::enumerate(indexCol)) {
@@ -296,7 +298,7 @@ void ScatterPlotMatrixProcessor::process() {
 void ScatterPlotMatrixProcessor::createScatterPlots() {
     numParams_ = 0;
     if (outport_.hasData()) {
-        auto& dataFrame = *dataFrame_.getData();
+        const auto& dataFrame = *dataFrame_.getData();
 
         const auto colorCol = [&]() -> std::shared_ptr<const Column> {
             const auto idx = color_.get();
@@ -338,7 +340,7 @@ void ScatterPlotMatrixProcessor::createStatsLabels() {
         textRenderer_.setFont(fontFaceStats_.get());
         textRenderer_.setFontSize(statsFontSize_.get());
 
-        auto& dataFrame = *dataFrame_.getData();
+        const auto& dataFrame = *dataFrame_.getData();
         for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
             if (!isIncluded(*x)) continue;
             for (auto y = x + 1; y != dataFrame.end(); ++y) {
@@ -373,10 +375,10 @@ void ScatterPlotMatrixProcessor::createLabels() {
         textRenderer_.setFont(fontFace_.get());
         textRenderer_.setFontSize(fontSize_.get());
 
-        auto& dataFrame = *dataFrame_.getData();
-        for (auto x = dataFrame.begin(); x != dataFrame.end(); ++x) {
-            if (!isIncluded(*x)) continue;
-            const auto tex = util::createTextTexture(textRenderer_, (*x)->getHeader(), fontColor_);
+        const auto& dataFrame = *dataFrame_.getData();
+        for (const auto& x : dataFrame) {
+            if (!isIncluded(x)) continue;
+            const auto tex = util::createTextTexture(textRenderer_, x->getHeader(), fontColor_);
             labelsTextures_.push_back(tex);
         }
     }
@@ -386,15 +388,15 @@ bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
     const std::string displayName = col->getHeader();
     const std::string identifier = util::stripIdentifier(displayName);
 
-    auto prop = parameters_.getPropertyByIdentifier(identifier);
+    auto* prop = parameters_.getPropertyByIdentifier(identifier);
     if (prop) {
-        if (auto bp = dynamic_cast<BoolProperty*>(prop)) {
+        if (auto* bp = dynamic_cast<BoolProperty*>(prop)) {
             bp->setSerializationMode(PropertySerializationMode::All);
             return bp->get();
         }
         throw inviwo::Exception("Not a bool property");
     } else {
-        auto newProp = new BoolProperty(identifier, displayName, true);
+        auto* newProp = new BoolProperty(identifier, displayName, true);
         newProp->setSerializationMode(PropertySerializationMode::All);
         parameters_.addProperty(newProp);
         return true;

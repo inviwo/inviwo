@@ -123,15 +123,13 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         }
 
         const auto pickedId = it->second;
-        if (touchStates_.find(pickedId) == touchStates_.end()) {
+        if (!touchStates_.contains(pickedId)) {
             touchStates_[pickedId] = PickingControllerTouchState{PickingManager::getPtr()};
         }
         pickingIdToTouchPoints[it->second].push_back(point);
     }
 
-    for (const auto& item : pickingIdToTouchPoints) {
-        const auto& startPickingId = item.first;
-        const auto& points = item.second;
+    for (const auto& [startPickingId, points] : pickingIdToTouchPoints) {
         TouchEvent te(points, e->getDevice(), e->modifiers());
         // Heuristic for obtaining picked object among the touch points:
         // Select first non-background object (points are generally sorted in the order they where
@@ -186,8 +184,6 @@ size_t PickingController::pickId(const dvec2& coord) {
     return PickingManager::VoidId;
 }
 
-bool PickingController::pickingEnabled() const {
-    return PickingManager::getPtr()->pickingEnabled();
-}
+bool PickingController::pickingEnabled() { return PickingManager::getPtr()->pickingEnabled(); }
 
 }  // namespace inviwo

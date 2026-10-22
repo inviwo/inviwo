@@ -89,9 +89,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view PersistenceDiagramPlotGL::Properties::getClassIdentifier() const {
     return classIdentifier;
@@ -112,7 +110,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
     , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
     , tf_("transferFunction", "Transfer Function",
-          TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
+          TransferFunction({{.pos = 0.0, .color = vec4(1.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}))
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
@@ -248,10 +246,10 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         auto clipped = algorithm::clipLineCohenSutherland(vec2(minmaxX_.x), vec2(minmaxX_.y),
                                                           rectMin, rectMax);
         if (std::get<0>(clipped)) {
-            const uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+            const auto indexOffset = static_cast<uint32_t>(vertices.size());
 
-            vertices.push_back({std::get<1>(clipped), properties_.pointColor_.get(), 0});
-            vertices.push_back({std::get<2>(clipped), properties_.pointColor_.get(), 0});
+            vertices.emplace_back(std::get<1>(clipped), properties_.pointColor_.get(), 0);
+            vertices.emplace_back(std::get<2>(clipped), properties_.pointColor_.get(), 0);
 
             indicesDiag.push_back(indexOffset);
             indicesDiag.push_back(indexOffset + 1);
@@ -297,17 +295,17 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
 
     {
         // vertical lines
-        uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+        auto indexOffset = static_cast<uint32_t>(vertices.size());
         for (const auto& index : selectedIndices) {
             const auto& point = xyPairs[index];
 
             auto clipped = algorithm::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                               rectMin, rectMax);
             if (std::get<0>(clipped)) {
-                vertices.push_back(
-                    {std::get<1>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
-                vertices.push_back(
-                    {std::get<2>(clipped), properties_.lineColor_.get(), getGlobalPickId(index)});
+                vertices.emplace_back(std::get<1>(clipped), properties_.lineColor_.get(),
+                                      getGlobalPickId(index));
+                vertices.emplace_back(std::get<2>(clipped), properties_.lineColor_.get(),
+                                      getGlobalPickId(index));
 
                 indicesLines.push_back(indexOffset++);
                 indicesLines.push_back(indexOffset++);
@@ -320,7 +318,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
         const auto normalizeValue = [range = minmaxC_](double value) {
             return (value - range.x) / (range.y - range.x);
         };
-        auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
+        const auto* colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
 
         const auto getColor =
             [this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
@@ -336,18 +334,18 @@ void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, b
                 }
             };
 
-        uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
+        auto indexOffset = static_cast<uint32_t>(vertices.size());
         for (const auto& index : selectedIndices) {
             const vec2 pLower(xyPairs[index].x);
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
 
             const vec4 color = getColor(index);
             if (algorithm::insideRect(pLower, rectMin, rectMax)) {
-                vertices.push_back({pLower, color, getGlobalPickId(index)});
+                vertices.emplace_back(pLower, color, getGlobalPickId(index));
                 indicesPoints.push_back(indexOffset++);
             }
             if (algorithm::insideRect(pUpper, rectMin, rectMax)) {
-                vertices.push_back({pUpper, color, getGlobalPickId(index)});
+                vertices.emplace_back(pUpper, color, getGlobalPickId(index));
                 indicesPoints.push_back(indexOffset++);
             }
         }
@@ -490,7 +488,7 @@ void PersistenceDiagramPlotGL::setColorData(std::shared_ptr<const BufferBase> bu
 
 void PersistenceDiagramPlotGL::setIndexColumn(
     std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
-    indexColumn_ = indexcol;
+    indexColumn_ = std::move(indexcol);
 
     if (indexColumn_) {
         picking_.resize(indexColumn_->getSize());
@@ -535,8 +533,9 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
         if (!indexColumn_) {
             return std::nullopt;
         }
-        auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-        const auto it = util::find(indexCol, static_cast<uint32_t>(id));
+        const auto& indexCol =
+            indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        const auto it = util::find(indexCol, id);
         if (it != indexCol.end()) {
             return *it;
         } else {
@@ -544,7 +543,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
         }
     };
 
-    const uint32_t id = static_cast<uint32_t>(p->getPickedId());
+    const auto id = static_cast<uint32_t>(p->getPickedId());
     auto rowIndex = idToDataFrameIndex(id);
 
     // Show tooltip for current item
@@ -586,6 +585,4 @@ uint32_t PersistenceDiagramPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

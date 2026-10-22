@@ -31,23 +31,26 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <algorithm>
 #include <glm/gtx/component_wise.hpp>
+#include <utility>
 
 namespace inviwo {
 
-ImageCache::ImageCache(std::shared_ptr<const Image> master) : valid_(true), master_(master) {}
+ImageCache::ImageCache(std::shared_ptr<const Image> master)
+    : valid_(true), master_(std::move(master)) {}
 
 void ImageCache::setMaster(std::shared_ptr<const Image> master) {
     // Clear cache if format changes.
     if (master_ && master && master_->getDataFormat() != master->getDataFormat()) {
         cache_.clear();
     }
-    master_ = master;
+    master_ = std::move(master);
     valid_ = false;
 }
 
 std::shared_ptr<const Image> ImageCache::getImage(const size2_t dimensions) const {
-    if (!master_ || (glm::compMul(dimensions) == 0)) return std::shared_ptr<const Image>();
+    if (!master_ || (glm::compMul(dimensions) == 0)) return {};
 
     if (master_->getDimensions() == dimensions) return master_;
 
@@ -86,7 +89,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
     std::vector<std::shared_ptr<Image>> unusedImages;
 
     for (auto it = cache_.begin(); it != cache_.end();) {
-        const auto dim = std::find(dimensions.begin(), dimensions.end(), it->first);
+        const auto dim = std::ranges::find(dimensions, it->first);
         if (dim == dimensions.end() || it->first == master_->getDimensions()) {
             unusedImages.push_back(std::move(it->second));
             it = cache_.erase(it);
@@ -117,9 +120,7 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
 
 void ImageCache::setInvalid() const { valid_ = false; }
 
-bool ImageCache::hasImage(const size2_t dimensions) {
-    return cache_.find(dimensions) != cache_.end();
-}
+bool ImageCache::hasImage(const size2_t dimensions) { return cache_.contains(dimensions); }
 
 void ImageCache::addImage(std::shared_ptr<Image> image) { cache_[image->getDimensions()] = image; }
 
@@ -130,22 +131,21 @@ std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
         cache_.erase(it);
         return ptr;
     } else {
-        return std::shared_ptr<Image>();
+        return {};
     }
 }
 
 std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& dimensions) {
-    const auto it =
-        std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
-            return !util::contains(dimensions, elem.first);
-        });
+    const auto it = std::ranges::find_if(cache_, [&dimensions](const Cache::value_type& elem) {
+        return !util::contains(dimensions, elem.first);
+    });
 
     if (it != cache_.end()) {
         auto ptr = it->second;
         cache_.erase(it);
         return ptr;
     } else {
-        return std::shared_ptr<Image>();
+        return {};
     }
 }
 

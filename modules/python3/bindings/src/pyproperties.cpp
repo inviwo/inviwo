@@ -71,6 +71,8 @@
 #include <fmt/format.h>
 #include <fmt/std.h>
 
+#include <utility>
+
 namespace inviwo {
 
 void exposeProperties(pybind11::module& m) {
@@ -187,11 +189,11 @@ void exposeProperties(pybind11::module& m) {
              [](Property* p, std::function<void()> func) { p->onChange(std::move(func)); })
         .def("visibilityDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
-                 p->visibilityDependsOn(*other, func);
+                 p->visibilityDependsOn(*other, std::move(func));
              })
         .def("readonlyDependsOn",
              [](Property* p, Property* other, std::function<bool(Property&)> func) {
-                 p->readonlyDependsOn(*other, func);
+                 p->readonlyDependsOn(*other, std::move(func));
              })
         .def("getHelp", static_cast<Document& (Property::*)()>(&Property::getHelp))
         .def("getDescription", &Property::getDescription)
@@ -204,11 +206,12 @@ void exposeProperties(pybind11::module& m) {
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new TransferFunctionProperty(identifier, displayName, std::move(help),
                                                      value, volumeInport, invalidationLevel,
-                                                     semantics);
+                                                     std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"),
-             py::arg("value") = TransferFunction(
-                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+             py::arg("value") =
+                 TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                   {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
@@ -216,11 +219,12 @@ void exposeProperties(pybind11::module& m) {
                          const TransferFunction& value, VolumeInport* volumeInport,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new TransferFunctionProperty(identifier, displayName, value, volumeInport,
-                                                     invalidationLevel, semantics);
+                                                     invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"),
-             py::arg("value") = TransferFunction(
-                 {{0.0, vec4(0.0f, 0.0f, 0.0f, 0.0f)}, {1.0, vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
+             py::arg("value") =
+                 TransferFunction({{.pos = 0.0, .color = vec4(0.0f, 0.0f, 0.0f, 0.0f)},
+                                   {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
              py::arg("inport") = nullptr,
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
              py::arg("semantics") = PropertySemantics::Default)
@@ -260,7 +264,7 @@ void exposeProperties(pybind11::module& m) {
             std::string str;
             fmt::format_to(std::back_inserter(str), "<TransferFunctionProperty: {} TF points",
                            tp.get().size());
-            for (auto& p : tp.get()) {
+            for (const auto& p : tp.get()) {
                 fmt::format_to(std::back_inserter(str), "\n    {}, {}", p.getPosition(),
                                color::rgba2hex(p.getColor()));
             }
@@ -318,7 +322,7 @@ void exposeProperties(pybind11::module& m) {
         .def("__repr__", [](const IsoValueProperty& ivp) {
             std::ostringstream oss;
             oss << "<IsoValueProperty:  " << ivp.get().size() << " isovalues";
-            for (auto& p : ivp.get()) {
+            for (const auto& p : ivp.get()) {
                 oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
@@ -331,7 +335,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new StringProperty(identifier, displayName, std::move(help), value,
-                                           invalidationLevel, semantics);
+                                           invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help"), py::arg("value") = "",
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -340,7 +344,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, InvalidationLevel invalidationLevel,
                          PropertySemantics semantics) {
                  return new StringProperty(identifier, displayName, value, invalidationLevel,
-                                           semantics);
+                                           std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
              py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
@@ -383,7 +387,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, std::string_view contentType,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new FileProperty(identifier, displayName, std::move(help), value,
-                                         contentType, invalidationLevel, semantics);
+                                         contentType, invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("help") = Document{},
              py::arg("value") = "", py::arg("contentType") = "default",
@@ -393,7 +397,7 @@ void exposeProperties(pybind11::module& m) {
                          std::string_view value, std::string_view contentType,
                          InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                  return new FileProperty(identifier, displayName, value, contentType,
-                                         invalidationLevel, semantics);
+                                         invalidationLevel, std::move(semantics));
              }),
              py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
              py::arg("contentType") = "default",

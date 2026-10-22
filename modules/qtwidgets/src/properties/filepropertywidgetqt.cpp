@@ -63,17 +63,19 @@ namespace inviwo {
 class PropertyEditorWidget;
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
-    : PropertyWidgetQt(property), property_(property), lineEdit_{new FilePathLineEditQt(this)} {
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , lineEdit_{new FilePathLineEditQt(this)}
+    , hWidgetLayout_(new QHBoxLayout()) {
 
     setFocusPolicy(lineEdit_->focusPolicy());
     setFocusProxy(lineEdit_);
     setAcceptDrops(true);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));
-    hWidgetLayout_ = new QHBoxLayout();
 
     {
         hWidgetLayout_->setContentsMargins(0, 0, 0, 0);

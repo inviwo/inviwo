@@ -28,9 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/core/algorithm/cubeplaneintersection.h>
+#include <algorithm>
 #include <array>
 #include <algorithm>
 #include <numeric>
+#include <ranges>
 
 namespace inviwo::util {
 
@@ -79,11 +81,12 @@ void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
             dotProdVals.push_back(dotProd);
         }
 
-        std::vector<unsigned int> idx(dotProdVals.size());
-        std::iota(idx.begin(), idx.end(), 0);
+        auto idx = std::views::iota(0u, static_cast<unsigned int>(dotProdVals.size())) |
+                   std::ranges::to<std::vector>();
 
-        sort(idx.begin(), idx.end(),
-             [&dotProdVals](size_t i1, size_t i2) { return dotProdVals[i1] > dotProdVals[i2]; });
+        std::ranges::sort(idx, [&dotProdVals](size_t i1, size_t i2) {
+            return dotProdVals[i1] > dotProdVals[i2];
+        });
 
         pos.push_back(midpoint);
         for (size_t i = startIndex; i < idx.size() - 1; i++) {

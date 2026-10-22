@@ -45,7 +45,7 @@ public:
     /**
      * Creates a file observer for filename and start observing that file
      */
-    explicit SingleFileObserver(const std::filesystem::path& filename = "");
+    explicit SingleFileObserver(std::filesystem::path filename = "");
     virtual ~SingleFileObserver();
 
     void setFilename(const std::filesystem::path& filename);

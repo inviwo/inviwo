@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLayout>
@@ -46,12 +47,11 @@
 namespace inviwo {
 
 DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
-    : ProcessorWidgetQt(p), tableview_(nullptr) {
+    : ProcessorWidgetQt(p), tableview_(new DataFrameTableView(this)) {
 
     setMinimumSize(32, 32);
     QObject::setProperty("bgType", "window");
 
-    tableview_ = new DataFrameTableView(this);
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -71,7 +71,7 @@ void DataFrameTableProcessorWidget::setManager(BrushingAndLinkingManager& manage
 
 void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                                  bool categoryIndices) {
-    tableview_->setDataFrame(dataframe, categoryIndices);
+    tableview_->setDataFrame(std::move(dataframe), categoryIndices);
 }
 
 void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {

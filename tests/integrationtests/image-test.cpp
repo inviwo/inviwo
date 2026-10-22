@@ -58,12 +58,12 @@ TEST(ImageTests, ImageLoadWhite) {
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
-    ASSERT_TRUE(reader != 0);
+    ASSERT_TRUE(reader != nullptr);
     const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layerRam != 0);
+    ASSERT_TRUE(layerRam != nullptr);
 
     const auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
@@ -98,12 +98,12 @@ TEST(ImageTests, ImageLoadRGB) {
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
-    ASSERT_TRUE(reader != 0);
+    ASSERT_TRUE(reader != nullptr);
     const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layerRam != 0);
+    ASSERT_TRUE(layerRam != nullptr);
 
     const auto dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);
@@ -137,12 +137,12 @@ TEST(ImageTests, ImageLoadRange) {
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
-    ASSERT_TRUE(reader != 0);
+    ASSERT_TRUE(reader != nullptr);
     const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layerRam != 0);
+    ASSERT_TRUE(layerRam != nullptr);
 
     const uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 256);
@@ -166,12 +166,12 @@ TEST(ImageTests, ImageResize) {
     auto reader =
         InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(
             imgFile);
-    ASSERT_TRUE(reader != 0);
+    ASSERT_TRUE(reader != nullptr);
     const auto layer = reader->readData(imgFile);
 
     Image img(layer);
     auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layerRam != 0);
+    ASSERT_TRUE(layerRam != nullptr);
 
     uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x, 2);

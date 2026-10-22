@@ -35,9 +35,7 @@
 #include <chrono>
 #include <iterator>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class KeyframeSequence;
 
 namespace detail {
@@ -76,7 +74,7 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
                             AnimationState state) -> AnimationTimeState {
         const auto direction =
             from <= to ? PlaybackDirection::Forward : PlaybackDirection::Backward;
-        AnimationTimeState res{to, state};
+        AnimationTimeState res{.time = to, .state = state};
         while (begin != end && res.state != AnimationState::Paused) {
             res = (*begin)(from, to, state);
             if ((direction == PlaybackDirection::Forward && res.time <= (*begin)) ||
@@ -108,6 +106,4 @@ AnimationTimeState animateRange(Iterator begin, Iterator end, Seconds from, Seco
     }
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

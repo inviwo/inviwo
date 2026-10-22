@@ -69,10 +69,10 @@ public:
     explicit TFPrimitive(const TFPrimitiveData& data);
     TFPrimitive(const TFPrimitive& rhs);
     TFPrimitive(TFPrimitive&& rhs) noexcept;
-    TFPrimitive& operator=(const TFPrimitive& that);
-    TFPrimitive& operator=(TFPrimitive&& that) noexcept;
+    TFPrimitive& operator=(const TFPrimitive& rhs);
+    TFPrimitive& operator=(TFPrimitive&& rhs) noexcept;
 
-    TFPrimitive& operator=(const TFPrimitiveData& that);
+    TFPrimitive& operator=(const TFPrimitiveData& rhs);
 
     virtual ~TFPrimitive() = default;
 

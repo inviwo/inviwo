@@ -80,7 +80,7 @@ const static std::array<size3_t, 8> offs = {size3_t{0, 0, 0}, size3_t{1, 0, 0}, 
                                             size3_t{0, 1, 0}, size3_t{0, 0, 1}, size3_t{1, 0, 1},
                                             size3_t{1, 1, 1}, size3_t{0, 1, 1}};
 
-std::array<std::vector<Triangle>, 256> cases = {
+static std::array<std::vector<Triangle>, 256> cases = {
     std::vector<Triangle>{},
     std::vector<Triangle>{Triangle{0, 1, 0, 4, 3, 0}},
     std::vector<Triangle>{Triangle{0, 1, 1, 2, 1, 5}},
@@ -558,9 +558,9 @@ std::array<std::vector<Triangle>, 256> cases = {
     std::vector<Triangle>{Triangle{0, 1, 3, 0, 0, 4}},
     std::vector<Triangle>{}};
 
-void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
-                  std::vector<vec3>& positions, std::vector<vec3>& normals,
-                  const std::array<vec3, 8>& pos, const std::array<double, 8>& values) {
+static void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                         std::vector<vec3>& positions, std::vector<vec3>& normals,
+                         const std::array<vec3, 8>& pos, const std::array<double, 8>& values) {
     int index = 0;
 
     //  v7 ----- v6
@@ -583,7 +583,7 @@ void evaluateCube(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffe
         const auto interpolate = [&](auto a, auto b) {
             const auto v0 = values[a];
             const auto v1 = values[b];
-            const float t = static_cast<float>(v0 / (v0 - v1));
+            const auto t = static_cast<float>(v0 / (v0 - v1));
             return pos[a] + t * (pos[b] - pos[a]);
         };
         const vec3 p0 = interpolate(t.e0a, t.e0b);

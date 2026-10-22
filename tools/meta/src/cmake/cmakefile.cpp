@@ -103,7 +103,7 @@ void convert(Command& command, const p::parse_tree::node& n) {
 }
 
 void convert(CMakeFile& cmakefile, const p::parse_tree::node& n) {
-    for (auto& child : n.children) {
+    for (const auto& child : n.children) {
         if (child->is_type<line_comment>() || child->is_type<bracket_comment>()) {
             cmakefile.items.emplace_back(Comment{child->string()});
         } else if (child->is_type<newline>()) {
@@ -128,9 +128,9 @@ void parse(CMakeFile& file, Input&& input) {
     try {
         const auto root = p::parse_tree::parse<cmake::file, cmake::selector, cmake::action>(
             std::forward<Input>(input), bracket_id);
-        convert(file, *(root->children[0]));
+        convert(file, *root->children[0]);
     } catch (const p::parse_error& e) {
-        auto& pos0 = e.positions().front();
+        const auto& pos0 = e.positions().front();
         throw util::makeError("Error: Parsing CMakeFile: '{}' at line: {} col: {}", pos0.source,
                               pos0.line, pos0.column);
     }

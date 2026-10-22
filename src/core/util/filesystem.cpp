@@ -40,6 +40,7 @@
 #include <sys/stat.h>
 
 // For working directory
+#include <algorithm>
 #include <cstdio>  // FILENAME_MAX
 #include <codecvt>
 #include <cctype>  // isdigit()
@@ -53,7 +54,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 #include <direct.h>
 #include <Shlobj.h>
 #include <psapi.h>
-#elif defined(__APPLE__)
+#elifdef __APPLE__
 #include <CoreServices/CoreServices.h>
 #include <libproc.h>  // proc_pidpath
 #include <unistd.h>
@@ -87,9 +88,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 
 namespace fs = std::filesystem;
 
-namespace inviwo {
-
-namespace filesystem {
+namespace inviwo::filesystem {
 
 FileHandle::FileHandle(FILE* file) : file_{file} {}
 
@@ -118,7 +117,7 @@ void FileHandle::reset(FILE* file) noexcept {
 }
 
 FILE* fopen(const fs::path& filename, const char* mode) {
-#if defined(_WIN32)
+#ifdef _WIN32
     return _wfopen(filename.c_str(), util::toWstring(mode).c_str());
 #else
     return ::fopen(filename.c_str(), mode);
@@ -167,10 +166,11 @@ fs::path getWorkingDirectory() {
         throw Exception("Error querying current directory");
     return fs::path{buff};
 #else
-    std::array<char, FILENAME_MAX> workingDir;
-    if (!getcwd(workingDir.data(), workingDir.size()))
+    std::array<char, FILENAME_MAX> workingDir{};
+    if (!getcwd(workingDir.data(), workingDir.size())) {
         throw Exception("Error querying current directory");
-    return fs::path(workingDir.data());
+    }
+    return {workingDir.data()};
 #endif
 }
 
@@ -218,7 +218,7 @@ fs::path getExecutablePath() {
 
 #elif __APPLE__
     // http://stackoverflow.com/questions/799679/programatically-retrieving-the-absolute-path-of-an-os-x-command-line-app/1024933#1024933
-    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath;
+    std::array<char, PROC_PIDPATHINFO_MAXSIZE> executablePath{};
     const auto pid = getpid();
     if (proc_pidpath(pid, executablePath.data(), executablePath.size()) <= 0) {
         // Error retrieving path
@@ -257,7 +257,7 @@ fs::path getInviwoBinDir() {
 
 #else
     auto allLibs = getLoadedLibraries();
-    const auto it = std::find_if(allLibs.begin(), allLibs.end(), [&](const auto& lib) {
+    const auto it = std::ranges::find_if(allLibs, [&](const auto& lib) {
         return lib.string().find("inviwo-core") != std::string::npos;
     });
 
@@ -269,9 +269,9 @@ fs::path getInviwoBinDir() {
 #endif
 }
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 
-std::string expandTilde(const char* str) {
+static std::string expandTilde(const char* str) {
     if (!str) return {};
 
     glob_t globbuf;
@@ -299,11 +299,11 @@ fs::path getInviwoUserSettingsPath() {
         throw Exception("Failed to get settings folder");
     }
 
-#elif defined(__unix__)
+#elifdef __unix__
     ss << std::getenv("HOME");
     ss << "/.inviwo";
 
-#elif defined(__APPLE__)
+#elifdef __APPLE__
     char path[PATH_MAX];
     auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
                                                       SYSDIR_DOMAIN_MASK_USER);
@@ -448,10 +448,10 @@ std::vector<fs::path> getDirectoryContents(const fs::path& path, ListMode mode) 
             break;
     }
 
-    std::transform(res.begin(), res.end(), res.begin(),
-                   [&](const fs::path& child) { return fs::relative(child, path); });
+    std::ranges::transform(res, res.begin(),
+                           [&](const fs::path& child) { return fs::relative(child, path); });
 
-    std::sort(res.begin(), res.end());
+    std::ranges::sort(res);
 
     return res;
 }
@@ -486,10 +486,10 @@ std::vector<fs::path> getDirectoryContentsRecursively(const fs::path& path, List
             break;
     }
 
-    std::transform(res.begin(), res.end(), res.begin(),
-                   [&](const fs::path& child) { return fs::relative(child, path); });
+    std::ranges::transform(res, res.begin(),
+                           [&](const fs::path& child) { return fs::relative(child, path); });
 
-    std::sort(res.begin(), res.end());
+    std::ranges::sort(res);
 
     return res;
 }
@@ -545,7 +545,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
     int result = 0;
 
     while (*strPtr != '\0') {
-        if ((*patternPtr == '#') && (isdigit(*strPtr))) {
+        if ((*patternPtr == '#') && isdigit(*strPtr)) {
             // digit detected
             result = result * 10 + static_cast<int>(*strPtr - '0');
 
@@ -554,7 +554,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
 
             if (matchMore) {
                 // more digits (eat up all digits)
-                while ((*strPtr != '\0') && (*patternPtr != '#') && (isdigit(*strPtr))) {
+                while ((*strPtr != '\0') && (*patternPtr != '#') && isdigit(*strPtr)) {
                     result = result * 10 + static_cast<int>(*strPtr - '0');
                     ++strPtr;
                 }
@@ -612,7 +612,7 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
 
     fs::path prevDir;
     do {
-        if (std::all_of(childFolders.begin(), childFolders.end(), [&](const fs::path& childFolder) {
+        if (std::ranges::all_of(childFolders, [&](const fs::path& childFolder) {
                 return fs::is_directory(currentDir / childFolder);
             })) {
             return currentDir;
@@ -629,7 +629,7 @@ std::optional<fs::path> getParentFolderWithChildren(const fs::path& path,
 const fs::path& findBasePath() {
     static const fs::path basePath = []() {
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
         // We might be in a bundle
         // the executable will be in
         //    Inviwo.app/Contents/MacOS/Inviwo
@@ -637,7 +637,7 @@ const fs::path& findBasePath() {
         //    Inviwo.app/Contents/Resources
 
         CFURLRef appUrlRef =
-            CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
+            CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), nullptr, nullptr);
         if (appUrlRef) {
             CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
             const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
@@ -769,7 +769,7 @@ fs::path getFileNameWithoutExtension(const fs::path& url) { return url.stem(); }
 
 std::string getFileExtension(const fs::path& url) {
     auto ext = url.extension().string();
-    if (ext.size() >= 1 && ext[0] == '.') {
+    if (!ext.empty() && ext[0] == '.') {
         return ext.substr(1);
     } else {
         return ext;
@@ -800,7 +800,7 @@ fs::path cleanupPath(std::string_view path) {
 
     std::string result(path);
     // replace backslashes '\' with forward slashes '/'
-    std::replace(result.begin(), result.end(), '\\', '/');
+    std::ranges::replace(result, '\\', '/');
 
     // check for matching quotes at begin and end
     if ((result.size() > 1) && (result.front() == '\"') && (result.back() == '\"')) {
@@ -861,11 +861,12 @@ std::vector<fs::path> getLoadedLibraries() {
     return res;
 }
 
-#elif defined(__APPLE__)
+#elifdef __APPLE__
 
 std::vector<fs::path> getLoadedLibraries() {
     std::vector<fs::path> res;
     const uint32_t count = _dyld_image_count();
+    res.reserve(count);
     for (uint32_t i = 0; i < count; i++) {
         res.emplace_back(_dyld_get_image_name(i));
     }
@@ -889,6 +890,6 @@ std::vector<fs::path> getLoadedLibraries() {
 
 #endif
 
-}  // namespace filesystem
+}  // namespace inviwo::filesystem
 
-}  // end namespace inviwo
+// end namespace inviwo

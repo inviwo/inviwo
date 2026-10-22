@@ -97,12 +97,13 @@ samplePosition = c2s(samplePosition);
 auto SphericalComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    return {
-        {fmt::format(uniforms, "x"_a = comp0_.getSelectedValue(), "y"_a = comp1_.getSelectedValue(),
-                     "z"_a = comp2_.getSelectedValue(), "rRange"_a = rRange_.getIdentifier()),
-         placeholder::uniform, 280},
-        {std::string{first}, placeholder::first, 280},
-        {std::string{first}, placeholder::loop, 280}};
+    return {{.snippet = fmt::format(
+                 uniforms, "x"_a = comp0_.getSelectedValue(), "y"_a = comp1_.getSelectedValue(),
+                 "z"_a = comp2_.getSelectedValue(), "rRange"_a = rRange_.getIdentifier()),
+             .placeholder = placeholder::uniform,
+             .priority = 280},
+            {.snippet = std::string{first}, .placeholder = placeholder::first, .priority = 280},
+            {.snippet = std::string{first}, .placeholder = placeholder::loop, .priority = 280}};
 }
 
 }  // namespace inviwo

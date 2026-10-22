@@ -88,7 +88,7 @@ public:
     std::string_view currentProcessorCId() const;
 
 protected:
-    virtual QVariant loadResource(int type, const QUrl& name) override;
+    virtual QVariant loadResource(int type, const QUrl& resourceUrl) override;
 
 private:
     InviwoApplication* app_;
@@ -100,24 +100,23 @@ private:
 HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
     : InviwoDockWidget(tr("Help"), mainWindow, "HelpWidget")
     , mainWindow_(mainWindow)
-    , helpBrowser_(nullptr) {
+    , helpBrowser_(new HelpBrowser(this, mainWindow_->getInviwoApplication())) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     auto* centralWidget = new QMainWindow();
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("HelpWidgetToolBar");
     centralWidget->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
 
-    helpBrowser_ = new HelpBrowser(this, mainWindow_->getInviwoApplication());
     centralWidget->setCentralWidget(helpBrowser_);
     setWidget(centralWidget);
 
     {
-        auto action = toolBar->addAction(QIcon(":/svgicons/link-left.svg"), tr("&Back"));
+        auto* action = toolBar->addAction(QIcon(":/svgicons/link-left.svg"), tr("&Back"));
         action->setShortcut(QKeySequence::Back);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Back");
@@ -127,7 +126,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         connect(helpBrowser_, &QTextBrowser::backwardAvailable, action, &QAction::setEnabled);
     }
     {
-        auto action = toolBar->addAction(QIcon(":/svgicons/link-right.svg"), tr("&Forward"));
+        auto* action = toolBar->addAction(QIcon(":/svgicons/link-right.svg"), tr("&Forward"));
         action->setShortcut(QKeySequence::Forward);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Forward");
@@ -137,7 +136,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainWindow)
         connect(helpBrowser_, &QTextBrowser::forwardAvailable, action, &QAction::setEnabled);
     }
     {
-        auto action = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("&Reload"));
+        auto* action = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("&Reload"));
         action->setShortcut(QKeySequence::Back);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Reload");

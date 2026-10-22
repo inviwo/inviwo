@@ -76,21 +76,24 @@ struct proxy {
         return std::get<N>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<1 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) first() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) first() const
+        requires(1 <= std::tuple_size_v<Us>)
+    {
         return std::get<0>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<2 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) second() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) second() const
+        requires(2 <= std::tuple_size_v<Us>)
+    {
         return std::get<1>(data);
     }
 
-    template <typename Us = std::tuple<Ts...>,
-              class = typename std::enable_if<3 <= std::tuple_size<Us>::value, void>::type>
-    decltype(auto) third() const {
+    template <typename Us = std::tuple<Ts...>>
+    decltype(auto) third() const
+        requires(3 <= std::tuple_size_v<Us>)
+    {
         return std::get<2>(data);
     }
 
@@ -127,7 +130,7 @@ bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
 }
 
 template <typename... Ts>
-void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) {
+void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) noexcept(noexcept(std::swap(a.data, b.data))) {
     std::swap(a.data, b.data);
 }
 
@@ -160,11 +163,11 @@ auto getEnd(const std::tuple<T...>& t) {
 }
 
 template <typename T, std::size_t... I>
-auto refImpl(const T& t, std::index_sequence<I...>) -> proxy<decltype(*(std::get<I>(t)))...> {
-    return proxy<decltype(*(std::get<I>(t)))...>{*(std::get<I>(t))...};
+auto refImpl(const T& t, std::index_sequence<I...>) -> proxy<decltype(*std::get<I>(t))...> {
+    return proxy<decltype(*std::get<I>(t))...>{*std::get<I>(t)...};
 }
 template <typename... T>
-auto ref(const std::tuple<T...>& t) -> proxy<decltype(*(std::declval<T>()))...> {
+auto ref(const std::tuple<T...>& t) -> proxy<decltype(*std::declval<T>())...> {
     return refImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -181,12 +184,11 @@ auto index(const std::tuple<T...>& t, ptrdiff_t i)
 
 template <typename T, std::size_t... I>
 auto pointerImpl(const T& t, std::index_sequence<I...>)
-    -> std::tuple<decltype((std::get<I>(t)).operator->())...> {
-    return std::tuple<decltype((std::get<I>(t)).operator->())...>{(std::get<I>(t)).operator->()...};
+    -> std::tuple<decltype(std::get<I>(t).operator->())...> {
+    return std::tuple<decltype(std::get<I>(t).operator->())...>{std::get<I>(t).operator->()...};
 }
 template <typename... T>
-auto pointer(const std::tuple<T...>& t)
-    -> std::tuple<decltype((std::declval<T>()).operator->())...> {
+auto pointer(const std::tuple<T...>& t) -> std::tuple<decltype(std::declval<T>().operator->())...> {
     return pointerImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -195,7 +197,7 @@ struct get_iterator {
     using type = decltype(std::begin(std::declval<std::add_lvalue_reference_t<T>>()));
 };
 template <typename T>
-using get_iterator_t = typename get_iterator<T>::type;
+using get_iterator_t = get_iterator<T>::type;
 
 template <typename T>
 struct iterator_tools;
@@ -203,8 +205,8 @@ struct iterator_tools;
 template <typename... Ts>
 struct iterator_tools<std::tuple<Ts...>> {
     using difference_type = std::ptrdiff_t;
-    using iterator_category = typename std::common_type<
-        typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>::type;
+    using iterator_category =
+        std::common_type_t<typename std::iterator_traits<get_iterator_t<Ts>>::iterator_category...>;
     using value_type = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::value_type...>;
     using pointer = std::tuple<typename std::iterator_traits<get_iterator_t<Ts>>::pointer...>;
     using reference = proxy<typename std::iterator_traits<get_iterator_t<Ts>>::reference...>;
@@ -214,27 +216,27 @@ struct iterator_tools<std::tuple<Ts...>> {
 template <typename Tag, typename IterTuple>
 struct require
     : std::enable_if<
-          std::is_base_of<Tag, typename iterator_tools<IterTuple>::iterator_category>::value> {};
+          std::is_base_of_v<Tag, typename iterator_tools<IterTuple>::iterator_category>> {};
 template <typename Tag, typename IterTuple>
-using require_t = typename require<Tag, IterTuple>::type;
+using require_t = require<Tag, IterTuple>::type;
 
 template <typename Iterables>
 struct zipIterator {
-    using Iterators = typename detailzip::iterator_tools<Iterables>::iterators;
-    using difference_type = typename detailzip::iterator_tools<Iterables>::difference_type;
-    using iterator_category = typename detailzip::iterator_tools<Iterables>::iterator_category;
-    using value_type = typename detailzip::iterator_tools<Iterables>::value_type;
-    using pointer = typename detailzip::iterator_tools<Iterables>::pointer;
-    using reference = typename detailzip::iterator_tools<Iterables>::reference;
+    using Iterators = detailzip::iterator_tools<Iterables>::iterators;
+    using difference_type = detailzip::iterator_tools<Iterables>::difference_type;
+    using iterator_category = detailzip::iterator_tools<Iterables>::iterator_category;
+    using value_type = detailzip::iterator_tools<Iterables>::value_type;
+    using pointer = detailzip::iterator_tools<Iterables>::pointer;
+    using reference = detailzip::iterator_tools<Iterables>::reference;
 
-    static_assert(std::is_base_of<std::input_iterator_tag, iterator_category>::value,
+    static_assert(std::is_base_of_v<std::input_iterator_tag, iterator_category>,
                   "All iterators have to be at least input iterators");
 
     template <typename Tag, typename IterTuple>
     using require_t = detailzip::require_t<Tag, IterTuple>;
 
     zipIterator() = default;
-    zipIterator(Iterators iterators) : iterators_(iterators) {}
+    zipIterator(Iterators iterators) : iterators_(std::move(iterators)) {}
 
     zipIterator& operator++() {
         for_each_in_tuple([](auto& iter) { ++iter; }, iterators_);
@@ -297,7 +299,7 @@ struct zipIterator {
     pointer operator->() const { return detailzip::pointer(iterators_); }
 
     template <size_t N>
-    typename std::tuple_element<N, Iterators>::type& get() {
+    std::tuple_element_t<N, Iterators>& get() {
         return std::get<N>(iterators_);
     }
 
@@ -357,7 +359,7 @@ struct zipper {
     using iterator = zipIterator<Iterables>;
     using const_iterator = zipIterator<Iterables>;
 
-    using value_type = typename zipIterator<Iterables>::value_type;
+    using value_type = zipIterator<Iterables>::value_type;
 
     template <typename... T>
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
@@ -492,7 +494,7 @@ struct sequence {
         T inc_{};
     };
 
-    using value_type = typename iterator::value_type;
+    using value_type = iterator::value_type;
     using const_iterator = iterator;
 
     iterator begin() const { return iterator(begin_, end_, inc_); }

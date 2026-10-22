@@ -33,9 +33,7 @@
 #include <stdexcept>
 #include <array>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /*
    base64.cpp and base64.h
@@ -111,7 +109,7 @@ std::string insert_linebreaks(std::string str, size_t distance) {
     //
     // Provided by https://github.com/JomaCorpFX, adapted by me.
     //
-    if (!str.length()) {
+    if (str.empty()) {
         return "";
     }
 
@@ -175,7 +173,7 @@ std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, b
 
 }  // namespace
 
-std::string encode(std::span<char> s, bool url);
+static std::string encode(std::span<char> s, bool url);
 
 template <typename String, unsigned int line_length>
 static std::string encode_with_line_breaks(String s) {
@@ -201,13 +199,13 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
     // decode(…) is templated so that it can be used with String = const std::string&
     // or std::string_view (requires at least C++17)
 
-    if (encoded_string.empty()) return std::string();
+    if (encoded_string.empty()) return {};
 
     if (remove_linebreaks) {
 
         std::string copy(encoded_string);
 
-        copy.erase(std::remove(copy.begin(), copy.end(), '\n'), copy.end());
+        copy.erase(std::ranges::remove(copy, '\n').begin(), copy.end());
 
         return decode<std::string>(copy, false);
     }
@@ -241,7 +239,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
         // Emit the first output byte that is produced in each chunk:
         //
         ret.push_back(static_cast<std::string::value_type>(
-            ((pos_of_char(encoded_string[pos + 0])) << 2) + ((pos_of_char_1 & 0x30) >> 4)));
+            (pos_of_char(encoded_string[pos + 0]) << 2) + ((pos_of_char_1 & 0x30) >> 4)));
 
         if ((pos + 2 < length_of_string) &&  // Check for data that is not padded with equal signs
                                              // (which is allowed by RFC 2045)
@@ -279,6 +277,4 @@ std::string base64_decode(std::string_view s, bool remove_linebreaks) {
     return decode(s, remove_linebreaks);
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

@@ -29,6 +29,7 @@
 
 #include <inviwo/ffmpeg/wrap/outputformat.h>
 
+#include <algorithm>
 #include <set>
 
 extern "C" {
@@ -37,10 +38,10 @@ extern "C" {
 #include <libavutil/avutil.h>
 }
 
-typedef struct AVCodecTag {
+struct AVCodecTag {
     enum AVCodecID id;
     unsigned int tag;
-} AVCodecTag;
+};
 
 namespace inviwo::ffmpeg {
 
@@ -80,7 +81,7 @@ bool OutputFormat::supportsCodec(CodecID codecId, std::optional<int> stdComplian
 std::vector<CodecID> OutputFormat::supportedCodecs(AVMediaType type) const {
     if (!of) return {};
 
-    auto* tags = of->codec_tag;
+    const auto* tags = of->codec_tag;
 
     std::set<CodecID> codecs;
     for (int i = 0; tags && tags[i]; i++) {
@@ -94,7 +95,7 @@ std::vector<CodecID> OutputFormat::supportedCodecs(AVMediaType type) const {
     }
 
     std::vector<CodecID> res(codecs.begin(), codecs.end());
-    std::sort(res.begin(), res.end(), [](CodecID a, CodecID b) { return a.name() < b.name(); });
+    std::ranges::sort(res, [](CodecID a, CodecID b) { return a.name() < b.name(); });
     return res;
 }
 

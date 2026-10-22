@@ -53,7 +53,7 @@ namespace inviwo {
 
 namespace resource {
 
-inline PY toPY(const pybind11::array& data) {
+static inline PY toPY(const pybind11::array& data) {
     return resource::PY{pybind11::module_::import("builtins").attr("id")(data).cast<size_t>()};
 }
 
@@ -62,7 +62,7 @@ inline PY toPY(const pybind11::array& data) {
 namespace {
 const DataFormatBase* format(pybind11::array data) {
     const auto ndim = data.ndim();
-    if (!(ndim == 3 || ndim == 4)) {
+    if (ndim != 3 && ndim != 4) {
         throw Exception("Ndims must be either 3 or 4, with 1 <= size[3] <= 4");
     }
     if ((data.flags() & pybind11::array::c_style) == 0) {
@@ -145,7 +145,7 @@ VolumePy::~VolumePy() {
 
 VolumePy* VolumePy::clone() const { return new VolumePy(*this); }
 
-std::type_index VolumePy::getTypeIndex() const { return std::type_index(typeid(VolumePy)); }
+std::type_index VolumePy::getTypeIndex() const { return {typeid(VolumePy)}; }
 
 const DataFormatBase* VolumePy::getDataFormat() const {
     const pybind11::gil_scoped_acquire guard{};
@@ -189,9 +189,9 @@ std::shared_ptr<VolumePy> VolumeRAM2PyConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeSrc) const {
     const pybind11::gil_scoped_acquire guard{};
 
-    const pybind11::array data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
+    const auto data = volumeSrc->dispatch<pybind11::array>([](auto vr) {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
-        using CompType = typename util::value_type<ValueType>::type;
+        using CompType = util::value_type<ValueType>::type;
         constexpr size_t extent = util::extent<ValueType>::value;
 
         const auto dims = vr->getDimensions();

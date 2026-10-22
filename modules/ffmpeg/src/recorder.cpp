@@ -37,6 +37,8 @@ extern "C" {
 
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
+
+#include <utility>
 }
 
 namespace inviwo::ffmpeg {
@@ -128,19 +130,19 @@ void Recorder::queueFrame(const LayerRAM& layer) {
     if (frame) {
         // this requires that .sourceFormat = AV_PIX_FMT_RGBA,
         stream.fillFrame(*frame, [&](AVFrame* pict, int width, int height) {
-            if (static_cast<int>(layer.getDimensions().x) != width ||
-                static_cast<int>(layer.getDimensions().y) != height) {
+            if (std::cmp_not_equal(layer.getDimensions().x, width) ||
+                std::cmp_not_equal(layer.getDimensions().y, height)) {
                 throw inviwo::Exception(
                     SourceContext{}, "Video dimensions do not match, expected: {}x{} got: {}x{}",
                     width, height, layer.getDimensions().x, layer.getDimensions().y);
             }
 
             if (layer.getDataFormat()->getId() == DataFormatId::Vec4UInt8) {
-                auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
+                const auto* data = static_cast<const glm::tvec4<uint8_t>*>(layer.getData());
                 const util::IndexMapper2D im{layer.getDimensions()};
 
                 for (int y = 0; y < height; y++) {
-                    auto rowStart = glm::value_ptr(data[im(0, y)]);
+                    const auto* rowStart = glm::value_ptr(data[im(0, y)]);
                     std::copy(rowStart, rowStart + 4 * width,
                               &pict->data[0][(height - y - 1) * pict->linesize[0]]);
                 }

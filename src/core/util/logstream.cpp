@@ -30,10 +30,12 @@
 #include <inviwo/core/util/logstream.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <utility>
+
 namespace inviwo {
 
 LogStream::LogStream(std::ostream& stream, std::string source, LogLevel level, LogAudience audience)
-    : source_{source}
+    : source_{std::move(source)}
     , level_{level}
     , audience_{audience}
     , buffer_{}

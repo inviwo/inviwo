@@ -33,17 +33,19 @@
 
 #include <inviwo/core/util/glm.h>
 
+#include <algorithm>
 #include <fstream>
+#include <utility>
 #include <fmt/std.h>
 
 namespace inviwo {
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, int w,
                                                int h)
-    : Base64Image{name, base64jpeg, ivec2{w, h}} {}
+    : Base64Image{std::move(name), std::move(base64jpeg), ivec2{w, h}} {}
 
 WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, ivec2 size)
-    : name(name), base64jpeg(base64jpeg), size(size) {}
+    : name(std::move(name)), base64jpeg(std::move(base64jpeg)), size(size) {}
 
 bool WorkspaceAnnotations::Base64Image::isValid() const {
     return !base64jpeg.empty() && glm::compMul(size) > 0;
@@ -149,9 +151,8 @@ const WorkspaceAnnotations::Base64Image& WorkspaceAnnotations::getCanvasImage(si
 }
 
 std::optional<size_t> WorkspaceAnnotations::getPrimaryCanvasIndex() const {
-    const auto it = std::find_if(canvases_.begin(), canvases_.end(), [&](const Base64Image& img) {
-        return img.name == primaryCanvasId_.get();
-    });
+    const auto it = std::ranges::find_if(
+        canvases_, [&](const Base64Image& img) { return img.name == primaryCanvasId_.get(); });
     if (it != canvases_.end()) {
         return std::distance(canvases_.begin(), it);
     } else if (!canvases_.empty()) {

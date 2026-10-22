@@ -49,6 +49,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <glm/detail/setup.hpp>
@@ -66,7 +67,7 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(
     std::function<bool(const size3_t&)> maskingCallback) {
     log::warn("Deprecated: Use util::marchingtetrahedron(...) instead");
     return util::marchingtetrahedron(std::move(volume), isoValues, isoValueMode, invert, enclose,
-                                     std::move(progressCallback), maskingCallback);
+                                     std::move(progressCallback), std::move(maskingCallback));
 }
 
 namespace marchingtetrahedron {
@@ -87,16 +88,19 @@ const static std::array<std::array<size_t, 4>, 6> tetras = {
     std::array<size_t, 4>{2, 3, 5, 6}, std::array<size_t, 4>{0, 3, 4, 5},
     std::array<size_t, 4>{7, 4, 3, 5}, std::array<size_t, 4>{7, 6, 5, 3}};
 
-void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
-                   std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& p0,
-                   double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2,
-                   const glm::vec3& p3, double v3) {
+static void evaluateTetra(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
+                          std::vector<vec3>& positions, std::vector<vec3>& normals,
+                          const glm::vec3& p0, double v0, const glm::vec3& p1, double v1,
+                          const glm::vec3& p2, double v2, const glm::vec3& p3, double v3) {
     int index = 0;
     if (v0 > 0) index = index | 1;
     if (v1 > 0) index = index | 2;
     if (v2 > 0) index = index | 4;
     if (v3 > 0) index = index | 8;
-    glm::vec3 a, b, c, d;
+    glm::vec3 a;
+    glm::vec3 b;
+    glm::vec3 c;
+    glm::vec3 d;
     if (index == 0 || index == 15) return;
     if (index == 1 || index == 14) {
         a = marching::interpolate(p0, v0, p2, v2);

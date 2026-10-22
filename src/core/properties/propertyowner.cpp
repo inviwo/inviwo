@@ -39,6 +39,7 @@
 #include <inviwo/core/network/networkvisitor.h>
 #include <inviwo/core/network/lambdanetworkvisitor.h>
 
+#include <algorithm>
 #include <iterator>
 
 namespace inviwo {
@@ -134,9 +135,7 @@ Property* PropertyOwner::insertProperty(size_t index, std::unique_ptr<Property> 
 }
 
 void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
-    if (index > properties_.size()) {
-        index = properties_.size();
-    }
+    index = std::min(index, properties_.size());
 
     if (const auto* existing = getPropertyByIdentifier(property->getIdentifier());
         existing != nullptr) {
@@ -146,12 +145,10 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
                         property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
                         existing->getIdentifier(), existing->getClassIdentifier());
     }
-    if (auto parent = dynamic_cast<Property*>(this)) {
-        if (parent == property) {
-            throw Exception(SourceContext{},
-                            "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
-                            property->getIdentifier(), property->getClassIdentifier());
-        }
+    if (auto parent = dynamic_cast<Property*>(this); parent && (parent == property)) {
+        throw Exception(SourceContext{},
+                        "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
+                        property->getIdentifier(), property->getClassIdentifier());
     }
 
     notifyObserversWillAddProperty(this, property, index);
@@ -404,10 +401,10 @@ void PropertyOwner::deserialize(Deserializer& d) {
                     } else {
                         // The property was not serialized since it was in its
                         // default state. Make sure we reset it to that state again.
-                        if (auto* p = getPropertyByIdentifier(id)) {
-                            if (p->getSerializationMode() == PropertySerializationMode::Default) {
-                                p->resetToDefaultState();
-                            }
+                        if (auto* p = getPropertyByIdentifier(id);
+                            p &&
+                            (p->getSerializationMode() == PropertySerializationMode::Default)) {
+                            p->resetToDefaultState();
                         }
                     }
                 },
@@ -415,7 +412,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
 }
 
 void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
-    for (auto& elem : properties_) (elem)->setCurrentStateAsDefault();
+    for (auto& elem : properties_) elem->setCurrentStateAsDefault();
 }
 
 void PropertyOwner::resetAllProperties() {

@@ -64,7 +64,7 @@ Document VolumeSliceVisualizer::getDescription() const {
 }
 
 std::vector<FileExtension> VolumeSliceVisualizer::getSupportedFileExtensions() const {
-    auto rf = app_->getDataReaderFactory();
+    auto* rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<Volume>();
     auto exts2 = rf->getExtensionsForType<VolumeSequence>();
     exts.insert(exts.end(), exts2.begin(), exts2.end());
@@ -97,7 +97,7 @@ std::vector<Processor*> VolumeSliceVisualizer::addVisualizerNetwork(Outport* out
     net->addConnection(outport, vsl->getInports()[0]);
     net->addConnection(vsl->getOutports()[0], cvs->getInports()[0]);
 
-    if (auto canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
+    if (auto* canvas = dynamic_cast<CanvasProcessor*>(cvs)) {
         canvas->setCanvasSize(size2_t{768, 768});
     }
 

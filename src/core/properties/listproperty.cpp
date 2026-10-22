@@ -37,7 +37,9 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <set>
+#include <utility>
 
 namespace inviwo {
 
@@ -47,7 +49,8 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
                            std::vector<std::unique_ptr<Property>> prefabs,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics))
     , uiFlags_(uiFlags)
     , maxNumElements_("maxNumberOfElements", maxNumberOfElements)
     , prefabs_{"prefabs", std::move(prefabs)} {}
@@ -57,7 +60,7 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : ListProperty(identifier, displayName, Document{}, std::move(prefabs), maxNumberOfElements,
-                   uiFlags, invalidationLevel, semantics) {}
+                   uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            std::unique_ptr<Property> prefab, size_t maxNumberOfElements,
@@ -70,13 +73,13 @@ ListProperty::ListProperty(std::string_view identifier, std::string_view display
               tmp.push_back(std::move(prefab));
               return tmp;
           }(),
-          maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
+          maxNumberOfElements, uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(std::string_view identifier, std::string_view displayName,
                            size_t maxNumberOfElements, ListPropertyUIFlags uiFlags,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : ListProperty(identifier, displayName, Document{}, std::vector<std::unique_ptr<Property>>{},
-                   maxNumberOfElements, uiFlags, invalidationLevel, semantics) {}
+                   maxNumberOfElements, uiFlags, invalidationLevel, std::move(semantics)) {}
 
 ListProperty::ListProperty(const ListProperty& rhs)
     : CompositeProperty(rhs)
@@ -173,14 +176,14 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
 
         // if prefab has a trailing number in its display name, use number of identifier
         const auto displayName = property->getDisplayName();
-        const auto it = std::find_if(displayName.rbegin(), displayName.rend(),
-                                     [](char c) { return !std::isdigit(c); });
+        const auto it = std::ranges::find_if(std::views::reverse(displayName),
+                                             [](char c) { return !std::isdigit(c); });
         const std::string baseName = trim(std::string{displayName.begin(), it.base()});
         if (it.base() != displayName.end()) {
             // extract number from identifier
             const auto identifier = property->getIdentifier();
-            const auto itIdentifier = std::find_if(identifier.rbegin(), identifier.rend(),
-                                                   [](char c) { return !std::isdigit(c); });
+            const auto itIdentifier = std::ranges::find_if(std::views::reverse(identifier),
+                                                           [](char c) { return !std::isdigit(c); });
             const std::string number(itIdentifier.base(), identifier.end());
             if (!number.empty()) {
                 property->setDisplayName(baseName + " " + number);
@@ -190,7 +193,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
         }
 
         CompositeProperty::addProperty(property, true);
-        invalidate(Property::getInvalidationLevel());
+        invalidate(CompositeProperty::getInvalidationLevel());
         return property;
     } else {
         log::error("Maximum number of list entries reached ({})", this->getDisplayName());
@@ -210,7 +213,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
         property->setSerializationMode(PropertySerializationMode::All);
         CompositeProperty::insertProperty(index, property, owner);
-        invalidate(Property::getInvalidationLevel());
+        invalidate(CompositeProperty::getInvalidationLevel());
     } else {
         log::error("Maximum number of list entries reached ({})", this->getDisplayName());
     }
@@ -218,13 +221,13 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
 
 Property* ListProperty::removeProperty(std::vector<Property*>::iterator it) {
     auto result = CompositeProperty::removeProperty(it);
-    invalidate(Property::getInvalidationLevel());
+    invalidate(CompositeProperty::getInvalidationLevel());
     return result;
 }
 
 bool ListProperty::move(Property* property, size_t newIndex) {
     const auto result = CompositeProperty::move(property, newIndex);
-    invalidate(Property::getInvalidationLevel());
+    invalidate(CompositeProperty::getInvalidationLevel());
     return result;
 }
 

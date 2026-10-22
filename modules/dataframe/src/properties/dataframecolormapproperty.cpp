@@ -48,6 +48,7 @@
 #include <cstddef>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 namespace inviwo {
 class DataFrame;
@@ -79,12 +80,13 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
     });
 
     selectedColorAxis.onChange([&]() {
-        if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() ||
-            overrideColormap)
+        if (selectedColorAxis.empty() || colormaps_.size() != selectedColorAxis.size() ||
+            overrideColormap) {
             return;
+        }
 
         for (auto i = 0u; i < colormaps_.size(); i++) {
-            colormaps_[i]->setVisible(i == static_cast<size_t>(*selectedColorAxis));
+            colormaps_[i]->setVisible(std::cmp_equal(i, *selectedColorAxis));
         }
 
         const auto updateColormap = [&]() {

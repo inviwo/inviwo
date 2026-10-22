@@ -65,7 +65,7 @@ TEST(Python3Scripts, GrabReturnValues) {
     auto script = PythonScript::fromFile(getPath() / "grabreturnvalue.py");
 
     bool status = false;
-    script.run([&](pybind11::dict dict) {
+    script.run([&](const pybind11::dict& dict) {
         const auto pyA = dict["a"];
         const auto pyB = dict["b"];
         const auto pyC = dict["c"];
@@ -104,7 +104,7 @@ TEST(Python3Scripts, PassValues) {
                 {"b", pybind11::cast(b)},
                 {"c", pybind11::cast(c)},
                 {"d", pybind11::cast(d)}},
-               [&](pybind11::dict dict) {
+               [&](const pybind11::dict& dict) {
                    EXPECT_TRUE(pybind11::cast<bool>(dict["A"])) << "Pass value as int";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["B"])) << "Pass value as float";
                    EXPECT_TRUE(pybind11::cast<bool>(dict["C"])) << "Pass value as string";
@@ -123,7 +123,7 @@ TEST(Python3Scripts, GLMTest) {
     auto script = PythonScript::fromFile(getPath() / "glm.py");
 
     bool status = false;
-    script.run([&](pybind11::dict dict) {
+    script.run([&](const pybind11::dict& dict) {
         const auto v1 = pybind11::cast<vec3>(dict["v1"]);
         const auto v2 = pybind11::cast<size2_t>(dict["v2"]);
         const auto v3 = pybind11::cast<vec3>(dict["v3"]);
@@ -193,7 +193,7 @@ TEST(Python3Scripts, OptionPropertyTest) {
     auto script = PythonScript::fromFile(getPath() / "option_property.py");
 
     bool status = false;
-    script.run([&](pybind11::dict dict) {
+    script.run([&](const pybind11::dict& dict) {
         auto prop = dict["p"].cast<Property*>();
         ASSERT_TRUE(prop != nullptr);
         auto optionProperty = static_cast<OptionPropertyInt*>(prop);
@@ -229,7 +229,7 @@ TEST(Python3Scripts, MetaDataTest) {
     bool status = false;
     script.run({{"volume", pybind11::cast(volume)},
                 {"prop", pybind11::cast(&prop, pybind11::return_value_policy::reference)}},
-               [&](pybind11::dict) { status = true; });
+               [&](const pybind11::dict&) { status = true; });
     ASSERT_TRUE(status);
 
     EXPECT_EQ(6, volume->getMetaData<IntMetaData>("int", 0));

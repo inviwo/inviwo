@@ -33,6 +33,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/docutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 Outport::Outport(std::string_view identifier, Document help)
@@ -52,7 +54,7 @@ Outport::Outport(std::string_view identifier, Document help)
 
 Outport::~Outport() = default;
 
-bool Outport::isConnected() const { return !(connectedInports_.empty()); }
+bool Outport::isConnected() const { return !connectedInports_.empty(); }
 
 bool Outport::isReady() const { return isReady_; }
 
@@ -77,11 +79,11 @@ void Outport::setValid() {
 void Outport::propagateEvent(Event* event, Inport*) { processor_->propagateEvent(event, this); }
 
 const BaseCallBack* Outport::onConnect(std::function<void()> lambda) {
-    return onConnectCallback_.addLambdaCallback(lambda);
+    return onConnectCallback_.addLambdaCallback(std::move(lambda));
 }
 void Outport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
 const BaseCallBack* Outport::onDisconnect(std::function<void()> lambda) {
-    return onDisconnectCallback_.addLambdaCallback(lambda);
+    return onDisconnectCallback_.addLambdaCallback(std::move(lambda));
 }
 void Outport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);

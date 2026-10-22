@@ -30,6 +30,8 @@
 #include <inviwo/core/interaction/events/mouseinteractionevent.h>
 #include <fmt/format.h>
 
+#include <utility>
+
 namespace inviwo {
 
 MouseInteractionEvent::MouseInteractionEvent(MouseButtons buttonState, KeyModifiers modifiers,
@@ -58,7 +60,7 @@ dvec2 MouseInteractionEvent::posNormalized() const { return position_; }
 void MouseInteractionEvent::setPosNormalized(dvec2 pos) { position_ = pos; }
 
 dvec3 MouseInteractionEvent::ndc() const {
-    return dvec3(2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_);
+    return {2.0 * position_.x - 1.0, 2.0 * position_.y - 1.0, depth_};
 }
 
 void MouseInteractionEvent::setNdc(dvec3 ndc) {
@@ -81,7 +83,7 @@ void MouseInteractionEvent::setMouseCursor(MouseCursor cursor) const {
 }
 
 void MouseInteractionEvent::setMouseCursorCallback(MouseCursorCallback callback) {
-    mousecursor_ = callback;
+    mousecursor_ = std::move(callback);
 }
 auto MouseInteractionEvent::getMouseCursorCallback() const -> const MouseCursorCallback& {
     return mousecursor_;

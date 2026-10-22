@@ -49,11 +49,10 @@ InviwoModule* findModuleForFile(ModuleManager* mm, const std::filesystem::path& 
     InviwoModule* inviwoModule = nullptr;
     for (auto& m : mm->getInviwoModules()) {
         const auto relpath = file.lexically_relative(m.getPath());
-        if (!relpath.empty() && !relpath.string().starts_with("..")) {
-            if (best.empty() || relpath.string().length() < best.string().length()) {
-                best = relpath;
-                inviwoModule = &m;
-            }
+        if ((!relpath.empty() && !relpath.string().starts_with("..")) &&
+            (best.empty() || relpath.string().length() < best.string().length())) {
+            best = relpath;
+            inviwoModule = &m;
         }
     }
     return inviwoModule;

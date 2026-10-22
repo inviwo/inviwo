@@ -35,20 +35,22 @@
 #include <ranges>
 #include <set>
 #include <optional>
+#include <utility>
 
 namespace inviwo::util {
 
 std::vector<TFPrimitiveData> tfSawTooth(const SawToothOptions& opts) {
     static constexpr auto clamp = [](double pos) { return std::clamp(pos, 0.0, 1.0); };
     static constexpr auto clamptf = [](TFPrimitiveData data) {
-        return TFPrimitiveData{clamp(data.pos), data.color};
+        return TFPrimitiveData{.pos = clamp(data.pos), .color = data.color};
     };
 
     auto shift = [s = opts.shift](TFPrimitiveData data) {
-        return TFPrimitiveData{data.pos + s, data.color};
+        return TFPrimitiveData{.pos = data.pos + s, .color = data.color};
     };
     const auto normalize = [range = opts.range](TFPrimitiveData data) {
-        return TFPrimitiveData{(data.pos - range.x) / (range.y - range.x), data.color};
+        return TFPrimitiveData{.pos = (data.pos - range.x) / (range.y - range.x),
+                               .color = data.color};
     };
 
     auto points = opts.points | std::views::transform(shift) | std::views::transform(normalize) |
@@ -169,7 +171,7 @@ double errorByRemoving(const std::vector<TFPrimitiveData>& points, int i) {
 /// removes redundant points from the tf
 void cleanTf(std::vector<TFPrimitiveData>& points, double epsilon) {
     // remove from the front
-    for (int i = 1; i < static_cast<int>(points.size()); ++i) {
+    for (int i = 1; std::cmp_less(i, points.size()); ++i) {
         if (points[i].color == points[i - 1].color) {
             points.erase(points.begin() + i - 1);
         } else {

@@ -57,13 +57,11 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 namespace detail {
 
-std::vector<MeshShaderCache::Requirement> defaultRequirements(
+static std::vector<MeshShaderCache::Requirement> defaultRequirements(
     const std::vector<MeshShaderCache::Requirement>& additional = {}) {
 
     std::vector<MeshShaderCache::Requirement> requirements = {
@@ -207,6 +205,4 @@ void LineRenderer::configureShader(Shader& shader) const {
     shader.build();
 }
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

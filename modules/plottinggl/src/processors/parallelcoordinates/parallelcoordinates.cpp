@@ -91,6 +91,7 @@
 #include <glm/common.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace inviwo::plot {
 
@@ -511,7 +512,7 @@ void ParallelCoordinates::buildLineIndices() {
     const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
 
     lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
-    if (!lines_.sizes.empty() && lines_.sizes.front() != static_cast<int>(numberOfEnabledAxis)) {
+    if (!lines_.sizes.empty() && std::cmp_not_equal(lines_.sizes.front(), numberOfEnabledAxis)) {
         std::ranges::fill(lines_.sizes, static_cast<int>(numberOfEnabledAxis));
     }
 
@@ -552,10 +553,10 @@ void ParallelCoordinates::partitionLines() {
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
     const auto lastFilteredIt =
-        std::partition(lines_.starts.begin(), lines_.starts.end(), [&](auto ind) {
+        std::ranges::partition(lines_.starts, [&](auto ind) {
             return brushingAndLinking_.isFiltered(
                 indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
-        });
+        }).begin();
     const auto lastRegularIt = std::partition(lastFilteredIt, lines_.starts.end(), [&](auto ind) {
         const auto idx = indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)];
         return !brushingAndLinking_.isSelected(idx) && !brushingAndLinking_.isHighlighted(idx);
@@ -831,7 +832,8 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, uint32_t columnId, PickTyp
                 } else if (columnId < axes_.size()) {
                     const auto rect = getDisplayRect(outport_.getDimensions());
                     lines_.axisPositions[columnId] =
-                        glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
+                        glm::clamp(static_cast<float>(p->getPosition().x * p->getCanvasSize().x -
+                                                      rect.first.x) /
                                        (rect.second.x - rect.first.x),
                                    0.0f, 1.0f);
                     invalidate(InvalidationLevel::InvalidOutput);

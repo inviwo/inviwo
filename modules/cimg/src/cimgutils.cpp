@@ -69,8 +69,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#if defined(__clang__)
-#elif defined(__GNUC__)
+#ifdef __clang__
+#elifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 #elif (_MSC_VER)
 #pragma warning(disable : 4146)
@@ -96,8 +96,8 @@
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
-#if defined(__clang__)
-#elif defined(__GNUC__)
+#ifdef __clang__
+#elifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 #elif (_MSC_VER)
 #pragma warning(disable : 4297)
@@ -113,11 +113,9 @@
 #include <OpenEXRConfig.h>
 #endif
 
-namespace inviwo {
+namespace inviwo::cimgutil {
 
-namespace cimgutil {
-
-std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
+static std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
     {".jpg", DataFormatId::UInt8},
     {".jpeg", DataFormatId::UInt8},
     {".bmp", DataFormatId::UInt8},
@@ -125,7 +123,7 @@ std::unordered_map<std::string_view, DataFormatId> extToBaseTypeMap_ = {
     {".hdr", DataFormatId::Float32}};
 namespace detail {
 
-cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
+static cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType type) {
     switch (type) {
         case inviwo::InterpolationType::Linear:  return cimgutil::InterpolationType::Linear;
         case inviwo::InterpolationType::Nearest: return cimgutil::InterpolationType::Nearest;
@@ -136,7 +134,8 @@ cimgutil::InterpolationType toCImgInterpolationType(inviwo::InterpolationType ty
 }  // namespace detail
 
 template <typename T>
-auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true, bool skipAlpha = false) {
+static auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true,
+                        bool skipAlpha = false) {
 
     if constexpr (util::rank_v<T> == 0) {
         return cimg_library::CImg<T>(
@@ -168,7 +167,7 @@ auto layerToCImg(const LayerRAMPrecision<T>* src, bool permute = true, bool skip
 namespace {
 DataFormatId findScalarFormat(const std::filesystem::path& filePath) {
     const auto fileExtension = toLower(filePath.extension().string());
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         return extToBaseTypeMap_[fileExtension];
     } else {
         return DataFormatId::Float32;
@@ -314,7 +313,7 @@ void updateVolume(VolumeRAM& volume, const std::filesystem::path& filePath) {
 }
 
 template <typename T>
-auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileExtension) {
+static auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileExtension) {
     const bool isJpeg = (fileExtension == ".jpg") || (fileExtension == ".jpeg");
     const bool skipAlpha = isJpeg && ((util::extent_v<T> == 2) || (util::extent_v<T> == 4));
     auto img = layerToCImg(lr, true, skipAlpha);
@@ -322,7 +321,7 @@ auto prepareImgFromLayer(const LayerRAMPrecision<T>* lr, std::string_view fileEx
     const DataFormatBase* inFormat = DataFormat<T>::get();
     // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
     const DataFormatBase* outFormat = DataFloat32::get();
-    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+    if (extToBaseTypeMap_.contains(fileExtension)) {
         outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
     } else if ((fileExtension == ".tif") || (fileExtension == ".tiff") ||
                (fileExtension == ".raw")) {
@@ -498,7 +497,9 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     }
     TIFFSetDirectory(tif, 0);
 
-    std::uint16_t samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
+    std::uint16_t samplesPerPixel = 1;
+    std::uint16_t bitsPerSample = 8;
+    std::uint16_t sampleFormat = 1;
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample)) {
         bitsPerSample = 8;
     }
@@ -524,9 +525,11 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
     if (!TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit)) {
         resUnit = 2;
     }
-    const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
+    const auto resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
-    std::uint32_t x = 0, y = 0, z = 0;
+    std::uint32_t x = 0;
+    std::uint32_t y = 0;
+    std::uint32_t z = 0;
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
     TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
     // count the images
@@ -559,15 +562,17 @@ TIFFHeader getTIFFHeader(const std::filesystem::path& filename) {
 
     auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
 
-    return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
+    return {.format = df,
+            .dimensions = size3_t{x, y, z},
+            .resolution = res,
+            .resolutionUnit = resolutionUnit,
+            .swizzleMask = swizzleMask};
 #else
     throw Exception("TIFF not available");
     return {};
 #endif
 }
 
-}  // namespace cimgutil
-
-}  // namespace inviwo
+}  // namespace inviwo::cimgutil
 
 #include <warn/pop>

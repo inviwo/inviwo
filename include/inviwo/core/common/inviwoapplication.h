@@ -126,7 +126,7 @@ public:
      * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules,
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
                          const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     /**
@@ -550,7 +550,10 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     using return_type = std::invoke_result_t<F, Args...>;
 
     const auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+        [f = std::forward<F>(f),
+         ... args = std::forward<Args>(args)]() mutable -> return_type {
+            return std::invoke(f, args...);
+        });
 
     std::future<return_type> res = task->get_future();
     {

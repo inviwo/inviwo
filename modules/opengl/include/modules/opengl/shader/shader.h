@@ -64,19 +64,19 @@ class IVW_MODULE_OPENGL_API Build {
 
 public:
     // Allow explicit conversion from anything bool like
-    template <
-        typename T,
-        std::enable_if_t<!std::is_same_v<T, bool> && std::is_constructible_v<bool, T>, int> = 0>
-    explicit constexpr Build(T value) noexcept : value_{value} {}
+    template <typename T>
+    explicit constexpr Build(T value) noexcept
+        requires(!std::is_same_v<T, bool> && std::is_constructible_v<bool, T>)
+        : value_{value} {}
 
     // Allow implicit construction only from bool
     // clang-format off
-    template <typename T, std::enable_if_t<std::is_same_v<T, bool>, int> = 0>
+    template <typename T>
     [[deprecated("Use Shader::Build::Yes or Shader::Build::No, instead of a true or false")]]
-    constexpr explicit Build(T value) noexcept : value_{value} {}
+    constexpr explicit Build(T value) noexcept requires (std::is_same_v<T, bool>) : value_{value} {}
     // clang-format on
 
-    explicit constexpr operator bool() { return value_; }
+    explicit constexpr operator bool() const { return value_; }
 
     static const Build Yes;
     static const Build No;
@@ -134,8 +134,8 @@ public:
 
     GLuint getID() const { return program_.id; }
 
-    using iterator = typename std::vector<ShaderObject>::iterator;
-    using const_iterator = typename std::vector<ShaderObject>::const_iterator;
+    using iterator = std::vector<ShaderObject>::iterator;
+    using const_iterator = std::vector<ShaderObject>::const_iterator;
 
     iterator begin();
     iterator end();
@@ -167,7 +167,7 @@ public:
     void addShaderObject(ShaderObject object);
 
     void activate();
-    void deactivate();
+    static void deactivate();
 
     void setUniform(std::string_view name, bool value) const;
     void setUniform(std::string_view name, std::span<const bool> values) const;
@@ -223,7 +223,7 @@ public:
     void setUniform(std::string_view name, const mat4& value) const;
     void setUniform(std::string_view name, std::span<const mat4> values) const;
 
-    void setUniform(std::string_view name, const TextureUnit& value) const;
+    void setUniform(std::string_view name, const TextureUnit& texUnit) const;
 
     void setUniformWarningLevel(UniformWarning level);
 
@@ -246,7 +246,7 @@ public:
 private:
     void bindAttributes();
 
-    void handleError(OpenGLException& e);
+    static void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
     void rebuildShader(ShaderObject* obj);

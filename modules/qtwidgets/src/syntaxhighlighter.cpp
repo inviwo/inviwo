@@ -93,7 +93,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
 
         while (startIndex >= 0) {
             const auto endMatch = rule.end.match(text, currPos);
-            int commentLength;
+            int commentLength = 0;
 
             if (endMatch.hasMatch()) {
                 commentLength = static_cast<int>(endMatch.capturedEnd()) - startIndex;
@@ -116,24 +116,29 @@ void SyntaxHighlighter::highlightBlock(const QString& text) {
 
 void SyntaxHighlighter::addMultBlockPattern(QTextCharFormat format, std::string_view startPattern,
                                             std::string_view endPattern) {
-    multiblockRules_.push_back(MultiBlockRule{format,
-                                              QRegularExpression{utilqt::toQString(startPattern)},
-                                              QRegularExpression{utilqt::toQString(endPattern)},
-                                              static_cast<int>(multiblockRules_.size() + 1)
+    multiblockRules_.push_back(MultiBlockRule{
+        .format = format,
+        .begin = QRegularExpression{utilqt::toQString(startPattern)},
+        .end = QRegularExpression{utilqt::toQString(endPattern)},
+        .name = static_cast<int>(multiblockRules_.size() + 1)
 
     });
 }
 
-void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) { defaultFormat_ = format; }
+void SyntaxHighlighter::setDefaultFormat(QTextCharFormat format) {
+    defaultFormat_ = std::move(format);
+}
 
 void SyntaxHighlighter::addPattern(QTextCharFormat format, std::string_view pattern) {
-    rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
+    rules_.push_back(
+        Rule{.format = format, .pattern = QRegularExpression{utilqt::toQString(pattern)}});
 }
 
 void SyntaxHighlighter::addPatterns(QTextCharFormat format,
                                     std::span<const std::string_view> patterns) {
     for (const auto pattern : patterns) {
-        rules_.push_back(Rule{format, QRegularExpression{utilqt::toQString(pattern)}});
+        rules_.push_back(
+            Rule{.format = format, .pattern = QRegularExpression{utilqt::toQString(pattern)}});
     }
 }
 
@@ -142,7 +147,7 @@ void SyntaxHighlighter::addPatternWithFormatStr(QTextCharFormat format,
                                                 std::string_view formatStr) {
     for (auto pattern : patterns) {
         const auto str = utilqt::toQString(fmt::format(fmt::runtime(formatStr), pattern));
-        rules_.push_back(Rule{format, QRegularExpression{str}});
+        rules_.push_back(Rule{.format = format, .pattern = QRegularExpression{str}});
     }
 }
 

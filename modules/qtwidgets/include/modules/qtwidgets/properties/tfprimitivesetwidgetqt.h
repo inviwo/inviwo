@@ -68,7 +68,7 @@ public:
 private:
     void initializeWidget();
 
-    std::vector<TFPrimitiveData> extractPrimitiveData(const std::string& str) const;
+    static std::vector<TFPrimitiveData> extractPrimitiveData(const std::string& str);
 
     struct PropertyConcept {
         virtual ~PropertyConcept() = default;

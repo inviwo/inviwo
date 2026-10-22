@@ -70,7 +70,7 @@ struct DataFrameAddColumnReg {
 
         d.def(
             fmt::format("add{}Column", classname).c_str(),
-            [](DataFrame& d, std::string header, std::vector<T> data, Unit unit = Unit(),
+            [](DataFrame& d, const std::string& header, std::vector<T> data, Unit unit = Unit(),
                std::optional<dvec2> range = std::nullopt) {
                 return d.addColumn(std::move(header), std::move(data), unit, range);
             },
@@ -281,7 +281,7 @@ void exposeDataFrame(pybind11::module& m) {
             std::string str = fmt::format("<DataFrame: {} column(s), {} rows",
                                           d.getNumberOfColumns(), d.getNumberOfRows());
             size_t i = 0;
-            for (const auto c : d) {
+            for (const auto& c : d) {
                 ++i;
                 str += fmt::format("\n   {:>3}: '{}', {}, {}", i, c->getHeader(), c->getSize(),
                                    c->getBuffer()->getDataFormat()->getString());

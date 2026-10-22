@@ -36,6 +36,7 @@
 #include <inviwo/core/util/typetraits.h>
 #include <inviwo/core/util/iterrange.h>
 
+#include <numeric>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <memory>
@@ -48,11 +49,10 @@
 #include <type_traits>
 #include <utility>
 #include <tuple>
+#include <ranges>
 #include <warn/pop>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 template <typename Derived, typename Base, typename Del>
 std::unique_ptr<Derived, Del> static_unique_ptr_cast(std::unique_ptr<Base, Del>&& p) {
@@ -62,7 +62,7 @@ std::unique_ptr<Derived, Del> static_unique_ptr_cast(std::unique_ptr<Base, Del>&
 
 template <typename Derived, typename Base, typename Del>
 std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>&& p) {
-    if (Derived* result = dynamic_cast<Derived*>(p.get())) {
+    if (auto* result = dynamic_cast<Derived*>(p.get())) {
         p.release();
         return std::unique_ptr<Derived, Del>(result, std::move(p.get_deleter()));
     }
@@ -72,7 +72,7 @@ std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>
 template <typename Derived, typename Base>
 std::unique_ptr<Derived> dynamic_unique_ptr_cast(
     std::unique_ptr<Base, std::default_delete<Base>>&& p) {
-    if (Derived* result = dynamic_cast<Derived*>(p.get())) {
+    if (auto* result = dynamic_cast<Derived*>(p.get())) {
         p.release();
         return std::unique_ptr<Derived>(result);
     }
@@ -216,12 +216,12 @@ auto find(T& cont, const V& elem) {
 }
 
 template <typename T, typename Pred>
-auto find_if(T& cont, Pred pred) -> typename T::iterator {
+auto find_if(T& cont, Pred pred) -> T::iterator {
     return std::ranges::find_if(cont, pred);
 }
 
 template <typename T, typename Pred>
-auto find_if(const T& cont, Pred pred) -> typename T::const_iterator {
+auto find_if(const T& cont, Pred pred) -> T::const_iterator {
     return std::ranges::find_if(cont, pred);
 }
 
@@ -256,7 +256,7 @@ bool contains_if(const T& cont, Pred pred) {
 }
 
 template <typename T, typename P>
-auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
+auto find_if_or_null(T& cont, P pred) -> T::value_type {
     const auto it = std::ranges::find_if(cont, pred);
     if (it != std::ranges::end(cont)) {
         return *it;
@@ -266,7 +266,7 @@ auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
 }
 
 template <typename T, typename V>
-auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
+auto find_or_null(T& cont, const V& elem) -> T::value_type {
     auto it = std::ranges::find(cont, elem);
     if (it != std::ranges::end(cont)) {
         return *it;
@@ -276,7 +276,7 @@ auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto find_or_null(T& cont, const V& elem, Callable f) -> typename T::value_type {
+auto find_or_null(T& cont, const V& elem, Callable f) -> T::value_type {
     auto it = std::ranges::find(cont, elem);
     if (it != std::ranges::end(cont)) {
         return f(*it);
@@ -295,7 +295,7 @@ bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_t
 }
 
 template <typename T, typename V>
-auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
+auto map_find_or_null(T& cont, const V& elem) -> T::mapped_type {
     const auto it = cont.find(elem);
     if (it != end(cont)) {
         return it->second;
@@ -305,8 +305,8 @@ auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
 }
 
 template <typename T, typename V, typename Callable>
-auto map_find_or_null(T& cont, const V& elem, Callable f) ->
-    typename std::invoke_result_t<Callable, typename T::mapped_type> {
+auto map_find_or_null(T& cont, const V& elem, Callable f)
+    -> std::invoke_result_t<Callable, typename T::mapped_type> {
     const auto it = cont.find(elem);
     if (it != end(cont)) {
         return f(it->second);
@@ -398,11 +398,11 @@ auto transform(const T& cont, UnaryOperation op)
 
 template <typename T, typename Pred>
 auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
-    std::vector<size_t> res(std::ranges::distance(cont));
-    std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(),
-              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
-    return res;
+    auto indices = std::views::iota(0uz, static_cast<size_t>(std::ranges::distance(cont))) |
+                   std::ranges::to<std::vector>();
+    std::ranges::sort(indices,
+                      [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
+    return indices;
 }
 
 template <typename T>
@@ -455,7 +455,7 @@ namespace hashtuple {
  * Hashing for tuples
  * https://stackoverflow.com/questions/20834838/using-tuple-in-unordered-map
  */
-template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
+template <class Tuple, size_t Index = std::tuple_size_v<Tuple> - 1>
 struct HashValueImpl {
     static void apply(size_t& seed, const Tuple& tuple) {
         HashValueImpl<Tuple, Index - 1>::apply(seed, tuple);
@@ -469,8 +469,7 @@ struct HashValueImpl<Tuple, 0> {
 };
 
 }  // namespace hashtuple
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util
 
 namespace std {
 

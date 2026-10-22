@@ -75,7 +75,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::filesystem::path& f
 
     // Print information
     const size3_t dim = volume->getDimensions();
-    const size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSizeInBytes());
+    const size_t bytes = dim.x * dim.y * dim.z * volume->getDataFormat()->getSizeInBytes();
     log::info("Loaded volume: {} size: {}", filePath, ByteSize{bytes});
     printMetaInfo(*volume, "description");
     printMetaInfo(*volume, "courtesy");
@@ -169,8 +169,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(const std::filesystem::path
     return volume;
 }
 
-void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
-                                    std::string_view key) const {
+void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");

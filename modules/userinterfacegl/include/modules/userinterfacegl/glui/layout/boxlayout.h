@@ -37,9 +37,7 @@
 #include <functional>
 #include <vector>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 class Element;
 
 /**
@@ -108,6 +106,4 @@ private:
     std::vector<std::reference_wrapper<Element>> uiElements_;
 };
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

@@ -60,16 +60,17 @@ public:
      * Register a `ShaderComponent`s. The Inport and Properties of each components will be
      * added to this in the order registered.
      */
-    void registerComponent(ShaderComponent& comps);
+    void registerComponent(ShaderComponent& component);
 
     /**
      * Register a set of `ShaderComponent`s. The Inport and Properties of each components will be
      * added to this in the order registered.
      *
      */
-    template <typename... Ts, typename = std::enable_if_t<
-                                  std::conjunction_v<std::is_base_of<ShaderComponent, Ts>...>>>
-    void registerComponents(Ts&... comps) {
+    template <typename... Ts>
+    void registerComponents(Ts&... comps)
+        requires(std::conjunction_v<std::is_base_of<ShaderComponent, Ts>...>)
+    {
         (registerComponent(comps), ...);
     }
 

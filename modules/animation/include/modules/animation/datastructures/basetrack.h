@@ -48,9 +48,7 @@
 #include <utility>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class Keyframe;
 class KeyframeSequence;
 
@@ -62,7 +60,7 @@ namespace detail {
  */
 template <std::derived_from<KeyframeSequence> Seq>
 struct DefaultSequenceCreator {
-    using key_type = typename Seq::key_type;
+    using key_type = Seq::key_type;
     static std::unique_ptr<Seq> create(std::vector<std::unique_ptr<key_type>> keys);
 };
 template <std::derived_from<KeyframeSequence> Seq>
@@ -77,8 +75,8 @@ template <std::derived_from<KeyframeSequence> Seq>
 class BaseTrack : public Track, public KeyframeSequenceObserver {
 public:
     using seq_type = Seq;
-    using key_type = typename Seq::key_type;
-    using value_type = typename Seq::value_type;
+    using key_type = Seq::key_type;
+    using value_type = Seq::value_type;
     using iterator = util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::iterator>;
     using const_iterator =
         util::IndirectIterator<typename std::vector<std::unique_ptr<Seq>>::const_iterator>;
@@ -304,7 +302,7 @@ std::vector<Seconds> BaseTrack<Seq>::getAllTimes() const {
             result.push_back((*seq)[i].getTime());
         }
     }
-    std::sort(result.begin(), result.end());
+    std::ranges::sort(result);
     return result;
 }
 
@@ -371,7 +369,7 @@ auto BaseTrack<Seq>::end() const -> const_iterator {
  *           |-case 2a---|---------case 2b-|
  */
 template <std::derived_from<KeyframeSequence> Seq>
-typename BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
+BaseTrack<Seq>::key_type* BaseTrack<Seq>::add(Seconds time, bool asNewSequence) {
     const auto addNew = [this](std::unique_ptr<key_type> key) -> key_type* {
         std::vector<std::unique_ptr<key_type>> keys;
         keys.push_back(std::move(key));
@@ -579,6 +577,4 @@ void BaseTrack<Seq>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

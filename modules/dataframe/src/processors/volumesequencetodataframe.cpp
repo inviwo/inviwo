@@ -132,7 +132,7 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     filteredIDs_.clear();
 
     auto volumeSequence = inport_.getVectorData();
-    auto first = (volumeSequence[0])->getRepresentation<VolumeRAM>();
+    auto first = volumeSequence[0]->getRepresentation<VolumeRAM>();
 
     const auto dims = first->getDimensions();
     const size_t size = dims.x * dims.y * dims.z;
@@ -150,8 +150,9 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
     if (omitOutliers) {
         for (const auto& vol : volumeSequence) {
             if (vol->getDataFormat()->getNumericType() != NumericType::Float) continue;
-            if (vol->getDataFormat()->getComponents() != 1)
+            if (vol->getDataFormat()->getComponents() != 1) {
                 log::warn("This volume is omitted because it has more than one channel.");
+            }
             volumeData.push_back(
                 static_cast<const glm::f32*>(vol->getRepresentation<VolumeRAM>()->getData()));
         }
@@ -163,15 +164,16 @@ void VolumeSequenceToDataFrame::recomputeReduceBuffer() {
 
     for (size_t i = 0; i < size; i++) {
         for (size_t j = 0; j < volumeData.size(); j++) {
-            if (volumeData[j][i] < threshold)
+            if (volumeData[j][i] < threshold) {
                 minMaxes[j] = vec2(std::min(volumeData[j][i], minMaxes[j].x),
                                    std::max(volumeData[j][i], minMaxes[j].y));
+            }
         }
         if (dis(gen) <= probability) {
             if (omitOutliers) {
                 bool add = true;
-                for (size_t j = 0; j < volumeData.size(); j++) {
-                    if (volumeData[j][i] > threshold) {
+                for (auto& j : volumeData) {
+                    if (j[i] > threshold) {
                         add = false;
                         break;
                     }
@@ -237,10 +239,10 @@ void VolumeSequenceToDataFrame::process() {
 
         util::forEachVoxelParallel(*volumeRAM, [&, this](const size3_t& pos) {
             const auto idx = indexMapper(pos);
-            if (filteredIDs_.find(idx) == filteredIDs_.end()) return;
+            if (!filteredIDs_.contains(idx)) return;
             const auto v = volumeRAM->getAsDVec4(pos);
             for (size_t c = 0; c < numCh; c++) {
-                (*channelBuffer_[c])[idx] = float(v[c]);
+                (*channelBuffer_[c])[idx] = static_cast<float>(v[c]);
             }
         });
     }

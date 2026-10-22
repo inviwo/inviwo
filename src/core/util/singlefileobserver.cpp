@@ -30,10 +30,12 @@
 #include <inviwo/core/util/singlefileobserver.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 
+#include <utility>
+
 namespace inviwo {
 
-SingleFileObserver::SingleFileObserver(const std::filesystem::path& filename)
-    : FileObserver(util::getInviwoApplication()), filename_(filename) {
+SingleFileObserver::SingleFileObserver(std::filesystem::path filename)
+    : FileObserver(util::getInviwoApplication()), filename_(std::move(filename)) {
     start();
 }
 
@@ -47,7 +49,7 @@ void SingleFileObserver::start() {
 void SingleFileObserver::stop() { stopFileObservation(filename_); }
 
 const BaseCallBack* SingleFileObserver::onChange(std::function<void()> callback) {
-    return onChangeCallbacks_.addLambdaCallback(callback);
+    return onChangeCallbacks_.addLambdaCallback(std::move(callback));
 }
 
 void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {

@@ -97,9 +97,8 @@ static double norm(const T& t) {
     return static_cast<double>(t);
 }
 
-template <
-    glm::length_t L, typename T, glm::qualifier Q,
-    typename F = typename std::conditional<std::is_same<T, float>::value, float, double>::type>
+template <glm::length_t L, typename T, glm::qualifier Q,
+          typename F = std::conditional_t<std::is_same_v<T, float>, float, double>>
 static double norm(const glm::vec<L, T, Q>& glm) {
     return glm::length(util::glm_convert<glm::vec<L, F, Q>>(glm));
 }
@@ -143,7 +142,7 @@ IntegralLineVectorToMesh::ColorByProperty* IntegralLineVectorToMesh::ColorByProp
     return new ColorByProperty(*this);
 }
 
-IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() {}
+IntegralLineVectorToMesh::ColorByProperty::~ColorByProperty() = default;
 
 void IntegralLineVectorToMesh::ColorByProperty::serialize(Serializer& s) const {
     CompositeProperty::serialize(s);
@@ -287,7 +286,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
             uint32_t idx = 0;
             const auto data = lines_.getData();
-            for (auto& line : *data) {
+            for (const auto& line : *data) {
                 const util::OnScopeExit incIdx([&idx]() { idx++; });
                 const auto size = line.getPositions().size();
                 if (size == 0) continue;
@@ -327,7 +326,7 @@ void IntegralLineVectorToMesh::process() {
         updateOptions();
     }
 
-    if (colorBy_.size() == 0) {
+    if (colorBy_.empty()) {
         updateOptions();
     }
     auto mesh = std::make_shared<BasicMesh>();
@@ -357,7 +356,7 @@ void IntegralLineVectorToMesh::process() {
 
         if (!mdProp) {  // Fallback
             auto props = getPropertiesByType<ColorByProperty>();
-            if (props.size() == 0) {
+            if (props.empty()) {
                 throw Exception(SourceContext{}, "Couldn't get ColorByProperty for meta data {}",
                                 metaDataKey);
             }
@@ -376,7 +375,7 @@ void IntegralLineVectorToMesh::process() {
 
     uint32_t lineIdx = 0;
     const auto data = lines_.getData();
-    for (auto& line : *data) {
+    for (const auto& line : *data) {
         const util::OnScopeExit incIdx([&lineIdx]() { lineIdx++; });
         auto size = line.getPositions().size();
 
@@ -452,7 +451,7 @@ void IntegralLineVectorToMesh::process() {
                 const vec4 color = coloring(sample, line.getIndex(), lineIdx);
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos, glm::normalize(vel), pos, color});
+                vertices.emplace_back(pos, glm::normalize(vel), pos, color);
             }
         };
 
@@ -472,9 +471,9 @@ void IntegralLineVectorToMesh::process() {
                 const auto pos1 = pos - off;
                 const auto pos2 = pos + off;
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos1, N, pos1, color});
+                vertices.emplace_back(pos1, N, pos1, color);
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
-                vertices.push_back({pos2, N, pos2, color});
+                vertices.emplace_back(pos2, N, pos2, color);
             }
         };
 
@@ -482,16 +481,16 @@ void IntegralLineVectorToMesh::process() {
             line.getMetaDataBuffer(metaDataKey)
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void>([&](auto mdBuf) {
-                    if (output == Output::Lines)
+                    if (output == Output::Lines) {
                         lineLoop(line, mdBuf->getDataContainer());
-                    else {
+                    } else {
                         ribbonLoop(line, mdBuf->getDataContainer());
                     }
                 });
         } else {
-            if (output == Output::Lines)
+            if (output == Output::Lines) {
                 lineLoop(line, std::vector<int>(line.getPositions().size()));
-            else {
+            } else {
                 ribbonLoop(line, std::vector<int>(line.getPositions().size()));
             }
         }

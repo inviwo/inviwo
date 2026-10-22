@@ -134,7 +134,7 @@ public:
     setupRenderState(std::shared_ptr<Texture2D> texture,
                      std::optional<vec4> clearColor = std::nullopt);
 
-    void render(std::string_view str, const vec2& posf, const vec2& scale, const vec4& color);
+    void render(std::string_view str, const vec2& posf, const vec2& scaling, const vec4& color);
 
     /**
      * @brief renders the given string with the specified color at position x, y in normalized
@@ -273,7 +273,7 @@ public:
      */
     int getBaseLineDescender() const;
 
-    void configure(const FontData& settings);
+    void configure(const FontData& data);
 
 protected:
     static std::shared_ptr<Shader> getShader();
@@ -327,18 +327,18 @@ protected:
     FontCache& getFontCache();
 
     void createDefaultGlyphAtlas();
-    std::shared_ptr<Texture2D> createAtlasTexture(FontCache& fc);
+    static std::shared_ptr<Texture2D> createAtlasTexture(FontCache& fc);
 
     FontFamilyStyle getFontTuple() const;
 
-    std::string_view::const_iterator validateString(std::string_view str) const;
+    static std::string_view::const_iterator validateString(std::string_view str);
 
     static constexpr char lf = '\n';   // Line Feed Ascii for std::endl, \n
     static constexpr char tab = '\t';  // Tab Ascii
 
     std::unordered_map<FontFamilyStyle, FontCache> glyphAtlas_;
 
-    FT_Library fontlib_;
+    FT_Library fontlib_{};
     FT_Face fontface_;
 
     int fontSize_;        //<! font size in pixel

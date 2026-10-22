@@ -69,9 +69,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 Renderer::Renderer()
     : uiShader_("renderui.vert", "renderui.frag")
@@ -116,10 +114,11 @@ const TextRenderer& Renderer::getTextRenderer(bool bold) const {
 int Renderer::getDefaultFontSize() const { return defaultFontSize_; }
 
 TextRenderer& Renderer::getTextRenderer(bool bold) {
-    if (bold)
+    if (bold) {
         return textRendererBold_;
-    else
+    } else {
         return textRenderer_;
+    }
 }
 
 const TextureQuadRenderer& Renderer::getTextureQuadRenderer() const { return quadRenderer_; }
@@ -226,7 +225,7 @@ void Renderer::setupRectangleMesh() {
 
 std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const std::vector<std::filesystem::path>& textureFiles,
-    const std::filesystem::path& sourcePath) const {
+    const std::filesystem::path& sourcePath) {
     // read in textures
     std::vector<std::shared_ptr<Layer>> textureLayers;
     const auto* factory = InviwoApplication::getPtr()->getDataReaderFactory();
@@ -241,14 +240,15 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
 
     // Check that all textures has the same dimensions
     const size2_t texDim = textureLayers.front()->getDimensions();
-    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
-                     [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
+    if (!std::ranges::all_of(textureLayers,
+                             [&](const auto& layer) { return layer->getDimensions() == texDim; })) {
         throw Exception(SourceContext{}, "Textures have inconsistent sizes: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }
     const DataFormatBase* const dataformat = textureLayers.front()->getDataFormat();
-    if (!std::all_of(textureLayers.begin(), textureLayers.end(),
-                     [&](const auto& layer) { return layer->getDataFormat() == dataformat; })) {
+    if (!std::ranges::all_of(textureLayers, [&](const auto& layer) {
+            return layer->getDataFormat() == dataformat;
+        })) {
         throw Exception(SourceContext{}, "Textures have inconsistent formats: {} at {}",
                         joinString(textureFiles, ", "), sourcePath);
     }
@@ -272,6 +272,4 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     return texture;
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

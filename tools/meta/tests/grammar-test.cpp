@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -44,7 +45,7 @@ template <typename... Rules>
 struct exact : p::seq<p::bof, Rules..., p::eof> {};
 
 template <typename Rule>
-bool test(const std::string& input) {
+static bool test(const std::string& input) {
     std::string id;
     return p::parse_tree::parse<exact<Rule>, cmake::selector, cmake::action>(
                p::string_input<>(input, ""), id) != nullptr;
@@ -130,33 +131,33 @@ endif()
 )"));
 }
 
-void print_node(const p::parse_tree::node& n, const std::string& s = "") {
+static void print_node(const p::parse_tree::node& n, const std::string& s = "") {
     // detect the root node:
     if (n.is_root()) {
-        std::cout << "ROOT" << std::endl;
+        std::cout << "ROOT" << '\n';
     } else {
         if (n.has_content()) {
             auto content = n.string();
-            std::transform(content.begin(), content.end(), content.begin(),
-                           [](char c) { return c == '\n' ? '~' : c; });
-            std::cout << s << n.type << " \"" << content << "\"" << std::endl;
+            std::ranges::transform(content, content.begin(),
+                                   [](char c) { return c == '\n' ? '~' : c; });
+            std::cout << s << n.type << " \"" << content << "\"" << '\n';
         } else {
-            std::cout << s << n.type << std::endl;
+            std::cout << s << n.type << '\n';
         }
     }
     // print all child nodes
     if (!n.children.empty()) {
         const auto s2 = s + "  ";
-        for (auto& up : n.children) {
+        for (const auto& up : n.children) {
             print_node(*up, s2);
         }
     }
 }
 
-std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
+static std::ostream& print(std::ostream& os, const p::parse_tree::node& n) {
 
     if (n.children.empty() && n.has_content()) os << n.string_view();
-    for (auto& up : n.children) {
+    for (const auto& up : n.children) {
         print(os, *up);
     }
     return os;

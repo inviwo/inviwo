@@ -28,6 +28,8 @@
  *********************************************************************************/
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view VolumeIndicatorProperty::getClassIdentifier() const { return classIdentifier; }
@@ -36,7 +38,7 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string_view identifier,
                                                  std::string_view displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, std::move(semantics))
     , plane1_("plane1", "Plane 1", vec3(0.5f), vec3(0.0f, 0.0f, 1.0f))
     , plane2_("plane2", "Plane 2", vec3(0.5f), vec3(0.0f, 1.0f, 0.0f))
     , plane3_("plane3", "Plane 3", vec3(0.5f), vec3(1.0f, 0.0f, 0.0f)) {

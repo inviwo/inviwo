@@ -55,6 +55,7 @@
 #include <array>
 #include <chrono>
 #include <cstddef>
+#include <memory>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -67,9 +68,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 EntryExitPointsHelper::EntryExitPointsHelper() = default;
 
@@ -213,8 +212,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         const utilgl::DepthFuncState depthfunc(GL_LESS);
         if (!tmpEntry_ ||
             tmpEntry_->getDataFormat() != entryPoints.getColorLayerGL()->getDataFormat()) {
-            tmpEntry_.reset(new Image(entryPoints.getDimensions(),
-                                      entryPoints.getColorLayerGL()->getDataFormat()));
+            tmpEntry_ = std::make_unique<Image>(entryPoints.getDimensions(),
+                                                entryPoints.getColorLayerGL()->getDataFormat());
             tmpEntry_->addColorLayer(std::make_shared<Layer>(
                 entryPoints.getDimensions(), DataVec3Float32::get(), LayerType::Color));
 
@@ -242,7 +241,9 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
     auto& nearClipShader = getNearClipShader(includeNormals);
     nearClipShader.activate();
 
-    TextureUnit entryColorUnit, entryDepthUnit, entryNormalUnit;
+    TextureUnit entryColorUnit;
+    TextureUnit entryDepthUnit;
+    TextureUnit entryNormalUnit;
     tmpEntryGL_->getColorLayerGL()->bindTexture(entryColorUnit);
     tmpEntryGL_->getDepthLayerGL()->bindTexture(entryDepthUnit);
     nearClipShader.setUniform("entryColor", entryColorUnit);
@@ -252,7 +253,8 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(ImageGL& entryPoints, Im
         nearClipShader.setUniform("entryNormal", entryNormalUnit);
     }
 
-    TextureUnit exitColorUnit, exitDepthUnit;
+    TextureUnit exitColorUnit;
+    TextureUnit exitDepthUnit;
     exitPoints.getColorLayerGL()->bindTexture(exitColorUnit);
     exitPoints.getDepthLayerGL()->bindTexture(exitDepthUnit);
     nearClipShader.setUniform("exitColor", exitColorUnit);
@@ -519,6 +521,4 @@ std::shared_ptr<Shader> EntryExitPointsHelper::createNearClipShader(IncludeNorma
     }
 }
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

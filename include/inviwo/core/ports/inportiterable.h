@@ -41,7 +41,7 @@ class Outport;
 
 template <typename T>
 class FlatInportIterator {
-    using PortIter = typename std::vector<DataOutportInterface<T>*>::const_iterator;
+    using PortIter = std::vector<DataOutportInterface<T>*>::const_iterator;
 
 public:
     using difference_type = std::ptrdiff_t;
@@ -104,13 +104,13 @@ protected:
 
     PortIter portIter_;
     PortIter portEnd_;
-    size_t dataIndex_;
-    size_t dataSize_;
+    size_t dataIndex_{};
+    size_t dataSize_{};
 };
 
 template <typename T>
 class RegularInportIterator {
-    using PortIter = typename std::vector<DataOutportInterface<T>*>::const_iterator;
+    using PortIter = std::vector<DataOutportInterface<T>*>::const_iterator;
 
 public:
     using difference_type = std::ptrdiff_t;

@@ -44,7 +44,7 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
     return *this;
 }
 
-std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
+std::type_index MeshRAM::getTypeIndex() const { return {typeid(MeshRAM)}; }
 
 bool MeshRAM::isValid() const {
     return util::all_of(bufferRAM_, [](const auto& b) { return b->isValid(); });
@@ -57,12 +57,14 @@ void MeshRAM::update(bool editable) {
 
     const Mesh* owner = static_cast<Mesh*>(this->getOwner());
     if (editable) {
-        for (const auto& elem : owner->getBuffers())
+        for (const auto& elem : owner->getBuffers()) {
             bufferRAM_.push_back(elem.second->getEditableRepresentation<BufferRAM>());
+        }
     } else {
-        for (const auto& elem : owner->getBuffers())
+        for (const auto& elem : owner->getBuffers()) {
             bufferRAM_.push_back(
                 const_cast<BufferRAM*>(elem.second->getRepresentation<BufferRAM>()));
+        }
     }
 }
 

@@ -204,11 +204,11 @@ inline ivec3 toivec3(const QColor& c) { return {c.red(), c.green(), c.blue()}; }
 inline vec4 tovec4(const QColor& c) { return {c.redF(), c.greenF(), c.blueF(), c.alphaF()}; }
 inline ivec4 toivec4(const QColor& c) { return {c.red(), c.green(), c.blue(), c.alpha()}; }
 
-constexpr QColor toQColor(const ivec3& v) { return QColor(v.r, v.g, v.b); }
+constexpr QColor toQColor(const ivec3& v) { return {v.r, v.g, v.b}; }
 constexpr QColor toQColor(const uvec3& v) { return QColor(v.r, v.g, v.b); }
 constexpr QColor toQColor(const vec3& v) { return toQColor(ivec3(v * 255.0f)); }
 
-constexpr QColor toQColor(const ivec4& v) { return QColor(v.r, v.g, v.b, v.a); }
+constexpr QColor toQColor(const ivec4& v) { return {v.r, v.g, v.b, v.a}; }
 constexpr QColor toQColor(const uvec4& v) { return QColor(v.r, v.g, v.b, v.a); }
 constexpr QColor toQColor(const vec4& v) { return toQColor(ivec4(v * 255.0f)); }
 

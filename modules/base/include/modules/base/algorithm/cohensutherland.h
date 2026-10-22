@@ -35,9 +35,7 @@
 
 #include <tuple>
 
-namespace inviwo {
-
-namespace algorithm {
+namespace inviwo::algorithm {
 
 /**
  * @brief clip a 2D line at given rectangle using Cohen-Sutherland algorithm
@@ -71,6 +69,4 @@ IVW_MODULE_BASE_API std::tuple<bool, vec2, vec2> clipLineCohenSutherland(vec2 p1
  */
 IVW_MODULE_BASE_API bool insideRect(const vec2& p, const vec2& rectMin, const vec2& rectMax);
 
-}  // namespace algorithm
-
-}  // namespace inviwo
+}  // namespace inviwo::algorithm

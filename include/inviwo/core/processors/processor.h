@@ -172,7 +172,7 @@ class IVW_CORE_API Processor : public PropertyOwner,
                                public std::enable_shared_from_this<Processor> {
 public:
     using NameDispatcher = Dispatcher<void(std::string_view, std::string_view)>;
-    using NameDispatcherHandle = typename NameDispatcher::Handle;
+    using NameDispatcherHandle = NameDispatcher::Handle;
 
     /**
      * Processor constructor, takes two optional arguments.

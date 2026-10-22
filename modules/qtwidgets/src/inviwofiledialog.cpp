@@ -165,10 +165,8 @@ void InviwoFileDialog::setCurrentDirectory(const std::filesystem::path& path) {
     QFileDialog::setDirectory(currentPath_);
 
     // if the given path points to a file, select it when the dialog is opened
-    if (path.has_filename()) {
-        if (QFile::exists(currentPath_)) {
-            QFileDialog::selectFile(currentPath_);
-        }
+    if ((path.has_filename()) && (QFile::exists(currentPath_))) {
+        QFileDialog::selectFile(currentPath_);
     }
 }
 
@@ -221,7 +219,7 @@ void InviwoFileDialog::addExtension(std::string_view extString) {
 }
 
 void InviwoFileDialog::addExtensions(const std::vector<FileExtension>& extensions) {
-    for (const auto ext : extensions) {
+    for (const auto& ext : extensions) {
         addExtension(ext);
     }
 }

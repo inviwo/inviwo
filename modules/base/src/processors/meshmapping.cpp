@@ -95,8 +95,8 @@ MeshMapping::MeshMapping()
 
     , enabled_("enabled", "Enabled", true)
     , tf_("transferfunction", "Transfer Function",
-          TransferFunction(
-              {{0.0f, vec4(0.0f, 0.1f, 1.0f, 1.0f)}, {1.0f, vec4(1.0f, 0.03f, 0.03f, 1.0f)}}))
+          TransferFunction({{.pos = 0.0f, .color = vec4(0.0f, 0.1f, 1.0f, 1.0f)},
+                            {.pos = 1.0f, .color = vec4(1.0f, 0.03f, 0.03f, 1.0f)}}))
 
     , buffer_("buffer", "Buffer", "buffer used as source for the color mapping"_help)
     , component_(

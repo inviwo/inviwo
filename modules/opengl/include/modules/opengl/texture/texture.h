@@ -51,9 +51,9 @@ class IVW_MODULE_OPENGL_API TextureBase {
 public:
     explicit TextureBase(GLenum target);
     TextureBase(const TextureBase& other);
-    TextureBase(TextureBase&& other);
-    TextureBase& operator=(const TextureBase& other);
-    TextureBase& operator=(TextureBase&& other);
+    TextureBase(TextureBase&& rhs);
+    TextureBase& operator=(const TextureBase& rhs);
+    TextureBase& operator=(TextureBase&& rhs);
     virtual ~TextureBase();
 
     GLuint getID() const;
@@ -75,8 +75,8 @@ public:
             const SwizzleMask& swizzleMask, std::span<const GLenum> wrapping, GLint level);
     Texture(const Texture& other);
     Texture(Texture&& other);
-    Texture& operator=(const Texture& other);
-    Texture& operator=(Texture&& other);
+    Texture& operator=(const Texture& rhs);
+    Texture& operator=(Texture&& rhs);
 
     virtual ~Texture();
 
@@ -142,7 +142,7 @@ protected:
     static size_t dataTypeSize(GLenum dataType);
 
     mutable std::mutex syncMutex;
-    mutable GLsync syncObj = 0;
+    mutable GLsync syncObj = nullptr;
 
 private:
     GLuint pboBack_;  // For asynchronous readback to CPU

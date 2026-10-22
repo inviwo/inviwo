@@ -43,6 +43,7 @@
 #include <fmt/ostream.h>
 #include <fmt/std.h>
 
+#include <algorithm>
 #include <memory_resource>
 #include <tuple>
 
@@ -91,7 +92,7 @@ public:
     }
 
 private:
-    bool bundleProcessorNetwork(TxElement* root) {
+    static bool bundleProcessorNetwork(TxElement* root) {
 
         // create
         TxElement newNode("ProcessorNetwork");
@@ -104,7 +105,7 @@ private:
 
         for (TiXmlElement* child = root->FirstChildElement(); child;
              child = child->NextSiblingElement()) {
-            if (std::find(toMove.begin(), toMove.end(), child->Value()) != toMove.end()) {
+            if (std::ranges::find(toMove, child->Value()) != toMove.end()) {
                 newNode.LinkEndChild(child->Clone());
                 toBeDeleted.push_back(child);
             }
@@ -359,16 +360,15 @@ void WorkspaceManager::configureWorkspaceDeserializerAndInfo(Deserializer& deser
     deserializer.deserialize("InviwoSetup", info);
 
     for (const auto& inviwoModule : app_->getModuleManager().getInviwoModules()) {
-        if (auto moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier())) {
-            if (moduleInfo->version < inviwoModule.getVersion()) {
-                const auto converter = inviwoModule.getConverter(moduleInfo->version);
-                deserializer.convertVersion(converter.get());
-                log::message(
-                    deserializer, LogLevel::Warn,
-                    "Loading old workspace ({}). {} module version: {}. Updating to version: {}.",
-                    deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
-                    inviwoModule.getVersion());
-            }
+        if (const auto* moduleInfo = info.getModuleInfo(inviwoModule.getIdentifier());
+            moduleInfo && (moduleInfo->version < inviwoModule.getVersion())) {
+            const auto converter = inviwoModule.getConverter(moduleInfo->version);
+            deserializer.convertVersion(converter.get());
+            log::message(
+                deserializer, LogLevel::Warn,
+                "Loading old workspace ({}). {} module version: {}. Updating to version: {}.",
+                deserializer.getFileName(), inviwoModule.getIdentifier(), moduleInfo->version,
+                inviwoModule.getVersion());
         }
     }
 }
@@ -382,7 +382,7 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
     return serializers_.add([callback, modes](Serializer& s,
                                               const ExceptionHandler& exceptionHandler,
                                               WorkspaceSaveMode mode) {
-        if (modes.count(mode)) {
+        if (modes.contains(mode)) {
             try {
                 callback(s);
             } catch (Exception& e) {
@@ -399,7 +399,7 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
     return deserializers_.add([callback, modes](Deserializer& d,
                                                 const ExceptionHandler& exceptionHandler,
                                                 WorkspaceSaveMode mode) {
-        if (modes.count(mode)) {
+        if (modes.contains(mode)) {
             try {
                 callback(d);
             } catch (Exception& e) {

@@ -29,9 +29,7 @@
 
 #include <modules/animation/datastructures/animationobserver.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void AnimationObservable::notifyTrackAdded(Track* track) {
     forEachObserver([&](AnimationObserver* o) { o->onTrackAdded(track); });
@@ -53,6 +51,4 @@ void AnimationObservable::notifyNameChanged(Animation* anim) {
     forEachObserver([&](AnimationObserver* o) { o->onNameChanged(anim); });
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

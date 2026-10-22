@@ -138,27 +138,26 @@ public:
      */
     virtual std::unique_ptr<VersionConverter> getConverter(int oldModuleVersion) const;
 
-    const std::vector<CameraFactoryObject*> getCameras() const;
-    const std::vector<Capabilities*> getCapabilities() const;
-    const std::vector<DataReader*> getDataReaders() const;
-    const std::vector<DataWriter*> getDataWriters() const;
-    const std::vector<DialogFactoryObject*> getDialogs() const;
-    const std::vector<MeshDrawer*> getDrawers() const;
-    const std::vector<MetaData*> getMetaData() const;
-    const std::vector<InportFactoryObject*> getInports() const;
-    const std::vector<OutportFactoryObject*> getOutports() const;
-    const std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
-    const std::vector<ProcessorFactoryObject*> getProcessors() const;
-    const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
-    const std::vector<PropertyFactoryObject*> getProperties() const;
-    const std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
+    std::vector<CameraFactoryObject*> getCameras() const;
+    std::vector<Capabilities*> getCapabilities() const;
+    std::vector<DataReader*> getDataReaders() const;
+    std::vector<DataWriter*> getDataWriters() const;
+    std::vector<DialogFactoryObject*> getDialogs() const;
+    std::vector<MeshDrawer*> getDrawers() const;
+    std::vector<MetaData*> getMetaData() const;
+    std::vector<InportFactoryObject*> getInports() const;
+    std::vector<OutportFactoryObject*> getOutports() const;
+    std::vector<PortInspectorFactoryObject*> getPortInspectors() const;
+    std::vector<ProcessorFactoryObject*> getProcessors() const;
+    std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
+    std::vector<PropertyFactoryObject*> getProperties() const;
+    std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
 
-    const std::vector<BaseRepresentationFactoryObject*> getRepresentationFactoryObjects() const;
-    const std::vector<BaseRepresentationFactory*> getRepresentationFactories() const;
+    std::vector<BaseRepresentationFactoryObject*> getRepresentationFactoryObjects() const;
+    std::vector<BaseRepresentationFactory*> getRepresentationFactories() const;
 
-    const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
-    const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
-        const;
+    std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
+    std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories() const;
     const std::vector<Settings*>& getSettings() const;
 
     auto cameras() const { return cameras_ | deref; }
@@ -345,19 +344,23 @@ private:
         return res;
     }
     template <typename T>
-    const std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
+    std::vector<T*> uniqueToPtr(const std::vector<std::unique_ptr<T>>& v) const {
         std::vector<T*> res;
+        res.reserve(v.size());
         for (auto& elem : v) res.push_back(elem.get());
         return res;
     }
-    template <typename T, typename std::enable_if<std::is_base_of<Inport, T>::value, int>::type = 0>
-    void registerPortInternal() {
+    template <typename T>
+    void registerPortInternal()
+        requires std::is_base_of_v<Inport, T>
+    {
         registerInport(std::make_unique<InportFactoryObjectTemplate<T>>());
     }
 
-    template <typename T,
-              typename std::enable_if<std::is_base_of<Outport, T>::value, int>::type = 0>
-    void registerPortInternal() {
+    template <typename T>
+    void registerPortInternal()
+        requires std::is_base_of_v<Outport, T>
+    {
         registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
 
@@ -417,7 +420,7 @@ void InviwoModule::registerProcessorWidget() {
 
 template <typename T>
 void InviwoModule::registerPort() {
-    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
+    static_assert(std::is_base_of_v<Inport, T> || std::is_base_of_v<Outport, T>,
                   "A port has to derive from either Inport of Outport");
     try {
         registerPortInternal<T>();
@@ -472,7 +475,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationConverter(
     std::unique_ptr<RepresentationConverter<BaseRepr>> converter) {
 
-    if (auto metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
+    if (auto* metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
         if (auto factory = metaFactory->getConverterFactory<BaseRepr>()) {
             if (factory->registerObject(converter.get())) {
                 representationConvertersUnRegFunctors_.push_back(
@@ -487,7 +490,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationFactoryObject(
     std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation) {
 
-    if (auto metaFactory = util::getRepresentationMetaFactory(app_)) {
+    if (auto* metaFactory = util::getRepresentationMetaFactory(app_)) {
         if (auto factory = metaFactory->getRepresentationFactory<BaseRepr>()) {
             if (factory->registerObject(representation.get())) {
                 representationUnRegFunctors_.push_back(

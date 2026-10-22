@@ -103,7 +103,7 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>>& items, Bui
     , onReloadCallback_{}
     , label_{} {
 
-    for (auto& item : items) {
+    for (const auto& item : items) {
         addShaderObject(item.first, utilgl::findShaderResource(item.second));
     }
 
@@ -125,7 +125,7 @@ Shader::Shader(
     , onReloadCallback_{}
     , label_{} {
 
-    for (auto& item : items) {
+    for (const auto& item : items) {
         addShaderObject(item.first, item.second);
     }
     if (buildShader) build();
@@ -299,7 +299,7 @@ void Shader::linkShader(bool notifyRebuild) {
 }
 
 bool Shader::checkLinkStatus() const {
-    GLint res;
+    GLint res = 0;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
     return res != 0;
 }
@@ -358,28 +358,29 @@ std::string Shader::processLog(std::string log) const {
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
         const auto lline = toLower(line);
-        if (lline.find("vertex") != std::string::npos)
+        if (lline.contains("vertex")) {
             type = ShaderType::Vertex;
-        else if (lline.find("geometry") != std::string::npos)
+        } else if (lline.contains("geometry")) {
             type = ShaderType::Geometry;
-        else if (lline.find("fragment") != std::string::npos)
+        } else if (lline.contains("fragment")) {
             type = ShaderType::Fragment;
-        else if (lline.find("tessellation control") != std::string::npos)
+        } else if (lline.contains("tessellation control")) {
             type = ShaderType::TessellationControl;
-        else if (lline.find("tessellation evaluation") != std::string::npos)
+        } else if (lline.contains("tessellation evaluation")) {
             type = ShaderType::TessellationEvaluation;
-        else if (lline.find("compute") != std::string::npos)
+        } else if (lline.contains("compute")) {
             type = ShaderType::Compute;
+        }
 
         const int origLineNumber = utilgl::getLogLineNumber(line);
 
-        auto obj = getShaderObject(type);
+        const auto* obj = getShaderObject(type);
         if (obj && origLineNumber > 0) {
             const auto res = obj->resolveLine(origLineNumber - 1);
             const auto lineNumber = res.second;
             const auto fileName = res.first;
             result << "\n"
-                   << fileName << " (" << lineNumber << "): " << line.substr(line.find(":") + 1);
+                   << fileName << " (" << lineNumber << "): " << line.substr(line.find(':') + 1);
         } else {
             result << "\n" << line;
         }
@@ -448,9 +449,8 @@ const ShaderObject* Shader::operator[](ShaderType type) const { return getShader
 ShaderObject* Shader::operator[](ShaderType type) { return getShaderObject(type); }
 
 const ShaderObject* Shader::getShaderObject(ShaderType type) const {
-    const auto it =
-        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it = std::ranges::find_if(
+        shaderObjects_, [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {
@@ -459,9 +459,8 @@ const ShaderObject* Shader::getShaderObject(ShaderType type) const {
 }
 
 ShaderObject* Shader::getShaderObject(ShaderType type) {
-    const auto it =
-        std::find_if(shaderObjects_.begin(), shaderObjects_.end(),
-                     [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
+    const auto it = std::ranges::find_if(
+        shaderObjects_, [&](const ShaderObject& obj) { return obj.getShaderType() == type; });
     if (it != shaderObjects_.end()) {
         return &(*it);
     } else {

@@ -48,6 +48,8 @@
 #include <QRgb>
 #include <QStyle>
 #include <QStyleOption>
+
+#include <numbers>
 #include <qmath.h>
 #include <Qt>
 #include <QtGlobal>
@@ -155,7 +157,7 @@ void ColorWheel::setColorFromSquare(const QPoint& point) {
                               clamp(static_cast<int>(p.y() / SquareWidth * 255.0), 0, 255)));
 }
 
-QSize ColorWheel::sizeHint() const { return QSize(height(), height()); }
+QSize ColorWheel::sizeHint() const { return {height(), height()}; }
 
 QSize ColorWheel::minimumSizeHint() const { return initSize_; }
 
@@ -210,19 +212,21 @@ void ColorWheel::mouseMoveEvent(QMouseEvent* e) {
             qreal y0 = 0.0f;
             const qreal w0 = static_cast<qreal>(squareRegion_.boundingRect().width());
 
-            if (lastPos_.x() > m + w0)
+            if (lastPos_.x() > m + w0) {
                 x0 = m + w0;
-            else if (lastPos_.x() < m)
+            } else if (lastPos_.x() < m) {
                 x0 = m;
-            else
+            } else {
                 x0 = static_cast<qreal>(lastPos_.x());
+            }
 
-            if (lastPos_.y() > m + w0)
+            if (lastPos_.y() > m + w0) {
                 y0 = m + w0;
-            else if (lastPos_.y() < m)
+            } else if (lastPos_.y() < m) {
                 y0 = m;
-            else
+            } else {
                 y0 = static_cast<qreal>(lastPos_.y());
+            }
 
             setColorFromSquare(QPoint(static_cast<int>(x0), static_cast<int>(y0)));
         }
@@ -251,12 +255,12 @@ void ColorWheel::resizeEvent(QResizeEvent* event) {
     const int w = qMin(width(), height());
     const qreal r = w / 2.0 - margin_;              // radius of outer circle
     const qreal ir = r - wheelWidth_;               // radius of inner circle
-    const qreal m = w / 2.0 - ir / std::sqrt(2.0);  // left corner of square
+    const qreal m = w / 2.0 - ir / std::numbers::sqrt2;  // left corner of square
 
     QRectF rect;
     rect.setTopLeft(QPointF(m, m));
-    rect.setWidth(2.0 * ir / std::sqrt(2.0));
-    rect.setHeight(2.0 * ir / std::sqrt(2.0));
+    rect.setWidth(2.0 * ir / std::numbers::sqrt2);
+    rect.setHeight(2.0 * ir / std::numbers::sqrt2);
     squareRegion_ = QRegion(rect.toRect());
 }
 
@@ -309,7 +313,7 @@ void ColorWheel::drawOuterRing(QPainter& painter) {
 void ColorWheel::updateSquareImage(const int& hue) {
     QImage square(255, 255, QImage::Format_ARGB32_Premultiplied);
     QColor color;
-    QRgb vv;
+    QRgb vv = 0;
 
     for (int i = 0; i < 255; ++i) {
         for (int j = 0; j < 255; ++j) {
@@ -318,16 +322,17 @@ void ColorWheel::updateSquareImage(const int& hue) {
             square.setPixel(i, j, vv);
         }
     }
-    squareImage_ = square;
+    squareImage_ = std::move(square);
 }
 
 void ColorWheel::drawIndicator(QPainter& painter) {
     const int hue = currentColor_.hue();
 
-    if (hue > 20 && hue < 200)
+    if (hue > 20 && hue < 200) {
         painter.setPen(Qt::black);
-    else
+    } else {
         painter.setPen(Qt::white);
+    }
 
     painter.save();
     painter.setBrush(Qt::NoBrush);

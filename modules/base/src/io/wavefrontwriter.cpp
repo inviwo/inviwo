@@ -86,7 +86,7 @@ std::unique_ptr<std::vector<unsigned char>> WaveFrontWriter::writeDataToBuffer(
 
 void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& info,
                                       const IndexBuffer& indices, bool hasNormals,
-                                      bool hasTextures) const {
+                                      bool hasTextures) {
     if (info.dt == DrawType::Triangles) {
         if (hasTextures && hasNormals) {
             meshutil::forEachTriangle(info, indices,
@@ -125,7 +125,7 @@ void WaveFrontWriter::writePrimitives(std::ostream& f, const Mesh::MeshInfo& inf
         }
 
     } else if (info.dt == DrawType::Points) {
-        auto& ram = indices.getRAMRepresentation()->getDataContainer();
+        const auto& ram = indices.getRAMRepresentation()->getDataContainer();
         fmt::print(f, "p ");
         for (const auto i : ram) fmt::print(f, "{} ", i + 1);
         fmt::print(f, "\n");
@@ -136,8 +136,8 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     const auto model = data->getModelMatrix();
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
     const auto proj = [&](const auto& d1) {
-        using GT = typename std::decay<decltype(d1)>::type;
-        using T = typename GT::value_type;
+        using GT = std::decay_t<decltype(d1)>;
+        using T = GT::value_type;
         const glm::tvec4<T> tmp = model * glm::tvec4<T>(d1, 1.0);
         return glm::tvec3<T>(tmp) / tmp.w;
     };
@@ -147,7 +147,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
         if (!buffer) {
             throw DataWriterException("Error: could not find a position buffer");
         }
-        const auto posRam = buffer->getRepresentation<BufferRAM>();
+        const auto* const posRam = buffer->getRepresentation<BufferRAM>();
         if (!posRam) {
             throw DataWriterException("Error: could not find a position buffer ram");
         }
@@ -166,7 +166,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     bool hasTextures = false;
     if (auto [buffer, loc] = data->findBuffer(BufferType::TexCoordAttrib); buffer) {
-        if (const auto texRam = buffer->getRepresentation<BufferRAM>()) {
+        if (const auto* const texRam = buffer->getRepresentation<BufferRAM>()) {
             fmt::print(f, "# List of texture coordinates ({})\n", texRam->getSize());
             if (texRam->getDataFormat()->getComponents() == 3) {
                 hasTextures = true;
@@ -188,7 +188,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     bool hasNormals = false;
     if (auto [buffer, loc] = data->findBuffer(BufferType::NormalAttrib); buffer) {
-        if (const auto normRam = buffer->getRepresentation<BufferRAM>()) {
+        if (const auto* const normRam = buffer->getRepresentation<BufferRAM>()) {
             fmt::print(f, "# List of vertex normal ({})\n", normRam->getSize());
             if (normRam->getDataFormat()->getComponents() == 3) {
                 hasNormals = true;
@@ -207,8 +207,10 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
         writePrimitives(f, info, *indices, hasNormals, hasTextures);
     }
     if (data->getIndexBuffers().empty()) {
-        std::vector<std::uint32_t> indices(data->getBuffer(0)->getSize());
-        std::iota(indices.begin(), indices.end(), 0);
+        auto indices =
+            std::views::iota(uint32_t{0}, static_cast<uint32_t>(data->getBuffer(0)->getSize())) |
+            std::ranges::to<std::vector>();
+
         const auto ib = IndexBuffer(std::make_shared<IndexBufferRAM>(std::move(indices)));
         writePrimitives(f, data->getDefaultMeshInfo(), ib, hasNormals, hasTextures);
     }

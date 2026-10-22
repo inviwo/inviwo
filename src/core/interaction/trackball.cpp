@@ -299,7 +299,7 @@ dvec3 Trackball::mapNormalizedMousePosToTrackball(const dvec2& mousePos, double 
     double z = 0;
     // Mapping according to Holroyds trackball
     // Piece-wise sphere + hyperbolic sheet
-    if (norm <= r * r / (2.0)) {  // Spherical Region
+    if (norm <= r * r / 2.0) {  // Spherical Region
         z = r * r - norm;
         z = z > 0.0 ? std::sqrt(z) : 0.0;
     } else {  // Hyperbolic Region - for smooth z values
@@ -380,8 +380,9 @@ void Trackball::rotateTAV(MouseEvent* mouseEvent) {
         const dvec3 newFrom =
             rot_around_right * rot_around_up * camDir;  // Rotate camDir (normalized lookFrom)
         dvec3 newUp = rot_around_right * rot_around_up * getLookUp();  // Rotate up accordingly
-        if (fixUp_)
+        if (fixUp_) {
             newUp = glm::cross(glm::cross(-camDir, wUp), -camDir);  // let up point along world up
+        }
 
         setLook(getLookTo() + newFrom * dist, getLookTo(), glm::normalize(newUp));
     }
@@ -701,7 +702,10 @@ void Trackball::touchGesture(Event* event) {
         const size_t rotateBasedOnIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
         const auto& point = touchPoints[rotateBasedOnIndex];
 
-        if (point.state() == TouchState::Finished) return reset(event);
+        if (point.state() == TouchState::Finished) {
+            reset(event);
+            return;
+        }
 
         if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
         timer_.stop();
@@ -805,7 +809,7 @@ void Trackball::touchGesture(Event* event) {
         zoom *= glm::length(direction);
         direction = glm::normalize(direction);
         zoom = getBoundedZoom(getLookFrom(), getLookTo(), static_cast<float>(zoom));
-        const dvec3 newLookFrom = getLookFrom() + zoom * (direction);
+        const dvec3 newLookFrom = getLookFrom() + zoom * direction;
 
         const dvec3 boundedWorldSpaceTranslation(
             getBoundedTranslation(newLookFrom, getLookTo(), worldSpaceTranslation));

@@ -107,7 +107,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         QPoint newPos =
             utilqt::movePointOntoDesktop(utilqt::toQPoint(pos), utilqt::toQSize(logicalDim), true);
 
-        if (!(newPos.x() == 0 && newPos.y() == 0)) {
+        if (newPos.x() != 0 || newPos.y() != 0) {
             const util::KeepTrueWhileInScope ignore(&ignoreEvents_);
             // prevent move events, since this will automatically save the "adjusted" position.
             // The processor widget already has its correct pos, i.e. the one de-serialized from
@@ -192,8 +192,9 @@ void CanvasProcessorWidgetQt::propagateResizeEvent() {
 }
 
 bool CanvasProcessorWidgetQt::contextMenu(QMenu& menu, ContextMenuCategories actions) {
-    if (const auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor())) {
-        if (!canvasProcessor->isContextMenuAllowed()) return false;
+    if (const auto* canvasProcessor = dynamic_cast<CanvasProcessor*>(getProcessor());
+        canvasProcessor && (!canvasProcessor->isContextMenuAllowed())) {
+        return false;
     }
 
     if (actions.contains(ContextMenuCategory::Widget)) {

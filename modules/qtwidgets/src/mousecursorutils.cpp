@@ -31,9 +31,7 @@
 
 #include <inviwo/core/interaction/events/mousecursors.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 MouseCursor fromCursorShape(const Qt::CursorShape cursor) {
     switch (cursor) {
@@ -85,6 +83,4 @@ Qt::CursorShape toCursorShape(const MouseCursor cursor) {
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

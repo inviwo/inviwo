@@ -56,7 +56,7 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     SeedPointsFromMask();
-    virtual ~SeedPointsFromMask() {}
+    virtual ~SeedPointsFromMask() = default;
 
 protected:
     virtual void process() override;

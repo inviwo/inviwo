@@ -57,11 +57,11 @@ void ClockGL::start() {
     if (!queries_.empty() && queries_.back().state == State::Started) {
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
     } else if (!queries_.empty() && queries_.front().state == State::Unused) {
-        std::rotate(queries_.begin(), queries_.begin() + 1, queries_.end());
+        std::ranges::rotate(queries_, queries_.begin() + 1);
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
         queries_.back().state = State::Started;
     } else {
-        queries_.push_back({{0, 0}, State::Started});
+        queries_.push_back({.ids = {0, 0}, .state = State::Started});
         glGenQueries(2, queries_.back().ids.data());
         glQueryCounter(queries_.back().startId(), GL_TIMESTAMP);
     }
@@ -105,8 +105,8 @@ auto ClockGL::getElapsedTime(std::chrono::seconds timeout) -> duration {
         if (isRunning()) {
             // special case if last query is still ongoing, i.e. this query is
             // not considered by collectTiming()
-            GLuint64 start;
-            GLuint64 stop;
+            GLuint64 start = 0;
+            GLuint64 stop = 0;
             glGetQueryObjectui64v(queries_.back().startId(), GL_QUERY_RESULT, &start);
             glGetQueryObjectui64v(queries_.back().stopId(), GL_QUERY_RESULT, &stop);
             return accumulatedTime_ + std::chrono::nanoseconds{stop - start};
@@ -136,8 +136,8 @@ void ClockGL::collectTiming() {
             int done = 0;
             glGetQueryObjectiv(query.stopId(), GL_QUERY_RESULT_AVAILABLE, &done);
             if (done) {
-                GLuint64 start;
-                GLuint64 stop;
+                GLuint64 start = 0;
+                GLuint64 stop = 0;
                 glGetQueryObjectui64v(query.startId(), GL_QUERY_RESULT, &start);
                 glGetQueryObjectui64v(query.stopId(), GL_QUERY_RESULT, &stop);
                 accumulatedTime_ += std::chrono::nanoseconds{stop - start};
@@ -145,8 +145,8 @@ void ClockGL::collectTiming() {
             }
         }
     }
-    std::stable_partition(queries_.begin(), queries_.end(),
-                          [](auto& query) { return query.state == State::Unused; });
+    std::ranges::stable_partition(queries_,
+                                  [](auto& query) { return query.state == State::Unused; });
 }
 
 double ClockGL::getElapsedMilliseconds(std::chrono::seconds timeout) {

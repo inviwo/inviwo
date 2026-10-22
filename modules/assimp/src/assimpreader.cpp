@@ -42,6 +42,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 
@@ -87,8 +88,8 @@ private:
     const std::filesystem::path fileName_;
 
 public:
-    InviwoAssimpLogStream(LogLevel ploglevel, const std::filesystem::path& filename)
-        : loglevel_{ploglevel}, fileName_{filename} {}
+    InviwoAssimpLogStream(LogLevel ploglevel, std::filesystem::path filename)
+        : loglevel_{ploglevel}, fileName_{std::move(filename)} {}
     virtual ~InviwoAssimpLogStream() = default;
 
     void write(const char* message) {
@@ -196,8 +197,9 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
 
     std::clock_t start_convert = std::clock();
     if (logging) {
-        Assimp::DefaultLogger::get()->debug(fmt::format(
-            "time to load: {}", double((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
+        Assimp::DefaultLogger::get()->debug(
+            fmt::format("time to load: {}",
+                        static_cast<double>((std::clock() - start_readmetadata) / CLOCKS_PER_SEC)));
     }
 
     if (!scene) {
@@ -243,7 +245,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         color_channels = std::max(size_t{m->GetNumColorChannels()}, color_channels);
         texture_channels = std::max(size_t{m->GetNumUVChannels()}, texture_channels);
 
-        if (false == m->HasNormals()) {
+        if (!m->HasNormals()) {
             use_normals = false;
         }
     }
@@ -349,7 +351,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
         }
 
         // fill not existing color channels with padding data
-        for (size_t l = size_t{m->GetNumColorChannels()}; l < color_channels; ++l) {
+        for (auto l = size_t{m->GetNumColorChannels()}; l < color_channels; ++l) {
             for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
                 crep[l]->add(padding_color);
             }
@@ -363,7 +365,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
             }
         }
 
-        for (size_t l = size_t{m->GetNumUVChannels()}; l < texture_channels; ++l) {
+        for (auto l = size_t{m->GetNumUVChannels()}; l < texture_channels; ++l) {
             for (size_t j = 0; j < size_t{m->mNumVertices}; ++j) {
                 trep[l]->add(vec3(0.0, 0.0, 0.0));
             }
@@ -407,10 +409,11 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::filesystem::path& url) {
     std::clock_t now = std::clock();
     if (logging) {
         Assimp::DefaultLogger::get()->debug(
-            "time to convert: " + std::to_string(double((now - start_convert) / CLOCKS_PER_SEC)));
+            "time to convert: " +
+            std::to_string(static_cast<double>((now - start_convert) / CLOCKS_PER_SEC)));
         Assimp::DefaultLogger::get()->debug(
             "overall time to import: " +
-            std::to_string(double((now - start_readmetadata) / CLOCKS_PER_SEC)));
+            std::to_string(static_cast<double>((now - start_readmetadata) / CLOCKS_PER_SEC)));
 
         Assimp::DefaultLogger::kill();
     }

@@ -46,8 +46,8 @@ namespace inviwo {
 
 using namespace std::literals;
 
-inline void checkContext(std::string_view error, Canvas::ContextID org,
-                         SourceContext context = std::source_location::current()) {
+static inline void checkContext(std::string_view error, Canvas::ContextID org,
+                                SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
         const auto* rc = RenderContext::getPtr();
         const auto* const curr = rc->activeContext();
@@ -61,11 +61,11 @@ inline void checkContext(std::string_view error, Canvas::ContextID org,
     }
 }
 
-size_t BufferObjectArray::maxSize() const {
+size_t BufferObjectArray::maxSize() {
     static const size_t size = []() {
         GLint glsize = 0;
         // usually about 16 should be more than BufferType::NumberOfBufferTypes.
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &glsize);
         return static_cast<size_t>(glsize);
     }();
 
@@ -73,18 +73,20 @@ size_t BufferObjectArray::maxSize() const {
 }
 
 BufferObjectArray::BufferObjectArray()
-    : id_(0u), attachedBuffers_(maxSize(), {BindingType::Native, nullptr}) {
+    : id_(0u)
+    , attachedBuffers_(maxSize(), {BindingType::Native, nullptr})
+    , creationContext_(RenderContext::getPtr()->activeContext()) {
 
-    creationContext_ = RenderContext::getPtr()->activeContext();
     IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenVertexArrays(1, &id_);
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(rhs.attachedBuffers_) {
+    : id_(0u)
+    , attachedBuffers_(rhs.attachedBuffers_)
+    , creationContext_(RenderContext::getPtr()->activeContext()) {
 
-    creationContext_ = RenderContext::getPtr()->activeContext();
     IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenVertexArrays(1, &id_);
@@ -138,7 +140,7 @@ void BufferObjectArray::bind() const {
     glBindVertexArray(id_);
 }
 
-void BufferObjectArray::unbind() const { glBindVertexArray(0); }
+void BufferObjectArray::unbind() { glBindVertexArray(0); }
 
 bool BufferObjectArray::isActive() const {
     checkContext("VAO used in a different context"sv, creationContext_);
@@ -189,10 +191,11 @@ void BufferObjectArray::detachBufferObject(GLuint location) {
 }
 
 const BufferObject* BufferObjectArray::getBufferObject(size_t location) const {
-    if (location < attachedBuffers_.size())
+    if (location < attachedBuffers_.size()) {
         return attachedBuffers_[location].second;
-    else
+    } else {
         return nullptr;
+    }
 }
 
 BufferObjectArray::BindingType BufferObjectArray::getBindingType(size_t location) const {

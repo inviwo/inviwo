@@ -63,8 +63,8 @@ namespace detail {
 // issues due to different default states (value, ranges, semantics, etc.). Therefore, the property
 // state has to be changed explicitly after construction in order to be serialized properly.
 template <typename Prop, typename... Args>
-void addProperty(PropertyOwner& owner, std::string_view identifier, std::string_view displayName,
-                 Args&&... args) {
+static void addProperty(PropertyOwner& owner, std::string_view identifier,
+                        std::string_view displayName, Args&&... args) {
     auto prop = std::make_unique<Prop>(identifier, displayName);
     prop->set(std::forward<Args>(args)...);
     prop->setSemantics(PropertySemantics::Text);
@@ -72,11 +72,11 @@ void addProperty(PropertyOwner& owner, std::string_view identifier, std::string_
 }
 
 template <typename Prop>
-void addOptionProperty(PropertyOwner& owner, std::string_view identifier,
-                       std::string_view displayName,
-                       std::vector<OptionPropertyOption<typename Prop::value_type>> options) {
+static void addOptionProperty(
+    PropertyOwner& owner, std::string_view identifier, std::string_view displayName,
+    std::vector<OptionPropertyOption<typename Prop::value_type>> options) {
     auto prop = std::make_unique<Prop>(identifier, displayName);
-    prop->replaceOptions(options);
+    prop->replaceOptions(std::move(options));
     owner.addProperty(std::move(prop));
 }
 
@@ -90,7 +90,7 @@ FilterListProperty::FilterListProperty(std::string_view identifier, std::string_
                                        InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
     : ListProperty(identifier, displayName, maxNumberOfElements, uiFlags, invalidationLevel,
-                   semantics) {
+                   std::move(semantics)) {
 
     const auto onHeaderProp = [enable = supportsFilterOnHeader]() {
         auto p = std::make_unique<BoolProperty>("filterOnHeader", "Filter on Header", enable);

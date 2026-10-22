@@ -41,42 +41,50 @@ namespace inviwo {
 
 using namespace util;
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-T minv() {
+template <typename T>
+static T minv()
+    requires std::is_floating_point_v<T>
+{
     return T{0.0};
 }
 
-template <typename T, typename std::enable_if<!std::is_floating_point<T>::value, int>::type = 0>
-T minv() {
+template <typename T>
+static T minv()
+    requires(!std::is_floating_point_v<T>)
+{
     return std::numeric_limits<T>::lowest();
 }
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-T maxv() {
+template <typename T>
+static T maxv()
+    requires std::is_floating_point_v<T>
+{
     return T{1.0};
 }
 
-template <typename T, typename std::enable_if<!std::is_floating_point<T>::value, int>::type = 0>
-T maxv() {
+template <typename T>
+static T maxv()
+    requires(!std::is_floating_point_v<T>)
+{
     return std::numeric_limits<T>::max();
 }
 
 template <typename To, typename From>
-void testmax(std::string_view to, std::string_view from) {
+static void testmax(std::string_view to, std::string_view from) {
     const auto res = glm_convert_normalized<To>(maxv<From>());
     EXPECT_EQ(maxv<To>(), res) << "Convert range max " << from << " (" << +maxv<From>() << ") to "
                                << to << " (" << +maxv<To>() << ")";
 }
 
 template <typename To, typename From>
-void testmin(std::string_view to, std::string_view from) {
+static void testmin(std::string_view to, std::string_view from) {
     const auto res = glm_convert_normalized<To>(minv<From>());
     EXPECT_EQ(minv<To>(), res) << "Convert range min " << from << " (" << +minv<From>() << ") to "
                                << to << " (" << +minv<To>() << ")";
 }
 
 template <typename F, typename T>
-constexpr bool testMinMax() {
+static constexpr bool testMinMax() {
     return ((glm_convert_normalized<T, F>(std::numeric_limits<F>::min()) ==
              std::numeric_limits<T>::min()) &&
             (glm_convert_normalized<T, F>(std::numeric_limits<F>::max()) ==

@@ -56,9 +56,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-
-namespace glui {
+namespace inviwo::glui {
 
 Element::Element(std::string_view label, Processor& processor, Renderer& uiRenderer,
                  UIOrientation orientation)
@@ -210,7 +208,7 @@ ivec2 Element::getWidgetExtentScaled() const {
         // no custom scaling
         return widgetExtent_;
     } else {
-        return ivec2(dvec2(widgetExtent_) * scalingFactor_ + 0.5);
+        return {dvec2(widgetExtent_) * scalingFactor_ + 0.5};
     }
 }
 
@@ -281,7 +279,7 @@ bool Element::isChecked() const { return checked_; }
 void Element::setAction(const std::function<void()>& action) { action_ = action; }
 
 void Element::setPickingEventAction(std::function<void(PickingEvent* e)> pickingAction) {
-    pickingAction_ = pickingAction;
+    pickingAction_ = std::move(pickingAction);
 }
 
 void Element::triggerAction() {
@@ -395,7 +393,7 @@ vec4 Element::adjustColor(const vec4& color) {
     hsv.z -= lumDiff;
     // reduce saturation
     hsv.y = std::max(0.0f, hsv.x - 0.15f);
-    return vec4(color::hsv2rgb(hsv), color.a);
+    return {color::hsv2rgb(hsv), color.a};
 }
 
 TextRenderer& Element::getCurrentTextRenderer() const {
@@ -420,6 +418,4 @@ void Element::renderLabel(const ivec2& origin, const size2_t& canvasDim) {
     }
 }
 
-}  // namespace glui
-
-}  // namespace inviwo
+}  // namespace inviwo::glui

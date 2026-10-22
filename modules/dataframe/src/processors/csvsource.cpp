@@ -203,7 +203,8 @@ void CSVSource::deserialize(Deserializer& d) {
 namespace detail {
 
 template <typename T>
-decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_view identifier) {
+static decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent,
+                                                   std::string_view identifier) {
     if (auto p = dynamic_cast<T*>(parent->getPropertyByIdentifier(identifier))) {
         return p->get();
     } else {
@@ -217,7 +218,7 @@ decltype(std::declval<T&>().get()) getValue(PropertyOwner* parent, std::string_v
 csvfilters::Filters CSVSource::createFilters() const {
 
     auto startsWith = [](std::string_view str, std::string_view prefix) {
-        return str.substr(0, prefix.size()) == prefix;
+        return str.starts_with(prefix);
     };
 
     const auto parse = [&](const auto& filterProp, auto& rowFilters, auto& itemFilters) {

@@ -118,7 +118,7 @@ RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     seed_.onChange([&]() { samples_.clear(); });
 }
 
-RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() {}
+RBFVectorFieldGenerator2D::~RBFVectorFieldGenerator2D() = default;
 
 void RBFVectorFieldGenerator2D::process() {
     if (samples_.size() != static_cast<size_t>(seeds_.get())) {
@@ -126,8 +126,10 @@ void RBFVectorFieldGenerator2D::process() {
     }
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(seeds_.get(), seeds_.get());
-    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get()), by(seeds_.get());
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get()), xy(seeds_.get());
+    Eigen::VectorXd bx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd by(seeds_.get());
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(seeds_.get());
+    Eigen::VectorXd xy(seeds_.get());
 
     int row = 0;
     for (const auto& a : samples_) {
@@ -192,7 +194,7 @@ void RBFVectorFieldGenerator2D::createSamples() {
 
     samples_.resize(seeds_.get());
 
-    std::generate(samples_.begin(), samples_.end(), [&]() {
+    std::ranges::generate(samples_, [&]() {
         const auto x = x_(mt_);
         const auto y = x_(mt_);
         return std::make_pair(dvec2(x, y), randomVector());

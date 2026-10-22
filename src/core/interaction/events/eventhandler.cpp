@@ -33,7 +33,7 @@
 namespace inviwo {
 
 void EventHandler::broadcast(Event* event) const {
-    for (auto& elem : eventListeners_) elem->invokeEvent(event);
+    for (const auto& elem : eventListeners_) elem->invokeEvent(event);
 }
 
 bool EventHandler::addEventListener(EventListener* listener) {

@@ -113,7 +113,7 @@ TFEditorView::TFEditorView(TFPropertyConcept* tfProperty, QGraphicsScene* scene,
         [this](TFPropertyConcept::HistogramChange change,
                std::shared_ptr<const std::vector<Histogram1D>> histograms) {
             histogramState_.change = change;
-            histogramState_.histograms = histograms;
+            histogramState_.histograms = std::move(histograms);
             histogramState_.polygons = HistogramState::createHistogramPolygons(
                 histogramState_.histograms, histogramState_.mode);
             resetCachedContent();
@@ -391,10 +391,9 @@ void TFEditorView::drawBackground(QPainter* painter, const QRectF& updateRect) {
     // coordinates"
     DataMapper sceneDM{dvec2{0.0, 1.0}, dvec2{0.0, 1.0}};
     if (property_->allRelative()) {
-        if (const auto* dm = property_->getDataMap()) {
-            if (dm->dataRange.x != dm->dataRange.y && dm->valueRange.x != dm->valueRange.y) {
-                sceneDM = *dm;
-            }
+        if (const auto* dm = property_->getDataMap();
+            dm && (dm->dataRange.x != dm->dataRange.y && dm->valueRange.x != dm->valueRange.y)) {
+            sceneDM = *dm;
         }
     }
 

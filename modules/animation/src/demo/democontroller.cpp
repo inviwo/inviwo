@@ -48,9 +48,7 @@
 
 #include <fmt/std.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 DemoController::DemoController(InviwoApplication* app)
     : app_(app), demoFolder_("demoFolder", "Folder", ""), demoFile_("demoFile", "File") {
@@ -75,11 +73,10 @@ void DemoController::setFileOptions() {
         filesystem::getDirectoryContents(demoFolder_.get(), filesystem::ListMode::Files);
 
     int invNum = 0;
-    for (size_t elIdx = 0; elIdx < elements.size(); ++elIdx) {
-        const auto& elem = elements[elIdx];
+    for (const auto& elem : elements) {
         std::string ext = elem.extension().string();
         ext = toLower(ext);
-        if (ext.compare(".inv") == 0) {  // Found a workspace
+        if (ext == ".inv") {  // Found a workspace
             const auto cleanName = elem.stem();
             const auto cleanNameExt = util::stripIdentifier(elem.string());
             demoFile_.addOption(cleanNameExt, cleanName.string(), invNum++);
@@ -89,7 +86,7 @@ void DemoController::setFileOptions() {
     updateWorkspace_ = true;
 
     // Select first element, call file callback.
-    if (demoFile_.getValues().size() > 0) {
+    if (!demoFile_.getValues().empty()) {
         demoFile_.set(0);
         onChangeSelection(Offset::Reload);
     }
@@ -112,8 +109,9 @@ void DemoController::onChangeSelection(Offset offset) {
 
     // No need to load anything
     if (nextFileIndex < 0 || nextFileIndex >= numFiles ||
-        (offset != Offset::Reload && nextFileIndex == demoFile_.get()))
+        (offset != Offset::Reload && nextFileIndex == demoFile_.get())) {
         return;
+    }
 
     updateWorkspace_ = false;
     demoFile_.set(nextFileIndex);
@@ -145,6 +143,4 @@ void DemoController::loadWorkspaceApp(const std::filesystem::path& fileName) {
 
 InviwoApplication* DemoController::getInviwoApplication() { return app_; }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

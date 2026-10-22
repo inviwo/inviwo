@@ -29,12 +29,14 @@
 
 #include <inviwo/core/properties/imageeditorproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
-ImageLabel::ImageLabel() : name_(""), startPoint_(0), rectSize_(0) {}
+ImageLabel::ImageLabel() : startPoint_(0), rectSize_(0) {}
 
 ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
-    : name_(name), startPoint_(startPoint), rectSize_(rectSize) {}
+    : name_(std::move(name)), startPoint_(startPoint), rectSize_(rectSize) {}
 
 ImageEditorProperty::ImageEditorProperty(const ImageEditorProperty& rhs)
     : FileProperty(rhs), labels_(rhs.labels_), dimensions_(rhs.dimensions_) {}
@@ -61,13 +63,13 @@ ImageEditorProperty::ImageEditorProperty(std::string_view identifier, std::strin
                                          std::string_view value,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, "image", invalidationLevel, semantics)
+    : FileProperty(identifier, displayName, value, "image", invalidationLevel, std::move(semantics))
     , labels_() {}
 
 void ImageEditorProperty::setDimensions(ivec2 imgSize) { dimensions_ = imgSize; }
 
 void ImageEditorProperty::addLabel(vec2 startPoint, vec2 rectSize, std::string name) {
-    labels_.push_back(ImageLabel(startPoint, rectSize, name));
+    labels_.emplace_back(startPoint, rectSize, name);
 }
 
 const std::vector<ImageLabel>& ImageEditorProperty::getLabels() const { return labels_; }

@@ -37,9 +37,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 struct RegisterOrdinalPropertyForMetaData {
     template <typename T>
@@ -62,7 +60,7 @@ struct RegisterOrdinalPropertyForMetaData {
                     }
                 }
 
-                using value_type = typename util::glmtype<T>::type;
+                using value_type = util::glmtype<T>::type;
 
                 T min = T{0} + std::numeric_limits<value_type>::lowest();
                 T max = T{0} + std::numeric_limits<value_type>::max();
@@ -153,6 +151,4 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
     }
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

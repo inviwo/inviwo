@@ -47,10 +47,8 @@ namespace inviwo {
 void exposePropertyOwner(pybind11::module& m) {
     namespace py = pybind11;
 
-    using PropertyVecWrapper =
-        VectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Property*>::const_iterator>(
-        m, "PropertyVecWrapper");
+    using PropertyVecWrapper = VectorIdentifierWrapper<std::vector<Property*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Property*>::const_iterator>(m, "PropertyVecWrapper");
 
     py::classh<PropertyOwner>(m, "PropertyOwner", py::multiple_inheritance{}, py::dynamic_attr{})
         .def(
@@ -67,7 +65,7 @@ void exposePropertyOwner(pybind11::module& m) {
             py::return_value_policy::reference)
         .def(
             "__setattr__",
-            [](py::object po, py::object key, py::object value) {
+            [](py::object po, py::object key, const py::object& value) {
                 const auto isProperty = [&]() {
                     const auto pyProperty =
                         py::module_::import("inviwopy").attr("properties").attr("Property");
@@ -93,18 +91,16 @@ void exposePropertyOwner(pybind11::module& m) {
 
                 const auto skey = py::str(key).cast<std::string>();
                 const auto owner = po.cast<PropertyOwner*>();
-                if (auto prop = owner->getPropertyByIdentifier(skey)) {
-                    if (isProperty()) {
-                        throw py::attribute_error{fmt::format(
-                            "The member '{0}' is a registered Property of type '{3}',\n"
-                            "in PropertyOwner '{1}' of type '{2}'.\n"
-                            "To rebind the member unregister (remove) the property from "
-                            "'{1}' first.\nIf you were trying to set the 'value' of the '{0}' "
-                            "property, you should assign to '{0}.value' instead.\nSee help({0}) "
-                            "for more details",
-                            skey, path(owner), type(po).attr("__name__").cast<std::string>(),
-                            prop->getClassIdentifier())};
-                    }
+                if (auto prop = owner->getPropertyByIdentifier(skey); prop && (isProperty())) {
+                    throw py::attribute_error{fmt::format(
+                        "The member '{0}' is a registered Property of type '{3}',\n"
+                        "in PropertyOwner '{1}' of type '{2}'.\n"
+                        "To rebind the member unregister (remove) the property from "
+                        "'{1}' first.\nIf you were trying to set the 'value' of the '{0}' "
+                        "property, you should assign to '{0}.value' instead.\nSee help({0}) "
+                        "for more details",
+                        skey, path(owner), type(po).attr("__name__").cast<std::string>(),
+                        prop->getClassIdentifier())};
                 }
 
                 const auto object = builtins.attr("object");
@@ -124,7 +120,7 @@ void exposePropertyOwner(pybind11::module& m) {
             py::arg("prop"), py::arg("owner") = false, py::keep_alive<1, 2>{})
         .def(
             "addProperties",
-            [](PropertyOwner& po, std::vector<Property*> props, bool owner) {
+            [](PropertyOwner& po, const std::vector<Property*>& props, bool owner) {
                 for (auto p : props) {
                     po.addProperty(p, owner);
                 }

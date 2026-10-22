@@ -67,10 +67,10 @@ public:
      * @brief Registers modules from factories and takes ownership of input module factories.
      * Module is registered if dependencies exist and they have correct version.
      */
-    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> moduleFactories,
+    void registerModules(std::vector<std::unique_ptr<InviwoModuleFactoryObject>> mfo,
                          const std::function<void(std::string_view)>& progressCallback);
 
-    void registerModules(std::vector<ModuleContainer> moduleFactories,
+    void registerModules(std::vector<ModuleContainer> inviwoModules,
                          const std::function<void(std::string_view)>& progressCallback);
 
     /**
@@ -84,7 +84,7 @@ public:
      */
     void registerModules(
         RuntimeModuleLoading,
-        std::function<bool(std::string_view)> filter = ModuleManager::getEnabledFilter(),
+        std::function<bool(std::string_view)> isEnabled = ModuleManager::getEnabledFilter(),
         const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     std::vector<ModuleContainer> findRuntimeModules(
@@ -92,11 +92,11 @@ public:
 
     std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths,
-        std::function<bool(std::string_view)> filter);
+        std::function<bool(std::string_view)> isEnabled);
 
-    std::vector<ModuleContainer> findRuntimeModules(
+    static std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths,
-        std::function<bool(std::string_view)> filter, bool runtimeReloading);
+        std::function<bool(std::string_view)> isEnabled, bool runtimeReloading);
 
     auto getInviwoModules() {
         static constexpr auto notNull = [](ModuleContainer& cont) -> bool {
@@ -176,7 +176,7 @@ private:
 
 template <class T>
 T* ModuleManager::getModuleByType() const {
-    for (auto& cont : inviwoModules_) {
+    for (const auto& cont : inviwoModules_) {
         if (auto* m = dynamic_cast<T*>(cont.getModule())) {
             return m;
         }

@@ -36,9 +36,7 @@
 #include <modules/animation/datastructures/callbackkeyframe.h>
 #include <modules/animation/datastructures/keyframe.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CallbackKeyframeSequence::CallbackKeyframeSequence(
     std::vector<std::unique_ptr<CallbackKeyframe>> keyframes)
@@ -53,6 +51,4 @@ AnimationTimeState CallbackKeyframeSequence::operator()(Seconds from, Seconds to
     return animateRange(begin(), end(), from, to, state);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -65,6 +65,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <variant>
 #include <cerrno>
 
@@ -259,8 +260,9 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::filesystem::path& file
 namespace util {
 
 template <typename Func>
-size_t parse(std::string_view str, std::string_view delimiters, std::optional<size_t> expectedParts,
-             std::optional<size_t> refLine, Func&& func) {
+static size_t parse(std::string_view str, std::string_view delimiters,
+                    std::optional<size_t> expectedParts, std::optional<size_t> refLine,
+                    Func&& func) {
 
     std::string lookFor{delimiters};
     lookFor.push_back('"');  // We also have to handle quotes
@@ -305,7 +307,7 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
     }
 
     // Handle the trailing delimiter with empty data
-    if (!str.empty() && delimiters.find(str.back()) != std::string_view::npos) {
+    if (!str.empty() && delimiters.contains(str.back())) {
         // Ignore them if we don't expect them.
         if ((expectedParts && index < *expectedParts) || !expectedParts) {
             std::invoke(func, std::string_view{}, index, part);
@@ -324,11 +326,11 @@ size_t parse(std::string_view str, std::string_view delimiters, std::optional<si
 }
 
 template <typename T>
-std::optional<T> toNumberLocale(std::string_view str) {
+static std::optional<T> toNumberLocale(std::string_view str) {
     const SafeCStr cstr{str};
     if constexpr (std::is_same_v<T, double>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const double val = strtod(cstr.c_str(), &end);
         std::swap(errno, errno_save);
@@ -339,7 +341,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, float>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const float val = strtof(cstr.c_str(), &end);
         std::swap(errno, errno_save);
@@ -351,7 +353,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, int>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const long val = strtol(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
@@ -367,7 +369,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, std::uint32_t>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         const unsigned long val = strtoul(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
@@ -384,7 +386,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
         }
     } else if constexpr (std::is_same_v<T, std::int64_t>) {
         char* end = nullptr;
-        typename std::remove_reference<decltype(errno)>::type errno_save = errno;
+        std::remove_reference_t<decltype(errno)> errno_save = errno;
         errno = 0;
         std::int64_t val = strtoll(cstr.c_str(), &end, 10);
         std::swap(errno, errno_save);
@@ -400,7 +402,7 @@ std::optional<T> toNumberLocale(std::string_view str) {
 }
 
 template <typename T>
-std::optional<T> toNumber(std::string_view str, bool cLocale) {
+static std::optional<T> toNumber(std::string_view str, bool cLocale) {
     if constexpr (config::charconv || !std::is_floating_point_v<T>) {
         if (!cLocale) return toNumberLocale<T>(str);
 
@@ -417,11 +419,11 @@ std::optional<T> toNumber(std::string_view str, bool cLocale) {
 }
 
 template <typename T>
-bool isNumber(std::string_view str, bool cLocale) {
+static bool isNumber(std::string_view str, bool cLocale) {
     return util::toNumber<T>(str, cLocale).has_value();
 }
 
-std::string_view stripQuotes(std::string_view str) {
+static std::string_view stripQuotes(std::string_view str) {
     // remove surrounding quotes
     if (str.size() >= 2 && str.front() == '"' && str.back() == '"') {
         str = str.substr(1, str.size() - 2);
@@ -454,7 +456,7 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
                         }
                     });
         if (i > sampledRows) {
-            if (std::any_of(counts.begin(), counts.end(), [](const TypeCounts& type) {
+            if (std::ranges::any_of(counts, [](const TypeCounts& type) {
                     return type.integer == 0 && type.real == 0 && type.string == 0;
                 })) {
                 sampledRows *= 2;
@@ -474,10 +476,9 @@ std::vector<CSVReader::TypeCounts> CSVReader::findCellTypes(
 }
 
 template <typename T, bool index = false>
-std::function<void(std::string_view, size_t, size_t)> addColumn(DataFrame& df,
-                                                                std::string_view header, Unit unit,
-                                                                CSVReader::EmptyField emptyField,
-                                                                bool cLocale) {
+static std::function<void(std::string_view, size_t, size_t)> addColumn(
+    DataFrame& df, std::string_view header, Unit unit, CSVReader::EmptyField emptyField,
+    bool cLocale) {
     auto& data = [&]() -> decltype(auto) {
         if constexpr (index && std::is_same_v<T, std::uint32_t>) {
             df.getIndexColumn()->setHeader(header);
@@ -531,11 +532,9 @@ std::vector<std::function<void(std::string_view, size_t, size_t)>> CSVReader::ad
         auto headerCopy = header;
         Unit unit{};
 
-        if (unitsInHeaders_ && counts.string == 0) {
-            if (std::regex_match(header, m, re)) {
-                headerCopy = util::trim(m.str(1));
-                unit = units::unit_from_string(m.str(2));
-            }
+        if ((unitsInHeaders_ && counts.string == 0) && std::regex_match(header, m, re)) {
+            headerCopy = util::trim(m.str(1));
+            unit = units::unit_from_string(m.str(2));
         }
 
         if (counts.index) {
@@ -605,7 +604,7 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
                     }};
                 for (const auto& f : filters) {
                     if ((!firstRowHeader_ || (f.filterOnHeader == filterOnHeader)) &&
-                        f.column == static_cast<int>(colIndex)) {
+                        std::cmp_equal(f.column, colIndex)) {
                         retval |= std::visit(test, f.filter);
                     }
                 }
@@ -621,10 +620,10 @@ bool CSVReader::skipRow(std::string_view row, size_t lineNumber, bool filterOnHe
     };
 
     if (filterApplicable(filters_.includeRows) &&
-        std::none_of(filters_.includeRows.begin(), filters_.includeRows.end(), filterRow(true))) {
+        std::ranges::none_of(filters_.includeRows, filterRow(true))) {
         return true;
     }
-    if (std::any_of(filters_.excludeRows.begin(), filters_.excludeRows.end(), filterRow(false))) {
+    if (std::ranges::any_of(filters_.excludeRows, filterRow(false))) {
         return true;
     }
 

@@ -34,6 +34,7 @@
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/chronoutils.h>
 
+#include <algorithm>
 #include <random>
 #include <iomanip>
 #include <clocale>
@@ -44,7 +45,9 @@
 #include <memory>
 #include <cxxabi.h>
 #include <cwchar>
-#elif defined(WIN32)
+#include <ranges>
+#include <utility>
+#elifdef WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -57,7 +60,7 @@ namespace inviwo {
 namespace util {
 
 std::wstring toWstring(std::string_view str) {
-#if defined(_WIN32)
+#ifdef _WIN32
     if (str.empty()) return std::wstring();
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
     std::wstring result(size_needed, 0);
@@ -86,7 +89,7 @@ std::wstring toWstring(std::string_view str) {
 }
 
 std::string fromWstring(std::wstring_view str) {
-#if defined(_WIN32)
+#ifdef _WIN32
     int s_size = static_cast<int>(str.size());
     if (s_size == 0) {  // WideCharToMultiByte does not support zero length, handle separately.
         return {};
@@ -205,7 +208,7 @@ std::vector<std::string> splitStringWithMultipleDelimiters(std::string_view str,
 }
 
 std::string removeFromString(std::string str, char char_to_remove) {
-    str.erase(std::remove(str.begin(), str.end(), char_to_remove), str.end());
+    str.erase(std::ranges::remove(str, char_to_remove).begin(), str.end());
     return str;
 }
 
@@ -230,7 +233,7 @@ constexpr std::array<bool, 256> urlEscapeMap = []() {
     const std::string_view urlValid = "~-_.+!*(),%#@?=;:/,+$";
     for (int i = 0; i < 256; ++i) {
         const char c = static_cast<char>(i);
-        map[i] = !isalnum(c) && urlValid.find(c) == std::string_view::npos;
+        map[i] = !isalnum(c) && !urlValid.contains(c);
     }
     return map;
 }();
@@ -258,14 +261,14 @@ std::string util::urlEncode(std::string_view text) {
 }
 
 void util::htmlEncodeTo(std::string_view data, StrBuffer& strBuffer) {
-    for (size_t pos = 0; pos != data.size(); ++pos) {
-        switch (data[pos]) {
+    for (char pos : data) {
+        switch (pos) {
             case '&':  strBuffer.append("&amp;"); break;
             case '\"': strBuffer.append("&quot;"); break;
             case '\'': strBuffer.append("&apos;"); break;
             case '<':  strBuffer.append("&lt;"); break;
             case '>':  strBuffer.append("&gt;"); break;
-            default:   strBuffer.buff.push_back(data[pos]); break;
+            default:   strBuffer.buff.push_back(pos); break;
         }
     }
 }
@@ -279,16 +282,18 @@ std::string util::htmlEncode(std::string_view text) {
 std::string toUpper(std::string_view str) {
     std::string res;
     res.reserve(str.size());
-    std::transform(str.begin(), str.end(), std::back_inserter(res),
-                   [](unsigned char c) { return static_cast<unsigned char>(std::toupper(c)); });
+    std::ranges::transform(str, std::back_inserter(res), [](unsigned char c) {
+        return static_cast<unsigned char>(std::toupper(c));
+    });
     return res;
 }
 
 std::string toLower(std::string_view str) {
     std::string res;
     res.reserve(str.size());
-    std::transform(str.begin(), str.end(), std::back_inserter(res),
-                   [](unsigned char c) { return static_cast<unsigned char>(std::tolower(c)); });
+    std::ranges::transform(str, std::back_inserter(res), [](unsigned char c) {
+        return static_cast<unsigned char>(std::tolower(c));
+    });
     return res;
 }
 
@@ -313,7 +318,7 @@ std::string randomString(size_t length) {
 std::string dotSeperatedToPascalCase(std::string_view s) {
     std::stringstream ss;
     util::forEachStringPart(s, ".", [&](std::string_view elem) {
-        if (elem.size() > 0) ss << static_cast<char>(std::toupper(elem[0]));
+        if (!elem.empty()) ss << static_cast<char>(std::toupper(elem[0]));
         if (elem.size() > 1) ss << elem.substr(1);
     });
     return ss.str();
@@ -345,43 +350,42 @@ std::string camelCaseToHeader(std::string_view s) {
 }
 
 bool iCaseCmp(std::string_view l, std::string_view r) {
-    return std::equal(l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-                      [](std::string_view::value_type l1, std::string_view::value_type r1) {
-                          return std::tolower(l1) == std::tolower(r1);
-                      });
+    return std::ranges::equal(l, r,
+                              [](std::string_view::value_type l1, std::string_view::value_type r1) {
+                                  return std::tolower(l1) == std::tolower(r1);
+                              });
 }
 
 bool iCaseLess(std::string_view l, std::string_view r) {
-    return std::lexicographical_compare(
-        l.cbegin(), l.cend(), r.cbegin(), r.cend(),
-        [](std::string_view::value_type l1, std::string_view::value_type r1) {
+    return std::ranges::lexicographical_compare(
+        l, r, [](std::string_view::value_type l1, std::string_view::value_type r1) {
             return std::tolower(l1) < std::tolower(r1);
         });
 }
 
 // trim from start
 std::string ltrim(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
-                return !std::isspace(static_cast<unsigned char>(c));
-            }));
+    s.erase(s.begin(), std::ranges::find_if(
+                           s, [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); }));
     return s;
 }
 
 // trim from end
 std::string rtrim(std::string s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-                         [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); })
-                .base(),
-            s.end());
+    s.erase(
+        std::ranges::find_if(std::views::reverse(s),
+                             [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); })
+            .base(),
+        s.end());
     return s;
 }
 
 // trim from both ends
-std::string trim(std::string s) { return ltrim(rtrim(s)); }
+std::string trim(std::string s) { return ltrim(rtrim(std::move(s))); }
 
 std::string removeSubString(std::string_view str, std::string_view strToRemove) {
     std::string newString(str);
-    size_t pos;
+    size_t pos = 0;
     while ((pos = newString.find(strToRemove)) != std::string::npos) {
         newString.erase(pos, strToRemove.length());
     }

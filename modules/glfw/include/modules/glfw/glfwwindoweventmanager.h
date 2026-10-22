@@ -36,7 +36,7 @@
 
 #include <functional>
 
-typedef struct GLFWwindow GLFWwindow;
+struct GLFWwindow;
 
 namespace inviwo {
 

@@ -46,7 +46,7 @@ class Shader;
 class TextureUnitContainer;
 
 namespace placeholder {
-using Placeholder = typename ShaderSegment::Placeholder;
+using Placeholder = ShaderSegment::Placeholder;
 
 constexpr Placeholder include{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_INCLUDE", "include"};
 constexpr Placeholder uniform{"#pragma IVW_SHADER_SEGMENT_PLACEHOLDER_UNIFORM", "uniform"};
@@ -63,7 +63,7 @@ public:
      * Represents a placeholder in shader code that will be replaced
      */
     struct Segment {
-        using Placeholder = typename ShaderSegment::Placeholder;
+        using Placeholder = ShaderSegment::Placeholder;
         std::string snippet;                          //!< The replacement code
         Placeholder placeholder = placeholder::loop;  //!< The placeholder that will be replaced
         size_t priority = 1000;  //!< Segments are ordered by priority, lower first.

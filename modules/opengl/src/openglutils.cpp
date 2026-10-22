@@ -46,8 +46,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/vec4.hpp>
 
-namespace inviwo {
-namespace utilgl {
+namespace inviwo::utilgl {
 
 std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
     const auto convertToGL = [](ImageChannel channel) -> GLint {
@@ -61,8 +60,8 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
             default:                  return static_cast<GLint>(GL_ZERO);
         }
     };
-    std::array<GLint, 4> swizzleMaskGL;
-    std::transform(mask.begin(), mask.end(), swizzleMaskGL.begin(), convertToGL);
+    std::array<GLint, 4> swizzleMaskGL{};
+    std::ranges::transform(mask, swizzleMaskGL.begin(), convertToGL);
     return swizzleMaskGL;
 }
 
@@ -115,7 +114,7 @@ SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
         }
     };
     SwizzleMask mask;
-    std::transform(maskGL.begin(), maskGL.end(), mask.begin(), convertFromGL);
+    std::ranges::transform(maskGL, mask.begin(), convertFromGL);
     return mask;
 }
 
@@ -228,7 +227,7 @@ CullFaceState::~CullFaceState() {
     }
 }
 
-GLint CullFaceState::getMode() { return mode_; }
+GLint CullFaceState::getMode() const { return mode_; }
 
 GlBoolState& GlBoolState::operator=(GlBoolState&& that) {
     if (this != &that) {
@@ -249,21 +248,23 @@ GlBoolState::GlBoolState(GlBoolState&& rhs)
 GlBoolState::GlBoolState(GLenum target, bool state) : target_(target), oldState_{}, state_(state) {
     oldState_ = (glIsEnabled(target_) == GL_TRUE);
     if (oldState_ != state_) {
-        if (state)
+        if (state) {
             glEnable(target_);
-        else
+        } else {
             glDisable(target_);
+        }
     }
 }
 
-GlBoolState::operator bool() { return state_; }
+GlBoolState::operator bool() const { return state_; }
 
 GlBoolState::~GlBoolState() {
     if (oldState_ != state_) {
-        if (oldState_)
+        if (oldState_) {
             glEnable(target_);
-        else
+        } else {
             glDisable(target_);
+        }
     }
 }
 
@@ -334,8 +335,8 @@ TexEnv::~TexEnv() {
 
 BlendModeState::BlendModeState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB, GLenum dstAlpha)
     : GlBoolState(GL_BLEND, srcRGB != GL_NONE || srcAlpha != GL_NONE)
-    , curr_{{static_cast<GLint>(srcRGB), static_cast<GLint>(srcAlpha)},
-            {static_cast<GLint>(dstRGB), static_cast<GLint>(dstAlpha)}}
+    , curr_{.src = {.rgb = static_cast<GLint>(srcRGB), .alpha = static_cast<GLint>(srcAlpha)},
+            .dst = {.rgb = static_cast<GLint>(dstRGB), .alpha = static_cast<GLint>(dstAlpha)}}
     , old_{} {
     if (state_) {
         glGetIntegerv(GL_BLEND_SRC_RGB, &old_.src.rgb);
@@ -381,7 +382,7 @@ BlendModeState::~BlendModeState() {
 BlendModeEquationState::BlendModeEquationState(GLenum srcRGB, GLenum srcAlpha, GLenum dstRGB,
                                                GLenum dstAlpha, GLenum eqnRGB, GLenum eqnAlpha)
     : BlendModeState(srcRGB, srcAlpha, dstRGB, dstAlpha)
-    , curr_{static_cast<GLint>(eqnRGB), static_cast<GLint>(eqnAlpha)}
+    , curr_{.rgb = static_cast<GLint>(eqnRGB), .alpha = static_cast<GLint>(eqnAlpha)}
     , old_{} {
     if (state_) {
         glGetIntegerv(GL_BLEND_EQUATION_RGB, &old_.rgb);
@@ -526,7 +527,7 @@ void ColorMaski::get() {
     glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
     std::vector<GLenum> drawBuffers(static_cast<size_t>(maxDrawBuffers), GL_NONE);
     for (int i = 0; i < maxDrawBuffers; ++i) {
-        GLint value;
+        GLint value = 0;
         glGetIntegerv(static_cast<GLenum>(static_cast<unsigned int>(GL_DRAW_BUFFER0) +
                                           static_cast<unsigned int>(i)),
                       &value);
@@ -550,6 +551,4 @@ GLfloat validateLineWidth(GLfloat width) {
     return width;
 }
 
-}  // namespace utilgl
-
-}  // namespace inviwo
+}  // namespace inviwo::utilgl

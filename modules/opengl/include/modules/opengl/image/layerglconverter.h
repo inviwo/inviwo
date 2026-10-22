@@ -43,19 +43,17 @@ class LayerRepresentation;
 class IVW_MODULE_OPENGL_API LayerRAM2GLConverter
     : public RepresentationConverterType<LayerRepresentation, LayerRAM, LayerGL> {
 public:
-    virtual std::shared_ptr<LayerGL> createFrom(
-        std::shared_ptr<const LayerRAM> source) const override;
-    virtual void update(std::shared_ptr<const LayerRAM> source,
-                        std::shared_ptr<LayerGL> destination) const override;
+    virtual std::shared_ptr<LayerGL> createFrom(std::shared_ptr<const LayerRAM> src) const override;
+    virtual void update(std::shared_ptr<const LayerRAM> src,
+                        std::shared_ptr<LayerGL> dst) const override;
 };
 
 class IVW_MODULE_OPENGL_API LayerGL2RAMConverter
     : public RepresentationConverterType<LayerRepresentation, LayerGL, LayerRAM> {
 public:
-    virtual std::shared_ptr<LayerRAM> createFrom(
-        std::shared_ptr<const LayerGL> source) const override;
-    virtual void update(std::shared_ptr<const LayerGL> source,
-                        std::shared_ptr<LayerRAM> destination) const override;
+    virtual std::shared_ptr<LayerRAM> createFrom(std::shared_ptr<const LayerGL> src) const override;
+    virtual void update(std::shared_ptr<const LayerGL> src,
+                        std::shared_ptr<LayerRAM> dst) const override;
 };
 
 }  // namespace inviwo

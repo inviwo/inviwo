@@ -67,27 +67,27 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     setMinimumHeight(
         utilqt::emToPx(this, linkdialog::dialogHeight / static_cast<double>(utilqt::refEm())));
 
-    auto scene =
+    auto* scene =
         new LinkDialogGraphicsScene(this, srcProcessor->getNetwork(), srcProcessor, dstProcessor);
     scene->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, size().height());
     connect(scene, &LinkDialogGraphicsScene::closeDialog, this, &LinkDialog::close);
 
-    auto view = new LinkDialogGraphicsView(this);
+    auto* view = new LinkDialogGraphicsView(this);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setScene(scene);
     const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
     view->setTransform(QTransform::fromScale(scale, scale), false);
 
-    auto mainLayout = new QVBoxLayout();
+    auto* mainLayout = new QVBoxLayout();
     setContents(mainLayout);
     mainLayout->addWidget(view);
 
-    auto smartLinkPushButtonLayout = new QHBoxLayout{};
+    auto* smartLinkPushButtonLayout = new QHBoxLayout{};
     smartLinkPushButtonLayout->setAlignment(Qt::AlignLeft);
 
     // hidden check box
-    auto showHidden = new QCheckBox("Show Hidden", this);
+    auto* showHidden = new QCheckBox("Show Hidden", this);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     connect(showHidden, &QCheckBox::checkStateChanged,
             [scene](int state) { scene->showHidden(state == Qt::Checked); });
@@ -99,25 +99,25 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     smartLinkPushButtonLayout->addWidget(showHidden, 10);
 
     // smart link button
-    auto smartLink = new QToolButton(this);
+    auto* smartLink = new QToolButton(this);
     smartLink->setObjectName("smartLinkButton");
     smartLink->setText("SmartLink");
     smartLink->setPopupMode(QToolButton::MenuButtonPopup);
     smartLink->setToolButtonStyle(Qt::ToolButtonTextOnly);
 
-    auto menu = new QMenu(this);
-    auto matchType = menu->addAction("Match Type");
+    auto* menu = new QMenu(this);
+    auto* matchType = menu->addAction("Match Type");
     matchType->setCheckable(true);
     matchType->setChecked(true);
-    auto matchId = menu->addAction("Match Identifier");
+    auto* matchId = menu->addAction("Match Identifier");
     matchId->setCheckable(true);
     matchId->setChecked(true);
 
-    auto leftLink = menu->addAction("Link Left to Right");
+    auto* leftLink = menu->addAction("Link Left to Right");
     leftLink->setCheckable(true);
     leftLink->setChecked(true);
 
-    auto rightLink = menu->addAction("Link Right to Left");
+    auto* rightLink = menu->addAction("Link Right to Left");
     rightLink->setCheckable(true);
     rightLink->setChecked(true);
 
@@ -145,12 +145,12 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
                     if (scene->isPropertyExpanded(src) || scene->isPropertyExpanded(dst)) {
 
                         if (shouldLink(src, dst)) {
-                            auto compSrc = dynamic_cast<CompositeProperty*>(src);
-                            auto compDst = dynamic_cast<CompositeProperty*>(dst);
+                            auto* compSrc = dynamic_cast<CompositeProperty*>(src);
+                            auto* compDst = dynamic_cast<CompositeProperty*>(dst);
                             if (compSrc && compDst) {
                                 // If composite property then try to link sub-properties only
-                                for (auto& i : compSrc->getProperties()) {
-                                    for (auto& j : compDst->getProperties()) {
+                                for (const auto& i : compSrc->getProperties()) {
+                                    for (const auto& j : compDst->getProperties()) {
                                         link(i, j);
                                     }
                                 }
@@ -164,8 +164,8 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
                     }
                 };
 
-                for (auto& src : srcProcessor->getProperties()) {
-                    for (auto& dst : dstProcessor->getProperties()) {
+                for (const auto& src : srcProcessor->getProperties()) {
+                    for (const auto& dst : dstProcessor->getProperties()) {
                         link(src, dst);
                     }
                 }
@@ -173,13 +173,13 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     smartLinkPushButtonLayout->addWidget(smartLink, 30);
 
     // delete button
-    auto deleteAllLinkPushButton = new QPushButton("Delete All", this);
+    auto* deleteAllLinkPushButton = new QPushButton("Delete All", this);
     connect(deleteAllLinkPushButton, &QPushButton::clicked, this,
             [scene]() { scene->removeAllPropertyLinks(); });
     smartLinkPushButtonLayout->addWidget(deleteAllLinkPushButton, 10);
 
     // expand composite
-    auto expandCompositeButton = new QPushButton("Expand/Collapse", this);
+    auto* expandCompositeButton = new QPushButton("Expand/Collapse", this);
     expandCompositeButton->setChecked(false);
     smartLinkPushButtonLayout->addWidget(expandCompositeButton, 10);
     connect(expandCompositeButton, &QPushButton::clicked, [scene]() { scene->toggleExpand(); });

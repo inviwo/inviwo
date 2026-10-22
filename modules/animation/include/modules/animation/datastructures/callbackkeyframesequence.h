@@ -41,9 +41,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * KeyframeSequence for CallbackKeyframe.
@@ -54,7 +52,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CallbackKeyframeSequence
     : public BaseKeyframeSequence<CallbackKeyframe> {
 public:
-    using key_type = typename BaseKeyframeSequence<CallbackKeyframe>::key_type;
+    using key_type = BaseKeyframeSequence<CallbackKeyframe>::key_type;
     CallbackKeyframeSequence() = default;
     CallbackKeyframeSequence(const CallbackKeyframeSequence& rhs) = default;
     CallbackKeyframeSequence(CallbackKeyframeSequence&& rhs) = default;
@@ -69,6 +67,4 @@ public:
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

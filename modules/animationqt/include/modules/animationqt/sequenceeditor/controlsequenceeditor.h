@@ -36,9 +36,7 @@
 
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationManager;
 class Keyframe;
@@ -56,6 +54,4 @@ protected:
     virtual QWidget* create(Keyframe* key) override;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -49,16 +49,17 @@
 #include <QWidget>
 #include <QLineEdit>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 namespace {
 
 class InvalidationEditorWidget : public QWidget, public KeyframeObserver {
 public:
     InvalidationEditorWidget(Keyframe& keyframe, SequenceEditorWidget* parent)
-        : QWidget(parent), keyframe_(keyframe), sequenceEditorWidget_(parent) {
+        : QWidget(parent)
+        , keyframe_(keyframe)
+        , sequenceEditorWidget_(parent)
+        , timeSpinner_(new DoubleValueDragSpinBox()) {
 
         setObjectName("KeyframeEditorWidget");
         setVisible(keyframe_.isSelected());
@@ -68,7 +69,6 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(7);
 
-        timeSpinner_ = new DoubleValueDragSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
         timeSpinner_->setSingleStep(0.1);
         timeSpinner_->setDecimals(3);
@@ -111,7 +111,7 @@ private:
 
 InvalidationSequenceEditor::InvalidationSequenceEditor(KeyframeSequence& sequence, Track& track,
                                                        AnimationManager& manager)
-    : SequenceEditorWidget(sequence, track, manager) {
+    : SequenceEditorWidget(sequence, track, manager), path_(new QLineEdit()) {
 
     sequence_.addObserver(this);
 
@@ -132,7 +132,7 @@ InvalidationSequenceEditor::InvalidationSequenceEditor(KeyframeSequence& sequenc
     layout->addLayout(subLayout);
     subLayout->setContentsMargins(0, 0, 0, 0);
     subLayout->setSpacing(7);
-    path_ = new QLineEdit();
+
     path_->setToolTip(
         "Invalidate the specified processor / property at each network evaluation."
         "(processorId.propertyId.propertyId, e.g., VolumeRaycaster or "
@@ -166,6 +166,4 @@ std::string InvalidationSequenceEditor::classIdentifier() {
     return "org.inviwo.animation.InvalidationSequenceEditor";
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -40,13 +40,19 @@
 
 #include <string_view>
 #include <string>
+#include <utility>
 
 namespace inviwo {
 
 template <typename T, size_t N>
 struct InviwoDefaultData {
     constexpr InviwoDefaultData(StaticString<N> aname, uvec2 adim, T aval, T amin, T amax, T ainc)
-        : name{aname}, dim{adim}, val{aval}, min{amin}, max{amax}, inc{ainc} {}
+        : name{aname}
+        , dim{adim}
+        , val{std::move(aval)}
+        , min{std::move(amin)}
+        , max{std::move(amax)}
+        , inc{std::move(ainc)} {}
 
     StaticString<N> name;
     uvec2 dim;
@@ -96,8 +102,7 @@ struct InviwoDefaults<unsigned short> {
 template <>
 struct InviwoDefaults<int> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Int"}, uvec2(1, 1), int{0},
-                                 int{-100},           int{100},    int{1}};
+        return InviwoDefaultData{StaticString{"Int"}, uvec2(1, 1), 0, -100, 100, 1};
     }
 };
 template <>
@@ -125,19 +130,13 @@ struct InviwoDefaults<size_t> {
 template <>
 struct InviwoDefaults<float> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Float"}, uvec2(1, 1), float{0.0f},
-                                 float{0.0f},           float{1.0f}, float{0.01f}};
+        return InviwoDefaultData{StaticString{"Float"}, uvec2(1, 1), 0.0f, 0.0f, 1.0f, 0.01f};
     }
 };
 template <>
 struct InviwoDefaults<double> {
     static constexpr auto get() {
-        return InviwoDefaultData{StaticString{"Double"},
-                                 uvec2(1, 1),
-                                 double{0.0},
-                                 double{0.0},
-                                 double{1.0},
-                                 double{0.01}};
+        return InviwoDefaultData{StaticString{"Double"}, uvec2(1, 1), 0.0, 0.0, 1.0, 0.01};
     }
 };
 

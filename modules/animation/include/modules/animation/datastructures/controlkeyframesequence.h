@@ -41,9 +41,7 @@
 #include <string>
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * KeyframeSequence for Control Keyframes.
@@ -64,6 +62,4 @@ public:
     virtual AnimationTimeState operator()(Seconds from, Seconds to, AnimationState state) const;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

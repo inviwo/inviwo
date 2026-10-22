@@ -76,7 +76,7 @@ public:
 template <typename InportType, typename OutportType>
 class CompositeSink : public CompositeSinkBase {
 public:
-    static_assert(std::is_same<typename InportType::type, typename OutportType::type>::value,
+    static_assert(std::is_same_v<typename InportType::type, typename OutportType::type>,
                   "InportType and OutportType must work with the same data type");
     CompositeSink();
     CompositeSink(const CompositeSink&) = delete;
@@ -105,9 +105,9 @@ private:
 template <typename InportType, typename OutportType>
 struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
     static ProcessorInfo getProcessorInfo() {
-        using intype = typename InportType::type;
-        using outtype = typename InportType::type;
-        static_assert(std::is_same<intype, outtype>::value, "type mismatch");
+        using intype = InportType::type;
+        using outtype = InportType::type;
+        static_assert(std::is_same_v<intype, outtype>, "type mismatch");
         const auto name = fmt::format("{} Meta Sink", DataTraits<intype>::dataName());
         const auto cid = util::appendIfNotEmpty(PortTraits<OutportType>::classIdentifier(),
                                                 CompositeSinkBase::identifierSuffix());

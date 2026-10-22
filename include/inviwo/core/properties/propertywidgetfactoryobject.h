@@ -42,7 +42,7 @@ class PropertyWidget;
 
 class IVW_CORE_API PropertyWidgetFactoryObject {
 public:
-    PropertyWidgetFactoryObject(std::string_view className, const PropertySemantics& semantics);
+    PropertyWidgetFactoryObject(std::string_view className, PropertySemantics semantics);
     virtual ~PropertyWidgetFactoryObject() = default;
 
     virtual std::unique_ptr<PropertyWidget> create(Property*) = 0;

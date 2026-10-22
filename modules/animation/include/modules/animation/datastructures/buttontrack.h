@@ -34,9 +34,7 @@
 #include <modules/animation/datastructures/buttonkeyframesequence.h>
 #include <modules/animation/datastructures/propertytrack.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class ButtonKeyframe;
 
 using ButtonTrack = PropertyTrack<ButtonProperty, ButtonKeyframe, ButtonKeyframeSequence>;
@@ -70,12 +68,10 @@ struct AnimateSequence<ButtonProperty, ButtonKeyframeSequence> {
         if (pressed) {
             prop->pressButton();
         }
-        return {to, state};
+        return {.time = to, .state = state};
     }
 };
 
 }  // namespace detail
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

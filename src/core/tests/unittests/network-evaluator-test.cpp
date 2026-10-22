@@ -148,7 +148,7 @@ struct Instrument {
         reset();
     }
 
-    std::string name = "";
+    std::string name;
     Calls calls;
 };
 

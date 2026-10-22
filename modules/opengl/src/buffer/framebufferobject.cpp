@@ -52,8 +52,8 @@ namespace inviwo {
 
 using namespace std::literals;
 
-inline void checkContext(std::string_view error, Canvas::ContextID org,
-                         SourceContext context = std::source_location::current()) {
+static inline void checkContext(std::string_view error, Canvas::ContextID org,
+                                SourceContext context = std::source_location::current()) {
     if constexpr (cfg::assertions) {
         const auto* rc = RenderContext::getPtr();
         const auto* const curr = rc->activeContext();
@@ -77,9 +77,12 @@ GLuint FrameBufferObject::maxColorAttachments() {
 }
 
 FrameBufferObject::FrameBufferObject()
-    : id_(0u), attachedDepthId_(0), attachedStencilId_(0), attachedColorIds_{} {
+    : id_(0u)
+    , attachedDepthId_(0)
+    , attachedStencilId_(0)
+    , attachedColorIds_{}
+    , creationContext_(RenderContext::getPtr()->activeContext()) {
 
-    creationContext_ = RenderContext::getPtr()->activeContext();
     IVW_ASSERT(creationContext_, "An OpenGL Context has to be active");
 
     glGenFramebuffers(1, &id_);
@@ -135,7 +138,7 @@ bool FrameBufferObject::isActive() const {
     checkContext("FBO used in a different context"sv, creationContext_);
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
-    return (static_cast<GLint>(id_) == currentFbo);
+    return (std::cmp_equal(id_, currentFbo));
 }
 
 GLenum FrameBufferObject::status() const {

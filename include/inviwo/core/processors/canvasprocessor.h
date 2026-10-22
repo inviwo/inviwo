@@ -70,8 +70,8 @@ public:
     size2_t getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(const std::filesystem::path& filePath,
-                        const FileExtension& extension = FileExtension());
+    void saveImageLayer(const std::filesystem::path& snapshotPath,
+                        const FileExtension& extension = FileExtension()) const;
     const Layer* getVisibleLayer() const;
 
     virtual std::shared_ptr<const Image> getImage() const override;
@@ -85,7 +85,7 @@ public:
      * By default the processor will only evaluate when its canvas is visible.
      * By setting setEvaluateWhenHidden to true, it will be evaluated regardless.
      */
-    void setEvaluateWhenHidden(bool option);
+    void setEvaluateWhenHidden(bool value);
 
     /**
      * @see Exporter::exportFile

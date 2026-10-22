@@ -35,9 +35,7 @@
 #include <string>
 #include <filesystem>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief RAII interface for providing a file handle and file name to a temporary file
@@ -67,6 +65,4 @@ private:
     std::filesystem::path filename_;
 };
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

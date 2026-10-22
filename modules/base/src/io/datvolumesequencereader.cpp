@@ -456,11 +456,10 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
     auto volumes = std::make_shared<VolumeSequence>();
 
     if (!state.datFiles.empty()) {
-        for (size_t t = 0; t < state.datFiles.size(); ++t) {
+        for (const auto& datFile : state.datFiles) {
             auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
-            const auto path = state.datFiles[t].is_absolute() ? state.datFiles[t]
-                                                              : fileDirectory / state.datFiles[t];
+            const auto path = datFile.is_absolute() ? datFile : fileDirectory / datFile;
             const auto v = datVolReader->readData(path);
 
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
@@ -474,7 +473,7 @@ std::shared_ptr<VolumeSequence> DatVolumeSequenceReader::readData(
         resolve(state);
         auto volume = createVolume(state);
 
-        const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+        const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
 
         for (size_t t = 0; t < state.sequences; ++t) {
             if (t == 0) {
@@ -545,7 +544,7 @@ std::shared_ptr<Volume> DatVolumeReader::readData(const std::filesystem::path& f
         createDiskRepWithLoader(state, filePath, filePath.parent_path() / state.rawFile, 0);
     volume->addRepresentation(diskRepr);
 
-    const auto bytes = glm::compMul(state.dimensions) * (state.format->getSizeInBytes());
+    const auto bytes = glm::compMul(state.dimensions) * state.format->getSizeInBytes();
     if (!state.dataRange) {  // Use min/max value in data as data range if none is given
         updateDataRange(*volume, state);
         if (bytes > 128 * 128 * 128) {

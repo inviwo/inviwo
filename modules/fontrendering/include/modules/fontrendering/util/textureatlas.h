@@ -65,7 +65,7 @@ public:
 
     void clear();
 
-    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& atlas);
+    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries);
     void fillAtlas(TextRenderer& textRenderer, const std::vector<std::string>& strings, vec4 color);
 
     void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,
@@ -82,8 +82,8 @@ private:
      *
      * @return minimum texture size required to accommodate atlas
      */
-    ivec2 calcTexLayout(const std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
-                        double minArea);
+    static ivec2 calcTexLayout(std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
+                               double minArea);
 
     void initAtlas(TextRenderer& textRenderer, const std::vector<TexAtlasEntry>& entries,
                    std::vector<TextBoundingBox>&& bboxes);

@@ -67,15 +67,13 @@ FileLogger::FileLogger(const std::filesystem::path& logPath) : Logger() {
         fileStream_ << header;
     }
 
-    fileStream_ << "<div class='info'>Inviwo (v" << build::version << ") Log File</div>"
-                << std::endl;
+    fileStream_ << "<div class='info'>Inviwo (v" << build::version << ") Log File</div>" << '\n';
 
     const auto t = std::time(nullptr);
     const auto tm = *std::localtime(&t);
     char formatedString[21];
     strftime(formatedString, sizeof(formatedString), "%Y-%m-%d %H:%M:%S ", &tm);
-    fileStream_ << "<div class='info nowrap'>Created at: " << formatedString << "</div>"
-                << std::endl;
+    fileStream_ << "<div class='info nowrap'>Created at: " << formatedString << "</div>" << '\n';
 }
 
 FileLogger::~FileLogger() = default;
@@ -103,6 +101,8 @@ void FileLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience 
     replaceInString(msg, "\n", "<br/>");
 
     fileStream_ << "(" << util::htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
+    // flush explicitly (not just '\n'): this is a crash/debug log, so each entry must hit
+    // disk immediately in case the process terminates abnormally right after logging.
     fileStream_ << "</div>" << std::endl;
 }
 

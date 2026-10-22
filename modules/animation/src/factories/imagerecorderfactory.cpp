@@ -38,6 +38,9 @@
 
 #include <fmt/format.h>
 
+#include <algorithm>
+#include <utility>
+
 namespace inviwo::animation {
 
 class ExceptionPropagator {
@@ -92,11 +95,11 @@ private:
 namespace {
 class ImageRecorder : public Recorder {
 public:
-    ImageRecorder(InviwoApplication* app, const std::filesystem::path& dir, std::string_view format,
+    ImageRecorder(InviwoApplication* app, std::filesystem::path dir, std::string_view format,
                   std::shared_ptr<DataWriterType<Layer>> writer)
         : Recorder{}
         , app_{app}
-        , dir_{dir}
+        , dir_{std::move(dir)}
         , format_{format}
         , writer_{std::move(writer)}
         , count_{1} {}
@@ -154,12 +157,13 @@ ImageRecorderFactory::ImageRecorderFactory(InviwoApplication* app)
 const std::string& ImageRecorderFactory::getClassIdentifier() const { return name_; }
 BoolCompositeProperty* ImageRecorderFactory::options() {
 
-    if (writer_.size() == 0) {
+    if (writer_.empty()) {
         auto writerFactory = util::getDataWriterFactory(app_);
         const auto exts = writerFactory->getExtensionsForType<Layer>();
         std::vector<OptionPropertyOption<FileExtension>> opts;
-        std::transform(exts.begin(), exts.end(), std::back_inserter(opts),
-                       [](const auto& ext) { return OptionPropertyOption<FileExtension>{ext}; });
+        std::ranges::transform(exts, std::back_inserter(opts), [](const auto& ext) {
+            return OptionPropertyOption<FileExtension>{ext};
+        });
 
         writer_.replaceOptions(std::move(opts));
         writer_.setCurrentStateAsDefault();

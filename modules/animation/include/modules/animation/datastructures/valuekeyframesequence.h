@@ -53,9 +53,7 @@
 
 #include <glm/fwd.hpp>  // IWYU pragma: keep
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class InterpolationFactoryObject;
 class Keyframe;
 template <typename T>
@@ -134,8 +132,8 @@ template <typename Key>
 class KeyframeSequenceTyped : public BaseKeyframeSequence<Key>, public ValueKeyframeSequence {
 public:
     using key_type = Key;
-    using value_type = typename Key::value_type;
-    static_assert(std::is_base_of<Keyframe, Key>::value, "Key has to derive from Keyframe");
+    using value_type = Key::value_type;
+    static_assert(std::is_base_of_v<Keyframe, Key>, "Key has to derive from Keyframe");
 
     /*
      * Uses ConstantInterpolation<Key> unless DefaultInterpolationCreator is
@@ -308,6 +306,4 @@ void KeyframeSequenceTyped<Key>::deserialize(Deserializer& d) {
 
 #endif
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

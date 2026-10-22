@@ -205,14 +205,14 @@ vec3 RandomSphereGenerator::randVec3(const float min, const float max) const {
     const float x = rand(min, max);
     const float y = rand(min, max);
     const float z = rand(min, max);
-    return vec3(x, y, z);
+    return {x, y, z};
 }
 
 vec3 RandomSphereGenerator::randVec3(const vec3& min, const vec3& max) const {
     const float x = rand(min.x, max.x);
     const float y = rand(min.y, max.y);
     const float z = rand(min.z, max.z);
-    return vec3(x, y, z);
+    return {x, y, z};
 }
 
 void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {

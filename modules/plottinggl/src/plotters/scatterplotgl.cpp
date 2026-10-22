@@ -94,7 +94,7 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
     , radiusRange_("radius", "Radius", 5, 0, 10, 0.01f)
     , minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
     , tf_("transferFunction", "Transfer Function",
-          TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
+          TransferFunction({{.pos = 0.0, .color = vec4(1.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}))
     , color_("defaultColor", "Color", util::ordinalColor(1.0f, 0.0f, 0.0f, 1.0f))
 
     , showHighlighted_("showHighlighted", "Show Highlighted", true, vec3(1.0f, 0.906f, 0.612f))
@@ -348,7 +348,7 @@ void ScatterPlotGL::setSortingData(const Column* col) {
 }
 
 void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol) {
-    indexColumn_ = indexcol;
+    indexColumn_ = std::move(indexcol);
 
     if (indexColumn_) {
         const auto numValues = static_cast<std::uint32_t>(indexColumn_->getSize());
@@ -540,7 +540,7 @@ void ScatterPlotGL::renderAxis(const size2_t& dims) {
 }
 
 void ScatterPlotGL::objectPicked(PickingEvent* p) {
-    const uint32_t id = static_cast<uint32_t>(p->getPickedId());
+    const auto id = static_cast<uint32_t>(p->getPickedId());
 
     // Show tooltip for current item
     if (properties_.tooltip_ && (p->getHoverState() == PickingHoverState::Move ||
@@ -589,8 +589,8 @@ void ScatterPlotGL::partitionData() {
         indices.assign(seq.begin(), seq.end());
     }
 
-    const auto lastFilteredIt = std::partition(indices.begin(), indices.end(),
-                                               [&](auto ind) { return filtered_.contains(ind); });
+    const auto lastFilteredIt =
+        std::ranges::partition(indices, [&](auto ind) { return filtered_.contains(ind); }).begin();
     const auto lastRegularIt = std::partition(lastFilteredIt, indices.end(), [&](auto ind) {
         return !selected_.contains(ind) && !highlighted_.contains(ind);
     });

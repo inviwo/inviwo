@@ -68,13 +68,13 @@ public:
     virtual ~LinkDialogGraphicsScene();
 
     template <typename T>
-    T* getItemAt(const QPointF pos, const Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
+    T* getItemAt(QPointF pos, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
                  Qt::SortOrder order = Qt::DescendingOrder) const;
 
     ProcessorNetwork* getNetwork() const;
 
     void removeAllPropertyLinks();
-    void addPropertyLink(Property* srcProperty, Property* dstProperty, bool bidirectional);
+    void addPropertyLink(Property* sProp, Property* eProp, bool bidirectional);
 
     void toggleExpand();
     void showHidden(bool val);
@@ -103,7 +103,7 @@ protected:
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
     // Override for tooltips
-    virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
+    virtual void helpEvent(QGraphicsSceneHelpEvent* e) override;
 
     void removePropertyLink(DialogConnectionGraphicsItem* propertyLink);
 
@@ -112,8 +112,8 @@ protected:
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
 
     DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(
-        const PropertyLink& propLink);
-    void removePropertyLinkRepresentation(const PropertyLink& propLink);
+        const PropertyLink& propertyLink);
+    void removePropertyLinkRepresentation(const PropertyLink& propertyLink);
 
     DialogConnectionGraphicsItem* getConnectionGraphicsItem(LinkDialogPropertyGraphicsItem*,
                                                             LinkDialogPropertyGraphicsItem*) const;
@@ -129,13 +129,13 @@ private:
         std::unique_ptr<DialogCurveGraphicsItem> linkCurve_;
         LinkDialogGraphicsScene* scene_;
 
-        explicit operator bool() { return linkCurve_ != nullptr; }
+        explicit operator bool() const { return linkCurve_ != nullptr; }
     };
 
     Curve curve_;
 
     LinkDialogPropertyGraphicsItem* startProperty_;
-    LinkDialogPropertyGraphicsItem* endProperty_;
+    LinkDialogPropertyGraphicsItem* endProperty_{};
 
     LinkDialogProcessorGraphicsItem* srcProcessor_;
     LinkDialogProcessorGraphicsItem* dstProcessor_;
@@ -154,9 +154,9 @@ T* LinkDialogGraphicsScene::getItemAt(const QPointF pos, const Qt::ItemSelection
                                       Qt::SortOrder order) const {
     QList<QGraphicsItem*> graphicsItems = items(pos, mode, order);
 
-    if (graphicsItems.size() > 0) {
-        for (int i = 0; i < graphicsItems.size(); i++) {
-            T* graphicsItem = qgraphicsitem_cast<T*>(graphicsItems[i]);
+    if (!graphicsItems.empty()) {
+        for (auto& i : graphicsItems) {
+            T* graphicsItem = qgraphicsitem_cast<T*>(i);
             if (graphicsItem) return graphicsItem;
         }
     }

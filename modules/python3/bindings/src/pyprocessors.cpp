@@ -168,9 +168,10 @@ void exposeProcessors(pybind11::module& m) {
     py::classh<ProcessorFactory>(m, "ProcessorFactory")
         .def("hasKey", &ProcessorFactory::hasKey)
         .def_property_readonly("keys", &ProcessorFactory::getKeys)
-        .def("create", [](ProcessorFactory* pf, std::string key) { return pf->createShared(key); })
         .def("create",
-             [](ProcessorFactory* pf, std::string key, ivec2 pos) {
+             [](ProcessorFactory* pf, const std::string& key) { return pf->createShared(key); })
+        .def("create",
+             [](ProcessorFactory* pf, const std::string& key, ivec2 pos) {
                  auto p = pf->createShared(key);
                  if (!p) {
                      throw py::key_error("failed to create processor of type '" + key + "'");
@@ -213,14 +214,11 @@ void exposeProcessors(pybind11::module& m) {
         .def_property("selected", &ProcessorMetaData::isSelected, &ProcessorMetaData::setSelected)
         .def_property("visible", &ProcessorMetaData::isVisible, &ProcessorMetaData::setVisible);
 
-    using InportVecWrapper = VectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Inport*>::const_iterator>(
-        m, "InportVectorWrapper");
+    using InportVecWrapper = VectorIdentifierWrapper<std::vector<Inport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Inport*>::const_iterator>(m, "InportVectorWrapper");
 
-    using OutportVecWrapper =
-        VectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>;
-    exposeVectorIdentifierWrapper<typename std::vector<Outport*>::const_iterator>(
-        m, "OutportVectorWrapper");
+    using OutportVecWrapper = VectorIdentifierWrapper<std::vector<Outport*>::const_iterator>;
+    exposeVectorIdentifierWrapper<std::vector<Outport*>::const_iterator>(m, "OutportVectorWrapper");
 
     py::classh<Processor, PropertyOwner, MetaDataOwner, ProcessorTrampoline>(
         m, "Processor", py::multiple_inheritance{}, py::dynamic_attr{})
@@ -323,7 +321,7 @@ void exposeProcessors(pybind11::module& m) {
                      throw Exception(SourceContext{}, "No writer for {}", filePath);
                  }
 
-                 if (auto layer = canvas->getVisibleLayer()) {
+                 if (const auto* layer = canvas->getVisibleLayer()) {
                      rendercontext::activateDefault();
                      writer->writeData(layer, filePath);
                  } else {
@@ -341,7 +339,7 @@ void exposeProcessors(pybind11::module& m) {
                 throw Exception(SourceContext{}, "No writer for {}", filePath);
             }
 
-            if (auto layer = canvas->getVisibleLayer()) {
+            if (const auto* layer = canvas->getVisibleLayer()) {
                 /* Unfortunately we need to clone the layer here since in most cases the layer comes
                  * from an ImageOutport and that will generally render new data into the layer on
                  * the next evaluation.

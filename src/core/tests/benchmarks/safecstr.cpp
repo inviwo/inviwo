@@ -94,7 +94,7 @@ private:
     std::unique_ptr<char[]> heap;
 };
 
-static void StringConv(benchmark::State& state) {
+void StringConv(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = std::string(sv);
@@ -103,7 +103,7 @@ static void StringConv(benchmark::State& state) {
     }
 }
 
-static void ArrayConvInit(benchmark::State& state) {
+void ArrayConvInit(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         std::array<char, 256> buff = {0};
@@ -113,7 +113,7 @@ static void ArrayConvInit(benchmark::State& state) {
     }
 }
 
-static void ArrayConvZero(benchmark::State& state) {
+void ArrayConvZero(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         std::array<char, 256> buff;
@@ -124,7 +124,7 @@ static void ArrayConvZero(benchmark::State& state) {
     }
 }
 
-static void SafeCStr1_256(benchmark::State& state) {
+void SafeCStr1_256(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = SafeCStr1<256>(sv);
@@ -133,7 +133,7 @@ static void SafeCStr1_256(benchmark::State& state) {
     }
 }
 
-static void SafeCStr2_56(benchmark::State& state) {
+void SafeCStr2_56(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = SafeCStr2<56>(sv);

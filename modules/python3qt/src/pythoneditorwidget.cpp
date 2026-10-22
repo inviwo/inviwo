@@ -54,6 +54,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <QAction>
@@ -96,6 +97,7 @@ PythonEditorWidget::PythonEditorWidget(
     std::function<void(UnorderedStringMap<QVariant>&)> stateLoader,
     std::function<void(const UnorderedStringMap<QVariant>&)> stateSaver)
     : InviwoDockWidget(tr("Python Editor[*]"), parent, "PythonEditorWidget")
+    , mainWindow_(new QMainWindow())
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , runAction_(nullptr)
@@ -103,21 +105,20 @@ PythonEditorWidget::PythonEditorWidget(
     , app_(app)
     , appendLog_(nullptr)
     , fileObserver_(this, "Python Editor")
-    , onTextChange_{onTextChange}
-    , stateLoader_{stateLoader}
-    , stateSaver_{stateSaver} {
+    , onTextChange_{std::move(onTextChange)}
+    , stateLoader_{std::move(stateLoader)}
+    , stateSaver_{std::move(stateSaver)} {
     setWindowIcon(QIcon(":/svgicons/python.svg"));
 
-    mainWindow_ = new QMainWindow();
     mainWindow_->setContextMenuPolicy(Qt::NoContextMenu);
-    QToolBar* toolBar = new QToolBar();
+    auto* toolBar = new QToolBar();
     toolBar->setObjectName("PythonEditorWidgetToolBar");
     mainWindow_->addToolBar(toolBar);
     toolBar->setFloatable(false);
     toolBar->setMovable(false);
     setWidget(mainWindow_);
 
-    QSplitter* splitter = new QSplitter(nullptr);
+    auto* splitter = new QSplitter(nullptr);
     splitter->setOrientation(Qt::Vertical);
 
     auto settings = app->getSettingsByType<PythonSyntaxHighlight>();
@@ -468,7 +469,7 @@ void PythonEditorWidget::updateWindowTitle() {
 
 void PythonEditorWidget::getState(UnorderedStringMap<QVariant>& state) const {
     InviwoDockWidget::getState(state);
-    state.insert_range(std::to_array<typename UnorderedStringMap<QVariant>::value_type>({
+    state.insert_range(std::to_array<UnorderedStringMap<QVariant>::value_type>({
         {"appendLog", appendLog_->isChecked()},
         {"lastScript", utilqt::toQString(scriptFileName_)},
         {"source", pythonCode_->toPlainText()},

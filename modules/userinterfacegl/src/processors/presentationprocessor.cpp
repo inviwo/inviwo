@@ -64,6 +64,7 @@
 #include <map>
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -205,7 +206,7 @@ void PresentationProcessor::process() {
 void PresentationProcessor::updateSlideImage() {
     // sanity check for valid index
     const auto index = slideIndex_.get() - 1;
-    if ((index < 0) || (index >= static_cast<int>(fileList_.size()))) {
+    if ((index < 0) || std::cmp_greater_equal(index, fileList_.size())) {
         log::error("Invalid image index. Exceeded number of files.");
         currentSlide_ = nullptr;
         return;
@@ -213,7 +214,7 @@ void PresentationProcessor::updateSlideImage() {
 
     const auto currentFileName = fileList_[index];
 
-    auto factory = getInviwoApplication()->getDataReaderFactory();
+    auto* factory = getInviwoApplication()->getDataReaderFactory();
     auto reader = factory->getReaderForTypeAndExtension<Layer>(currentFileName);
 
     // there should always be a reader since we asked the reader for valid extensions

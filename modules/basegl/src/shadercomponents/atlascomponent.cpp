@@ -98,14 +98,14 @@ namespace {
 
 OrdinalPropertyState<float> ordinalAlpha(
     const float& value, InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput) {
-    return {value,
-            0.0f,
-            ConstraintBehavior::Immutable,
-            1.0f,
-            ConstraintBehavior::Immutable,
-            0.01f,
-            invalidationLevel,
-            PropertySemantics::Default};
+    return {.value = value,
+            .min = 0.0f,
+            .minConstraint = ConstraintBehavior::Immutable,
+            .max = 1.0f,
+            .maxConstraint = ConstraintBehavior::Immutable,
+            .increment = 0.01f,
+            .invalidationLevel = invalidationLevel,
+            .semantics = PropertySemantics::Default};
 }
 
 void orderTf(TransferFunction& tf, size_t nSegments) {
@@ -172,12 +172,18 @@ AtlasComponent::AtlasComponent(Processor* p, std::string_view color, TimeCompone
     , coloringApply_{"coloringApply",
                      "Apply Coloring",
                      {
-                         {"Set Color", std::nullopt, std::nullopt,
-                          [&]() { coloringAction_ = ColoringAction::SetColor; }},
-                         {"Set Alpha", std::nullopt, std::nullopt,
-                          [&]() { coloringAction_ = ColoringAction::SetAlpha; }},
-                         {"Set Scheme", std::nullopt, std::nullopt,
-                          [&]() { coloringAction_ = ColoringAction::SetScheme; }},
+                         {.name = "Set Color",
+                          .icon = std::nullopt,
+                          .tooltip = std::nullopt,
+                          .action = [&]() { coloringAction_ = ColoringAction::SetColor; }},
+                         {.name = "Set Alpha",
+                          .icon = std::nullopt,
+                          .tooltip = std::nullopt,
+                          .action = [&]() { coloringAction_ = ColoringAction::SetAlpha; }},
+                         {.name = "Set Scheme",
+                          .icon = std::nullopt,
+                          .tooltip = std::nullopt,
+                          .action = [&]() { coloringAction_ = ColoringAction::SetScheme; }},
                      }}
     , coloringAction_{ColoringAction::None}
     , colors_{size2_t{64, 2},     DataFormat<vec4>::get(),    LayerType::Color,
@@ -452,11 +458,18 @@ if (picking.a == 0.0 && {color}.a > 0.0 && {atlas}Color1.a > 0.0) {{
 auto AtlasComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
 
-    return {
-        {R"(#include "utils/pickingutils.glsl")", placeholder::include, 800},
-        {fmt::format(uniforms, "atlas"_a = getName()), placeholder::uniform, 800},
-        {fmt::format(first, "atlas"_a = getName(), "color"_a = color_), placeholder::first, 800},
-        {fmt::format(loop, "atlas"_a = getName(), "color"_a = color_), placeholder::loop, 800}};
+    return {{.snippet = R"(#include "utils/pickingutils.glsl")",
+             .placeholder = placeholder::include,
+             .priority = 800},
+            {.snippet = fmt::format(uniforms, "atlas"_a = getName()),
+             .placeholder = placeholder::uniform,
+             .priority = 800},
+            {.snippet = fmt::format(first, "atlas"_a = getName(), "color"_a = color_),
+             .placeholder = placeholder::first,
+             .priority = 800},
+            {.snippet = fmt::format(loop, "atlas"_a = getName(), "color"_a = color_),
+             .placeholder = placeholder::loop,
+             .priority = 800}};
 }
 
 }  // namespace inviwo

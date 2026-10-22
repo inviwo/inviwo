@@ -75,7 +75,7 @@ public:
     virtual ImageEditorProperty* clone() const override;
     virtual ~ImageEditorProperty();
 
-    void addLabel(vec2 start, vec2 end, std::string name = "");
+    void addLabel(vec2 start, vec2 rectSize, std::string name = "");
     void setDimensions(ivec2 imgSize);
     const std::vector<ImageLabel>& getLabels() const;
     void clearLabels();
@@ -84,7 +84,7 @@ public:
 
 private:
     std::vector<ImageLabel> labels_;
-    ivec2 dimensions_;
+    ivec2 dimensions_{};
 };
 
 }  // namespace inviwo

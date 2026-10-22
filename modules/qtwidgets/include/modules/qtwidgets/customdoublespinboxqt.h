@@ -48,7 +48,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
     Q_OBJECT
 public:
-    explicit CustomDoubleSpinBoxQt(QWidget* parent = 0);
+    explicit CustomDoubleSpinBoxQt(QWidget* parent = nullptr);
     virtual QString textFromValue(double value) const;
 
     /**

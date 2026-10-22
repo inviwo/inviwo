@@ -127,7 +127,7 @@ void LayerDistanceTransform::process() {
     };
 
     outport_.clear();
-    dispatchOne(calc, [this](std::shared_ptr<Layer> result) {
+    dispatchOne(calc, [this](const std::shared_ptr<Layer>& result) {
         outport_.setData(result);
         newResults();
     });

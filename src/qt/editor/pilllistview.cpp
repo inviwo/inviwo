@@ -37,7 +37,7 @@ namespace inviwo {
 
 TagModel::TagModel(const Tags& tags, QObject* parent) : QAbstractListModel(parent) {
     for (const auto& t : tags.tags_) {
-        tags_.push_back({t, utilqt::toQString(t.getString()), true});
+        tags_.push_back({.tag = t, .text = utilqt::toQString(t.getString()), .checked = true});
     }
 }
 
@@ -156,7 +156,7 @@ int PillListView::heightForWidth(int viewWidth) const {
         rowWidth += size.width();
     }
     const auto size = pillDelegate_->sizeHint(option, model()->index(0, 0));
-    return rows * (size.height());
+    return rows * size.height();
 }
 
 QSize PillListView::viewportSizeHint() const {

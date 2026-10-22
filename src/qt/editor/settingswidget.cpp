@@ -50,19 +50,20 @@
 namespace inviwo {
 
 SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
-    : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
+    : InviwoDockWidget(title, mainwindow, "SettingsWidget")
+    , mainwindow_(mainwindow)
+    , scrollArea_(new QScrollArea())
+    , mainWidget_(new QWidget()) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
-    scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, 0, 0, 0);
 
-    mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
     const auto space = utilqt::refSpacePx(this);
@@ -78,7 +79,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
             [&]() { updateSettingsWidget(); });
     onModulesWillUnregister_ =
         mainwindow->getInviwoApplication()->getModuleManager().onModulesWillUnregister([&]() {
-            while (auto item = layout_->takeAt(0)) {
+            while (auto* item = layout_->takeAt(0)) {
                 delete item;
             }
         });
@@ -92,13 +93,13 @@ SettingsWidget::~SettingsWidget() = default;
 void SettingsWidget::updateSettingsWidget() {
     const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
 
-    for (auto setting : settings) {
-        auto settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
+    for (auto* setting : settings) {
+        auto* settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
         settingsGroup->setShowIfEmpty(true);
         layout_->addWidget(settingsGroup);
         settingsGroup->initState();
 
-        for (auto prop : setting->getProperties()) {
+        for (auto* prop : setting->getProperties()) {
             settingsGroup->addProperty(prop);
         }
 

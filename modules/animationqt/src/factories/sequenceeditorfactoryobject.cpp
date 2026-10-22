@@ -29,17 +29,15 @@
 
 #include <modules/animationqt/factories/sequenceeditorfactoryobject.h>
 
-namespace inviwo {
+#include <utility>
 
-namespace animation {
+namespace inviwo::animation {
 
-SequenceEditorFactoryObject::SequenceEditorFactoryObject(const std::string& classIdentifier)
-    : classIdentifier_(classIdentifier) {}
+SequenceEditorFactoryObject::SequenceEditorFactoryObject(std::string classIdentifier)
+    : classIdentifier_(std::move(classIdentifier)) {}
 
 const std::string& SequenceEditorFactoryObject::getClassIdentifier() const {
     return classIdentifier_;
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

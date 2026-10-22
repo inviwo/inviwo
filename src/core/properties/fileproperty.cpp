@@ -35,6 +35,9 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/properties/multifileproperty.h>
 
+#include <algorithm>
+#include <utility>
+
 namespace inviwo {
 
 FileBase::FileBase(std::function<void()> onModified, AcceptMode acceptMode, FileMode fileMode,
@@ -43,7 +46,7 @@ FileBase::FileBase(std::function<void()> onModified, AcceptMode acceptMode, File
     , acceptMode_{"acceptMode", acceptMode}
     , fileMode_{"fileMode", fileMode}
     , contentType_{"contentType", contentType}
-    , onModified_{onModified} {
+    , onModified_{std::move(onModified)} {
 
     addNameFilter(FileExtension::all());
 }
@@ -115,14 +118,13 @@ void FileBase::setSelectedExtension(const FileExtension& ext) {
 bool FileBase::updateExtension(const std::filesystem::path& file) {
     bool modified = false;
     if (!selectedExtension_->matches(file)) {
-        const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
-            return !f.matchesAll() && f.matches(file);
-        });
+        const auto it = std::ranges::find_if(
+            nameFilters_, [&](const auto& f) { return !f.matchesAll() && f.matches(file); });
         if (it != nameFilters_.end() && selectedExtension_ != *it) {
             modified |= selectedExtension_.update(*it);
         } else {
-            const auto allIt = std::find_if(nameFilters_.begin(), nameFilters_.end(),
-                                            [&](const auto& f) { return f.matchesAll(); });
+            const auto allIt =
+                std::ranges::find_if(nameFilters_, [&](const auto& f) { return f.matchesAll(); });
             if (allIt != nameFilters_.end() && selectedExtension_ != *allIt) {
                 modified |= selectedExtension_.update(*allIt);
             }
@@ -308,12 +310,12 @@ void FileProperty::deserialize(Deserializer& d) {
     if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
         if (oldWorkspacePath.is_absolute()) {
             if (absolutePath.empty()) {  // on use url if "absolutePath" is not set
-                absolutePath = oldWorkspacePath;
+                absolutePath = std::move(oldWorkspacePath);
             }
         } else {
             // on use url if "workspaceRelativePath" is not set
             if (workspaceRelativePath.empty()) {
-                workspaceRelativePath = oldWorkspacePath;
+                workspaceRelativePath = std::move(oldWorkspacePath);
             }
         }
     }

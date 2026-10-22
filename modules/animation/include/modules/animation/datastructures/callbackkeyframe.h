@@ -36,9 +36,7 @@
 
 #include <functional>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * Keyframe which calls one function when animating forward and a different one when animating
@@ -53,7 +51,7 @@ namespace animation {
 class IVW_MODULE_ANIMATION_API CallbackKeyframe : public BaseKeyframe {
 public:
     CallbackKeyframe() = default;
-    explicit CallbackKeyframe(Seconds time, std::function<void()> do_ = nullptr,
+    explicit CallbackKeyframe(Seconds time, std::function<void()> doForward = nullptr,
                               std::function<void()> undo = nullptr);
     CallbackKeyframe(const CallbackKeyframe& rhs) = default;
     CallbackKeyframe& operator=(const CallbackKeyframe& that) = default;
@@ -68,6 +66,4 @@ private:
     std::function<void()> undo_;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

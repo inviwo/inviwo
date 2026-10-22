@@ -75,8 +75,6 @@ private:
     SimpleRaycastingProperty raycasting_;
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
-
-private:
 };
 
 }  // namespace inviwo

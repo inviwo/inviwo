@@ -106,8 +106,7 @@ private:
 
 void FileSystemObserverQt::registerFileObserver(FileObserver* fileObserver) {
     const std::scoped_lock lock{mutex_};
-    IVW_ASSERT(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
-                   fileObservers_.cend(),
+    IVW_ASSERT(std::ranges::find(fileObservers_, fileObserver) == fileObservers_.cend(),
                "File observer already registered.");
     fileObservers_.push_back(fileObserver);
 }
@@ -180,7 +179,7 @@ void showFatalMessage(const QString& msg) {
 void utilqt::logQtMessages([[maybe_unused]] QtMsgType type,
                            [[maybe_unused]] const QMessageLogContext& context,
                            [[maybe_unused]] const QString& msg) {
-#if defined(__APPLE__)
+#ifdef __APPLE__
     // There is some weird bug on mac that sets complains about
     // QWidgetWindow(...) Attempt to set a screen on a child window
     // Does not seem to be a real problem lets, ignore it.
@@ -274,7 +273,7 @@ void utilqt::configurePostEnqueueFront(InviwoApplication& app) {
         helper.get(), &detail::QtProcessFrontHelper::postEnqueue, qapp,
         [&app]() { app.processFront(); }, Qt::QueuedConnection);
 
-    app.setProcessEventsCallback([]() { QApplication::instance()->processEvents(); });
+    app.setProcessEventsCallback([]() { QCoreApplication::processEvents(); });
 }
 
 void utilqt::configureAssertionHandler(InviwoApplication& app) {
@@ -299,7 +298,7 @@ void utilqt::configurePoolResizeWait(InviwoApplication& app, QWidget* window) {
                     break;
                 }
                 case InviwoApplication::LongWait::Update: {
-                    QApplication::instance()->processEvents();
+                    QCoreApplication::processEvents();
                     break;
                 }
                 case InviwoApplication::LongWait::End: {

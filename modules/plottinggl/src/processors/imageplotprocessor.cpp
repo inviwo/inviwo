@@ -167,7 +167,7 @@ ImagePlotProcessor::ImagePlotProcessor()
     rangeMode_.onChange([this]() { adjustRanges(); });
 
     customRanges_.readonlyDependsOn(
-        rangeMode_, [](auto p) { return p.getSelectedValue() != AxisRangeMode::Custom; });
+        rangeMode_, [](const auto& p) { return p.getSelectedValue() != AxisRangeMode::Custom; });
     customRanges_.setReadOnly(rangeMode_.getSelectedValue() != AxisRangeMode::Custom);
 
     viewManager_.push_back(viewport_);
@@ -227,10 +227,9 @@ void ImagePlotProcessor::propagateEvent(Event* event, Outport* source) {
         }
     } else {
         if (imageInteraction_.get() && imgInport_.isConnected()) {
-            const bool overlayHandlesEvent =
-                (viewManager_.propagateEvent(event, [&](Event* newEvent, size_t /*ind*/) {
-                    imgInport_.propagateEvent(newEvent);
-                }));
+            const bool overlayHandlesEvent = viewManager_.propagateEvent(
+                event,
+                [&](Event* newEvent, size_t /*ind*/) { imgInport_.propagateEvent(newEvent); });
 
             if (overlayHandlesEvent || event->hasBeenUsed()) {
                 return;
@@ -282,7 +281,7 @@ ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_
 
     // ensure positive extent and minimum extent of (1,1)
     upperRight = glm::max(upperRight, lowerLeft);
-    return {lowerLeft, glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
+    return {.pos = lowerLeft, .extent = glm::max(size2_t{upperRight - lowerLeft}, size2_t{1u})};
 }
 
 void ImagePlotProcessor::adjustRanges() {

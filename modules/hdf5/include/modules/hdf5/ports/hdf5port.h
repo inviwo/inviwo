@@ -34,13 +34,9 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 using Inport = DataInport<Handle>;
 using Outport = DataOutport<Handle>;
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

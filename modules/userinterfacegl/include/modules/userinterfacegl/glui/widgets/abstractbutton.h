@@ -63,7 +63,7 @@ protected:
     virtual vec2 marginScale() const override;
 
     Texture2DArray* uiTextures_;
-    std::array<int, 9> uiTextureMap_;
+    std::array<int, 9> uiTextureMap_{};
 };
 
 }  // namespace glui

@@ -30,6 +30,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/serialization.h>
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -108,40 +109,42 @@ void Document::Element::deserialize(Deserializer& d) {
 }
 
 Document::PathComponent Document::PathComponent::first() {
-    return PathComponent("<first>", [](const ElemVec& elements) -> ElemVec::const_iterator {
-        if (!elements.empty())
-            return elements.begin();
-        else
-            return elements.end();
-    });
+    return {"<first>", [](const ElemVec& elements) -> ElemVec::const_iterator {
+                if (!elements.empty()) {
+                    return elements.begin();
+                } else {
+                    return elements.end();
+                }
+            }};
 }
 
 Document::PathComponent::PathComponent(
     std::string_view strrep, std::function<ElemVec::const_iterator(const ElemVec&)> matcher)
-    : strrep_(strrep), matcher_(matcher) {}
+    : strrep_(strrep), matcher_(std::move(matcher)) {}
 
 Document::PathComponent::PathComponent(int index)
     : strrep_("Index: " + std::to_string(index))
     , matcher_{[index](const ElemVec& elements) -> ElemVec::const_iterator {
         const size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
-        if (i < elements.size())
+        if (i < elements.size()) {
             return elements.begin() + i;
-        else
+        } else {
             return elements.end();
+        }
     }} {}
 
 Document::PathComponent::PathComponent(std::string_view name)
     : strrep_(name)
     , matcher_{[name = std::string(name)](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(),
-                            [&](const auto& e) { return e->isNode() && e->name() == name; });
+        return std::ranges::find_if(
+            elements, [&](const auto& e) { return e->isNode() && e->name() == name; });
     }} {}
 
 Document::PathComponent::PathComponent(const UnorderedStringMap<std::string>& attributes)
     : strrep_("attr"), matcher_{[attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
+        return std::ranges::find_if(elements, [&](const auto& e) {
             if (e->isText()) return false;
-            for (auto& attr : attributes) {
+            for (const auto& attr : attributes) {
                 const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;
@@ -155,10 +158,10 @@ Document::PathComponent::PathComponent(std::string_view name,
     : strrep_("attr")
     , matcher_{[name = std::string(name),
                 attributes](const ElemVec& elements) -> ElemVec::const_iterator {
-        return std::find_if(elements.begin(), elements.end(), [&](const auto& e) {
+        return std::ranges::find_if(elements, [&](const auto& e) {
             if (e->isText()) return false;
             if (e->name() != name) return false;
-            for (auto& attr : attributes) {
+            for (const auto& attr : attributes) {
                 const auto it = e->attributes().find(attr.first);
                 if (it == e->attributes().end()) return false;
                 if (it->second != attr.second) return false;
@@ -173,17 +176,18 @@ std::ostream& operator<<(std::ostream& ss, const Document::PathComponent& path) 
 }
 
 Document::PathComponent Document::PathComponent::last() {
-    return PathComponent("<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {
-        if (!elements.empty())
-            return --elements.end();
-        else
-            return elements.end();
-    });
+    return {"<last>", [](const ElemVec& elements) -> ElemVec::const_iterator {
+                if (!elements.empty()) {
+                    return --elements.end();
+                } else {
+                    return elements.end();
+                }
+            }};
 }
 
 Document::PathComponent Document::PathComponent::end() {
-    return PathComponent(
-        "<end>", [](const ElemVec& elements) -> ElemVec::const_iterator { return elements.end(); });
+    return {"<end>",
+            [](const ElemVec& elements) -> ElemVec::const_iterator { return elements.end(); }};
 }
 
 Document::ElemVec::const_iterator Document::PathComponent::operator()(
@@ -201,10 +205,10 @@ Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathCom
         if (it != current->children_.end()) {
             current = (*it).get();
         } else {
-            return DocumentHandle(doc_, nullptr);
+            return {doc_, nullptr};
         }
     }
-    return DocumentHandle(doc_, current);
+    return {doc_, current};
 }
 
 Document::DocumentHandle Document::DocumentHandle::insert(
@@ -215,7 +219,7 @@ Document::DocumentHandle Document::DocumentHandle::insert(
     const auto it =
         elem_->children_.insert(iter, std::make_unique<Element>(name, content, attributes));
 
-    return DocumentHandle(doc_, it->get());
+    return {doc_, it->get()};
 }
 
 Document::DocumentHandle Document::DocumentHandle::append(
@@ -229,7 +233,7 @@ Document::DocumentHandle Document::DocumentHandle::insertText(PathComponent pos,
     const auto iter = pos(elem_->children_);
     const auto it =
         elem_->children_.insert(iter, std::make_unique<Element>(ElementType::Text, text));
-    return DocumentHandle(doc_, it->get());
+    return {doc_, it->get()};
 }
 Document::DocumentHandle Document::DocumentHandle::appendText(std::string_view text) {
     return insertText(PathComponent::end(), text);
@@ -245,7 +249,7 @@ Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Doc
     const auto it = elem_->children_.insert(iter, std::move_iterator(doc.root_->children_.begin()),
                                             std::move_iterator(doc.root_->children_.end()));
 
-    return DocumentHandle(doc_, it->get());
+    return {doc_, it->get()};
 }
 Document::DocumentHandle Document::DocumentHandle::append(Document doc) {
     return insert(PathComponent::end(), std::move(doc));
@@ -285,7 +289,7 @@ Document& Document::operator=(const Document& that) {
     return *this;
 }
 
-Document::DocumentHandle Document::handle() const { return DocumentHandle(this, root_.get()); }
+Document::DocumentHandle Document::handle() const { return {this, root_.get()}; }
 
 Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
     return handle().get(path);

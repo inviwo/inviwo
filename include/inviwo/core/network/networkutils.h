@@ -89,8 +89,8 @@ void traverseNetwork(
     if constexpr (V == VisitPattern::Pre) f(processor);
 
     if constexpr (D == TraversalDirection::Up) {
-        for (auto port : processor->getInports()) {
-            for (auto connectedPort : port->getConnectedOutports()) {
+        for (auto* port : processor->getInports()) {
+            for (auto* connectedPort : port->getConnectedOutports()) {
                 if (connectionFilter(processor, port, connectedPort)) {
                     traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
                                                 connectionFilter);
@@ -98,8 +98,8 @@ void traverseNetwork(
             }
         }
     } else {
-        for (auto port : processor->getOutports()) {
-            for (auto connectedPort : port->getConnectedInports()) {
+        for (auto* port : processor->getOutports()) {
+            for (auto* connectedPort : port->getConnectedInports()) {
                 if (connectionFilter(processor, port, connectedPort)) {
                     traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f,
                                                 connectionFilter);
@@ -123,7 +123,7 @@ struct IVW_CORE_API PropertyDistanceSorter {
 
 private:
     vec2 getPosition(const Property* p);
-    vec2 getPosition(const Processor* processor);
+    static vec2 getPosition(const Processor* processor);
 
     vec2 pos_ = {0, 0};
     std::map<const Property*, vec2> cache_;

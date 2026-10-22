@@ -35,9 +35,7 @@
 
 #include <vector>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class Keyframe;
 
@@ -55,6 +53,4 @@ protected:
     void notifyKeyframeEasingChanged(Keyframe* key);
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

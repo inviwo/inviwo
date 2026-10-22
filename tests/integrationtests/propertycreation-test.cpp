@@ -64,7 +64,7 @@ class PropertyCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
     PropertyCreationTests() : factory_{InviwoApplication::getPtr()->getPropertyFactory()} {}
 
-    virtual ~PropertyCreationTests() = default;
+    ~PropertyCreationTests() = default;
 
     virtual void SetUp() override {}
     virtual void TearDown() override {}
@@ -123,7 +123,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(InviwoApplication::getPtr()->getPropertyFactory()->getKeys()),
     [](const testing::TestParamInfo<std::string>& info) {
         auto name = fmt::format("{:04}_{}", info.index, info.param);
-        std::replace_if(name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+        std::ranges::replace_if(name, [](char c) { return !std::isalnum(c); }, '_');
         return name;
     });
 }  // namespace inviwo

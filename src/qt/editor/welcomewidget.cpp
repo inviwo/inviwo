@@ -205,7 +205,7 @@ public:
         QTextEdit::resizeEvent(event);
     }
 
-    std::optional<std::filesystem::path> findChangelog() {
+    static std::optional<std::filesystem::path> findChangelog() {
         auto changelog = filesystem::findBasePath() / "CHANGELOG.md";
         if (std::filesystem::is_regular_file(changelog)) {
             return changelog;
@@ -239,7 +239,7 @@ protected:
                                   Qt::SmoothTransformation);
             }
         }
-        return QTextEdit::loadResource(type, name);
+        return QTextBrowser::loadResource(type, name);
     }
 
     QFileSystemWatcher fileWatcher_;
@@ -264,7 +264,7 @@ auto annotationMatcher = [](auto getter) {
     return [getter](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
         const QVariant variant = utilqt::getData(i, Role::Annotations);
         if (variant.isValid()) {
-            const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+            const auto info = qvariant_cast<WorkspaceInfo>(variant);
             return contains(std::invoke(getter, *info.annotations), str);
         } else {
             return false;
@@ -284,22 +284,45 @@ class WorkspaceFilter : public QSortFilterProxyModel {
 public:
     explicit WorkspaceFilter(QObject* parent = nullptr)
         : QSortFilterProxyModel(parent)
-        , dsl_{{{"file", "f", "file name", true, matcher(Role::Name)},
-                {"path", "/", "file path", true, matcher(Role::Path)},
-                {"title", "t", "workspace title", true,
-                 annotationMatcher(&WorkspaceAnnotationsQt::getTitle)},
-                {"author", "a", "workspace author", true,
-                 annotationMatcher(&WorkspaceAnnotationsQt::getAuthor)},
-                {"tags", "#", "workspace tags", true,
-                 annotationMatcher(&WorkspaceAnnotationsQt::getTags)},
-                {"category", "c", "workspace category", true,
-                 annotationMatcher(&WorkspaceAnnotationsQt::getCategories)},
-                {"processors", "p",
-                 "search processor identifiers, display names, and class identifiers", false,
-                 [](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
+        , dsl_{{{.name = "file",
+                 .shortcut = "f",
+                 .description = "file name",
+                 .global = true,
+                 .match = matcher(Role::Name)},
+                {.name = "path",
+                 .shortcut = "/",
+                 .description = "file path",
+                 .global = true,
+                 .match = matcher(Role::Path)},
+                {.name = "title",
+                 .shortcut = "t",
+                 .description = "workspace title",
+                 .global = true,
+                 .match = annotationMatcher(&WorkspaceAnnotationsQt::getTitle)},
+                {.name = "author",
+                 .shortcut = "a",
+                 .description = "workspace author",
+                 .global = true,
+                 .match = annotationMatcher(&WorkspaceAnnotationsQt::getAuthor)},
+                {.name = "tags",
+                 .shortcut = "#",
+                 .description = "workspace tags",
+                 .global = true,
+                 .match = annotationMatcher(&WorkspaceAnnotationsQt::getTags)},
+                {.name = "category",
+                 .shortcut = "c",
+                 .description = "workspace category",
+                 .global = true,
+                 .match = annotationMatcher(&WorkspaceAnnotationsQt::getCategories)},
+                {.name = "processors",
+                 .shortcut = "p",
+                 .description =
+                     "search processor identifiers, display names, and class identifiers",
+                 .global = false,
+                 .match = [](std::string_view str, const std::any&, const QModelIndex& i) -> bool {
                      const QVariant variant = utilqt::getData(i, Role::Annotations);
                      if (variant.isValid()) {
-                         const WorkspaceInfo info = qvariant_cast<WorkspaceInfo>(variant);
+                         const auto info = qvariant_cast<WorkspaceInfo>(variant);
                          for (const auto& item : info.annotations->getProcessorList()) {
                              if (contains(item.type, str) || contains(item.identifier, str) ||
                                  contains(item.displayName, str)) {
@@ -362,8 +385,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
     setContentsMargins(0, 0, 0, 0);
 
     {  // Left splitter pane ( caption | splitter ( filetree | details ) )
-        auto leftWidget = new QWidget();
-        auto leftLayout = new QVBoxLayout();
+        auto* leftWidget = new QWidget();
+        auto* leftLayout = new QVBoxLayout();
         leftWidget->setLayout(leftLayout);
         leftWidget->setContentsMargins(0, 0, 0, 0);
         leftLayout->setContentsMargins(0, 0, 0, 0);
@@ -372,16 +395,16 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         addWidget(leftWidget);
 
         {  // caption: logo + "get started"
-            auto captionLayout = new QHBoxLayout();
-            auto captionWidget = new QWidget();
+            auto* captionLayout = new QHBoxLayout();
+            auto* captionWidget = new QWidget();
             captionWidget->setLayout(captionLayout);
-            auto inviwoLogo = new QLabel(leftWidget);
+            auto* inviwoLogo = new QLabel(leftWidget);
             inviwoLogo->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
             inviwoLogo->setPixmap(QPixmap(":/inviwo/inviwo_light.png"));
             inviwoLogo->setScaledContents(false);
             captionLayout->addWidget(inviwoLogo);
 
-            auto title = new QLabel("Get Started", leftWidget);
+            auto* title = new QLabel("Get Started", leftWidget);
             title->setObjectName("WelcomeHeader");
             title->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
             captionLayout->addWidget(title);
@@ -491,8 +514,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                             const QVariant variant =
                                 utilqt::getData(detailsIndex_, Role::Annotations);
                             if (variant.isValid()) {
-                                const WorkspaceInfo workspaceInfo =
-                                    qvariant_cast<WorkspaceInfo>(variant);
+                                const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
                                 const auto doc =
                                     createDetailsDocument(info, *workspaceInfo.annotations);
                                 details_->setHtml(utilqt::toQString(doc));
@@ -505,7 +527,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 },
                 Qt::QueuedConnection);
 
-            auto toolbarLayout = new QHBoxLayout();
+            auto* toolbarLayout = new QHBoxLayout();
             filterLineEdit_ = new QLineEdit();
             filterLineEdit_->setPlaceholderText("Search for Workspace...");
             filterLineEdit_->installEventFilter(
@@ -519,7 +541,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                               utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
             clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
                               utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
-            auto clearAction = filterLineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+            auto* clearAction = filterLineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
             clearAction->setVisible(false);
             connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
             connect(filterLineEdit_, &QLineEdit::textChanged, this,
@@ -535,8 +557,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             toolbarLayout->addWidget(filterLineEdit_);
 
-            auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 1.0), 0,
-                                                    QSizePolicy::Minimum, QSizePolicy::Minimum);
+            auto* horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 1.0), 0,
+                                                     QSizePolicy::Minimum, QSizePolicy::Minimum);
             toolbarLayout->addItem(horizontalSpacer);
 
             auto expandCollapse = QIcon();
@@ -545,8 +567,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             expandCollapse.addFile(":/svgicons/treelist-collapse.svg", QSize(), QIcon::Normal,
                                    QIcon::On);
 
-            const auto createToolButton = [&](auto text, QIcon icon, auto callback) {
-                auto btn = new QToolButton();
+            const auto createToolButton = [&](auto text, const QIcon& icon, auto callback) {
+                auto* btn = new QToolButton();
                 btn->setToolTip(text);
                 btn->setIcon(icon);
                 btn->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -555,7 +577,7 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                 return btn;
             };
 
-            auto expandCollapseBtn =
+            auto* expandCollapseBtn =
                 createToolButton("Expand/Collapse", expandCollapse, [this](bool expand) {
                     if (expand) {
                         workspaceGridView_->expandRecursively({});
@@ -566,27 +588,27 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                     }
                 });
             expandCollapseBtn->setCheckable(true);
-            auto gridListBtn =
+            auto* gridListBtn =
                 createToolButton("Workspace Grid View", QIcon(":/svgicons/gridlist.svg"), [this]() {
                     setSetting("showWorkSpaceGridView", true);
                     workspaceGridView_->setVisible(true);
                     workspaceTreeView_->setVisible(false);
                 });
-            auto treeViewBtn = createToolButton("Workspace Tree View",
-                                                QIcon(":svgicons/detaillist.svg"), [this]() {
-                                                    setSetting("showWorkSpaceGridView", false);
-                                                    workspaceGridView_->setVisible(false);
-                                                    workspaceTreeView_->setVisible(true);
-                                                });
+            auto* treeViewBtn = createToolButton("Workspace Tree View",
+                                                 QIcon(":svgicons/detaillist.svg"), [this]() {
+                                                     setSetting("showWorkSpaceGridView", false);
+                                                     workspaceGridView_->setVisible(false);
+                                                     workspaceTreeView_->setVisible(true);
+                                                 });
             toolbarLayout->addWidget(expandCollapseBtn);
             toolbarLayout->addWidget(gridListBtn);
             toolbarLayout->addWidget(treeViewBtn);
 
-            auto fileTreeLayout = new QVBoxLayout();
+            auto* fileTreeLayout = new QVBoxLayout();
             fileTreeLayout->addLayout(toolbarLayout);
             fileTreeLayout->addWidget(workspaceTreeView_);
             fileTreeLayout->addWidget(workspaceGridView_);
-            auto filetreeWidget = new QWidget();
+            auto* filetreeWidget = new QWidget();
             filetreeWidget->setLayout(fileTreeLayout);
             fileTreeLayout->setContentsMargins(2 * space, 0, 0, 0);
             workspaceSplitter_->addWidget(filetreeWidget);
@@ -599,16 +621,16 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             centerStackedWidget_->setContentsMargins(space, 0, 0, 2 * space);
 
             {
-                auto dragAndDrop = new QSvgWidget(QString(":/svgicons/dragndrop.svg"));
+                auto* dragAndDrop = new QSvgWidget(QString(":/svgicons/dragndrop.svg"));
                 dragAndDrop->setToolTip("Drag & drop data here to load");
                 dragAndDrop->setObjectName("dragndrop");
                 dragAndDrop->renderer()->setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
                 dragAndDrop->setMaximumHeight(600);
-                auto dragAndDropLayout = new QVBoxLayout();
+                auto* dragAndDropLayout = new QVBoxLayout();
                 dragAndDropLayout->addStretch();
                 dragAndDropLayout->addWidget(dragAndDrop);
                 dragAndDropLayout->addStretch();
-                auto w = new QWidget();
+                auto* w = new QWidget();
                 w->setLayout(dragAndDropLayout);
 
                 centerStackedWidget_->addWidget(w);
@@ -625,12 +647,12 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
 
             centerStackedWidget_->addWidget(details_);
 
-            auto buttonLayout = new QHBoxLayout();
+            auto* buttonLayout = new QHBoxLayout();
             buttonLayout->setSpacing(6);
             const auto createButton = [&](const QString& str, const QString& iconpath,
                                           const QString& toolTip, const QString& objName,
                                           auto&& function) {
-                auto button = new QToolButton(leftWidget);
+                auto* button = new QToolButton(leftWidget);
                 button->setText(str);
                 button->setIcon(QIcon(iconpath));
                 button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
@@ -672,8 +694,8 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
                              "Restore last automatically saved workspace if available",
                              "OpenWorkspaceToolButton", [this]() { emit restoreWorkspace(); });
 
-            auto centerWidget = new QWidget();
-            auto centerLayout = new QVBoxLayout();
+            auto* centerWidget = new QWidget();
+            auto* centerLayout = new QVBoxLayout();
             centerLayout->addWidget(centerStackedWidget_);
             centerLayout->addLayout(buttonLayout);
             centerLayout->setContentsMargins(space, 0, 0, 2 * space);
@@ -691,18 +713,18 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
         workspaceSplitter_->handle(1)->setAttribute(Qt::WA_Hover);
     }
     {  // right splitter pane: changelog / options
-        auto rightColumn = new QFrame(this);
+        auto* rightColumn = new QFrame(this);
         rightColumn->setContentsMargins(0, 0, 0, 0);
 
         addWidget(rightColumn);
         setStretchFactor(0, 2);  // left + center widget (workspace view + details)
         setStretchFactor(1, 1);  // rightColumn (changelog)
         rightColumn->setObjectName("WelcomeRightColumn");
-        auto rightColumnLayout = new QVBoxLayout(rightColumn);
+        auto* rightColumnLayout = new QVBoxLayout(rightColumn);
         rightColumnLayout->setContentsMargins(space, 0, 0, 3 * space);
 
         {
-            auto title = new QLabel("Latest Changes", rightColumn);
+            auto* title = new QLabel("Latest Changes", rightColumn);
             title->setObjectName("ChangeLog");
             rightColumnLayout->addWidget(title);
 
@@ -717,14 +739,14 @@ WelcomeWidget::WelcomeWidget(InviwoApplication* app, QWidget* parent)
             new QSpacerItem(space, space, QSizePolicy::Minimum, QSizePolicy::Fixed));
 
         {
-            auto autoloadWorkspace = new QCheckBox("&Auto-load last workspace", rightColumn);
+            auto* autoloadWorkspace = new QCheckBox("&Auto-load last workspace", rightColumn);
             autoloadWorkspace->setChecked(getSetting("autoloadLastWorkspace", false).toBool());
             QObject::connect(autoloadWorkspace, &QCheckBox::toggled, this, [this](bool checked) {
                 setSetting("autoloadLastWorkspace", checked);
             });
             rightColumnLayout->addWidget(autoloadWorkspace);
 
-            auto showOnStartup = new QCheckBox("&Show this page on startup", rightColumn);
+            auto* showOnStartup = new QCheckBox("&Show this page on startup", rightColumn);
             showOnStartup->setChecked(getSetting("showWelcomePage", true).toBool());
             QObject::connect(showOnStartup, &QCheckBox::toggled, this,
                              [this](bool checked) { setSetting("showWelcomePage", checked); });
@@ -963,7 +985,7 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     const QFileInfo info(utilqt::getData(index, Role::FilePath).toString());
     const QVariant variant = utilqt::getData(index, Role::Annotations);
     if (variant.isValid()) {
-        const WorkspaceInfo workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
+        const auto workspaceInfo = qvariant_cast<WorkspaceInfo>(variant);
         const auto doc = createDetailsDocument(info, *workspaceInfo.annotations);
         details_->setHtml(utilqt::toQString(doc));
     } else {
@@ -973,8 +995,8 @@ void WelcomeWidget::updateDetails(const QModelIndex& index) {
     centerStackedWidget_->setCurrentIndex(1);
 }
 
-Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) const {
-    const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
+Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) {
+    const auto* const dateFormat = "yyyy-MM-dd hh:mm:ss";
     const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
     const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));
     const auto titleStr = formatTitle(utilqt::fromQString(info.completeBaseName()));
@@ -1003,7 +1025,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info) const {
 Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
                                               const WorkspaceAnnotationsQt& annotations) const {
 
-    const auto dateFormat = "yyyy-MM-dd hh:mm:ss";
+    const auto* const dateFormat = "yyyy-MM-dd hh:mm:ss";
     const auto createdStr = utilqt::fromQString(info.birthTime().toString(dateFormat));
     const auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateFormat));
     const auto titleStr = (!annotations.getTitle().empty())
@@ -1051,7 +1073,7 @@ Document WelcomeWidget::createDetailsDocument(const QFileInfo& info,
              {"src", "data:image/jpeg;base64," + item.base64jpeg}});
     };
 
-    for (auto& elem : annotations.getCanvasImages()) {
+    for (const auto& elem : annotations.getCanvasImages()) {
         addImage(elem);
     }
     if (annotations.getNetworkImage().isValid()) {
@@ -1114,10 +1136,12 @@ private:
 };
 
 ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QSplitter* parent)
-    : QSplitterHandle{orientation, parent}, prevWidth_{250}, collapsed_{false} {
+    : QSplitterHandle{orientation, parent}
+    , label_((this->orientation() == Qt::Horizontal) ? new VerticalLabel() : new QLabel())
+    , prevWidth_{250}
+    , collapsed_{false} {
     const auto space = utilqt::refSpacePx(this);
 
-    label_ = (this->orientation() == Qt::Horizontal) ? new VerticalLabel() : new QLabel();
     label_->setObjectName("splitterHandleTitle");
     label_->setSizePolicy(QSizePolicy(QSizePolicy::Policy::Fixed, QSizePolicy::Policy::Fixed));
     label_->setMinimumHeight(20);
@@ -1138,7 +1162,7 @@ ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QS
     collapseButton_->setFixedSize(QSize(19, 19));
     collapseButton_->setCursor(QCursor(Qt::ArrowCursor));
 
-    auto l = new QVBoxLayout();
+    auto* l = new QVBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(space);
     l->setSizeConstraint(QLayout::SetMinimumSize);
@@ -1149,7 +1173,7 @@ ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QS
     setLayout(l);
 
     connect(parent, &QSplitter::splitterMoved, this, [this](int, int index) {
-        auto s = splitter();
+        auto* s = splitter();
         if (const int idx = s->indexOf(this); idx != index) return;
 
         const bool collapsed = (s->sizes()[index] == 0);
@@ -1161,7 +1185,7 @@ ChangelogSplitterHandle::ChangelogSplitterHandle(Qt::Orientation orientation, QS
     });
 
     connect(collapseButton_, &QToolButton::clicked, this, [this]() {
-        auto s = splitter();
+        auto* s = splitter();
         const int index = s->indexOf(this);
 
         const bool isCollapsed = (s->sizes()[index] == 0);

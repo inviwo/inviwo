@@ -29,7 +29,7 @@
 
 #include <modules/animationqt/widgets/editorconstants.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -39,9 +39,7 @@
 #include <QFlags>
 #include <Qt>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 qreal getSnapTime(const qreal& actualTime, const qreal& scale) {
     if (QApplication::keyboardModifiers() & Qt::AltModifier) {
@@ -126,8 +124,10 @@ FindDivisionsResult findDivisions(double start, double stop, int divisions) {
         remainder = std::remainder(remainder * 10.0, 1.0);
     }
 
-    return {niceStart, factor, static_cast<size_t>(count), int_digits, frac_digits};
+    return {.start = niceStart,
+            .step = factor,
+            .count = static_cast<size_t>(count),
+            .integerDigits = int_digits,
+            .fractionalDigits = frac_digits};
 }
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -128,7 +128,7 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
-    operator bool();
+    operator bool() const;
 
     ~GlBoolState();
 
@@ -154,11 +154,11 @@ struct IVW_MODULE_OPENGL_API CullFaceState : protected GlBoolState {
 
     ~CullFaceState();
 
-    GLint getMode();
+    GLint getMode() const;
 
 protected:
     GLint mode_;
-    GLint oldMode_;
+    GLint oldMode_{};
 };
 
 /**
@@ -295,12 +295,8 @@ struct IVW_MODULE_OPENGL_API Viewport {
     GLsizei width() const { return view_[2]; }
     GLsizei height() const { return view_[3]; }
 
-    friend inline bool operator==(const Viewport& a, const Viewport& b) {
-        return a.view_ == b.view_;
-    }
-    friend inline bool operator!=(const Viewport& lhs, const Viewport& rhs) {
-        return !(lhs == rhs);
-    }
+    friend bool operator==(const Viewport& a, const Viewport& b) { return a.view_ == b.view_; }
+    friend bool operator!=(const Viewport& lhs, const Viewport& rhs) { return !(lhs == rhs); }
 
 private:
     std::array<GLint, 4> view_;
@@ -338,12 +334,8 @@ struct IVW_MODULE_OPENGL_API ScissorBox {
     GLsizei width() const { return box_[2]; }
     GLsizei height() const { return box_[3]; }
 
-    friend inline bool operator==(const ScissorBox& a, const ScissorBox& b) {
-        return a.box_ == b.box_;
-    }
-    friend inline bool operator!=(const ScissorBox& lhs, const ScissorBox& rhs) {
-        return !(lhs == rhs);
-    }
+    friend bool operator==(const ScissorBox& a, const ScissorBox& b) { return a.box_ == b.box_; }
+    friend bool operator!=(const ScissorBox& lhs, const ScissorBox& rhs) { return !(lhs == rhs); }
 
 private:
     std::array<GLint, 4> box_;
@@ -382,12 +374,8 @@ struct IVW_MODULE_OPENGL_API ColorMask {
     GLboolean blue() const { return mask_[2]; }
     GLboolean alpha() const { return mask_[3]; }
 
-    friend inline bool operator==(const ColorMask& a, const ColorMask& b) {
-        return a.mask_ == b.mask_;
-    }
-    friend inline bool operator!=(const ColorMask& lhs, const ColorMask& rhs) {
-        return !(lhs == rhs);
-    }
+    friend bool operator==(const ColorMask& a, const ColorMask& b) { return a.mask_ == b.mask_; }
+    friend bool operator!=(const ColorMask& lhs, const ColorMask& rhs) { return !(lhs == rhs); }
 
 private:
     std::array<GLboolean, 4> mask_;
@@ -410,12 +398,10 @@ struct IVW_MODULE_OPENGL_API ColorMaski {
     GLboolean blue() const { return mask_[2]; }
     GLboolean alpha() const { return mask_[3]; }
 
-    friend inline bool operator==(const ColorMaski& a, const ColorMaski& b) {
+    friend bool operator==(const ColorMaski& a, const ColorMaski& b) {
         return a.buf_ == b.buf_ && a.mask_ == b.mask_;
     }
-    friend inline bool operator!=(const ColorMaski& lhs, const ColorMaski& rhs) {
-        return !(lhs == rhs);
-    }
+    friend bool operator!=(const ColorMaski& lhs, const ColorMaski& rhs) { return !(lhs == rhs); }
 
 private:
     GLuint buf_;
@@ -474,8 +460,8 @@ T passThrough(T x) {
  */
 template <typename Policy>
 struct SimpleState {
-    using value_type = typename Policy::value_type;
-    using setter_type = typename Policy::setter_type;
+    using value_type = Policy::value_type;
+    using setter_type = Policy::setter_type;
 
     SimpleState() = delete;
     SimpleState(const SimpleState&) = delete;
@@ -650,7 +636,7 @@ private:
 };
 
 template <typename T>
-inline constexpr std::string_view glslTypeName() {
+constexpr std::string_view glslTypeName() {
     using types = std::tuple<float, double, bool, uint32_t, int32_t, vec2, dvec2, bvec2, ivec2,
                              uvec2, vec3, dvec3, bvec3, ivec3, uvec3, vec4, dvec4, bvec4, ivec4,
                              uvec4, mat2, dmat2, mat3, dmat3, mat4, dmat4>;

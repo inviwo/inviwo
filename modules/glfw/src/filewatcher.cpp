@@ -311,8 +311,7 @@ FileWatcher::FileWatcher(InviwoApplication* app) : app_{app} {
 FileWatcher::~FileWatcher() = default;
 
 void FileWatcher::registerFileObserver(FileObserver* fileObserver) {
-    IVW_ASSERT(std::find(fileObservers_.cbegin(), fileObservers_.cend(), fileObserver) ==
-                   fileObservers_.cend(),
+    IVW_ASSERT(std::ranges::find(fileObservers_, fileObserver) == fileObservers_.cend(),
                "File observer already registered.");
     fileObservers_.push_back(fileObserver);
 }

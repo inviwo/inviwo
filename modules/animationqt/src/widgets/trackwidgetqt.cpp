@@ -38,9 +38,7 @@ class QPainter;
 class QStyleOptionGraphicsItem;
 class QWidget;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class KeyframeSequence;
 
 TrackWidgetQt::TrackWidgetQt(Track& track) : QGraphicsItem(), track_(track) {
@@ -68,6 +66,4 @@ void TrackWidgetQt::onKeyframeSequenceRemoved(Track*, KeyframeSequence* sequence
     sequences_.erase(sequence);
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

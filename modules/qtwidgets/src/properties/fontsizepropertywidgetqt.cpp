@@ -66,7 +66,7 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     setFocusPolicy(comboBox_->focusPolicy());
     setFocusProxy(comboBox_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
     setLayout(hLayout);
@@ -86,11 +86,11 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     hLayout->addWidget(label_);
 
     {
-        QWidget* widget = new QWidget(this);
+        auto* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
         sliderPol.setHorizontalStretch(3);
         widget->setSizePolicy(sliderPol);
-        QGridLayout* vLayout = new QGridLayout();
+        auto* vLayout = new QGridLayout();
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);
@@ -106,13 +106,11 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     connect(comboBox_->lineEdit(), &QLineEdit::editingFinished, [&]() {
         int fontSize = comboBox_->currentText().toInt();
         // check whether it is a custom font size
-        if (std::find(fontSizes_.begin(), fontSizes_.end(), fontSize) == fontSizes_.end()) {
-            // custom font size
-            if (fontSize != property_->get()) {
-                property_->setInitiatingWidget(this);
-                util::exceptionGuard([&]() { property_->set(fontSize); });
-                property_->clearInitiatingWidget();
-            }
+        if ((std::ranges::find(fontSizes_, fontSize) == fontSizes_.end()) &&
+            (fontSize != property_->get())) {
+            property_->setInitiatingWidget(this);
+            util::exceptionGuard([&]() { property_->set(fontSize); });
+            property_->clearInitiatingWidget();
         }
     });
 
@@ -140,7 +138,7 @@ void FontSizePropertyWidgetQt::updateFromProperty() {
         comboBox_->addItem(QString::number(size), size);
     }
 
-    auto it = std::find(fontSizes_.begin(), fontSizes_.end(), property_->get());
+    auto it = std::ranges::find(fontSizes_, property_->get());
     const bool customFontSize = (it == fontSizes_.end());
     if (customFontSize) {
         comboBox_->setCurrentIndex(-1);

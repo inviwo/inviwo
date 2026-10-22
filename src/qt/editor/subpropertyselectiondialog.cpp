@@ -43,6 +43,8 @@
 #include <inviwo/core/util/transformiterator.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <algorithm>
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QLabel>
@@ -70,7 +72,7 @@
 namespace inviwo {
 
 SuperPropertyMimeData::SuperPropertyMimeData(std::vector<Property*> someProperties)
-    : QMimeData{}, properties{someProperties} {
+    : QMimeData{}, properties{std::move(someProperties)} {
 
     const auto str = utilqt::toQString(fmt::format(
         "{}", fmt::join(util::transformRange(properties, [](Property* p) { return p->getPath(); }),
@@ -106,12 +108,12 @@ public:
         : QAbstractItemModel(parent), processors_{processors} {
 
         LambdaNetworkVisitor ownerVisitor{[&](PropertyOwner& o) { o.addObserver(this); }};
-        for (auto p : processors_) {
+        for (auto* p : processors_) {
             p->accept(ownerVisitor);
         }
 
         LambdaNetworkVisitor propVisitor{[&](Property& o) { o.addObserver(this); }};
-        for (auto p : processors_) {
+        for (auto* p : processors_) {
             p->accept(propVisitor);
         }
     }
@@ -129,8 +131,8 @@ public:
         }
     }
     virtual QModelIndex parent(const QModelIndex& index) const override {
-        if (auto parent = getParent(index)) {
-            if (auto grandParent = parent->getOwner()) {
+        if (auto* parent = getParent(index)) {
+            if (auto* grandParent = parent->getOwner()) {
                 return createIndex(
                     position(grandParent->getProperties(), dynamic_cast<Property*>(parent)), 0,
                     grandParent);
@@ -145,7 +147,7 @@ public:
     virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override {
         if (!parent.isValid()) {
             return static_cast<int>(processors_.size());
-        } else if (auto owner = toOwner(parent)) {
+        } else if (auto* owner = toOwner(parent)) {
             return static_cast<int>(owner->size());
         } else {
             return 0;
@@ -159,12 +161,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex& index) const override {
         if (index.column() == 0) {
             Qt::ItemFlags flags = Qt::NoItemFlags;
-            if (auto prop = toProperty(index)) {
-                if (!isExposed(prop)) {
-                    flags =
-                        flags | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
-                }
+            if (auto* prop = toProperty(index); prop && (!isExposed(prop))) {
+                flags = flags | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
             }
+
             return flags;
         } else {
             return Qt::NoItemFlags;
@@ -226,29 +226,29 @@ public:
         if (index.column() == column::name) {
             switch (role) {
                 case Qt::DisplayRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return name(prop);
-                    } else if (auto proc = toProcessor(index)) {
+                    } else if (auto* proc = toProcessor(index)) {
                         return name(proc);
                     }
                     break;
                 }
                 case Qt::EditRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return name(prop);
-                    } else if (auto proc = toProcessor(index)) {
+                    } else if (auto* proc = toProcessor(index)) {
                         return name(proc);
                     }
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return tooltip(prop);
                     }
                     break;
                 }
                 case Qt::ForegroundRole: {
-                    if (auto prop = toProperty(index); prop && isExposed(prop)) {
+                    if (auto* prop = toProperty(index); prop && isExposed(prop)) {
                         return QBrush{QColor("#7d7975")};
                     }
                     break;
@@ -257,19 +257,19 @@ public:
         } else if (index.column() == column::visible) {
             switch (role) {
                 case Qt::DecorationRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return visible(prop);
                     }
                     break;
                 }
                 case Qt::EditRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return prop->getVisible();
                     }
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return prop->getVisible() ? "Visible" : "Hidden";
                     }
                     break;
@@ -278,19 +278,19 @@ public:
         } else if (index.column() == column::readonly) {
             switch (role) {
                 case Qt::DecorationRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return readOnly(prop);
                     }
                     break;
                 }
                 case Qt::EditRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return prop->getReadOnly();
                     }
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto prop = toProperty(index)) {
+                    if (auto* prop = toProperty(index)) {
                         return prop->getReadOnly() ? "ReadOnly" : "Editable";
                     }
                     break;
@@ -310,7 +310,7 @@ public:
 
         std::vector<Property*> props;
         for (const auto index : indexes) {
-            if (auto prop = toProperty(index)) {
+            if (auto* prop = toProperty(index)) {
                 props.push_back(prop);
             }
         }
@@ -348,20 +348,20 @@ public:
         dataChanged(pos, pos, {Qt::DisplayRole});
     }
 
-    PropertyOwner* getParent(const QModelIndex& index) const {
+    static PropertyOwner* getParent(const QModelIndex& index) {
         return static_cast<PropertyOwner*>(index.internalPointer());
     }
 
     Property* toProperty(const QModelIndex& index) const {
-        if (auto parent = getParent(index)) {
-            if (index.row() >= 0 && index.row() < ssize(*parent)) {
-                return (*parent)[index.row()];
-            }
+        if (auto* parent = getParent(index);
+            parent && (index.row() >= 0 && index.row() < ssize(*parent))) {
+            return (*parent)[index.row()];
         }
+
         return nullptr;
     }
     PropertyOwner* toOwner(const QModelIndex& index) const {
-        if (auto parent = getParent(index)) {
+        if (auto* parent = getParent(index)) {
             if (index.row() >= 0 && index.row() < ssize(*parent)) {
                 return dynamic_cast<PropertyOwner*>((*parent)[index.row()]);
             }
@@ -371,7 +371,7 @@ public:
         return nullptr;
     }
     Processor* toProcessor(const QModelIndex& index) const {
-        if (auto parent = getParent(index)) {
+        if (auto* parent = getParent(index)) {
             if (index.row() >= 0 && index.row() < ssize(*parent)) {
                 return dynamic_cast<Processor*>((*parent)[index.row()]);
             }
@@ -385,7 +385,7 @@ protected:
     static bool isExposed(Property* prop) {
         auto exposed = prop->getMetaData<BoolMetaData>("CompositeProcessorExposed", false);
         if (exposed) return true;
-        for (auto owner = dynamic_cast<Property*>(prop->getOwner()); owner;
+        for (auto* owner = dynamic_cast<Property*>(prop->getOwner()); owner;
              owner = dynamic_cast<Property*>(owner->getOwner())) {
             exposed = owner->getMetaData<BoolMetaData>("CompositeProcessorExposed", false);
             if (exposed) return true;
@@ -394,14 +394,14 @@ protected:
     }
 
     QModelIndex index(Property* property) const {
-        auto parent = property->getOwner();
+        auto* parent = property->getOwner();
         IVW_ASSERT(parent, "Should always be a parent for a property");
 
         const auto pos = position(parent->getProperties(), property);
         return index(pos, 0, index(parent));
     }
     QModelIndex index(PropertyOwner* owner) const {
-        if (auto parent = owner->getOwner()) {
+        if (auto* parent = owner->getOwner()) {
             const auto pos = position(parent->getProperties(), dynamic_cast<Property*>(owner));
             return index(pos, 0, index(parent));
         } else {
@@ -412,11 +412,12 @@ protected:
 
     static std::vector<Processor*> networkToProcessors(ProcessorNetwork& net) {
         auto processors = net.getProcessors();
-        processors.erase(std::remove_if(processors.begin(), processors.end(),
-                                        [](Processor* p) {
-                                            return dynamic_cast<CompositeSinkBase*>(p) ||
-                                                   dynamic_cast<CompositeSourceBase*>(p);
-                                        }),
+        processors.erase(std::ranges::remove_if(processors,
+                                                [](Processor* p) {
+                                                    return dynamic_cast<CompositeSinkBase*>(p) ||
+                                                           dynamic_cast<CompositeSourceBase*>(p);
+                                                })
+                             .begin(),
                          processors.end());
         return processors;
     }
@@ -488,19 +489,17 @@ public:
         if (index.column() == column::remove) {
             switch (role) {
                 case Qt::DecorationRole: {
-                    if (auto prop = toProperty(index)) {
-                        if (cp_.getSubProperty(prop)) {
-                            return QIcon(":/svgicons/close.svg");
-                        }
+                    if (auto* prop = toProperty(index); prop && cp_.getSubProperty(prop)) {
+                        return QIcon(":/svgicons/close.svg");
                     }
+
                     break;
                 }
                 case Qt::ToolTipRole: {
-                    if (auto prop = toProperty(index)) {
-                        if (cp_.getSubProperty(prop)) {
-                            return "Remove";
-                        }
+                    if (auto* prop = toProperty(index); prop && cp_.getSubProperty(prop)) {
+                        return "Remove";
                     }
+
                     break;
                 }
             }
@@ -517,18 +516,18 @@ public:
 
         if (index.column() == column::name) {
             if (const auto str = value.toString(); !str.isEmpty()) {
-                if (auto property = toProperty(index)) {
+                if (auto* property = toProperty(index)) {
                     property->setDisplayName(utilqt::fromQString(str));
                     return true;
                 }
             }
         } else if (index.column() == column::visible) {
-            if (auto property = toProperty(index)) {
+            if (auto* property = toProperty(index)) {
                 property->setVisible(value.toBool());
                 return true;
             }
         } else if (index.column() == column::readonly) {
-            if (auto property = toProperty(index)) {
+            if (auto* property = toProperty(index)) {
                 property->setReadOnly(value.toBool());
                 return true;
             }
@@ -541,10 +540,8 @@ public:
         std::vector<Property*> toRemove;
 
         for (int i = 0; i < count; ++i) {
-            if (auto prop = toProperty(index(row, 0, parent))) {
-                if (cp_.getSubProperty(prop)) {
-                    toRemove.emplace_back(prop);
-                }
+            if (auto* prop = toProperty(index(row, 0, parent)); prop && cp_.getSubProperty(prop)) {
+                toRemove.emplace_back(prop);
             }
         }
 
@@ -552,7 +549,7 @@ public:
             return false;
         }
 
-        for (auto prop : toRemove) {
+        for (auto* prop : toRemove) {
             const auto i = index(prop);
 
             beginRemoveRows(i.parent(), i.row(), i.row());
@@ -567,7 +564,7 @@ public:
                       [[maybe_unused]] int row, [[maybe_unused]] int column,
                       [[maybe_unused]] const QModelIndex& parent) override {
         try {
-            if (auto* propData = SuperPropertyMimeData::toSuperPropertyMimeData(data)) {
+            if (const auto* propData = SuperPropertyMimeData::toSuperPropertyMimeData(data)) {
                 for (auto* subProperty : propData->properties) {
                     cp_.addSuperProperty(subProperty);
                 }
@@ -645,7 +642,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
 
     loadState();
 
-    auto layout = new QGridLayout();
+    auto* layout = new QGridLayout();
 
     const auto config = [&](QTreeView* tree) {
         tree->header()->hide();
@@ -680,15 +677,15 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
     layout->addWidget(new QLabel("Exposed Properties"), 0, 2);
 
     // Sub tree
-    auto subModel = new NetworkTreeModel(net, this);
-    auto subTree = new QTreeView(this);
+    auto* subModel = new NetworkTreeModel(net, this);
+    auto* subTree = new QTreeView(this);
     subTree->setModel(subModel);
     config(subTree);
     subTree->setDragDropMode(QAbstractItemView::DragOnly);
     layout->addWidget(subTree, 1, 0);
 
     // Super tree
-    auto superTree = new QTreeView(this);
+    auto* superTree = new QTreeView(this);
     superTree->setModel(superModel);
     superTree->setDragDropMode(QAbstractItemView::DragDrop);
     superTree->setItemDelegate(new ItemDelegate(this));
@@ -697,7 +694,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
     superTree->setRootIndex(superModel->index(0, 0));
 
     // Add button
-    auto add = new QToolButton(this);
+    auto* add = new QToolButton(this);
     add->setIcon(QIcon(":/svgicons/link-right.svg"));
     add->setMinimumSize(utilqt::emToPx(this, QSizeF{3, 3}));
     add->setIconSize(utilqt::emToPx(this, QSizeF{3, 3}));
@@ -712,7 +709,7 @@ SubPropertySelectionDialog::SubPropertySelectionDialog(Processor* processor, Pro
 
     connect(add, &QToolButton::clicked, this, [subTree, subModel, superModel]() {
         for (const auto index : subTree->selectionModel()->selectedIndexes()) {
-            if (auto prop = subModel->toProperty(index)) {
+            if (auto* prop = subModel->toProperty(index)) {
                 superModel->cp_.addSuperProperty(prop);
             }
         }

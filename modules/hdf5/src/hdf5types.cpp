@@ -30,9 +30,7 @@
 #include <modules/hdf5/hdf5types.h>
 #include <inviwo/core/util/logcentral.h>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
@@ -87,6 +85,4 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
 
 #include <warn/pop>
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

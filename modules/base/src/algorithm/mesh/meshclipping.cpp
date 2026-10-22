@@ -70,9 +70,7 @@
 #include <glm/vec4.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 namespace detail {
 
@@ -145,14 +143,15 @@ std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane
 void removeDuplicateEdges(std::vector<glm::u32vec2>& cuts, const std::vector<vec3>& positions,
                           float eps) {
 
-    cuts.erase(
-        std::remove_if(cuts.begin(), cuts.end(),
-                       [&](glm::u32vec2 edge) {
-                           return glm::all(glm::equal(positions[edge[0]], positions[edge[1]], eps));
-                       }),
-        cuts.end());
+    cuts.erase(std::ranges::remove_if(cuts,
+                                      [&](glm::u32vec2 edge) {
+                                          return glm::all(glm::equal(positions[edge[0]],
+                                                                     positions[edge[1]], eps));
+                                      })
+                   .begin(),
+               cuts.end());
 
-    std::transform(cuts.begin(), cuts.end(), cuts.begin(), [&](glm::u32vec2 edge) {
+    std::ranges::transform(cuts, cuts.begin(), [&](glm::u32vec2 edge) {
         const auto pa = glm::value_ptr(positions[edge[0]]);
         const auto pb = glm::value_ptr(positions[edge[1]]);
         return std::lexicographical_compare(pa, pa + 3, pb, pb + 3)
@@ -160,7 +159,7 @@ void removeDuplicateEdges(std::vector<glm::u32vec2>& cuts, const std::vector<vec
                    : glm::u32vec2{edge[1], edge[0]};
     });
 
-    std::sort(cuts.begin(), cuts.end(), [&](glm::u32vec2 a, glm::u32vec2 b) {
+    std::ranges::sort(cuts, [&](glm::u32vec2 a, glm::u32vec2 b) {
         const auto pa0 = glm::value_ptr(positions[a[0]]);
         const auto pb0 = glm::value_ptr(positions[b[0]]);
         if (std::lexicographical_compare(pa0, pa0 + 3, pb0, pb0 + 3)) {
@@ -173,11 +172,13 @@ void removeDuplicateEdges(std::vector<glm::u32vec2>& cuts, const std::vector<vec
             return std::lexicographical_compare(pa1, pa1 + 3, pb1, pb1 + 3);
         }
     });
-    cuts.erase(std::unique(cuts.begin(), cuts.end(),
-                           [&](glm::u32vec2 a, glm::u32vec2 b) {
-                               return glm::all(glm::equal(positions[a[0]], positions[b[0]], eps)) &&
-                                      glm::all(glm::equal(positions[a[1]], positions[b[1]], eps));
-                           }),
+    cuts.erase(std::ranges::unique(
+                   cuts,
+                   [&](glm::u32vec2 a, glm::u32vec2 b) {
+                       return glm::all(glm::equal(positions[a[0]], positions[b[0]], eps)) &&
+                              glm::all(glm::equal(positions[a[1]], positions[b[1]], eps));
+                   })
+                   .begin(),
                cuts.end());
 }
 
@@ -187,14 +188,14 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
 
     const auto findMatch = [eps, &positions](std::vector<glm::u32vec2>& edges,
                                              std::uint32_t index) {
-        const auto it1 = std::find_if(edges.begin(), edges.end(), [&](glm::u32vec2 edge) {
+        const auto it1 = std::ranges::find_if(edges, [&](glm::u32vec2 edge) {
             return glm::all(glm::equal(positions[edge[0]], positions[index], eps));
         });
 
         if (it1 != edges.end()) {
             return std::make_tuple(it1, (*it1)[1]);
         }
-        const auto it2 = std::find_if(edges.begin(), edges.end(), [&](glm::u32vec2 edge) {
+        const auto it2 = std::ranges::find_if(edges, [&](glm::u32vec2 edge) {
             return glm::all(glm::equal(positions[edge[1]], positions[index], eps));
         });
 
@@ -235,9 +236,9 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
 std::vector<float> barycentricInsidePolygon(vec2 v, const std::vector<vec2>& vis) {
     const auto N = vis.size();
     std::vector<vec2> s(N);
-    std::transform(vis.begin(), vis.end(), s.begin(), [v](vec2 vi) { return vi - v; });
+    std::ranges::transform(vis, s.begin(), [v](vec2 vi) { return vi - v; });
     std::vector<float> r(N);
-    std::transform(s.begin(), s.end(), r.begin(), [](vec2 si) { return glm::length(si); });
+    std::ranges::transform(s, r.begin(), [](vec2 si) { return glm::length(si); });
 
     std::vector<float> weights(N, 0.0f);
     std::vector<float> tana(N, 0.0f);
@@ -264,8 +265,7 @@ std::vector<float> barycentricInsidePolygon(vec2 v, const std::vector<vec2>& vis
         weights[i] = 2.f * (tana[i] + tana[prev]) / r[i];
         total += weights[i];
     }
-    std::transform(weights.begin(), weights.end(), weights.begin(),
-                   [total](float w) { return w / total; });
+    std::ranges::transform(weights, weights.begin(), [total](float w) { return w / total; });
 
     return weights;
 }
@@ -286,9 +286,9 @@ vec2 polygonCentroid(const std::vector<vec2>& polygon) {
     return center;
 }
 
-void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
-              const std::vector<vec3>& positions, std::vector<std::uint32_t>& indices,
-              const InterpolateFunctor& addInterpolatedVertex) {
+static void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
+                     const std::vector<vec3>& positions, std::vector<std::uint32_t>& indices,
+                     const InterpolateFunctor& addInterpolatedVertex) {
 
     constexpr float relError = 0.000001f;
     const auto eps =
@@ -306,16 +306,18 @@ void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
         const auto trans = glm::inverse(plane.inPlaneBasis());
 
         std::vector<vec3> pos;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(pos),
-                       [&](uint32_t p) { return positions[p]; });
+        std::ranges::transform(loop, std::back_inserter(pos),
+                               [&](uint32_t p) { return positions[p]; });
 
         std::vector<vec4> uv4;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(uv4),
-                       [&](uint32_t p) { return trans * vec4{positions[p], 1.0f}; });
+        std::ranges::transform(loop, std::back_inserter(uv4), [&](uint32_t p) {
+            return trans * vec4{positions[p], 1.0f};
+        });
 
         std::vector<vec2> uv;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(uv),
-                       [&](uint32_t p) { return vec2{trans * vec4{positions[p], 1.0f}}; });
+        std::ranges::transform(loop, std::back_inserter(uv), [&](uint32_t p) {
+            return vec2{trans * vec4{positions[p], 1.0f}};
+        });
 
         const auto uvCenter = polygonCentroid(uv);
         const auto center = vec3{glm::inverse(trans) * vec4{uvCenter, 0.0f, 1.0f}};
@@ -337,11 +339,11 @@ void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
     }
 }
 
-std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
-                                      const std::shared_ptr<Mesh>& clippedMesh,
-                                      const std::vector<uint32_t>& indices, const Plane& plane,
-                                      const std::vector<vec3>& positions,
-                                      const InterpolateFunctor& addInterpolatedVertex) {
+static std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
+                                             const std::shared_ptr<Mesh>& clippedMesh,
+                                             const std::vector<uint32_t>& indices,
+                                             const Plane& plane, const std::vector<vec3>& positions,
+                                             const InterpolateFunctor& addInterpolatedVertex) {
 
     std::vector<glm::u32vec2> newEdges;
 
@@ -513,15 +515,13 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     std::vector<detail::InterpolateFunctor> interpolateFunctors;
     std::shared_ptr<BufferRAMPrecision<vec3, BufferTarget::Data>> posBuffer;
 
-    for (const auto& item : mesh.getBuffers()) {
-        const auto& bufferType = item.first;
-        const auto& inBuffer = item.second;
+    for (const auto& [bufferType, inBuffer] : mesh.getBuffers()) {
         const auto functor =
             inBuffer->getRepresentation<BufferRAM>()->dispatch<detail::InterpolateFunctor>(
                 [&clippedMesh, bufferType, &posBuffer](auto inRam) -> detail::InterpolateFunctor {
                     using PB = util::PrecisionType<decltype(inRam)>;
                     using ValueType = util::PrecisionValueType<decltype(inRam)>;
-                    using T = typename util::same_extent<ValueType, float>::type;
+                    using T = util::same_extent<ValueType, float>::type;
 
                     static const auto mix = [](const PB& buffer,
                                                const std::vector<uint32_t>& indices,
@@ -560,7 +560,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     } else {  // Only interpolate floating point buffers;
                         return [outRam](const std::vector<uint32_t>& indices,
                                         const std::vector<float>& weights, std::optional<vec3>) {
-                            const auto it = std::max_element(weights.begin(), weights.end());
+                            const auto it = std::ranges::max_element(weights);
                             const auto index = std::distance(weights.begin(), it);
 
                             outRam->add(static_cast<ValueType>((*outRam)[indices[index]]));
@@ -598,8 +598,10 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     }
     if (mesh.getIndexBuffers().empty()) {
         const auto meshInfo = mesh.getDefaultMeshInfo();
-        std::vector<uint32_t> indices(mesh.getBuffer(0)->getSize());
-        std::iota(indices.begin(), indices.end(), 0);
+        auto indices =
+            std::views::iota(uint32_t{0}, static_cast<uint32_t>(mesh.getBuffer(0)->getSize())) |
+            std::ranges::to<std::vector>();
+
         auto edges = detail::clipIndices(meshInfo, clippedMesh, indices, plane, positions,
                                          addInterpolatedVertex);
         newEdges.insert(newEdges.end(), edges.begin(), edges.end());
@@ -615,6 +617,4 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     return clippedMesh;
 }
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

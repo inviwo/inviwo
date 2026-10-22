@@ -49,10 +49,10 @@ class IVW_CORE_API Observer {
 
 public:
     Observer() = default;
-    Observer(const Observer& other);
-    Observer(Observer&& other);
-    Observer& operator=(Observer&& other);
-    Observer& operator=(const Observer& other);
+    Observer(const Observer& rhs);
+    Observer(Observer&& rhs);
+    Observer& operator=(Observer&& that);
+    Observer& operator=(const Observer& that);
 
     /**
      * Removes the observer from all observable objects. Makes sure that it cannot
@@ -74,7 +74,7 @@ protected:
      * Add an object to observe.
      * @param observable The observable to add.
      */
-    void addObservation(ObservableInterface* observable);
+    void addObservation(ObservableInterface* observed);
 
     // Storing observables connected to this observer enables removal upon destruction.
     std::unordered_set<ObservableInterface*> observables_;
@@ -82,7 +82,7 @@ protected:
 private:
     // The internal ones will not call observable->add/remove
     // Should only be called by ObservableInterface.
-    void addObservationInternal(ObservableInterface* observable);
+    void addObservationInternal(ObservableInterface* observed);
     void removeObservationInternal(ObservableInterface* observable);
 };
 
@@ -187,7 +187,7 @@ public:
     /**
      * This operation will remove all observers from other and add them to this.
      */
-    Observable(Observable<T>&& other) noexcept;
+    Observable(Observable<T>&& rhs) noexcept;
 
     /**
      * This operation does nothing. We will not touch the observers of other.
@@ -198,7 +198,7 @@ public:
      * This operation will remove all observers of this, and make all observers of other observe
      * this instead.
      */
-    Observable<T>& operator=(Observable<T>&& other) noexcept;
+    Observable<T>& operator=(Observable<T>&& that) noexcept;
     virtual ~Observable();
 
     void addObserver(T* observer);
@@ -263,7 +263,7 @@ Observable<T>::~Observable() {
 
 template <typename T>
 void Observable<T>::removeObservers() {
-    for (auto o : observers_) {
+    for (auto* o : observers_) {
         if (o) removeObservationHelper(o);
     }
     observers_.clear();

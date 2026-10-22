@@ -73,20 +73,20 @@ private:
     using ModifiedDispatcher = Dispatcher<void(bool)>;
 
 public:
-    using ClearCallback = typename ClearDispatcher::Callback;
-    using ClearHandle = typename ClearDispatcher::Handle;
+    using ClearCallback = ClearDispatcher::Callback;
+    using ClearHandle = ClearDispatcher::Handle;
 
     using SerializationCallback = std::function<void(Serializer&)>;
-    using SerializationHandle = typename SerializationDispatcher::Handle;
+    using SerializationHandle = SerializationDispatcher::Handle;
 
     using DeserializationCallback = std::function<void(Deserializer&)>;
-    using DeserializationHandle = typename DeserializationDispatcher::Handle;
+    using DeserializationHandle = DeserializationDispatcher::Handle;
 
-    using ModifiedChangedCallback = typename ModifiedChangedDispatcher::Callback;
-    using ModifiedChangedHandle = typename ModifiedChangedDispatcher::Handle;
+    using ModifiedChangedCallback = ModifiedChangedDispatcher::Callback;
+    using ModifiedChangedHandle = ModifiedChangedDispatcher::Handle;
 
-    using ModifiedCallback = typename ModifiedDispatcher::Callback;
-    using ModifiedHandle = typename ModifiedDispatcher::Handle;
+    using ModifiedCallback = ModifiedDispatcher::Callback;
+    using ModifiedHandle = ModifiedDispatcher::Handle;
 
     explicit WorkspaceManager(InviwoApplication* app);
     ~WorkspaceManager();

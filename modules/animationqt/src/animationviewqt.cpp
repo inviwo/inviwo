@@ -67,9 +67,7 @@ class QMouseEvent;
 class QPaintEvent;
 class QWheelEvent;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class TimeLine : public QWidget {
 public:
@@ -176,15 +174,12 @@ private:
 };
 
 AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEditorQt* aScene)
-    : QGraphicsView(), scene_{aScene}, controller_(controller) {
+    : QGraphicsView(), scene_{aScene}, controller_(controller), timeline_(new TimeLine{this}) {
 
     setObjectName("AnimationView");
     setScene(scene_);
     setViewportMargins(0, timelineHeight, 0, 0);
     setSceneRect(QRectF());
-
-    // Time Line widget
-    timeline_ = new TimeLine{this};
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
@@ -199,7 +194,7 @@ AnimationViewQt::AnimationViewQt(AnimationController& controller, AnimationEdito
     connect(horizontalScrollBar(), &QScrollBar::valueChanged, this,
             [this]() { timeline_->update(); });
 
-    QGridLayout* gridLayout = new QGridLayout();
+    auto* gridLayout = new QGridLayout();
     gridLayout->setSpacing(0);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -320,6 +315,4 @@ void AnimationViewQt::onTimeChanged(AnimationController*, Seconds, Seconds) {
     this->viewport()->update();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

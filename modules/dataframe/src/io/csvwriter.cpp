@@ -104,7 +104,7 @@ void CSVWriter::writeData(const DataFrame* dataFrame, std::ostream& file) const 
         }
         auto df = col->getBuffer()->getDataFormat();
         if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
-            printers.push_back([cc, citation](std::ostream& os, size_t index) {
+            printers.emplace_back([cc, citation](std::ostream& os, size_t index) {
                 os << citation << cc->getAsString(index) << citation;
             });
         } else if (df->getComponents() == 1) {

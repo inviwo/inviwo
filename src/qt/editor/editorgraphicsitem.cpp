@@ -67,7 +67,7 @@ QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
         const QPoint viewP = v->mapFromScene(sceneP);
         return v->viewport()->mapToGlobal(viewP);
     } else {
-        return QPoint(0, 0);
+        return {0, 0};
     }
 }
 
@@ -128,7 +128,7 @@ void addLayersTable(Document::DocumentHandle& body,
     p.append("b", "Port Inspector", {{"style", "color:white;"}});
     auto t = p.append("table");
     auto tableRow = t.append("tr");
-    const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+    const auto perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
     size_t rowCount = 0;
     for (const auto& [name, layer] : layers) {
         if (rowCount >= perRow) {
@@ -187,8 +187,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     auto body = html.append("body");
     body.append(port->getInfo());
 
-    auto inport = dynamic_cast<const Inport*>(port);
-    auto outport = dynamic_cast<Outport*>(port);
+    const auto* inport = dynamic_cast<const Inport*>(port);
+    auto* outport = dynamic_cast<Outport*>(port);
     if (!outport && inport) {
         outport = inport->getConnectedOutport();
     }

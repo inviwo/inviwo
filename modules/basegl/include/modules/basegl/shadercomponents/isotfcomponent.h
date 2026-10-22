@@ -108,6 +108,7 @@ public:
 
     virtual std::vector<Property*> getProperties() override {
         std::vector<Property*> props;
+        props.reserve(isoTFs.size());
         for (auto&& isoTF : isoTFs) {
             props.push_back(&isoTF);
         }
@@ -126,7 +127,7 @@ public:
     std::array<IsoTFProperty, N> isoTFs;
 
 private:
-    VolumeInport* volume_;
+    VolumeInport* volume_{};
 };
 
 }  // namespace inviwo

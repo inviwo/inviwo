@@ -106,7 +106,7 @@ void parseColorMapsNode(TransferFunction& tf, TxElement* node) {
 }  // namespace
 
 TransferFunctionXMLReader::TransferFunctionXMLReader() {
-    addExtension({"xml", "XML Transfer Function"});
+    addExtension({.extension = "xml", .description = "XML Transfer Function"});
 }
 
 TransferFunctionXMLReader* TransferFunctionXMLReader::clone() const {
@@ -122,7 +122,7 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
     const auto filesize = in.tellg();
     in.seekg(0, std::ios::beg);
 
-    const std::string_view xmlHeader{"<?xml version=\"1.0\" standalone=\"yes\"?>"};
+    const std::string_view xmlHeader{R"(<?xml version="1.0" standalone="yes"?>)"};
 
     std::string str;
     str.reserve(xmlHeader.size() + filesize + 1);

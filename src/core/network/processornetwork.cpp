@@ -188,7 +188,7 @@ void ProcessorNetwork::addConnection(Outport* src, Inport* dst) {
     }
 }
 
-bool ProcessorNetwork::canConnect(const Outport* src, const Inport* dst) const {
+bool ProcessorNetwork::canConnect(const Outport* src, const Inport* dst) {
     return src != nullptr && dst != nullptr && dst->canConnectTo(src);
 }
 
@@ -223,11 +223,11 @@ const std::vector<PortConnection>& ProcessorNetwork::getConnections() const {
 }
 
 bool ProcessorNetwork::isPortInNetwork(Port* port) const {
-    if (const auto* processor = port->getProcessor()) {
-        if (processor == getProcessorByIdentifier(processor->getIdentifier())) {
-            return true;
-        }
+    if (const auto* processor = port->getProcessor();
+        processor && (processor == getProcessorByIdentifier(processor->getIdentifier()))) {
+        return true;
     }
+
     return false;
 }
 

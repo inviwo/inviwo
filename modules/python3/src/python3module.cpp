@@ -74,7 +74,7 @@ class VolumePyFactoryObject
     : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumePy> {
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
-        const typename VolumeRepresentation::ReprOwner* volume) {
+        const VolumeRepresentation::ReprOwner* volume) {
         auto volumePy = std::make_unique<VolumePy>(
             volume->getDimensions(), volume->getDataFormat(), volume->getSwizzleMask(),
             volume->getInterpolation(), volume->getWrapping());
@@ -87,7 +87,7 @@ class LayerPyFactoryObject
     : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerPy> {
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
-        const typename LayerRepresentation::ReprOwner* layer) {
+        const LayerRepresentation::ReprOwner* layer) {
         auto layerPy = std::make_unique<LayerPy>(layer->getDimensions(), layer->getLayerType(),
                                                  layer->getDataFormat(), layer->getSwizzleMask(),
                                                  layer->getInterpolation(), layer->getWrapping());

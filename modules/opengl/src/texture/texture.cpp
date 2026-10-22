@@ -170,7 +170,7 @@ Texture::Texture(const Texture& other)
     glGetTexParameterIuiv(other.target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
     glGetTexParameterIuiv(other.target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
     for (size_t i = 0; i < dims; ++i) {
-        glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        glGetTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
     }
 
     glBindTexture(target_, id_);
@@ -178,7 +178,7 @@ Texture::Texture(const Texture& other)
     glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
     glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
     for (size_t i = 0; i < dims; ++i) {
-        glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+        glTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
     }
     glBindTexture(target_, 0);
 }
@@ -217,14 +217,14 @@ Texture& Texture::operator=(const Texture& rhs) {
         glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
         glGetTexParameterIuiv(rhs.target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
         for (size_t i = 0; i < dims; ++i) {
-            glGetTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+            glGetTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
         }
         glBindTexture(target_, id_);
         glTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
         glTexParameterIuiv(target_, GL_TEXTURE_MIN_FILTER, &minFiltering);
         glTexParameterIuiv(target_, GL_TEXTURE_MAG_FILTER, &magFiltering);
         for (size_t i = 0; i < dims; ++i) {
-            glTexParameterIuiv(target_, wrapNames[i], &(wrapping[i]));
+            glTexParameterIuiv(target_, wrapNames[i], &wrapping[i]);
         }
         glBindTexture(target_, 0);
     }
@@ -258,14 +258,14 @@ Texture::~Texture() {
         // which happens when move operations has been used
         glDeleteBuffers(1, &pboBack_);
     }
-    if (syncObj != 0) {
+    if (syncObj != nullptr) {
         glDeleteSync(syncObj);
     }
 }
 
 size_t Texture::targetDims(GLenum target) {
-    const auto it = std::find_if(targetToDim.begin(), targetToDim.end(),
-                                 [&](auto& item) { return item.first == target; });
+    const auto it =
+        std::ranges::find_if(targetToDim, [&](auto& item) { return item.first == target; });
     return it != targetToDim.end() ? it->second : size_t{0};
 }
 
@@ -303,7 +303,7 @@ void Texture::setSwizzleMask(SwizzleMask mask) {
 }
 
 SwizzleMask Texture::getSwizzleMask() const {
-    std::array<GLint, 4> swizzleMaskGL;
+    std::array<GLint, 4> swizzleMaskGL{};
     bind();
     glGetTexParameteriv(target_, GL_TEXTURE_SWIZZLE_RGBA, swizzleMaskGL.data());
     unbind();
@@ -372,7 +372,7 @@ void Texture::download(void* data) const {
 
     {
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         }
     }
@@ -409,7 +409,7 @@ void Texture::downloadToPBO() const {
 
     {
         const std::scoped_lock lock{syncMutex};
-        if (syncObj != 0) {
+        if (syncObj != nullptr) {
             glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
         }
     }

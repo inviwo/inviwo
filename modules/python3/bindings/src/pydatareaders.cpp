@@ -48,6 +48,7 @@
 
 namespace inviwo {
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/attributes>
 // Allow overriding virtual functions from Python
@@ -131,7 +132,7 @@ public:
 
     std::shared_ptr<T> read(const std::filesystem::path& filePath,
                             std::optional<FileExtension> ext = std::nullopt) {
-        return factory->readDataForTypeAndExtension<T>(filePath, ext);
+        return factory->readDataForTypeAndExtension<T>(filePath, std::move(ext));
     }
 
 private:
@@ -139,8 +140,8 @@ private:
 };
 
 template <typename T>
-void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFactory>& r,
-                             std::string_view type) {
+static void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFactory>& r,
+                                    std::string_view type) {
     namespace py = pybind11;
 
     using TRF = TypedDataReaderFactoryWrapper<T>;
@@ -170,7 +171,7 @@ void exposeFactoryReaderType(pybind11::module& m, pybind11::classh<DataReaderFac
 }
 
 template <typename T>
-void exposeReaderType(pybind11::module& m, std::string_view name) {
+static void exposeReaderType(pybind11::module& m, std::string_view name) {
     pybind11::classh<DataReaderType<T>, DataReader, DataReaderTypeTrampoline<T>>(
         m, fmt::format("{}DataReader", name).c_str())
         .def("readData",

@@ -40,7 +40,7 @@
 #include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/core/util/zip.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <memory>
 #include <ostream>
 #include <unordered_set>
@@ -50,12 +50,11 @@
 #include <glm/matrix.hpp>
 #include <glm/vec2.hpp>
 
-namespace inviwo {
-namespace statsutil {
+namespace inviwo::statsutil {
 namespace detail {
 template <typename Tx, typename Ty>
-RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
-    RegresionResult res;
+static RegresionResult linearRegresion(const Tx& X, const Ty& Y) {
+    RegresionResult res{};
     if (X.getSize() != Y.getSize()) {
         throw Exception("Buffers are not of equal length");
     }
@@ -150,6 +149,4 @@ std::ostream& operator<<(std::ostream& os, RegresionResult res) {
     return os;
 }
 
-}  // namespace statsutil
-
-}  // namespace inviwo
+}  // namespace inviwo::statsutil

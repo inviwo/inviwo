@@ -331,7 +331,7 @@ TEST(CSVdelimiter, multiple) {
 }
 
 TEST(CSVquotes, singlequotes) {
-    std::istringstream ss("\"first quote\",not quoted,\"b\"");
+    std::istringstream ss(R"("first quote",not quoted,"b")");
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
@@ -349,7 +349,7 @@ TEST(CSVquotes, singlequotes) {
 }
 
 TEST(CSVquotes, stripSingleQuotes) {
-    std::istringstream ss("\"first quote\",not quoted,\"b\"");
+    std::istringstream ss(R"("first quote",not quoted,"b")");
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
@@ -550,7 +550,8 @@ TEST(CSVFilters, keepLines) {
 
     csvfilters::Filters filters;
     filters.includeRows.push_back(
-        {[](std::string_view, size_t line) { return (line < 2) || (line > 2); }, true});
+        {.filter = [](std::string_view, size_t line) { return (line < 2) || (line > 2); },
+         .filterOnHeader = true});
 
     CSVReader reader;
     reader.setFirstRowHeader(false);

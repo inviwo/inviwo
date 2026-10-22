@@ -124,12 +124,12 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
-    for (size_t i = 0; i < files.size(); i++) {
-        const auto newVol = PVMVolumeReader::readPVMData(fileDirectory / files[i]);
+    for (const auto& file : files) {
+        const auto newVol = PVMVolumeReader::readPVMData(fileDirectory / file);
         if (newVol) {
             volumes.push_back(newVol);
         } else {
-            log::warn("Could not load {:?g}", fileDirectory / files[i]);
+            log::warn("Could not load {:?g}", fileDirectory / file);
         }
     }
 
@@ -187,7 +187,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::filesystem::path& 
 void MPVMVolumeReader::printPVMMeta(const Volume& volume,
                                     const std::filesystem::path& fileName) const {
     const size3_t dim = volume.getDimensions();
-    const size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSizeInBytes());
+    const size_t bytes = dim.x * dim.y * dim.z * volume.getDataFormat()->getSizeInBytes();
     log::info("Loaded volume: '{:?g}' size: {}", fileName, ByteSize{bytes});
     printMetaInfo(volume, "description");
     printMetaInfo(volume, "courtesy");
@@ -195,8 +195,7 @@ void MPVMVolumeReader::printPVMMeta(const Volume& volume,
     printMetaInfo(volume, "comment");
 }
 
-void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner,
-                                     std::string_view key) const {
+void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string_view key) {
     if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");

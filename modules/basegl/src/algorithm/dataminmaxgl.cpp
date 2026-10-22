@@ -71,7 +71,7 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
     using namespace std::string_view_literals;
     if (glFormat.layoutQualifier.ends_with("ui")) {
         return "u"sv;
-    } else if (glFormat.layoutQualifier.ends_with("i")) {
+    } else if (glFormat.layoutQualifier.ends_with('i')) {
         return "i"sv;
     } else {
         return {};

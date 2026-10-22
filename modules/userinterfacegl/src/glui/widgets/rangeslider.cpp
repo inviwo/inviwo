@@ -160,9 +160,7 @@ void RangeSlider::setStart(int start) {
     start = std::max(start, min_);
     if (value_.x != start) {
         value_.x = start;
-        if (value_.x > max_ - minSeparation_) {
-            value_.x = max_ - minSeparation_;
-        }
+        value_.x = std::min(value_.x, max_ - minSeparation_);
         if (value_.y - value_.x < minSeparation_) {
             value_.y = value_.x + minSeparation_;
         }
@@ -173,9 +171,7 @@ void RangeSlider::setEnd(int stop) {
     stop = std::min(stop, max_);
     if (value_.y != stop) {
         value_.y = stop;
-        if (value_.y < min_ + minSeparation_) {
-            value_.y = min_ + minSeparation_;
-        }
+        value_.y = std::max(value_.y, min_ + minSeparation_);
         if (value_.y - value_.x < minSeparation_) {
             value_.x = value_.y - minSeparation_;
         }
@@ -340,14 +336,14 @@ vec2 RangeSlider::getSliderPos() const {
                    sliderLength;
         };
 
-        return vec2(calcPos(value_.y), calcPos(value_.x));
+        return {calcPos(value_.y), calcPos(value_.x)};
     } else {
         const auto calcPos = [this, sliderLength](int pos) {
             return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
                    sliderLength;
         };
 
-        return vec2(calcPos(value_.x), calcPos(value_.y));
+        return {calcPos(value_.x), calcPos(value_.y)};
     }
 }
 

@@ -111,12 +111,12 @@ const TouchDevice* mapTouchDevice(QTouchEvent* touch) {
 
     const auto deviceIt = devices_.find(touch->device());
     if (deviceIt != devices_.end()) {
-        return &(deviceIt->second);
+        return &deviceIt->second;
     } else {
         // Insert device new device into map
         auto [it, inserted] = devices_.try_emplace(touch->device(), mapDeviceType(touch),
                                                    utilqt::fromQString(touch->device()->name()));
-        return &(it->second);
+        return &it->second;
     }
 }
 
@@ -311,14 +311,13 @@ bool InteractionEventMapperQt::mapTouchEvent(QTouchEvent* touch) {
     // Ensure that the order to the touch points are the same as last touch event.
     // Note that the ID of a touch point is always the same but the order in which
     // they are given can vary.
-    std::sort(touchPoints.begin(), touchPoints.end(),
-              [](const auto& a, const auto& b) { return a.id() < b.id(); });
+    std::ranges::sort(touchPoints, [](const auto& a, const auto& b) { return a.id() < b.id(); });
 
     // Touchpad on Mac sends one event per touch point. Prevent duplicate events from being sent.
     // We consider an event to be a duplicate if all points in the event are the same as the last
     // event.
     if (touchPoints == prevTouchPoints_) {
-        prevTouchPoints_ = touchPoints;
+        prevTouchPoints_ = std::move(touchPoints);
         touch->accept();
         return true;
     }

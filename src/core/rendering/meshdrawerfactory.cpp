@@ -30,6 +30,8 @@
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 bool MeshDrawerFactory::registerObject(MeshDrawer* drawer) {
@@ -43,19 +45,19 @@ bool MeshDrawerFactory::unRegisterObject(MeshDrawer* drawer) {
 }
 
 std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
-    const auto it = std::find_if(drawers_.begin(), drawers_.end(),
-                                 [geom](MeshDrawer* d) { return d->canDraw(geom); });
+    const auto it =
+        std::ranges::find_if(drawers_, [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
     if (it != drawers_.end()) {
         return std::unique_ptr<MeshDrawer>((*it)->create(geom));
     } else {
-        return std::unique_ptr<MeshDrawer>();
+        return {};
     }
 }
 
 bool MeshDrawerFactory::hasKey(const Mesh* geom) const {
-    const auto it = std::find_if(drawers_.begin(), drawers_.end(),
-                                 [geom](MeshDrawer* d) { return d->canDraw(geom); });
+    const auto it =
+        std::ranges::find_if(drawers_, [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
     return (it != drawers_.end());
 }

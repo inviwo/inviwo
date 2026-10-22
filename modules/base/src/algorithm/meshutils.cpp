@@ -50,6 +50,7 @@
 #include <cstdlib>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <unordered_map>
 #include <utility>
 #include <numbers>
@@ -73,19 +74,19 @@ namespace inviwo::meshutil {
 
 namespace detail {
 
-vec3 orthvec(const vec3& vec) {
+static vec3 orthvec(const vec3& vec) {
     const vec3 u(1.0f, 0.0f, 0.0f);
     const vec3 n = glm::normalize(vec);
     const float p = glm::dot(u, n);
     if (std::abs(p) != 1.0f) {
         return glm::normalize(u - p * n);
     } else {
-        return vec3(0.0f, 1.0f, 0.0f);
+        return {0.0f, 1.0f, 0.0f};
     }
 }
 
-vec3 tospherical(const vec2& v) {
-    return vec3(std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x));
+static vec3 tospherical(const vec2& v) {
+    return {std::sin(v.x) * std::cos(v.y), std::sin(v.x) * std::sin(v.y), std::cos(v.x)};
 }
 
 }  // namespace detail
@@ -243,9 +244,9 @@ std::shared_ptr<BasicMesh> cylinder(const vec3& start, const vec3& stop, const v
         const vec3 texCoord = vec3(static_cast<float>(i) / static_cast<double>(segments), 0.0, 0.0);
 
         // vertex at base
-        vertices.push_back({start + dir, normal, texCoord, color});
+        vertices.emplace_back(start + dir, normal, texCoord, color);
         // vertex at top
-        vertices.push_back({stop + dir, normal, texCoord + vec3(0.0, 1.0, 0.0), color});
+        vertices.emplace_back(stop + dir, normal, texCoord + vec3(0.0, 1.0, 0.0), color);
 
         // indices for two triangles filling the strip
         inds->add(i * 2 + 1 + globalIndexOffset);
@@ -385,8 +386,10 @@ std::shared_ptr<Mesh> rotatingLine(vec3 start, vec3 stop, float endAngle, vec4 c
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::vector{segments + 1, color}));
 
     const auto ct = withAdjacency ? ConnectivityType::StripAdjacency : ConnectivityType::Strip;
-    std::vector<std::uint32_t> indices(segments + 1);
-    std::iota(indices.begin(), indices.end(), 0);
+
+    auto indices = std::views::iota(uint32_t{0}, static_cast<uint32_t>(segments + 1)) |
+                   std::ranges::to<std::vector>();
+
     if (withAdjacency) {
         indices.insert(indices.begin(), 0);
         indices.emplace_back(indices.back());
@@ -433,16 +436,16 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
         {std::atan(std::sqrt(17.0f) / 2.0f), std::atan(1.0f / 4.0f)},
         {std::atan(std::sqrt(10.0f) / 3.0f), std::atan(1.0f / 3.0f)},
         {std::atan(std::sqrt(5.0f) / 4.0f), std::atan(1.0f / 2.0f)},
-        {std::atan(std::sqrt(2.0f) / 5.0f), glm::quarter_pi<float>()},
+        {std::atan(std::numbers::sqrt2_v<float> / 5.0f), glm::quarter_pi<float>()},
         {std::atan(1.0f / 6.0f), glm::half_pi<float>()},
         {glm::half_pi<float>(), std::atan(2.0f / 5.0f)},
         {std::atan(2.0f * std::sqrt(5.0f)), std::atan(1.0f / 2.0f)},
         {std::atan(std::sqrt(13.0f) / 2.0f), std::atan(2.0f / 3.0f)},
-        {std::atan((2.0f * std::sqrt(2.0f)) / 3.0f), glm::quarter_pi<float>()},
+        {std::atan((2.0f * std::numbers::sqrt2_v<float>) / 3.0f), glm::quarter_pi<float>()},
         {std::atan(std::sqrt(5.0f) / 4.0f), std::atan(2.0f)},
         {std::atan(2.0f / 5.0f), glm::half_pi<float>()},
         {glm::half_pi<float>(), std::atan(3.0f / 4.0f)},
-        {std::atan(3.0f * std::sqrt(2.0f)), glm::quarter_pi<float>()},
+        {std::atan(3.0f * std::numbers::sqrt2_v<float>), glm::quarter_pi<float>()},
         {std::atan(std::sqrt(13.0f) / 2.0f), std::atan(3.0f / 2.0f)},
         {std::atan(std::sqrt(10.0f) / 3.0f), std::atan(3.0f)},
         {std::atan(3.0f / 4.0f), glm::half_pi<float>()},
@@ -491,19 +494,19 @@ std::shared_ptr<BasicMesh> colorsphere(const vec3& center, const float& radius,
                 vec3 vertex;
                 vec3 tcoord;
                 const vec4 color((quad + 1.0f) / 2.0f, 1.0f);
-                for (auto& elem : spheremesh) {
+                for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
-                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
-                    vertices.push_back({vertex, normal, tcoord, color});
+                    tcoord = vec3(quad.x * elem.x, quad.y * elem.y, 0.0f);
+                    vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.x, idxOffset + elem.y, idxOffset + elem.z});
                     }
                 } else {
-                    for (auto& elem : sphereind) {
+                    for (const auto& elem : sphereind) {
                         inds->add({idxOffset + elem.z, idxOffset + elem.y, idxOffset + elem.x});
                     }
                 }
@@ -532,16 +535,16 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
         {std::atan(std::sqrt(17.0f) / 2.0f), std::atan(1.0f / 4.0f)},
         {std::atan(std::sqrt(10.0f) / 3.0f), std::atan(1.0f / 3.0f)},
         {std::atan(std::sqrt(5.0f) / 4.0f), std::atan(1.0f / 2.0f)},
-        {std::atan(std::sqrt(2.0f) / 5.0f), glm::quarter_pi<float>()},
+        {std::atan(std::numbers::sqrt2_v<float> / 5.0f), glm::quarter_pi<float>()},
         {std::atan(1.0f / 6.0f), glm::half_pi<float>()},
         {glm::half_pi<float>(), std::atan(2.0f / 5.0f)},
         {std::atan(2.0f * std::sqrt(5.0f)), std::atan(1.0f / 2.0f)},
         {std::atan(std::sqrt(13.0f) / 2.0f), std::atan(2.0f / 3.0f)},
-        {std::atan((2.0f * std::sqrt(2.0f)) / 3.0f), glm::quarter_pi<float>()},
+        {std::atan((2.0f * std::numbers::sqrt2_v<float>) / 3.0f), glm::quarter_pi<float>()},
         {std::atan(std::sqrt(5.0f) / 4.0f), std::atan(2.0f)},
         {std::atan(2.0f / 5.0f), glm::half_pi<float>()},
         {glm::half_pi<float>(), std::atan(3.0f / 4.0f)},
-        {std::atan(3.0f * std::sqrt(2.0f)), glm::quarter_pi<float>()},
+        {std::atan(3.0f * std::numbers::sqrt2_v<float>), glm::quarter_pi<float>()},
         {std::atan(std::sqrt(13.0f) / 2.0f), std::atan(3.0f / 2.0f)},
         {std::atan(std::sqrt(10.0f) / 3.0f), std::atan(3.0f)},
         {std::atan(3.0f / 4.0f), glm::half_pi<float>()},
@@ -591,8 +594,8 @@ std::shared_ptr<BasicMesh> sphere(const vec3& center, const float& radius, const
                 for (const auto& elem : spheremesh) {
                     normal = quad * detail::tospherical(elem);
                     vertex = center + radius * normal;
-                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
-                    vertices.push_back({vertex, normal, tcoord, color});
+                    tcoord = vec3(quad.x * elem.x, quad.y * elem.y, 0.0f);
+                    vertices.emplace_back(vertex, normal, tcoord, color);
                 }
 
                 if (quad.x * quad.y * quad.z > 0) {
@@ -618,7 +621,7 @@ static vec3 V(const mat4& m, const vec3 v) {
 
 static vec3 N(const mat4& m, const vec3 v) {
     const vec4 V = m * vec4(v, 0);
-    return vec3(V);
+    return {V};
 }
 
 std::shared_ptr<BasicMesh> cube(const mat4& m, const vec4& color) {
@@ -789,7 +792,8 @@ std::shared_ptr<Mesh> cubeIndicator(const mat4& basisAndOffset) {
                            {BufferType::NormalAttrib, norm},
                            {BufferType::ColorAttrib, col},
                            {BufferType::PickingAttrib, pick}},
-        Mesh::IndexVector{{Mesh::MeshInfo{DrawType::Triangles, ConnectivityType::None}, inds}});
+        Mesh::IndexVector{
+            {Mesh::MeshInfo{.dt = DrawType::Triangles, .ct = ConnectivityType::None}, inds}});
 
     mesh->setModelMatrix(basisAndOffset);
 
@@ -1034,7 +1038,7 @@ std::shared_ptr<Mesh> parallelepiped(glm::vec3 origin, glm::vec3 p1, glm::vec3 p
     colorVertices.reserve(faces.size() * faces[0].size());
     normalVertices.reserve(faces.size() * faces[0].size());
 
-    for (auto& face : faces) {
+    for (const auto& face : faces) {
         const auto normal = calcNnormal(face);
         const auto ind = static_cast<uint32_t>(positionVertices.size());
         for (const auto i : face) {

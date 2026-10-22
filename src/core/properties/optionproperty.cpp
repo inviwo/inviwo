@@ -31,12 +31,14 @@
 
 #include <fmt/base.h>
 
+#include <utility>
+
 namespace inviwo {
 
 BaseOptionProperty::BaseOptionProperty(std::string_view identifier, std::string_view displayName,
                                        Document help, InvalidationLevel invalidationLevel,
                                        PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics) {}
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics)) {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
 
@@ -77,6 +79,7 @@ template class IVW_CORE_TMPL_INST OptionProperty<std::string>;
 std::vector<OptionPropertyIntOption> util::enumeratedOptions(std::string_view name, size_t count,
                                                              int start, int step) {
     std::vector<OptionPropertyIntOption> res;
+    res.reserve(count);
     for (size_t i = 0; i < count; ++i) {
         res.emplace_back(fmt::format("{}{}", toLower(name), i + 1),
                          fmt::format("{} {}", name, i + 1), start + static_cast<int>(i) * step);

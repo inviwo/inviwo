@@ -33,9 +33,7 @@
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basekeyframe.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * Keyframe for ButtonProperty. Button will be pressed when passing over the keyframe in any
@@ -58,6 +56,4 @@ public:
     void operator()(Seconds from, Seconds to, value_type& pressed) const;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

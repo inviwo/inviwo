@@ -63,6 +63,7 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <glm/vec2.hpp>
+#include <utility>
 
 #if __has_include(<fmt/args.h>)  // New in fmt v8
 #include <fmt/args.h>
@@ -75,7 +76,7 @@ std::string_view TextOverlayProperty::getClassIdentifier() const { return classI
 TextOverlayProperty::TextOverlayProperty(std::string_view identifier, std::string_view displayName,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , text("text", "Text", "The text with possible formatting"_help, "Lorem ipsum etc.",
            InvalidationLevel::InvalidOutput, PropertySemantics::TextEditor)
     , position("position", "Position", "Where to put the text, relative position from 0 to 1"_help,

@@ -81,7 +81,7 @@ AnglePropertyWidgetQt<T>::AnglePropertyWidgetQt(OrdinalProperty<T>* property)
     , settings_(nullptr)
     , displayName_(new EditableLabelQt(this, property))
     , angleWidget_(new AngleRadiusWidget(this)) {
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     // Label showing the display name of the property
     setSpacingAndMargins(hLayout);
     hLayout->addWidget(displayName_);

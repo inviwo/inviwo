@@ -34,9 +34,7 @@
 #include <string>
 #include <string_view>
 
-namespace inviwo {
-
-namespace hdf5 {
+namespace inviwo::hdf5 {
 
 /**
  * A normalized HDF5 group path, e.g. `/group/subgroup/dataset`. The path is stored as a single
@@ -53,10 +51,10 @@ public:
     Path& operator=(Path&& that) = default;
 
     Path& push(std::string_view path);
-    Path& push(const Path& path);
+    Path& push(const Path& rhs);
     Path& pop();
 
-    Path& operator+=(const Path& path);
+    Path& operator+=(const Path& rhs);
     Path& operator+=(std::string_view path);
 
     operator const std::string&() const;
@@ -79,6 +77,4 @@ private:
     std::string path_;
 };
 
-}  // namespace hdf5
-
-}  // namespace inviwo
+}  // namespace inviwo::hdf5

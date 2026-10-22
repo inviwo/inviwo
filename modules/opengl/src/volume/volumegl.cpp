@@ -40,6 +40,7 @@
 #include <inviwo/core/resourcemanager/resource.h>
 
 #include <type_traits>
+#include <utility>
 
 namespace inviwo {
 
@@ -63,7 +64,8 @@ VolumeGL::VolumeGL(const VolumeReprConfig& config, bool initializeTexture)
                config.wrapping.value_or(VolumeConfig::defaultWrapping),
                initializeTexture} {}
 
-VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex) : VolumeRepresentation{}, texture_(tex) {
+VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex)
+    : VolumeRepresentation{}, texture_(std::move(tex)) {
     IVW_ASSERT(texture_, "The texture should never be nullptr.");
 }
 
@@ -96,7 +98,7 @@ void VolumeGL::setDimensions(size3_t dimensions) { texture_->uploadAndResize(nul
 
 const size3_t& VolumeGL::getDimensions() const { return texture_->getDimensions(); }
 
-std::type_index VolumeGL::getTypeIndex() const { return std::type_index(typeid(VolumeGL)); }
+std::type_index VolumeGL::getTypeIndex() const { return {typeid(VolumeGL)}; }
 
 void VolumeGL::setSwizzleMask(const SwizzleMask& mask) { texture_->setSwizzleMask(mask); }
 

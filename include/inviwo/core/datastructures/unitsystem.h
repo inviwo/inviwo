@@ -198,13 +198,13 @@ struct Group {
     std::span<const UnitDesc> units;
 };
 
-constexpr std::array<Group, 7> groups = {{{"SI", si},
-                                          {"Derived", derived},
-                                          {"Extra", extra},
-                                          {"Time", time},
-                                          {"Temperature", temperature},
-                                          {"Atomic", atomic},
-                                          {"Astronomical", astronomical}}};
+constexpr std::array<Group, 7> groups = {{{.name = "SI", .units = si},
+                                          {.name = "Derived", .units = derived},
+                                          {.name = "Extra", .units = extra},
+                                          {.name = "Time", .units = time},
+                                          {.name = "Temperature", .units = temperature},
+                                          {.name = "Atomic", .units = atomic},
+                                          {.name = "Astronomical", .units = astronomical}}};
 
 using EnabledGroups = std::array<bool, groups.size()>;
 constexpr EnabledGroups allGroups = {true, true, true, true, true, true, true};
@@ -291,23 +291,23 @@ struct fmt::formatter<::inviwo::Unit> {
             endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
         auto unitFormat = range.substr(0, endPos);
 
-        if (unitFormat.size() > 0 && unitFormat[0] == ' ') {
+        if (!unitFormat.empty() && unitFormat[0] == ' ') {
             leadingSpace = true;
             unitFormat.remove_prefix(1);
         }
 
-        if (unitFormat.size() > 0 && unitFormat[0] == '(') {
+        if (!unitFormat.empty() && unitFormat[0] == '(') {
             braces = Braces::Paren;
             unitFormat.remove_prefix(1);
-        } else if (unitFormat.size() > 0 && unitFormat[0] == '[') {
+        } else if (!unitFormat.empty() && unitFormat[0] == '[') {
             braces = Braces::Square;
             unitFormat.remove_prefix(1);
         }
 
-        if (unitFormat.size() > 0 && unitFormat[0] == 'p') {
+        if (!unitFormat.empty() && unitFormat[0] == 'p') {
             usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
             unitFormat.remove_prefix(1);
-        } else if (unitFormat.size() > 0 && unitFormat[0] == 'P') {
+        } else if (!unitFormat.empty() && unitFormat[0] == 'P') {
             usePrefix = ::inviwo::util::UseUnitPrefixes::No;
             unitFormat.remove_prefix(1);
         }

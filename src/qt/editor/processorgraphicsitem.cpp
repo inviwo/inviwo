@@ -278,10 +278,10 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     processor_->ProcessorObservable::addObserver(this);
     processorMeta_->addObserver(this);
 
-    for (auto& inport : processor_->getInports()) {
+    for (const auto& inport : processor_->getInports()) {
         addInport(inport);
     }
-    for (auto& outport : processor_->getOutports()) {
+    for (const auto& outport : processor_->getOutports()) {
         addOutport(outport);
     }
 
@@ -543,17 +543,17 @@ ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { 
 void ProcessorGraphicsItem::onProcessorReadyChanged(Processor*) { updateStatus(); }
 
 void ProcessorGraphicsItem::onProcessorPortAdded(Processor*, Port* port) {
-    if (auto inport = dynamic_cast<Inport*>(port)) {
+    if (auto* inport = dynamic_cast<Inport*>(port)) {
         addInport(inport);
-    } else if (auto outport = dynamic_cast<Outport*>(port)) {
+    } else if (auto* outport = dynamic_cast<Outport*>(port)) {
         addOutport(outport);
     }
 }
 
 void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
-    if (auto inport = dynamic_cast<Inport*>(port)) {
+    if (auto* inport = dynamic_cast<Inport*>(port)) {
         removeInport(inport);
-    } else if (auto outport = dynamic_cast<Outport*>(port)) {
+    } else if (auto* outport = dynamic_cast<Outport*>(port)) {
         removeOutport(outport);
     }
 }
@@ -621,7 +621,7 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     tb(H("Code"), processor_->getCodeState());
     tb(H("Tags"), processor_->getTags().getString());
     tb(H("Status"), fmt::to_string(processor_->status()));
-    if (auto error = processor_->getMetaData<StringMetaData>("ProcessError")) {
+    if (auto* error = processor_->getMetaData<StringMetaData>("ProcessError")) {
         tb(H("Error"), error->get());
     }
     tb(H("Valid"), processor_->getInvalidationLevel());
@@ -646,11 +646,10 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
             std::string bestModule;
             for (const auto& m : app->getModuleManager().getInviwoModules()) {
                 const auto relpath = processorFile.lexically_relative(m.getPath());
-                if (!relpath.empty() && !relpath.string().starts_with("..")) {
-                    if (best.empty() || relpath.string().length() < best.string().length()) {
-                        best = relpath;
-                        bestModule = m.getIdentifier();
-                    }
+                if ((!relpath.empty() && !relpath.string().starts_with("..")) &&
+                    (best.empty() || relpath.string().length() < best.string().length())) {
+                    best = relpath;
+                    bestModule = m.getIdentifier();
                 }
             }
 

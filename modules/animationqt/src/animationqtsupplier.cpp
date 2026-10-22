@@ -37,9 +37,7 @@
 #include <modules/animationqt/factories/trackwidgetqtfactory.h>
 #include <modules/animationqt/factories/trackwidgetqtfactoryobject.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 AnimationQtSupplier::AnimationQtSupplier(AnimationQtModule& animationQtModule)
     : animationQtModule_{animationQtModule} {}
@@ -83,6 +81,4 @@ void AnimationQtSupplier::unRegisterAll() {
     sequenceEditors_.clear();
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

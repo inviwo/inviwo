@@ -36,9 +36,9 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/util/glmvec.h>
 
-namespace inviwo {
+#include <utility>
 
-namespace plot {
+namespace inviwo::plot {
 
 std::string_view BoxSelectionProperty::getClassIdentifier() const { return classIdentifier; }
 
@@ -46,7 +46,7 @@ BoxSelectionProperty::BoxSelectionProperty(const std::string& identifier,
                                            const std::string& displayName,
                                            InvalidationLevel invalidationLevel,
                                            PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , mode_("mode", "Mode",
             {{"selection", "Selection", BoxSelectionData::Mode::Selection},
              {"filtering", "Filtering", BoxSelectionData::Mode::Filtering},
@@ -81,6 +81,4 @@ void BoxSelectionProperty::update(BoxSelectionData& data) const {
     data.mode = mode_.get();
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

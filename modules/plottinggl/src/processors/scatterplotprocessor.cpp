@@ -56,9 +56,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace inviwo {
-
-namespace plot {
+namespace inviwo::plot {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ScatterPlotProcessor::processorInfo_{
@@ -187,7 +185,8 @@ void ScatterPlotProcessor::process() {
 
         indexToRowMap_ = [&]() {
             const auto iCol = dataFramePort_.getData()->getIndexColumn();
-            auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+            const auto& indexCol =
+                iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
             std::unordered_map<uint32_t, uint32_t> indexToRow;
             indexToRow.reserve(indexCol.size());
             for (auto&& [row, index] : util::enumerate(indexCol)) {
@@ -226,6 +225,4 @@ void ScatterPlotProcessor::process() {
     }
 }
 
-}  // namespace plot
-
-}  // namespace inviwo
+}  // namespace inviwo::plot

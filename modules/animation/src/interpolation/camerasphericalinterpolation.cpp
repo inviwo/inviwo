@@ -54,9 +54,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 CameraSphericalInterpolation::CameraSphericalInterpolation(InviwoApplication* app)
     : InterpolationTyped<CameraKeyframe, CameraKeyframe::value_type>(app) {}
@@ -135,6 +133,4 @@ void CameraSphericalInterpolation::serialize(Serializer& s) const {
 
 void CameraSphericalInterpolation::deserialize(Deserializer& /*d*/) {}
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

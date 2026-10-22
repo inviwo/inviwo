@@ -167,8 +167,9 @@ std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> util::getUni
         for (const auto& desc : group.units) {
             if (isSubset(desc.unit.base_units(), unit.base_units()) &&
                 inviwo::all(desc.unit.base_units(), unit.base_units(),
-                            [](auto a, auto b) { return std::abs(a) <= std::abs(b); }))
+                            [](auto a, auto b) { return std::abs(a) <= std::abs(b); })) {
                 groups[desc.unit.base_units()].push_back(desc);
+            }
         }
     }
     return groups;
@@ -181,6 +182,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     auto groups = getUnitGroupsFor(unit, enabledGroups);
 
     std::vector<units::detail::unit_data> bases;
+    bases.reserve(groups.size());
     for (const auto& [base, descs] : groups) {
         bases.push_back(base);
     }
@@ -211,7 +213,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
 
     auto closestMultiplier = std::numeric_limits<double>::max();
 
-    static constexpr std::string_view empty = "";
+    static constexpr std::string_view empty;
     constexpr auto siPrefixHalf = static_cast<int>(unitgroups::prefixes.size() / 2);
     std::vector<std::string_view> prefixes;
 
@@ -219,6 +221,7 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
 
     for (const auto& match : matches) {
         std::vector<size_t> groupSizes;
+        groupSizes.reserve(match.size());
         for (const auto& [base, pow] : match) {
             groupSizes.push_back(groups[base].size());
         }

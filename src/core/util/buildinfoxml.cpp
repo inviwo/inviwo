@@ -37,9 +37,7 @@
 #include <fstream>
 #include <locale>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 namespace {
 
@@ -63,7 +61,7 @@ const std::optional<BuildInfo>& getBuildInfo() {
         auto dir = exeDir / xmlFileName;
         if (std::filesystem::is_regular_file(dir)) return dir;
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
         if (dir.parent_path().filename() == "MacOS") {
             dir = exeDir.parent_path().parent_path().parent_path() / xmlFileName;
             if (std::filesystem::is_regular_file(dir)) return dir;
@@ -111,6 +109,4 @@ const std::optional<BuildInfo>& getBuildInfo() {
     return maybebuildInfo;
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

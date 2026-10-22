@@ -49,6 +49,7 @@
 #include <QSignalBlocker>
 #include <QSizePolicy>
 #include <QWidget>
+#include <utility>
 
 class QHBoxLayout;
 namespace inviwo {
@@ -62,7 +63,7 @@ namespace inviwo {
 class IVW_MODULE_QTWIDGETS_API PropertyWidgetDelegate : public PropertyWidget {
 public:
     PropertyWidgetDelegate(Property* p, std::function<void()> func)
-        : PropertyWidget(p), func{func} {}
+        : PropertyWidget(p), func{std::move(func)} {}
 
     virtual void updateFromProperty() override { func(); }
     std::function<void()> func;
@@ -94,24 +95,24 @@ StringsPropertyWidgetQt<N>::StringsPropertyWidgetQt(StringsProperty<N>* property
     , label_{new EditableLabelQt(this, property_)}
     , lineEdits_{util::make_array<N>([]([[maybe_unused]] auto i) { return new LineEditQt(); })}
     , delegates_{util::make_array<N>([&](auto i) {
-        auto p = &(property_->strings[i]);
+        auto p = &property_->strings[i];
         return PropertyWidgetDelegate(p, [p, l = lineEdits_[i]]() {
             const QSignalBlocker blocker(l);
             l->setText(utilqt::toQString(p->get()));
             l->setCursorPosition(0);
             l->clearFocus();
         });
-    })} {
+    })}
+    , hWidgetLayout_(new QHBoxLayout()) {
 
     setFocusPolicy(lineEdits_[0]->focusPolicy());
     setFocusProxy(lineEdits_[0]);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(label_);
 
-    hWidgetLayout_ = new QHBoxLayout();
     {
         hWidgetLayout_->setContentsMargins(0, 0, 0, 0);
         auto widget = new QWidget();

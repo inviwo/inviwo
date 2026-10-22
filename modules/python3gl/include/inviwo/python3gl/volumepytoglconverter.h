@@ -42,18 +42,18 @@ class IVW_MODULE_PYTHON3GL_API VolumeGL2PyConverter
     : public RepresentationConverterType<VolumeRepresentation, VolumeGL, VolumePy> {
 public:
     virtual std::shared_ptr<VolumePy> createFrom(
-        std::shared_ptr<const VolumeGL> source) const override;
-    virtual void update(std::shared_ptr<const VolumeGL> source,
-                        std::shared_ptr<VolumePy> destination) const override;
+        std::shared_ptr<const VolumeGL> volumeSrc) const override;
+    virtual void update(std::shared_ptr<const VolumeGL> volumeSrc,
+                        std::shared_ptr<VolumePy> volumeDst) const override;
 };
 
 class IVW_MODULE_PYTHON3GL_API VolumePy2GLConverter
     : public RepresentationConverterType<VolumeRepresentation, VolumePy, VolumeGL> {
 public:
     virtual std::shared_ptr<VolumeGL> createFrom(
-        std::shared_ptr<const VolumePy> source) const override;
-    virtual void update(std::shared_ptr<const VolumePy> source,
-                        std::shared_ptr<VolumeGL> destination) const override;
+        std::shared_ptr<const VolumePy> volumeSrc) const override;
+    virtual void update(std::shared_ptr<const VolumePy> volumeSrc,
+                        std::shared_ptr<VolumeGL> volumeDst) const override;
 };
 
 }  // namespace inviwo

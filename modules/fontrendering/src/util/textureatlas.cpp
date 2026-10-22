@@ -59,9 +59,7 @@
 #include <glm/vec4.hpp>
 #include <glm/vector_relational.hpp>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 bool TextureAtlas::valid() const { return (atlasTex_ != nullptr); }
 
@@ -70,8 +68,8 @@ void TextureAtlas::clear() { atlasTex_ = nullptr; }
 void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries) {
 
     std::vector<TextBoundingBox> bboxes;
-    std::transform(entries.begin(), entries.end(), std::back_inserter(bboxes),
-                   [&](const auto& s) { return textRenderer.computeBoundingBox(s.value); });
+    std::ranges::transform(entries, std::back_inserter(bboxes),
+                           [&](const auto& s) { return textRenderer.computeBoundingBox(s.value); });
 
     fillAtlas(textRenderer, entries, bboxes);
 }
@@ -80,12 +78,16 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, const std::vector<std::
                              vec4 color) {
 
     std::vector<TextBoundingBox> bboxes;
-    std::transform(strings.begin(), strings.end(), std::back_inserter(bboxes),
-                   [&](const std::string& s) { return textRenderer.computeBoundingBox(s); });
+    std::ranges::transform(strings, std::back_inserter(bboxes), [&](const std::string& s) {
+        return textRenderer.computeBoundingBox(s);
+    });
 
     std::vector<TexAtlasEntry> entries;
     for (auto&& item : util::zip(strings, bboxes)) {
-        entries.push_back({item.first(), ivec2{0}, item.second().glyphsExtent, color});
+        entries.push_back({.value = item.first(),
+                           .texPos = ivec2{0},
+                           .texExtent = item.second().glyphsExtent,
+                           .color = color});
     }
 
     fillAtlas(textRenderer, entries, bboxes);
@@ -103,11 +105,10 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
         throw Exception("Max size for texture atlas exceeded");
     }
 
-    std::vector<size_t> indices(bboxes.size());
-    std::iota(indices.begin(), indices.end(), 0u);
+    auto indices = std::views::iota(0uz, bboxes.size()) | std::ranges::to<std::vector>();
 
     // sort labels according to width then height
-    std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
+    std::ranges::sort(indices, [&](auto a, auto b) {
         const auto& extA(bboxes[a].glyphsExtent);
         const auto& extB(bboxes[b].glyphsExtent);
 
@@ -211,17 +212,16 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAt
     renderInfo_.texTransform.reserve(entries.size());
     const vec2 texDim(atlasTex_->getDimensions());
 
-    std::transform(entries.begin(), entries.end(), std::back_inserter(renderInfo_.texTransform),
-                   [&](auto& elem) {
-                       mat4 m(glm::scale(vec3(vec2(elem.texExtent) / texDim, 1.0f)));
-                       m[3] = vec4(vec2(elem.texPos) / texDim, 0.0f, 1.0f);
-                       return m;
-                   });
+    std::ranges::transform(entries, std::back_inserter(renderInfo_.texTransform), [&](auto& elem) {
+        mat4 m(glm::scale(vec3(vec2(elem.texExtent) / texDim, 1.0f)));
+        m[3] = vec4(vec2(elem.texPos) / texDim, 0.0f, 1.0f);
+        return m;
+    });
 
     renderInfo_.size.clear();
     renderInfo_.size.reserve(entries.size());
-    std::transform(entries.begin(), entries.end(), std::back_inserter(renderInfo_.size),
-                   [](auto& a) { return a.texExtent; });
+    std::ranges::transform(entries, std::back_inserter(renderInfo_.size),
+                           [](auto& a) { return a.texExtent; });
 
     renderInfo_.boundingBoxes = std::move(bboxes);
 }
@@ -232,6 +232,4 @@ static_assert(!std::is_copy_assignable_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_constructible_v<TextureAtlas>);
 static_assert(std::is_nothrow_move_assignable_v<TextureAtlas>);
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

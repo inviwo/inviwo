@@ -74,7 +74,7 @@ public:
      *    -d     d
      * @return Negative distance if behind plane, positive otherwise.
      */
-    float distance(const vec3& x) const;
+    float distance(const vec3& p) const;
 
     /**
      * Project point onto plane.
@@ -86,7 +86,7 @@ public:
      * @param x Point to project
      * @return point on the plane
      */
-    vec3 projectPoint(const vec3& x) const;
+    vec3 projectPoint(const vec3& p) const;
 
     /**
      * Check if point is on positive side of plane.
@@ -110,12 +110,12 @@ public:
      */
     mat4 inPlaneBasis() const;
 
-    void setPoint(const vec3);
+    void setPoint(vec3);
     void setNormal(const vec3&);
 
     Plane transform(const mat4& transform) const;
 
-    std::string getDataInfo() const;
+    static std::string_view getDataInfo();
 
     static constexpr uvec3 colorCode{225, 174, 225};
     static constexpr std::string_view classIdentifier{"org.inviwo.Plane"};

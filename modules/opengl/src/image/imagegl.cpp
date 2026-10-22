@@ -154,7 +154,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         colorLayerCopyCount_ = colorLayersGL_.size();
     }
 
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    TextureUnit colorUnit;
+    TextureUnit depthUnit;
+    TextureUnit pickingUnit;
     source->getColorLayerGL()->bindTexture(colorUnit.getEnum());
     if (source->getDepthLayerGL()) {
         source->getDepthLayerGL()->bindTexture(depthUnit.getEnum());
@@ -198,7 +200,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
                            ? glm::scale(glm::vec3(1.0f, targetRatio / sourceRatio, 1.0f))
                            : glm::scale(glm::vec3(sourceRatio / targetRatio, 1.0f, 1.0f));
 
-    GLint prog;
+    GLint prog = 0;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
 
     shader_->activate();
@@ -404,7 +406,7 @@ void ImageGL::reAttachAllLayers() {
     }
 }
 
-std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
+std::type_index ImageGL::getTypeIndex() const { return {typeid(ImageGL)}; }
 
 bool ImageGL::isValid() const {
     return depthLayerGL_ && pickingLayerGL_ && depthLayerGL_->isValid() &&
@@ -434,7 +436,7 @@ dvec4 ImageGL::readPixel(size2_t pos, LayerType layer, size_t index) const {
 
     // Make a buffer that can hold the largest possible pixel type
     vec4 res{0.0f};
-    GLvoid* ptr = static_cast<GLvoid*>(glm::value_ptr(res));
+    auto* ptr = static_cast<GLvoid*>(glm::value_ptr(res));
     const auto x = static_cast<GLint>(pos.x);
     const auto y = static_cast<GLint>(pos.y);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

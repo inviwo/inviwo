@@ -31,6 +31,7 @@
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
+#include <algorithm>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPen>
@@ -60,7 +61,7 @@ ProcessorGraphicsItem* ProcessorLinkGraphicsItem::getProcessorGraphicsItem() con
     return processor_;
 }
 
-QRectF ProcessorLinkGraphicsItem::boundingRect() const { return QRectF(); }
+QRectF ProcessorLinkGraphicsItem::boundingRect() const { return {}; }
 void ProcessorLinkGraphicsItem::paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget*) {}
 
 QVariant ProcessorLinkGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
@@ -76,7 +77,7 @@ void ProcessorLinkGraphicsItem::addLink(LinkConnectionGraphicsItem* link) {
 }
 
 void ProcessorLinkGraphicsItem::removeLink(LinkConnectionGraphicsItem* link) {
-    links_.erase(std::find(links_.begin(), links_.end(), link));
+    links_.erase(std::ranges::find(links_, link));
 }
 
 void ProcessorLinkGraphicsItem::updateLinkPositions() {

@@ -38,9 +38,7 @@
 
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 void flipLayerVertical(Layer& layer) {
     layer.getEditableRepresentation<LayerRAM>()->dispatch<void>([](auto layerpr) {
@@ -87,6 +85,4 @@ size_t detail::getPoolSize() {
     return InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->poolSize_.get();
 }
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

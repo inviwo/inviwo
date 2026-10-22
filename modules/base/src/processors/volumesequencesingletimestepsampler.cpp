@@ -54,10 +54,10 @@ namespace {
 
 class VolumeSequenceSingleTimestepSampler : public SpatialSampler<dvec3> {
 public:
-    VolumeSequenceSingleTimestepSampler(double t, std::shared_ptr<const Volume> v0,
+    VolumeSequenceSingleTimestepSampler(double t, const std::shared_ptr<const Volume>& v0,
                                         std::shared_ptr<const Volume> v1,
                                         CoordinateSpace space = CoordinateSpace::Data)
-        : SpatialSampler(*v0, space), t_(t), v0_(v0, space), v1_(v1, space) {}
+        : SpatialSampler(*v0, space), t_(t), v0_(v0, space), v1_(std::move(v1), space) {}
 
 protected:
     virtual dvec3 sampleDataSpace(const dvec3& pos) const override {
@@ -114,8 +114,8 @@ void VolumeSequenceSingleTimestepSamplerProcessor::process() {
         }
 
         const auto newRange = util::getTimestampRange(*seq);
-        const float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
-                                           (timestamp_.getMaxValue() - timestamp_.getMinValue()));
+        const auto t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
+                                          (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
         timestamp_.setMinValue(newRange.first);
         timestamp_.setMaxValue(newRange.second);

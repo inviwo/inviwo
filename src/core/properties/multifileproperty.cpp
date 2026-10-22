@@ -36,6 +36,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/docutils.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view MultiFileProperty::getClassIdentifier() const { return classIdentifier; }
@@ -46,7 +48,7 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      std::string_view contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
     , files_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
@@ -59,7 +61,8 @@ MultiFileProperty::MultiFileProperty(std::string_view identifier, std::string_vi
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : MultiFileProperty(identifier, displayName, {}, value, AcceptMode::Open,
-                        FileMode::ExistingFiles, contentType, invalidationLevel, semantics) {}
+                        FileMode::ExistingFiles, contentType, invalidationLevel,
+                        std::move(semantics)) {}
 
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::filesystem::path>& value) {
     set(value);
@@ -76,7 +79,7 @@ void MultiFileProperty::set(const std::vector<std::filesystem::path>& values) {
     bool modified = files_.update(values);
 
     // figure out best matching extension based on first filename
-    if (auto* file = front()) {
+    if (const auto* file = front()) {
         modified |= updateExtension(*file);
     } else {
         modified |= selectedExtension_.update(FileExtension{});
@@ -109,9 +112,9 @@ void MultiFileProperty::set(const FileProperty* property) {
 }
 
 void MultiFileProperty::set(const Property* property) {
-    if (auto mfp = dynamic_cast<const MultiFileProperty*>(property)) {
+    if (const auto* mfp = dynamic_cast<const MultiFileProperty*>(property)) {
         set(mfp);
-    } else if (auto fp = dynamic_cast<const FileProperty*>(property)) {
+    } else if (const auto* fp = dynamic_cast<const FileProperty*>(property)) {
         set(fp);
     }
 }
@@ -231,8 +234,8 @@ void MultiFileProperty::deserialize(Deserializer& d) {
 }
 
 void MultiFileProperty::requestFile() {
-    for (auto widget : getWidgets()) {
-        if (auto fileRequester = dynamic_cast<FileRequestable*>(widget)) {
+    for (auto* widget : getWidgets()) {
+        if (auto* fileRequester = dynamic_cast<FileRequestable*>(widget)) {
             fileRequester->requestFile();
             return;
         }

@@ -34,9 +34,9 @@
 #include <modules/animation/datastructures/animationtime.h>
 #include <modules/animation/datastructures/basekeyframe.h>
 
-namespace inviwo {
+#include <utility>
 
-namespace animation {
+namespace inviwo::animation {
 
 /**
  * Keyframe of a given value type (float, integer, vec3 and so on).
@@ -49,7 +49,7 @@ public:
     using value_type = T;
     ValueKeyframe() = default;
     explicit ValueKeyframe(Seconds time);
-    ValueKeyframe(Seconds time, const T& value);
+    ValueKeyframe(Seconds time, T value);
     virtual ~ValueKeyframe() = default;
     virtual ValueKeyframe* clone() const override;
 
@@ -81,7 +81,8 @@ template <typename T>
 ValueKeyframe<T>::ValueKeyframe(Seconds time) : BaseKeyframe{time}, value_{} {}
 
 template <typename T>
-ValueKeyframe<T>::ValueKeyframe(Seconds time, const T& value) : BaseKeyframe{time}, value_(value) {}
+ValueKeyframe<T>::ValueKeyframe(Seconds time, T value)
+    : BaseKeyframe{time}, value_(std::move(value)) {}
 
 template <typename T>
 ValueKeyframe<T>& ValueKeyframe<T>::operator=(const ValueKeyframe<T>& that) {
@@ -122,6 +123,4 @@ void ValueKeyframe<T>::deserialize(Deserializer& d) {
     BaseKeyframe::deserialize(d);
     d.deserialize("value", value_);
 }
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -51,21 +51,23 @@
 namespace inviwo {
 
 MouseButton util::mapGLFWMouseButton(int mouseButtonGLFW) {
-    if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT)
+    if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT) {
         return MouseButton::Left;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE)
+    } else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE) {
         return MouseButton::Middle;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT)
+    } else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT) {
         return MouseButton::Right;
-    else
+    } else {
         return MouseButton::None;
+    }
 }
 
 MouseState util::mapGLFWMouseState(int mouseStateGLFW) {
-    if (mouseStateGLFW == GLFW_PRESS)
+    if (mouseStateGLFW == GLFW_PRESS) {
         return MouseState::Press;
-    else  // (mouseStateGLFW == GLFW_RELEASE)
+    } else {  // (mouseStateGLFW == GLFW_RELEASE)
         return MouseState::Release;
+    }
 }
 
 KeyModifiers util::mapGLFWModifiers(int modifiersGLFW) {

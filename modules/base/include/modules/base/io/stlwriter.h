@@ -57,7 +57,7 @@ public:
         const Mesh* data, std::string_view fileExtension) const override;
 
 private:
-    void writeData(const Mesh* data, std::ostream& os) const;
+    static void writeData(const Mesh* data, std::ostream& f);
 };
 
 }  // namespace inviwo

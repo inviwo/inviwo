@@ -36,9 +36,7 @@
 #include <iterator>
 #include <algorithm>
 
-namespace inviwo {
-
-namespace util {
+namespace inviwo::util {
 
 /**
  * @brief An iterator providing access to a subregion, or brick, within linearized 3D data.
@@ -87,13 +85,13 @@ namespace util {
 template <typename Iter>
 class BrickIterator {
 public:
-    using base_category = typename std::iterator_traits<Iter>::iterator_category;
+    using base_category = std::iterator_traits<Iter>::iterator_category;
 
-    using difference_type = typename std::iterator_traits<Iter>::difference_type;
+    using difference_type = std::iterator_traits<Iter>::difference_type;
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = typename std::iterator_traits<Iter>::value_type;
-    using pointer = typename std::iterator_traits<Iter>::pointer;
-    using reference = typename std::iterator_traits<Iter>::reference;
+    using value_type = std::iterator_traits<Iter>::value_type;
+    using pointer = std::iterator_traits<Iter>::pointer;
+    using reference = std::iterator_traits<Iter>::reference;
 
     BrickIterator() = default;
     /**
@@ -171,13 +169,11 @@ public:
     }
 
 private:
-    size3_t current_;
-    size3_t start_;
-    size3_t extent_;
+    size3_t current_{};
+    size3_t start_{};
+    size3_t extent_{};
     util::IndexMapper3D im_;
     Iter iterator_;
 };
 
-}  // namespace util
-
-}  // namespace inviwo
+}  // namespace inviwo::util

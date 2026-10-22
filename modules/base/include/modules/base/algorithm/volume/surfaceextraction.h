@@ -42,14 +42,13 @@
 #include <glm/fwd.hpp>
 #include <glm/vec3.hpp>
 
-namespace inviwo {
 /*
 Common functions used in MarchingCubes and MarchingTetrahedron
 */
-namespace marching {
+namespace inviwo::marching {
 template <typename T>
 double getValue(const T* src, size3_t pos, size3_t dim, double iso, bool invert) {
-    const double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
+    const auto v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
     return invert ? v - iso : -(v - iso);
 }
 
@@ -60,7 +59,7 @@ void evaluateTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexB
                       double v0, const glm::vec3& p1, double v1, const glm::vec3& p2, double v2);
 
 size_t addVertex(K3DTree<size_t, float>& vertexTree, std::vector<vec3>& positions,
-                 std::vector<vec3>& normals, const vec3 pos);
+                 std::vector<vec3>& normals, vec3 pos);
 
 void addTriangle(K3DTree<size_t, float>& vertexTree, IndexBufferRAM* indexBuffer,
                  std::vector<vec3>& positions, std::vector<vec3>& normals, const glm::vec3& a,
@@ -71,12 +70,12 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
                    std::vector<vec3>& positions, std::vector<vec3>& normals, double iso,
                    bool invert, double dx, double dy, double dz) {
     const auto cubeEdgeIndices = [](size_t n) -> std::vector<size_t> {
-        if (n == 1) return {size_t(0)};
-        return {size_t(0), n - 1};
+        if (n == 1) return {static_cast<size_t>(0)};
+        return {static_cast<size_t>(0), n - 1};
     };
 
-    std::array<vec3, 4> pos;
-    std::array<double, 4> values;
+    std::array<vec3, 4> pos{};
+    std::array<double, 4> values{};
 
     {
         K3DTree<size_t, float> sideVertexTree;
@@ -185,6 +184,4 @@ void encloseSurfce(const T* src, const size3_t& dim, IndexBufferRAM* indexBuffer
     }
 }
 
-}  // namespace marching
-
-}  // namespace inviwo
+}  // namespace inviwo::marching

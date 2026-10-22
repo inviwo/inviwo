@@ -62,9 +62,9 @@ bool OpenGLCapabilities::glInitialized_ = false;
 int OpenGLCapabilities::glVersion_ = 0;
 std::string OpenGLCapabilities::glVersionStr_ = "0";
 
-OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0), profile_("") {}
+OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion() : number_(0) {}
 
-OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num), profile_("") {}
+OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num) : number_(num) {}
 
 OpenGLCapabilities::GLSLShaderVersion::GLSLShaderVersion(int num, std::string_view pro)
     : number_(num), profile_(pro) {}
@@ -81,7 +81,7 @@ std::string OpenGLCapabilities::GLSLShaderVersion::getVersionAndProfileAsString(
     return (hasProfile() ? getVersionAsString() + " " + profile_ : getVersionAsString());
 }
 
-bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() const { return (profile_ != ""); }
+bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() const { return (!profile_.empty()); }
 
 bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i,
                                                              GLSLShaderVersion j) {
@@ -250,7 +250,7 @@ bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     }
     const std::string nameStr(name);
     // glbinding extension names always include the "GL_" prefix
-    const std::string fullName = (nameStr.substr(0, 3) != "GL_") ? "GL_" + nameStr : nameStr;
+    const std::string fullName = (!nameStr.starts_with("GL_")) ? "GL_" + nameStr : nameStr;
 
     return std::ranges::any_of(cachedExtensions, [&fullName](const auto& ext) {
         return glbinding::aux::Meta::getString(ext) == fullName;
@@ -292,7 +292,7 @@ int OpenGLCapabilities::getMaxColorAttachments() const { return maxColorAttachme
 const std::string& OpenGLCapabilities::getRenderString() const { return glRenderStr_; }
 const std::string& OpenGLCapabilities::getVendorString() const { return glVendorStr_; }
 const std::string& OpenGLCapabilities::getProfileString() const { return glProfileStr_; }
-const std::string& OpenGLCapabilities::getGLVersionString() const { return glVersionStr_; }
+const std::string& OpenGLCapabilities::getGLVersionString() { return glVersionStr_; }
 const std::string& OpenGLCapabilities::getGLSLVersionString() const { return glslVersionStr_; }
 OpenGLCapabilities::GlVendor OpenGLCapabilities::getVendor() const { return glVendor_; }
 
@@ -346,13 +346,11 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     glVendorStr_ =
         std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
-    if (glVendorStr_.find("NVIDIA") != std::string::npos) {
+    if (glVendorStr_.contains("NVIDIA")) {
         glVendor_ = GlVendor::Nvidia;
-    } else if (glVendorStr_.find("AMD") != std::string::npos ||
-               glVendorStr_.find("ATI") != std::string::npos) {
+    } else if (glVendorStr_.contains("AMD") || glVendorStr_.contains("ATI")) {
         glVendor_ = GlVendor::Amd;
-    } else if (glVendorStr_.find("INTEL") != std::string::npos ||
-               glVendorStr_.find("Intel") != std::string::npos) {
+    } else if (glVendorStr_.contains("INTEL") || glVendorStr_.contains("Intel")) {
         glVendor_ = GlVendor::Intel;
     } else {
         glVendor_ = GlVendor::Unknown;
@@ -363,7 +361,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         std::string((glrender != nullptr ? reinterpret_cast<const char*>(glrender) : "INVALID"));
 
     GLint contextMask = 0;
-    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, (GLint*)&contextMask);
+    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &contextMask);
     const auto profileMask = static_cast<unsigned int>(contextMask);
     if (profileMask & static_cast<unsigned int>(GL_CONTEXT_CORE_PROFILE_BIT)) {
         glProfileStr_ = "core";
@@ -401,15 +399,15 @@ void OpenGLCapabilities::retrieveStaticInfo() {
                                      glslVersion);
         }
 
-        std::sort(supportedShaderVersions_.begin(), supportedShaderVersions_.end(),
-                  &GLSLShaderVersion::sortHighestFirst);
+        std::ranges::sort(supportedShaderVersions_, &GLSLShaderVersion::sortHighestFirst);
     }
 
     if (numberOfSupportedVersions == 0) {
-        if (isShadersSupported())
+        if (isShadersSupported()) {
             glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        else if (isShadersSupportedARB())
+        } else if (isShadersSupportedARB()) {
             glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
+        }
 
         glslVersionStr_ = std::string(
             (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
@@ -444,8 +442,9 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
         while (i < supportedShaderVersions_.size() &&
                (supportedShaderVersions_[i].hasProfile() &&
-                supportedShaderVersions_[i].getProfile() != getProfileString()))
+                supportedShaderVersions_[i].getProfile() != getProfileString())) {
             i++;
+        }
 
         currentGlobalGLSLVersionIdx_ = i;
     }
@@ -475,31 +474,32 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     // Texturing
     // With glbinding, all GL constants are available; use runtime version checks instead
     texSupported_ = true;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&maxTexSize_);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize_);
 
     tex3DSupported_ = true;
-    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, (GLint*)&max3DTexSize_);
+    glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &max3DTexSize_);
 
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&maxArrayVertexAttribs_);
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxArrayVertexAttribs_);
 
     if (glVersion_ >= 300) {
         texArraySupported_ = true;
-        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTexSize_);
     } else {
         texArraySupported_ = isExtensionSupported("GL_EXT_texture_array");
 
-        if (isTextureArraysSupported())
-            glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, (GLint*)&maxArrayTexSize_);
-        else
+        if (isTextureArraysSupported()) {
+            glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxArrayTexSize_);
+        } else {
             maxArrayTexSize_ = 0;
+        }
     }
     numTexUnits_ = -1;
 
-    if (isShadersSupported()) glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, (GLint*)&numTexUnits_);
+    if (isShadersSupported()) glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &numTexUnits_);
 
-    if (getNumTexUnits() < 0) glGetIntegerv(GL_MAX_TEXTURE_UNITS, (GLint*)&numTexUnits_);
+    if (getNumTexUnits() < 0) glGetIntegerv(GL_MAX_TEXTURE_UNITS, &numTexUnits_);
 
-    if (numTexUnits_ < 0) numTexUnits_ = 0;
+    numTexUnits_ = std::max(numTexUnits_, 0);
     // FBO
     fboSupported_ = isExtensionSupported("GL_EXT_framebuffer_object");
     maxColorAttachments_ = 0;
@@ -521,13 +521,14 @@ void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int co
     if (!versionStr.empty()) {
         // Remove all non-alphanumeric characters, but keep spaces
         versionStr.erase(
-            std::remove_if(versionStr.begin(), versionStr.end(),
-                           [](char c) { return !(std::isspace(c) || std::isalnum(c)); }),
+            std::ranges::remove_if(versionStr,
+                                   [](char c) { return !(std::isspace(c) || std::isalnum(c)); })
+                .begin(),
             versionStr.end());
 
         const auto versionSplit = util::splitStringView(versionStr);
-        if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 ||
-                                        versionSplit[1].compare("compatibility") == 0)) {
+        if (versionSplit.size() > 1 &&
+            (versionSplit[1] == "core" || versionSplit[1] == "compatibility")) {
             addShaderVersionIfEqualOrLower(
                 GLSLShaderVersion(stringTo<int>(versionSplit[0]), versionSplit[1]), compVersion);
         } else {

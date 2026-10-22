@@ -74,7 +74,7 @@ public:
     explicit InvalidConversion(const std::string& message = "",
                                SourceContext context = SourceContext())
         : Exception(message, context) {}
-    virtual ~InvalidConversion() throw() {}
+    virtual ~InvalidConversion() noexcept = default;
 };
 
 enum class ColumnType { Index, Ordinal, Categorical };
@@ -505,7 +505,7 @@ public:
 private:
     class IVW_MODULE_DATAFRAME_API AddMany {
     public:
-        inline void operator()(std::string_view value) const {
+        void operator()(std::string_view value) const {
             const auto id = column_->addOrGetID(value);
             buffer_->getDataContainer().push_back(id);
         }
@@ -534,7 +534,7 @@ private:
 template <typename T>
 TemplateColumn<T>::TemplateColumn(std::string_view header, std::shared_ptr<Buffer<T>> buffer,
                                   Unit unit, std::optional<dvec2> range)
-    : header_{header}, unit_{unit}, range_{range}, buffer_{buffer} {}
+    : header_{header}, unit_{unit}, range_{range}, buffer_{std::move(buffer)} {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(std::string_view header, std::vector<T> data, Unit unit,
@@ -665,8 +665,10 @@ void TemplateColumn<T>::add(const T& value) {
 
 namespace detail {
 
-template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* buffer, std::string_view value)
+    requires std::is_integral_v<T>
+{
     T result;
     if (value.empty()) {
         result = T{0};  // no special value indicating missing data for integral types
@@ -681,8 +683,10 @@ void add(Buffer<T>* buffer, std::string_view value) {
     buffer->getEditableRAMRepresentation()->add(result);
 }
 // Specialization for float and double types, add NaN instead of throwing an error
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T>* buffer, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* buffer, std::string_view value)
+    requires std::is_floating_point_v<T>
+{
     T result;
     std::stringstream stream;
     stream << value;
@@ -694,10 +698,10 @@ void add(Buffer<T>* buffer, std::string_view value) {
     }
 }
 
-template <typename T,
-          typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
-                                  int>::type = 0>
-void add(Buffer<T>* /*buffer*/, std::string_view value) {
+template <typename T>
+void add(Buffer<T>* /*buffer*/, std::string_view value)
+    requires(!std::is_integral_v<T> && !std::is_floating_point_v<T>)
+{
     throw InvalidConversion(
         fmt::format("conversion to target type not implemented (\"{}\")", value));
 }
@@ -777,13 +781,13 @@ size_t TemplateColumn<T>::getSize() const {
 }
 
 inline auto CategoricalColumn::begin() const -> ConstIterator {
-    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
-                                   buffer_->getRAMRepresentation()->getDataContainer().begin());
+    return {detail::categoricalTransform(lookUpTable_),
+            buffer_->getRAMRepresentation()->getDataContainer().begin()};
 }
 
 inline auto CategoricalColumn::end() const -> ConstIterator {
-    return util::TransformIterator(detail::categoricalTransform(lookUpTable_),
-                                   buffer_->getRAMRepresentation()->getDataContainer().end());
+    return {detail::categoricalTransform(lookUpTable_),
+            buffer_->getRAMRepresentation()->getDataContainer().end()};
 }
 
 inline auto CategoricalColumn::values() const -> util::iter_range<ConstIterator> {

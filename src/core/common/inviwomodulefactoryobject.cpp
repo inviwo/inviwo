@@ -33,19 +33,20 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <unordered_set>
+#include <utility>
 
 namespace inviwo {
 
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     std::string_view aName, Version aVersion, std::string_view aDescription,
-    const std::filesystem::path& aSrcPath, Version aInviwoCoreVersion,
+    std::filesystem::path aSrcPath, Version aInviwoCoreVersion,
     std::vector<std::string> someDependencies, std::vector<Version> someDependenciesVersion,
     std::vector<std::string> someAliases, std::vector<LicenseInfo> someLicenses,
     ProtectedModule aProtectedModule)
     : name(aName)
     , version(aVersion)
     , description(aDescription)
-    , srcPath(aSrcPath)
+    , srcPath(std::move(aSrcPath))
     , inviwoCoreVersion(aInviwoCoreVersion)
     , dependencies([&]() {
         if (someDependencies.size() != someDependenciesVersion.size()) {
@@ -74,7 +75,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
  * @param tmpVisited Modules being searched
  * @param sorted Module names, sorted after dependencies.
  */
-void recursiveTopologicalModuleFactoryObjectSort(
+static void recursiveTopologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, const std::string& lname,
     std::unordered_set<std::string>& visited, std::unordered_set<std::string>& tmpVisited,
@@ -85,8 +86,8 @@ void recursiveTopologicalModuleFactoryObjectSort(
         return;
     }
 
-    if (visited.find(lname) != visited.end()) return;  // Already visited;
-    if (tmpVisited.find(lname) != tmpVisited.end()) {
+    if (visited.contains(lname)) return;  // Already visited;
+    if (tmpVisited.contains(lname)) {
         throw Exception(SourceContext{}, "Dependency graph not a DAG");
     }
 
@@ -98,8 +99,6 @@ void recursiveTopologicalModuleFactoryObjectSort(
     }
     visited.insert(lname);
     sorted.insert(sorted.begin(), lname);
-
-    return;
 }
 
 void topologicalModuleFactoryObjectSort(
@@ -112,7 +111,7 @@ void topologicalModuleFactoryObjectSort(
     std::vector<std::string> sorted;
     for (auto it = start; it != end; ++it) {
         const auto lname = toLower((*it)->name);
-        if (visited.find(lname) == visited.end()) {
+        if (!visited.contains(lname)) {
             recursiveTopologicalModuleFactoryObjectSort(start, end, lname, visited, tmpVisited,
                                                         sorted);
         }

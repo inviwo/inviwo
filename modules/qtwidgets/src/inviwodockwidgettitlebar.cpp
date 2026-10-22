@@ -99,7 +99,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget* parent)
         closeBtn_->setFocusPolicy(Qt::FocusPolicy::NoFocus);
     }
 
-    QHBoxLayout* layout = new QHBoxLayout(this);
+    auto* layout = new QHBoxLayout(this);
     layout->addWidget(label_, 1);
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);

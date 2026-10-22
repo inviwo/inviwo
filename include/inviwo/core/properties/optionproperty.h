@@ -295,7 +295,7 @@ public:
     const T& getOptionValue(size_t index) const;
     const OptionPropertyOption<T>& getOptions(size_t index) const;
 
-    virtual bool setSelectedIndex(size_t index) override;
+    virtual bool setSelectedIndex(size_t option) override;
     virtual bool setSelectedIdentifier(std::string_view identifier) override;
     virtual bool setSelectedDisplayName(std::string_view name) override;
 
@@ -977,6 +977,7 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(const std::vector<std::stri
     IVW_ASSERT(ids.size() == values.size(), "Arguments has to have the same size");
 
     std::vector<OptionPropertyOption<T>> options;
+    options.reserve(ids.size());
     for (size_t i = 0; i < ids.size(); i++) {
         options.emplace_back(ids[i], displayNames[i], values[i]);
     }
@@ -988,6 +989,7 @@ OptionProperty<T>& OptionProperty<T>::replaceOptions(const std::vector<T>& value
     requires(fmt::is_formattable<T>::value || util::is_stream_insertable<T>::value)
 {
     std::vector<OptionPropertyOption<T>> options;
+    options.reserve(values.size());
     for (size_t i = 0; i < values.size(); i++) {
         options.emplace_back(values[i]);
     }
@@ -1028,7 +1030,7 @@ const T& OptionProperty<T>::operator*() const {
 
 template <typename T>
 const T* OptionProperty<T>::operator->() const {
-    return &(opt(selectedIndex_).value_);
+    return &opt(selectedIndex_).value_;
 }
 
 template <typename T>

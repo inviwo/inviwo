@@ -56,7 +56,7 @@ public:
     explicit LinkDragHelper(NetworkEditor& editor);
     virtual ~LinkDragHelper();
 
-    void start(ProcessorLinkGraphicsItem* outLink, QPointF endPos);
+    void start(ProcessorLinkGraphicsItem* item, QPointF endPos);
     void reset();
 
     virtual bool eventFilter(QObject* obj, QEvent* event) override;

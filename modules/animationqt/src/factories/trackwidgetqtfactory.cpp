@@ -31,9 +31,7 @@
 
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 void TrackWidgetQtFactory::registerTrackToWidgetMap(std::string_view trackId,
                                                     std::string_view widgetId) {
@@ -48,6 +46,4 @@ std::string TrackWidgetQtFactory::getWidgetId(std::string_view trackId) const {
         return "";
     }
 }
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -67,18 +67,18 @@ THE SOFTWARE.
 #include <sstream>
 #include <queue>
 #include <memory>
+#include <utility>
 
-namespace inviwo {
-namespace shuntingyard {
+namespace inviwo::shuntingyard {
 
 struct IVW_CORE_API TokenBase {
-    virtual ~TokenBase() {}
+    virtual ~TokenBase() = default;
 };
 
 template <class T>
 class Token : public TokenBase {
 public:
-    explicit Token(T t) : val(t) {}
+    explicit Token(T t) : val(std::move(t)) {}
     T val;
 };
 
@@ -91,11 +91,11 @@ public:
                                   std::map<std::string, std::string>& symbols);
 
 private:
-    inline static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
+    static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
 
-    inline static std::string getVariable(std::stringstream& expr) {
+    static std::string getVariable(std::stringstream& expr) {
         std::stringstream ss;
-        char c;
+        char c = 0;
         expr.get(c);
         ss << c;
         while (isvariablechar(static_cast<char>(expr.peek())) || isdigit(expr.peek())) {
@@ -121,5 +121,4 @@ private:
     }
 };
 
-}  // namespace shuntingyard
-}  // namespace inviwo
+}  // namespace inviwo::shuntingyard

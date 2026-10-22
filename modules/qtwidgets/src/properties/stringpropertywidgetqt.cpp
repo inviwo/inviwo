@@ -52,17 +52,18 @@ namespace inviwo {
 class PropertyEditorWidget;
 
 StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
-    : PropertyWidgetQt(property), property_(property), lineEdit_{new LineEditQt()} {
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , lineEdit_{new LineEditQt()}
+    , hWidgetLayout_(new QHBoxLayout()) {
 
     setFocusPolicy(lineEdit_->focusPolicy());
     setFocusProxy(lineEdit_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
     hLayout->addWidget(new EditableLabelQt(this, property_));
-
-    hWidgetLayout_ = new QHBoxLayout();
 
     {
         hWidgetLayout_->setContentsMargins(0, 0, 0, 0);

@@ -138,7 +138,7 @@ std::vector<TFPrimitiveData> linearBlend(std::span<const TFPrimitiveData> a,
     for (const double x : positions) {
         const vec4 ca = evaluate(a, x);
         const vec4 cb = evaluate(b, x);
-        result.push_back({x, glm::mix(ca, cb, static_cast<float>(t))});
+        result.push_back({.pos = x, .color = glm::mix(ca, cb, static_cast<float>(t))});
     }
     return result;
 }
@@ -154,8 +154,10 @@ Cdf computeCdf(std::span<const TFPrimitiveData> tf) {
     if (tf.empty()) return cdf;
 
     cdf.points.reserve(tf.size());
-    cdf.points.push_back(
-        CdfPoint{tf.front().pos, 0.0, alphaOf(tf.front()), vec3{tf.front().color}});
+    cdf.points.push_back(CdfPoint{.pos = tf.front().pos,
+                                  .mass = 0.0,
+                                  .alpha = alphaOf(tf.front()),
+                                  .color = vec3{tf.front().color}});
 
     double cumulative = 0.0;
     for (std::size_t i = 1; i < tf.size(); ++i) {
@@ -168,7 +170,8 @@ Cdf computeCdf(std::span<const TFPrimitiveData> tf) {
         const double a1 = alphaOf(tf[i]);
         cumulative += 0.5 * (a0 + a1) * dx;
 
-        cdf.points.push_back(CdfPoint{x1, cumulative, a1, vec3{tf[i].color}});
+        cdf.points.push_back(
+            CdfPoint{.pos = x1, .mass = cumulative, .alpha = a1, .color = vec3{tf[i].color}});
     }
 
     cdf.totalMass = cumulative;
@@ -320,7 +323,7 @@ std::vector<double> mergedQuantileLevels(const Cdf& a, const Cdf& b,
 QuantilePoint quantilePoint(std::span<const TFPrimitiveData> tf, const Cdf& cdf, double q) {
     const double x = invertCdf(cdf, q);
     const vec4 color = evaluate(tf, x);
-    return QuantilePoint{x, q, vec3{color}};
+    return QuantilePoint{.pos = x, .q = q, .color = vec3{color}};
 }
 
 // ---------------------------------------------------------------------------
@@ -363,7 +366,7 @@ void addStructuralVertices(std::span<const TFPrimitiveData> aspan,
             const auto qb = quantilePoint(bspan, cdfB, q);
             const double x = (1.0 - t) * qa.pos + t * qb.pos;
             const vec3 color = glm::mix(qa.color, qb.color, static_cast<float>(t));
-            interpolatedCdf.push_back(QuantilePoint{x, q, color});
+            interpolatedCdf.push_back(QuantilePoint{.pos = x, .q = q, .color = color});
         }
     };
 
@@ -380,7 +383,7 @@ void appendZeroAlphaBoundary(std::vector<TFPrimitiveData>& result,
                              std::span<const TFPrimitiveData> a, std::span<const TFPrimitiveData> b,
                              double x, double t) {
     const vec3 color = glm::mix(vec3{evaluate(a, x)}, vec3{evaluate(b, x)}, static_cast<float>(t));
-    result.push_back({x, vec4{color, 0.0f}});
+    result.push_back({.pos = x, .color = vec4{color, 0.0f}});
 }
 
 }  // namespace
@@ -435,7 +438,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
         const auto qb = quantilePoint(bspan, cdfB, q);
         const double x = (1.0 - t) * qa.pos + t * qb.pos;
         const vec3 color = glm::mix(qa.color, qb.color, static_cast<float>(t));
-        interpolatedCdf.push_back(QuantilePoint{x, q, color});
+        interpolatedCdf.push_back(QuantilePoint{.pos = x, .q = q, .color = color});
     }
 
     // --- Step 3: Insert structural vertices ---
@@ -603,7 +606,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
 
     for (std::size_t idx = 0; idx < n; ++idx) {
         const auto alphaVal = static_cast<float>(alpha[idx]);
-        result.push_back({vertices[idx].pos, vec4{vertices[idx].color, alphaVal}});
+        result.push_back({.pos = vertices[idx].pos, .color = vec4{vertices[idx].color, alphaVal}});
     }
 
     // Add zero-alpha point at domain end if the last vertex is interior.

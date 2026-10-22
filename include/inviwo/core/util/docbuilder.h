@@ -41,15 +41,13 @@
 #include <string_view>
 #include <string>
 
-namespace inviwo {
-
-namespace help {
+namespace inviwo::help {
 
 struct IVW_CORE_API HelpInport {
     std::string classIdentifier;
     std::string displayName;
     std::string typeName;
-    glm::uvec3 colorCode;
+    glm::uvec3 colorCode{};
     DataInfo data;
     Document help;
 
@@ -61,7 +59,7 @@ struct IVW_CORE_API HelpOutport {
     std::string classIdentifier;
     std::string displayName;
     std::string typeName;
-    glm::uvec3 colorCode;
+    glm::uvec3 colorCode{};
     DataInfo data;
     Document help;
 
@@ -107,6 +105,4 @@ IVW_CORE_API HelpProcessor buildProcessorHelp(Processor& processor, InviwoApplic
 IVW_CORE_API Document toDocument(const HelpProperty& property, std::string_view path);
 IVW_CORE_API Document toDocument(const HelpProcessor& processor);
 
-}  // namespace help
-
-}  // namespace inviwo
+}  // namespace inviwo::help

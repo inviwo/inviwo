@@ -38,11 +38,11 @@
 #include <inviwo/core/properties/property.h>
 #include <fmt/base.h>
 #include <fmt/std.h>
+#include <algorithm>
 #include <ranges>
 #include <filesystem>
 
-namespace inviwo {
-namespace util {
+namespace inviwo::util {
 
 void saveNetwork(const ProcessorNetwork* network, std::string_view filename) {
     try {
@@ -62,7 +62,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
     std::vector<CanvasProcessor*> allConsideredCanvases;
     if (onlyActiveCanvases) {
         allConsideredCanvases.reserve(allCanvases.size());
-        for (auto cp : allCanvases) {
+        for (auto* cp : allCanvases) {
             if (cp->isSink()) allConsideredCanvases.push_back(cp);
         }
     } else {
@@ -71,7 +71,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
 
     // Save them
     int i = 0;
-    for (auto cp : allConsideredCanvases) {
+    for (auto* cp : allConsideredCanvases) {
         if (!cp->isValid() || !cp->isReady()) {
             const std::ostringstream msg;
             log::error(
@@ -85,7 +85,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
             StrBuffer filepath;
             if (name.empty()) {
                 filepath.append("{}", cp->getIdentifier());
-            } else if (name.find("UPN") != std::string::npos) {
+            } else if (name.contains("UPN")) {
                 auto [before, after] = util::splitByFirst(name, "UPN");
                 filepath.append("{}{}{}", before, cp->getIdentifier(), after);
             } else if (allConsideredCanvases.size() > 1) {
@@ -128,7 +128,7 @@ void validateIdentifier(std::string_view identifier, std::string_view type, Sour
     auto view = identifier | std::views::drop(1) | std::views::drop_while(validChar);
     if (view.begin() != view.end()) {
         throw Exception(
-            fmt::format("{} identifiers are not allowed to contain \"{}\". Found in \"{}\"", type,
+            fmt::format(R"({} identifiers are not allowed to contain "{}". Found in "{}")", type,
                         view.front(), identifier),
             context);
     }
@@ -157,9 +157,9 @@ std::string findUniqueIdentifier(std::string_view identifier,
 
 std::string cleanIdentifier(std::string_view identifier, std::string_view extra) {
     std::string str{identifier};
-    std::replace_if(
-        str.begin(), str.end(),
-        [&](char c) { return !(util::contains(extra, c) || std::isalnum(c) || c == '_'); }, ' ');
+    std::ranges::replace_if(
+        str, [&](char c) { return !util::contains(extra, c) && !std::isalnum(c) && c != '_'; },
+        ' ');
     std::erase_if(str, [s = false](char c) mutable {
         if (s && c == ' ') return true;
         s = c == ' ';
@@ -170,7 +170,7 @@ std::string cleanIdentifier(std::string_view identifier, std::string_view extra)
 
 std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath) {
     const auto fileNameWithoutExtension = filePath.stem().string();
-#if defined(WIN32)
+#ifdef WIN32
     auto decoration1 = std::string_view("inviwo-module-");
     auto decoration2 = std::string_view("inviwo-");
 #else
@@ -201,7 +201,7 @@ std::string stripModuleFileNameDecoration(const std::filesystem::path& filePath)
 std::string stripIdentifier(std::string_view identifier) {
     // Valid identifier: [a-zA-Z_][a-zA-Z0-9_]*
     const auto firstCharValid = [](char c) -> bool { return (c == '_' || std::isalpha(c)); };
-    const auto invalidChar = [](char c) -> bool { return !(c == '_' || std::isalnum(c)); };
+    const auto invalidChar = [](char c) -> bool { return c != '_' && !std::isalnum(c); };
 
     std::string stripped{identifier};
     while (!stripped.empty()) {
@@ -233,5 +233,4 @@ void Hideer::operator()(ProcessorWidget& p) { p.setVisible(false); }
 
 }  // namespace detail
 
-}  // namespace util
-}  // namespace inviwo
+}  // namespace inviwo::util

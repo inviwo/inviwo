@@ -96,7 +96,7 @@ marching::Config::Config()
     }()}
     , nodeIdsToEdgeId{util::make_array<8, NodeId>([&](NodeId i) -> std::array<EdgeId, 8> {
         return util::make_array<8, NodeId>([&](NodeId j) -> EdgeId {
-            auto it = std::find_if(edges.begin(), edges.end(), [&](auto e) {
+            const auto it = std::ranges::find_if(edges, [&](auto e) {
                 return (e[0] == i && e[1] == j) || (e[0] == j && e[1] == i);
             });
             if (it != edges.end()) {
@@ -106,10 +106,10 @@ marching::Config::Config()
         });
     })}
     , edgeIdToFaceIds{util::make_array<12, EdgeId>([&](EdgeId edge) -> std::array<FaceId, 2> {
-        auto it1 = std::find_if(faces.begin(), faces.end(),
-                                [&](auto& face) { return util::contains(face, edge); });
-        auto it2 = std::find_if(it1 + 1, faces.end(),
-                                [&](auto& face) { return util::contains(face, edge); });
+        const auto it1 =
+            std::ranges::find_if(faces, [&](auto& face) { return util::contains(face, edge); });
+        const auto it2 = std::find_if(it1 + 1, faces.end(),
+                                       [&](auto& face) { return util::contains(face, edge); });
         return {static_cast<FaceId>(std::distance(faces.begin(), it1)),
                 static_cast<FaceId>(std::distance(faces.begin(), it2))};
     })}
@@ -157,7 +157,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
     // Create groups of neighboring edges and nodes
     std::unordered_map<NodeId, std::vector<EdgeId>> edgeGroups;
     std::unordered_map<NodeId, std::vector<NodeId>> nodeGroups;
-    for (const auto item : edgeMap) {
+    for (const auto& item : edgeMap) {
         const NodeId i = item.first;
         const NodeId groupId = groups.find(i);
         nodeGroups[groupId].push_back(i);
@@ -176,7 +176,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         while (it + 1 != edgeGroup.end()) {
             // find an edge that share a face with *it
             const auto nit = std::find_if(it + 1, edgeGroup.end(), [&](auto edge) {
-                auto& faces1 = edgeIdToFaceIds[*it];
+                const auto& faces1 = edgeIdToFaceIds[*it];
                 auto& faces2 = edgeIdToFaceIds[edge];
                 return faces1[0] == faces2[0] || faces1[0] == faces2[1] || faces1[1] == faces2[0] ||
                        faces1[1] == faces2[1];
@@ -190,7 +190,7 @@ std::vector<marching::Config::Triangle> marching::Config::calcTriangles(std::bit
         }
 
         // apply the triangulations
-        for (auto& triangle : triangulations.at(edgeGroup.size())) {
+        for (const auto& triangle : triangulations.at(edgeGroup.size())) {
             const auto e0 = edgeGroup[triangle[0]];
             const auto e1 = edgeGroup[triangle[1]];
             const auto e2 = edgeGroup[triangle[2]];
@@ -240,7 +240,7 @@ std::array<size_t, 8> marching::Config::calcIncrenents(std::bitset<8> corners, b
         return calcIncrenents(~corners, true);
     }
     std::array<size_t, 8> res;
-    std::fill(res.begin(), res.end(), 0);
+    std::ranges::fill(res, 0);
 
     // Check which edges that are involved add group neighboring nodes
     const std::array<int, 12> edgeToCache = {{0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5}};

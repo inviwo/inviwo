@@ -86,7 +86,7 @@ std::unique_ptr<std::vector<unsigned char>> StlWriter::writeDataToBuffer(
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 
-void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
+void StlWriter::writeData(const Mesh* data, std::ostream& f) {
     const auto pit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
@@ -96,7 +96,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     }
 
     const auto posBuffer = pit->second;
-    const auto posRam = posBuffer->getRepresentation<BufferRAM>();
+    const auto* const posRam = posBuffer->getRepresentation<BufferRAM>();
     if (!posRam) {
         throw DataWriterException("Error: could not find a position buffer ram");
     }
@@ -108,8 +108,8 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
     const auto proj = [&](const auto& d1) {
-        using GT = typename std::decay<decltype(d1)>::type;
-        using T = typename GT::value_type;
+        using GT = std::decay_t<decltype(d1)>;
+        using T = GT::value_type;
         const glm::tvec4<T> tmp = model * glm::tvec4<T>(d1, 1.0);
         return glm::tvec3<T>(tmp) / tmp.w;
     };
@@ -129,24 +129,23 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
     auto normalprinter = [&]() {
         if (nit != data->getBuffers().end()) {
-            if (const auto normRam = nit->second->getRepresentation<BufferRAM>()) {
-                if (normRam->getDataFormat()->getComponents() == 3) {
-                    return normRam
-                        ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,
-                                   dispatching::filter::Vec3s>(
-                            [&](auto nb)
-                                -> std::function<void(std::ostream & fs, size_t, size_t, size_t)> {
-                                return [&modelNormal, nb](std::ostream& fs, size_t i1, size_t i2,
-                                                          size_t i3) {
-                                    auto& norm = *nb;
-                                    const auto n1 = modelNormal * norm[i1];
-                                    const auto n2 = modelNormal * norm[i2];
-                                    const auto n3 = modelNormal * norm[i3];
-                                    const auto n = glm::normalize(n1 + n2 + n3);
-                                    fmt::print(fs, "{} {} {}\n", n.x, n.y, n.z);
-                                };
-                            });
-                }
+            if (const auto* const normRam = nit->second->getRepresentation<BufferRAM>();
+                normRam && (normRam->getDataFormat()->getComponents() == 3)) {
+                return normRam
+                    ->dispatch<std::function<void(std::ostream & fs, size_t, size_t, size_t)>,
+                               dispatching::filter::Vec3s>(
+                        [&](auto nb)
+                            -> std::function<void(std::ostream& fs, size_t, size_t, size_t)> {
+                            return [&modelNormal, nb](std::ostream& fs, size_t i1, size_t i2,
+                                                      size_t i3) {
+                                auto& norm = *nb;
+                                const auto n1 = modelNormal * norm[i1];
+                                const auto n2 = modelNormal * norm[i2];
+                                const auto n3 = modelNormal * norm[i3];
+                                const auto n = glm::normalize(n1 + n2 + n3);
+                                fmt::print(fs, "{} {} {}\n", n.x, n.y, n.z);
+                            };
+                        });
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(

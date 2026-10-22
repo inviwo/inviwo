@@ -72,14 +72,14 @@ bool FileObserver::startFileObservation(const std::filesystem::path& fileName) {
 
     std::unique_lock lock{mutex_};
     const auto it = observedFiles_.find(fileName);
-    if (it == observedFiles_.end()) {
-        if (std::filesystem::is_regular_file(fileName) || std::filesystem::is_directory(fileName)) {
-            observedFiles_.insert(fileName);
-            lock.unlock();
-            fileSystemObserver_->startFileObservation(fileName, this);
-            return true;
-        }
+    if ((it == observedFiles_.end()) &&
+        (std::filesystem::is_regular_file(fileName) || std::filesystem::is_directory(fileName))) {
+        observedFiles_.insert(fileName);
+        lock.unlock();
+        fileSystemObserver_->startFileObservation(fileName, this);
+        return true;
     }
+
     return false;
 }
 
@@ -112,7 +112,7 @@ void FileObserver::stopAllObservation() {
 
 bool FileObserver::isObserved(const std::filesystem::path& fileName) const {
     const std::scoped_lock lock{mutex_};
-    return observedFiles_.find(fileName) != observedFiles_.end();
+    return observedFiles_.contains(fileName);
 }
 
 }  // namespace inviwo

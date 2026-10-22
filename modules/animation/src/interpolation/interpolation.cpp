@@ -31,13 +31,11 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 Interpolation::Interpolation(InviwoApplication* app) : app_(app) {}
 
-Interpolation::Interpolation(const Interpolation& rhs) : PropertyOwner(rhs), app_(rhs.app_) {}
+Interpolation::Interpolation(const Interpolation& rhs) = default;
 
 InviwoApplication* Interpolation::getInviwoApplication() { return app_; }
 
@@ -50,6 +48,4 @@ void Interpolation::deserialize(Deserializer& d) { PropertyOwner::deserialize(d)
 bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
 bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

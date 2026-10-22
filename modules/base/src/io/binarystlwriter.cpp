@@ -85,7 +85,7 @@ std::unique_ptr<std::vector<unsigned char>> BinarySTLWriter::writeDataToBuffer(
     return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 
-void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
+void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) {
     const auto pit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::PositionAttrib;
     });
@@ -107,8 +107,8 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
 
     const auto proj = [&](const auto& d1) {
-        using GT = typename std::decay<decltype(d1)>::type;
-        using T = typename GT::value_type;
+        using GT = std::decay_t<decltype(d1)>;
+        using T = GT::value_type;
         const glm::tvec4<T> tmp = model * glm::tvec4<T>(d1, 1.0);
         return glm::tvec4<T>(tmp) / tmp.w;
     };
@@ -129,24 +129,23 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
     auto normalprinter = [&]() {
         if (nit != data->getBuffers().end()) {
-            if (const auto normRam = nit->second->getRepresentation<BufferRAM>()) {
-                if (normRam->getDataFormat()->getComponents() == 3) {
-                    return normRam
-                        ->dispatch<std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>,
-                                   dispatching::filter::Vec3s>(
-                            [&](auto nb) -> std::function<void(std::vector<vec3> & normals, size_t,
-                                                               size_t, size_t)> {
-                                return [&modelNormal, nb](std::vector<vec3>& normals, size_t i1,
-                                                          size_t i2, size_t i3) {
-                                    auto& norm = *nb;
-                                    const auto n1 = modelNormal * norm[i1];
-                                    const auto n2 = modelNormal * norm[i2];
-                                    const auto n3 = modelNormal * norm[i3];
-                                    const auto n = glm::normalize(n1 + n2 + n3);
-                                    normals.push_back(static_cast<vec3>(n));
-                                };
-                            });
-                }
+            if (const auto* const normRam = nit->second->getRepresentation<BufferRAM>();
+                normRam && (normRam->getDataFormat()->getComponents() == 3)) {
+                return normRam
+                    ->dispatch<std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>,
+                               dispatching::filter::Vec3s>(
+                        [&](auto nb) -> std::function<void(std::vector<vec3>& normals, size_t,
+                                                           size_t, size_t)> {
+                            return [&modelNormal, nb](std::vector<vec3>& normals, size_t i1,
+                                                      size_t i2, size_t i3) {
+                                auto& norm = *nb;
+                                const auto n1 = modelNormal * norm[i1];
+                                const auto n2 = modelNormal * norm[i2];
+                                const auto n3 = modelNormal * norm[i3];
+                                const auto n = glm::normalize(n1 + n2 + n3);
+                                normals.push_back(static_cast<vec3>(n));
+                            };
+                        });
             }
         }
         return std::function<void(std::vector<vec3>&, size_t, size_t, size_t)>(
@@ -178,7 +177,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     std::uint16_t attrib{0};
     std::array<char, 80> header = {0};
     f.write(header.data(), header.size());
-    std::uint32_t size = static_cast<std::uint32_t>(floatdata.size() / 4);
+    auto size = static_cast<std::uint32_t>(floatdata.size() / 4);
     f.write(reinterpret_cast<char*>(&size), sizeof(size));
     for (size_t i = 0; i < floatdata.size() - 4u; i += 4) {
         f.write(reinterpret_cast<char*>(&floatdata[i + 0]), sizeof(vec3));

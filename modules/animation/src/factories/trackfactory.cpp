@@ -38,8 +38,7 @@
 #include <ostream>
 #include <utility>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 TrackFactory::TrackFactory(ProcessorNetwork* network)
     : network_{network}, keyframeFactory{*this}, keyframeSequenceFactory{*this} {}
@@ -54,7 +53,7 @@ std::unique_ptr<Track> TrackFactory::create(Property* property) const {
     const auto it = propertyToTrackMap_.find(property->getClassIdentifier());
     if (it != propertyToTrackMap_.end()) {
         if (auto track = create(it->second)) {
-            if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
+            if (auto* basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
                 try {
                     basePropertyTrack->setProperty(property);
                 } catch (const Exception& e) {
@@ -105,5 +104,4 @@ std::unique_ptr<Keyframe> KeyframeFactory::create(std::string_view key) const {
 }
 bool KeyframeFactory::hasKey(std::string_view key) const { return trackFactory_->hasKey(key); }
 
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation

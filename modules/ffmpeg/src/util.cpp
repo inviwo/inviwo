@@ -48,9 +48,9 @@ std::vector<OptionPropertyOption<ffmpeg::CodecID>> codecsOptionsFor(
 
     if (outputFormat) {
         for (const auto& codecId : outputFormat.supportedCodecs(AVMEDIA_TYPE_VIDEO)) {
-            opts.push_back(OptionPropertyOption<ffmpeg::CodecID>{
-                std::string(codecId.name()),
-                fmt::format("{} ({})", codecId.name(), codecId.longName().value_or("-")), codecId});
+            opts.emplace_back(
+                codecId.name(),
+                fmt::format("{} ({})", codecId.name(), codecId.longName().value_or("-")), codecId);
         }
     }
 
@@ -63,10 +63,9 @@ OptionPropertyState<std::string> formatOptionsState() {
 
     ffmpeg::OutputFormat::forEach([&](const ffmpeg::OutputFormat& format) {
         if (format.defaultVideoCodec()) {
-            opts.push_back(OptionPropertyOption<std::string>{
-                std::string(format.name()),
-                fmt::format("{} ({})", format.name(), format.longName()),
-                std::string(format.name())});
+            opts.emplace_back(format.name(),
+                              fmt::format("{} ({})", format.name(), format.longName()),
+                              std::string(format.name()));
         }
     });
 

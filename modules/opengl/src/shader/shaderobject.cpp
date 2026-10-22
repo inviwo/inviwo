@@ -59,6 +59,7 @@
 
 #include <fmt/base.h>
 #include <boost/sml.hpp>
+#include <utility>
 
 namespace sml = boost::sml;
 
@@ -67,7 +68,7 @@ class ShaderResource;
 
 namespace psm {
 
-std::string indent(std::string_view block, size_t indent) {
+static std::string indent(std::string_view block, size_t indent) {
     std::stringstream ss;
     bool first = true;
     const auto indentStr = std::string(indent, ' ');
@@ -95,12 +96,12 @@ struct Error {};
 
 // Events
 struct Char {
-    using It = typename std::string_view::const_iterator;
+    using It = std::string_view::const_iterator;
 
     It curr;
     It end;
 
-    bool peek(std::string_view match) {
+    bool peek(std::string_view match) const {
         return std::mismatch(curr, end, match.begin(), match.end()).second == match.end();
     }
 };
@@ -111,8 +112,7 @@ struct State {
     std::ostream& output;
     LineNumberResolver& lnr;
     std::string_view key;
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource;
     size_t lines = 0;
     size_t column = 0;
@@ -170,7 +170,7 @@ struct Psm {
         };
 
         const auto replace = [](Char c, State& s) {
-            using Placeholder = typename ShaderSegment::Placeholder;
+            using Placeholder = ShaderSegment::Placeholder;
             const auto lineEnd = std::find(c.curr, c.end, '\n');
 
             const std::string_view line{&*c.curr, static_cast<size_t>(lineEnd - c.curr)};
@@ -260,17 +260,21 @@ struct Psm {
 
 void utilgl::parseShaderSource(
     std::string_view key, std::string_view source, std::ostream& output, LineNumberResolver& lnr,
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements,
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements,
     std::function<std::optional<std::pair<std::string, std::string>>(std::string_view)> getSource) {
 
     const size_t lines = 0;
-    psm::State state{output, lnr, key, replacements, getSource, lines};
+    psm::State state{.output = output,
+                     .lnr = lnr,
+                     .key = key,
+                     .replacements = replacements,
+                     .getSource = getSource,
+                     .lines = lines};
     psm::Errors errors;
 
     sml::sm<psm::Psm> sm{state, errors};
     for (auto it = source.begin(); it != source.end(); ++it) {
-        sm.process_event(psm::Char{it, source.end()});
+        sm.process_event(psm::Char{.curr = it, .end = source.end()});
     }
     sm.process_event(psm::Eof{});
     if (errors.exception) {
@@ -291,7 +295,7 @@ std::string ShaderObject::OutDeclaration::toString() const {
 }
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
-    : shaderType_{shaderType}, id_{0}, resource_{resource} {
+    : shaderType_{shaderType}, id_{0}, resource_{std::move(resource)} {
 
     IVW_ASSERT(resource_, "Should never be null");
 
@@ -387,7 +391,7 @@ const std::string& ShaderObject::getFileName() const { return resource_->key(); 
 
 void ShaderObject::setResource(std::shared_ptr<const ShaderResource> resource) {
     IVW_ASSERT(resource, "Should never be null");
-    resource_ = resource;
+    resource_ = std::move(resource);
     callbacks_.invoke(this);
 }
 
@@ -440,8 +444,7 @@ std::string ShaderObject::getPreprocessed() const {
     std::ostringstream output;
     LineNumberResolver lnr;
 
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     for (const auto& segment : shaderSegments_) {
         replacements[segment.placeholder].push_back(segment);
     }
@@ -526,7 +529,7 @@ void ShaderObject::addDefines(std::ostringstream& source) {
 
     // Need to be able to detect platform in the fragment shader since `gl_FrontFacing`
     // is not working on MacOS and requires a custom solution
-#if defined(__APPLE__)
+#ifdef __APPLE__
     source << "#define __APPLE__\n";
     lnr_.addLine("Header", 0);
 #endif
@@ -563,10 +566,10 @@ void ShaderObject::addStandardFragmentOutDeclarations() {
 }
 
 void ShaderObject::addStandardVertexInDeclarations() {
-    addInDeclaration(InDeclaration{"in_Vertex", 0});
-    addInDeclaration(InDeclaration{"in_Normal", 1, "vec3"});
-    addInDeclaration(InDeclaration{"in_Color", 2});
-    addInDeclaration(InDeclaration{"in_TexCoord", 3, "vec3"});
+    addInDeclaration(InDeclaration{.name = "in_Vertex", .location = 0});
+    addInDeclaration(InDeclaration{.name = "in_Normal", .location = 1, .type = "vec3"});
+    addInDeclaration(InDeclaration{.name = "in_Color", .location = 2});
+    addInDeclaration(InDeclaration{.name = "in_TexCoord", .location = 3, .type = "vec3"});
 }
 
 void ShaderObject::parseSource(std::ostringstream& output) {
@@ -592,12 +595,10 @@ void ShaderObject::parseSource(std::ostringstream& output) {
         }
     };
 
-    std::sort(shaderSegments_.begin(), shaderSegments_.end(),
-              [](const ShaderSegment& a, const ShaderSegment& b) {
-                  return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
-              });
-    std::unordered_map<typename ShaderSegment::Placeholder, std::vector<ShaderSegment>>
-        replacements;
+    std::ranges::sort(shaderSegments_, [](const ShaderSegment& a, const ShaderSegment& b) {
+        return std::tie(a.placeholder, a.priority) < std::tie(b.placeholder, b.priority);
+    });
+    std::unordered_map<ShaderSegment::Placeholder, std::vector<ShaderSegment>> replacements;
     for (const auto& segment : shaderSegments_) {
         replacements[segment.placeholder].push_back(segment);
     }
@@ -615,7 +616,7 @@ std::string ShaderObject::resolveLog(std::string_view compileLog) const {
             if (origLineNumber > 0) {
                 const auto& [source, line] = lnr_.resolveLine(origLineNumber - 1);
                 fmt::format_to(std::back_inserter(result), "\n{} ({}): {}", source, line,
-                               curLine.substr(curLine.find(":") + 1));
+                               curLine.substr(curLine.find(':') + 1));
             } else {
                 fmt::format_to(std::back_inserter(result), "\n{}", curLine);
             }
@@ -682,7 +683,7 @@ void ShaderObject::removeShaderDefine(std::string_view name) {
 }
 
 bool ShaderObject::hasShaderDefine(std::string_view name) const {
-    return shaderDefines_.find(name) != shaderDefines_.end();
+    return shaderDefines_.contains(name);
 }
 
 void ShaderObject::clearShaderDefines() { shaderDefines_.clear(); }
@@ -716,7 +717,7 @@ void ShaderObject::removeShaderExtension(std::string_view extName) {
 }
 
 bool ShaderObject::hasShaderExtension(std::string_view extName) const {
-    return shaderExtensions_.find(extName) != shaderExtensions_.end();
+    return shaderExtensions_.contains(extName);
 }
 
 void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }
@@ -727,15 +728,17 @@ void ShaderObject::addSegment(ShaderSegment segment) {
 
 void ShaderObject::removeSegments(std::string_view name) {
     shaderSegments_.erase(
-        std::remove_if(shaderSegments_.begin(), shaderSegments_.end(),
-                       [&name](const ShaderSegment& segment) { return segment.name == name; }),
+        std::ranges::remove_if(
+            shaderSegments_, [&name](const ShaderSegment& segment) { return segment.name == name; })
+            .begin(),
         shaderSegments_.end());
 }
 
 void ShaderObject::clearSegments() { shaderSegments_.clear(); }
 
 void ShaderObject::addOutDeclaration(std::string_view name, int location, std::string_view type) {
-    addOutDeclaration(OutDeclaration{std::string{name}, location, std::string{type}});
+    addOutDeclaration(
+        OutDeclaration{.name = std::string{name}, .location = location, .type = std::string{type}});
 }
 
 void ShaderObject::addOutDeclaration(const OutDeclaration& decl) {
@@ -756,7 +759,8 @@ void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
 void ShaderObject::ShaderObject::addInDeclaration(std::string_view name, int location,
                                                   std::string_view type) {
-    addInDeclaration(InDeclaration{std::string{name}, location, std::string{type}});
+    addInDeclaration(
+        InDeclaration{.name = std::string{name}, .location = location, .type = std::string{type}});
 }
 void ShaderObject::addInDeclaration(const InDeclaration& decl) {
     const auto it = util::find_if(

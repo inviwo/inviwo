@@ -98,6 +98,7 @@
 #include <QWidget>
 #include <Qt>
 #include <QDockWidget>
+#include <utility>
 #include <fmt/base.h>
 
 namespace inviwo::utilqt {
@@ -109,7 +110,7 @@ std::ios_base& localizeStream(std::ios_base& stream) {
 
 QMainWindow* getApplicationMainWindow() {
     auto widgets = QApplication::allWidgets();
-    const auto it = std::find_if(widgets.begin(), widgets.end(), [](const auto& item) {
+    const auto it = std::ranges::find_if(widgets, [](const auto& item) {
         return item->objectName().compare("InviwoMainWindow") == 0;
     });
     if (it != widgets.end()) {
@@ -390,7 +391,7 @@ QMenu* getMenu(std::string_view menuName, bool createIfNotFound) {
         std::string menuNoAnd{menuName};
         replaceInString(menuNoAnd, "&", "");
 
-        const auto menuItem = std::find_if(menus.begin(), menus.end(), [&](auto& m) {
+        const auto menuItem = std::ranges::find_if(menus, [&](auto& m) {
             std::string title = utilqt::fromQString(m->title());
             replaceInString(title, "&", "");
             return menuNoAnd == title;
@@ -423,7 +424,7 @@ std::shared_ptr<Layer> toLayer(const QImage& image) {
     const auto ramMemSize =
         glm::compMul(ram->getDimensions()) * ram->getDataFormat()->getSizeInBytes();
 
-    if (static_cast<size_t>(qImage.sizeInBytes()) != ramMemSize) {
+    if (std::cmp_not_equal(qImage.sizeInBytes(), ramMemSize)) {
         throw Exception(
             SourceContext{},
             "Expected the QImage byte size {}, and Inviwo Layer byte size {}, to be equal",
@@ -511,20 +512,19 @@ QIcon fromBase64ToIcon(std::string_view base64, std::string_view format) {
     pm.loadFromData(
         QByteArray::fromBase64(QByteArray{base64.data(), static_cast<int>(base64.size())}),
         format.empty() ? nullptr : SafeCStr{format}.c_str());
-    return QIcon(pm);
+    return {pm};
 }
 
 std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {
     std::vector<std::pair<std::string, QImage>> images;
 
     network->forEachProcessor([&](Processor* p) {
-        if (const auto* exporter = dynamic_cast<const ImageExporter*>(p)) {
-            if (p->isSink() && p->isReady()) {
-                if (const auto img = exporter->getImage()) {
-                    if (const auto* layer = img->getColorLayer()) {
-                        auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
-                        images.emplace_back(p->getDisplayName(), qimg);
-                    }
+        if (const auto* exporter = dynamic_cast<const ImageExporter*>(p);
+            exporter && (p->isSink() && p->isReady())) {
+            if (const auto img = exporter->getImage()) {
+                if (const auto* layer = img->getColorLayer()) {
+                    auto qimg = utilqt::layerToQImage(*layer).scaledToHeight(256);
+                    images.emplace_back(p->getDisplayName(), qimg);
                 }
             }
         }
@@ -618,7 +618,7 @@ std::vector<std::string> getMonoSpaceFonts() {
 size_t getDefaultMonoSpaceFontIndex() {
     const auto fonts = getMonoSpaceFonts();
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    const auto it = std::find(fonts.begin(), fonts.end(), utilqt::fromQString(fixedFont.family()));
+    const auto it = std::ranges::find(fonts, utilqt::fromQString(fixedFont.family()));
     if (it != fonts.end()) {
         return it - fonts.begin();
     } else {
@@ -639,7 +639,7 @@ bool WidgetCloseEventFilter::eventFilter(QObject* obj, QEvent* ev) {
     }
 }
 
-void setFullScreen(QWidget* widget, bool fullScreen) {
+static void setFullScreen(QWidget* widget, bool fullScreen) {
     if (widget->windowState().testFlag(Qt::WindowFullScreen) == fullScreen) return;
     const auto visible = widget->isVisible();
     if (fullScreen) {

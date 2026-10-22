@@ -30,9 +30,7 @@
 
 #include <modules/animation/datastructures/animationtime.h>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 enum class AnimationState { Paused = 0, Playing, Rendering };
 
@@ -45,6 +43,4 @@ struct AnimationTimeState {
     AnimationState state;
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

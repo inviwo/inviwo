@@ -54,7 +54,7 @@ size2_t ImageRAM::getDimensions() const { return colorLayersRAM_.front()->getDim
 
 bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     const ImageRAM* source = this;
-    ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
+    auto* target = dynamic_cast<ImageRAM*>(targetRep);
 
     if (!target) return false;
 
@@ -63,19 +63,22 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
         std::min(source->getNumberOfColorLayers(), target->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
-        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))
+        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i))) {
             return false;
+        }
     }
 
     // Copy and resize depth layer
-    if (source->getDepthLayerRAM() && target->getDepthLayerRAM())
-        if (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))
-            return false;
+    if ((source->getDepthLayerRAM() && target->getDepthLayerRAM()) &&
+        (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))) {
+        return false;
+    }
 
     // Copy and resize picking layer
-    if (source->getPickingLayerRAM() && target->getPickingLayerRAM())
-        if (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))
-            return false;
+    if ((source->getPickingLayerRAM() && target->getPickingLayerRAM()) &&
+        (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))) {
+        return false;
+    }
 
     return true;
 }
@@ -126,7 +129,7 @@ LayerRAM* ImageRAM::getPickingLayerRAM() { return pickingLayerRAM_; }
 
 size_t ImageRAM::getNumberOfColorLayers() const { return colorLayersRAM_.size(); }
 
-std::type_index ImageRAM::getTypeIndex() const { return std::type_index(typeid(ImageRAM)); }
+std::type_index ImageRAM::getTypeIndex() const { return {typeid(ImageRAM)}; }
 
 const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const { return colorLayersRAM_.at(idx); }
 

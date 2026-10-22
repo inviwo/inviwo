@@ -72,13 +72,13 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
         // Only support object types, i.e. [ {key: value} ]
         return;
     }
-    if (j.count("value") > 0) {
+    if (j.contains("value")) {
         o.value_ = j.at("value").get<T>();
     }
-    if (j.count("id") > 0) {
+    if (j.contains("id")) {
         o.id_ = j.at("id").get<std::string>();
     }
-    if (j.count("name") > 0) {
+    if (j.contains("name")) {
         o.name_ = j.at("name").get<std::string>();
     }
 }
@@ -121,19 +121,19 @@ void to_json(json& j, const OptionProperty<T>& p) {
  */
 template <typename T>
 void from_json(const json& j, OptionProperty<T>& p) {
-    if (j.count("options") > 0) {
+    if (j.contains("options")) {
         const auto options = j.at("options").get<std::vector<OptionPropertyOption<T>>>();
         p.replaceOptions(options);
     }
-    if (j.count("value") > 0) {
+    if (j.contains("value")) {
         T value = j.at("value").get<T>();
         p.set(value);
     }
-    if (j.count("selectedIndex") > 0) {
+    if (j.contains("selectedIndex")) {
         const auto selectedIndex = j.at("selectedIndex").get<size_t>();
         p.setSelectedIndex(selectedIndex);
     }
-    if (j.count("selectedDisplayName") > 0) {
+    if (j.contains("selectedDisplayName")) {
         const auto selectedName = j.at("selectedDisplayName").get<std::string>();
         p.setSelectedDisplayName(selectedName);
     }

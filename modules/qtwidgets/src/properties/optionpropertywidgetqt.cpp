@@ -64,7 +64,7 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     setFocusPolicy(comboBox_->focusPolicy());
     setFocusProxy(comboBox_);
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
+    auto* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
     setLayout(hLayout);
@@ -83,11 +83,11 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     hLayout->addWidget(label_);
 
     {
-        QWidget* widget = new QWidget(this);
+        auto* widget = new QWidget(this);
         QSizePolicy sliderPol = widget->sizePolicy();
         sliderPol.setHorizontalStretch(3);
         widget->setSizePolicy(sliderPol);
-        QGridLayout* vLayout = new QGridLayout();
+        auto* vLayout = new QGridLayout();
         widget->setLayout(vLayout);
         vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->setSpacing(0);

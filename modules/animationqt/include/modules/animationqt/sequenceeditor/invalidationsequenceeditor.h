@@ -36,9 +36,7 @@
 
 class QLineEdit;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 class AnimationManager;
 class Keyframe;
@@ -58,6 +56,4 @@ protected:
     QLineEdit* path_{nullptr};
 };
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

@@ -157,7 +157,7 @@ public:
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
         });
-        actions_.push_back({action, text, sig});
+        actions_.push_back({.action = action, .text = text, .connection = sig});
     }
 
     void add(QMenu* menu) {
@@ -166,7 +166,7 @@ public:
                 QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier);
             update(ctrl);
         });
-        menus_.push_back({menu, sig});
+        menus_.push_back({.menu = menu, .connection = sig});
     }
 
     void clear() {
@@ -199,18 +199,19 @@ private:
 
 namespace detail {
 
-auto getWidgetProcessors(InviwoApplication* app) {
+static auto getWidgetProcessors(InviwoApplication* app) {
     auto widgetProcessors = util::copy_if(app->getProcessorNetwork()->getProcessors(),
                                           [](const auto p) { return p->hasProcessorWidget(); });
-    std::sort(widgetProcessors.begin(), widgetProcessors.end(),
-              [](auto a, auto b) { return iCaseLess(a->getDisplayName(), b->getDisplayName()); });
+    std::ranges::sort(widgetProcessors, [](auto a, auto b) {
+        return iCaseLess(a->getDisplayName(), b->getDisplayName());
+    });
     return widgetProcessors;
 }
 
-auto getFloatingDockWidgets(const InviwoMainWindow* win) {
+static auto getFloatingDockWidgets(const InviwoMainWindow* win) {
     auto dockWidgets = util::copy_if(win->findChildren<InviwoDockWidget*>(),
                                      [](const auto p) { return p->isFloating(); });
-    std::sort(dockWidgets.begin(), dockWidgets.end(), [](auto a, auto b) {
+    std::ranges::sort(dockWidgets, [](auto a, auto b) {
         return QString::compare(a->windowTitle(), b->windowTitle(), Qt::CaseInsensitive) < 0;
     });
 
@@ -317,11 +318,11 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     fileAssociations_->registerFileType(
         "Inviwo.volume", "Inviwo Volume", ".dat", 0,
         {{"Open", "-d \"%1\"", "data", [this](const std::filesystem::path& file) {
-              auto net = app_->getProcessorNetwork();
+              auto* net = app_->getProcessorNetwork();
               util::insertNetworkForData(file, net);
           }}});
 
-    auto screen = QGuiApplication::primaryScreen();
+    auto* screen = QGuiApplication::primaryScreen();
     const float maxRatio = 0.8f;
     const auto ssize = screen->availableSize();
 
@@ -340,7 +341,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     app->getCommandLineParser().add(
         &openData_,
         [this]() {
-            auto net = app_->getProcessorNetwork();
+            auto* net = app_->getProcessorNetwork();
             util::insertNetworkForData(openData_.getValue(), net, true);
         },
         900);
@@ -504,10 +505,11 @@ void InviwoMainWindow::saveSnapshots(const std::filesystem::path& path, std::str
         }
 
         rendercontext::activateDefault();
-        util::exportAllFiles(
-            *app_->getProcessorNetwork(), path, fileName,
-            {FileExtension{"png", ""}, FileExtension{"csv", ""}, FileExtension{"txt", ""}},
-            Overwrite::Yes);
+        util::exportAllFiles(*app_->getProcessorNetwork(), path, fileName,
+                             {FileExtension{.extension = "png", .description = ""},
+                              FileExtension{.extension = "csv", .description = ""},
+                              FileExtension{.extension = "txt", .description = ""}},
+                             Overwrite::Yes);
     } catch (const Exception& e) {
         log::exception(e);
     } catch (const std::exception& e) {
@@ -726,10 +728,9 @@ void InviwoMainWindow::addActions() {  // NOLINT
                             if (qApp->keyboardModifiers() == Qt::ControlModifier) {
                                 appendWorkspace(utilqt::toPath(action->data().toString()));
                                 hideWelcomeScreen();
-                            } else if (askToSaveWorkspaceChanges()) {
-                                if (openWorkspace(utilqt::toPath(action->data().toString()))) {
-                                    hideWelcomeScreen();
-                                }
+                            } else if (askToSaveWorkspaceChanges() &&
+                                       openWorkspace(utilqt::toPath(action->data().toString()))) {
+                                hideWelcomeScreen();
                             }
                         });
                     }
@@ -794,12 +795,11 @@ void InviwoMainWindow::addActions() {  // NOLINT
                     if (action == ModifierAction::AppendWorkspace) {
                         appendWorkspace(path);
                         hideWelcomeScreen();
-                    } else if (askToSaveWorkspaceChanges()) {
+                    } else if (askToSaveWorkspaceChanges() &&
+                               openWorkspace(path, action != ModifierAction::OpenWithPath)) {
                         // open examples as regular workspace with filename and full path if
                         // modifier key is pressed
-                        if (openWorkspace(path, action != ModifierAction::OpenWithPath)) {
-                            hideWelcomeScreen();
-                        }
+                        hideWelcomeScreen();
                     }
                 });
             }
@@ -846,10 +846,8 @@ void InviwoMainWindow::addActions() {  // NOLINT
                         if (action == ModifierAction::AppendWorkspace) {
                             appendWorkspace(path);
                             hideWelcomeScreen();
-                        } else if (askToSaveWorkspaceChanges()) {
-                            if (openWorkspace(path)) {
-                                hideWelcomeScreen();
-                            }
+                        } else if (askToSaveWorkspaceChanges() && openWorkspace(path)) {
+                            hideWelcomeScreen();
                         }
                     });
                 }
@@ -1004,7 +1002,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
         networkToolBar->addAction(compAction);
         compAction->setShortcut(Qt::CTRL | Qt::Key_G);
         connect(compAction, &QAction::triggered, this, [this]() {
-            util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
+            util::replaceSelectionWithCompositeProcessor(*app_->getProcessorNetwork());
         });
 
         auto* expandAction = networkMenuItem->addAction(
@@ -1051,7 +1049,7 @@ void InviwoMainWindow::addActions() {  // NOLINT
             }
         });
 
-        auto invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
+        auto* invalidateResourcesNetwork = networkMenuItem->addAction("Invalidate All Resources");
         connect(invalidateResourcesNetwork, &QAction::triggered, [this](bool /*state*/) {
             auto* net = app_->getProcessorNetwork();
             const NetworkLock lock{net};
@@ -1414,9 +1412,9 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
 }
 
 bool InviwoMainWindow::saveWorkspace() {
-    if (!currentWorkspaceFileName_)
+    if (!currentWorkspaceFileName_) {
         return saveWorkspaceAs();
-    else {
+    } else {
         return saveWorkspace(*currentWorkspaceFileName_);
     }
 }
@@ -1657,7 +1655,7 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     // destroyed. This way, the main window can stay open if a child widget does not close, i.e.
     // calls event->ignore().
     // @see QWidget::closeEvent()
-    for (auto& child : children()) {
+    for (const auto& child : children()) {
         QApplication::sendEvent(child, event);
         if (!event->isAccepted()) {
             return;
@@ -1765,7 +1763,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 hideWelcomeScreen();
 
                 bool first = true;
-                for (auto& file : urlList) {
+                for (const auto& file : urlList) {
                     const std::filesystem::path filename = utilqt::toPath(file.toLocalFile());
 
                     if (toLower(filename.extension().string()) == ".inv") {

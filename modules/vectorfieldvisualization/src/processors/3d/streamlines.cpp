@@ -146,15 +146,16 @@ StreamLinesDeprecated::StreamLinesDeprecated()
         "with the IntegralLineToMesh processor.");
 }
 
-StreamLinesDeprecated::~StreamLinesDeprecated() {}
+StreamLinesDeprecated::~StreamLinesDeprecated() = default;
 
 void StreamLinesDeprecated::process() {
 
     const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
-        if (sampler_.isConnected())
+        if (sampler_.isConnected()) {
             return sampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
+        }
     }();
 
     const auto mesh = std::make_shared<BasicMesh>();
@@ -183,7 +184,7 @@ void StreamLinesDeprecated::process() {
                 IntegralLine line = tracer.traceFrom(vec3(P));
                 const auto size = line.getPositions().size();
                 if (size > 1) {
-                    const std::lock_guard<std::mutex> lock(mutex);
+                    const std::scoped_lock lock(mutex);
                     lines->push_back(line, startID + i);
                 };
             });
@@ -227,7 +228,7 @@ void StreamLinesDeprecated::process() {
 
             indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
-            vertices.push_back({pos, glm::normalize(v), pos, c});
+            vertices.emplace_back(pos, glm::normalize(v), pos, c);
 
             position++;
             velocity++;

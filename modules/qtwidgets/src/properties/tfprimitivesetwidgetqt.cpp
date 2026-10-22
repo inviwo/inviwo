@@ -87,14 +87,13 @@ void TFPrimitiveSetWidgetQt::setPropertyValue() {
     const bool performMapping = (propertyPtr_->get().getMode() == PrimitiveSetMode::Relative) &&
                                 (property_->getSemantics().getString() == "Text");
 
-    if (const auto* map = propertyPtr_->data().getDataMap()) {
-        if (performMapping) {
-            const dvec2 range = map->valueRange;
-            std::ranges::for_each(
-                primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
-                &TFPrimitiveData::pos);
-        }
+    if (const auto* map = propertyPtr_->data().getDataMap(); map && (performMapping)) {
+        const dvec2 range = map->valueRange;
+        std::ranges::for_each(
+            primitives, [&](double& x) { x = util::linearMapToNormalized(x, range); },
+            &TFPrimitiveData::pos);
     }
+
     {
         const NetworkLock lock(property_);
         propertyPtr_->get().clear();
@@ -155,8 +154,7 @@ void TFPrimitiveSetWidgetQt::initializeWidget() {
     updateFromProperty();
 }
 
-std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
-    const std::string& str) const {
+std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(const std::string& str) {
     std::string errorMsg;
 
     const auto convertToDouble = [&errorMsg](double& retVal, const std::string& str,
@@ -212,7 +210,8 @@ std::vector<TFPrimitiveData> TFPrimitiveSetWidgetQt::extractPrimitiveData(
             if (!convertToDouble(alpha, tokens[1], "alpha", lineCount)) continue;
             try {
                 primitives.push_back(
-                    {pos, vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
+                    {.pos = pos,
+                     .color = vec4(vec3(color::hex2rgba(tokens[2])), static_cast<float>(alpha))});
             } catch (Exception& e) {
                 errorMsg += "\n(" + std::to_string(lineCount) + ") " + e.getMessage();
             }

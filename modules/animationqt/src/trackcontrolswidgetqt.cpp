@@ -52,20 +52,16 @@
 
 class QStandardItem;
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 
 TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
                                              AnimationController& controller)
-    : QWidget(), controller_(controller), track_{track} {
+    : QWidget(), controller_(controller), track_{track}, layout_(new QHBoxLayout()) {
 
     setObjectName("TrackControlsWidget");
     setAutoFillBackground(true);
 
     track_.addObserver(this);
-
-    layout_ = new QHBoxLayout();
 
     layout_->setSpacing(1);
     layout_->setContentsMargins(0, 0, 0, 0);
@@ -78,7 +74,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
                                 QIcon::On);
         enableTrackIcon.addFile(":/animation/icons/eye_look_search_view_icon_128.svg", iconSize,
                                 QIcon::Normal, QIcon::Off);
-        QAction* disable = new QAction(enableTrackIcon, "Enable/Disable Track", this);
+        auto* disable = new QAction(enableTrackIcon, "Enable/Disable Track", this);
         connect(disable, &QAction::triggered, this,
                 [this]() { track_.setEnabled(!track_.isEnabled()); });
 
@@ -97,7 +93,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         lockTrackIcon.addFile(
             ":/animation/icons/lock_open_opened_protection_safety_security_unlocked_icon_128.svg",
             iconSize, QIcon::Normal, QIcon::Off);
-        QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
+        auto* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this,
                 [=]() { log::warn("Locking tracks is not implemented yet."); });
         lock->setCheckable(true);
@@ -116,16 +112,15 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         QIcon prevIcon;
         prevIcon.addFile(":/animation/icons/arrow_direction_left_next_previous_return_icon_128.svg",
                          iconSize, QIcon::Normal, QIcon::On);
-        QAction* prev = new QAction(prevIcon, "Prev Keyframe", this);
+        auto* prev = new QAction(prevIcon, "Prev Keyframe", this);
         connect(prev, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            const auto it =
-                std::lower_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it = std::ranges::lower_bound(times, controller_.getCurrentTime());
             if (it != times.begin()) {
                 controller_.eval(controller_.getCurrentTime(), *std::prev(it));
             }
         });
-        QToolButton* btnprev = new QToolButton(this);
+        auto* btnprev = new QToolButton(this);
         btnprev->setDefaultAction(prev);
         layout_->addWidget(btnprev, Qt::AlignRight | Qt::AlignVCenter);
     }
@@ -137,7 +132,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         keyFrameHandlingIcon.addFile(
             ":/animation/icons/basket_delete_garbage_trash_waste_icon_128.svg", iconSize,
             QIcon::Normal, QIcon::Off);
-        QAction* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe", this);
+        auto* addAndDelete = new QAction(keyFrameHandlingIcon, "Add Keyframe", this);
 
         connect(addAndDelete, &QAction::triggered, this, [this]() {
             track_.add(controller_.getCurrentTime(), QApplication::keyboardModifiers() == Qt::CTRL);
@@ -154,11 +149,10 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
         QIcon nextIcon;
         nextIcon.addFile(":/animation/icons/arrow_direction_previous_right_icon_128.svg", iconSize,
                          QIcon::Normal, QIcon::On);
-        QAction* next = new QAction(nextIcon, "Next Keyframe", this);
+        auto* next = new QAction(nextIcon, "Next Keyframe", this);
         connect(next, &QAction::triggered, this, [this]() {
             auto times = track_.getAllTimes();
-            const auto it =
-                std::upper_bound(times.begin(), times.end(), controller_.getCurrentTime());
+            const auto it = std::ranges::upper_bound(times, controller_.getCurrentTime());
             if (it != times.end()) {
                 controller_.eval(controller_.getCurrentTime(), *it);
             }
@@ -178,6 +172,4 @@ void TrackControlsWidgetQt::onEnabledChanged(Track*) {
     btnDisable_->setChecked(!track_.isEnabled());
 }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation

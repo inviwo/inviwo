@@ -816,7 +816,7 @@ void TFEditor::updateConnections() {
     for (auto&& [set, items] : primitives_) {
         if (!items.connected) continue;
 
-        std::stable_sort(items.points.begin(), items.points.end(), comparePtr{});
+        std::ranges::stable_sort(items.points, comparePtr{});
         while (items.connections.size() < items.points.size() + 1) {
             auto c = std::make_unique<TFControlPointConnection>();
             addItem(c.get());
@@ -870,8 +870,8 @@ std::vector<TFPrimitive*> TFEditor::getAllPrimitives() const {
     std::vector<TFPrimitive*> res;
 
     for (auto&& [set, items] : primitives_) {
-        std::transform(items.points.begin(), items.points.end(), std::back_inserter(res),
-                       [](auto& p) { return &p->getPrimitive(); });
+        std::ranges::transform(items.points, std::back_inserter(res),
+                               [](auto& p) { return &p->getPrimitive(); });
     }
 
     return res;
@@ -930,12 +930,11 @@ QPointF TFEditor::calcTransformRef(std::span<TFEditorPrimitive*> primitives,
     const std::array corners = {selRect.bottomLeft(), selRect.bottomRight(), selRect.topLeft(),
                                 selRect.topRight()};
 
-    return *std::max_element(corners.begin(), corners.end(),
-                             [&](const QPointF& a, const QPointF& b) {
-                                 const auto da = a - start->pos();
-                                 const auto db = b - start->pos();
-                                 return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
-                             });
+    return *std::ranges::max_element(corners, [&](const QPointF& a, const QPointF& b) {
+        const auto da = a - start->pos();
+        const auto db = b - start->pos();
+        return QPointF::dotProduct(da, da) < QPointF::dotProduct(db, db);
+    });
 }
 
 void TFEditor::move(std::span<TFEditorPrimitive*> primitives, const QTransform& transform) {
@@ -1058,11 +1057,11 @@ void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
 }
 
 bool TFEditor::handleGroupSelection(QKeyEvent* event) {
-#if defined(_WIN32)
+#ifdef _WIN32
     static constexpr std::array<std::pair<qint32, int>, 10> nativeKeyMap{
         {{2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 0}}};
     const quint32 nativeKey = event->nativeScanCode();
-#elif defined(__APPLE__)
+#elifdef __APPLE__
     static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
         {{18, 1}, {19, 2}, {20, 3}, {21, 4}, {23, 5}, {22, 6}, {26, 7}, {28, 8}, {25, 9}, {29, 0}}};
     const quint32 nativeKey = event->nativeVirtualKey();
@@ -1147,7 +1146,7 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
     }
 
     auto points = getSelectedPrimitiveItems();
-    std::stable_sort(points.begin(), points.end(), comparePtr{});
+    std::ranges::stable_sort(points, comparePtr{});
 
     switch (k) {
         case Qt::Key_Left:
@@ -1159,10 +1158,8 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.back()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.back()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.back()->setSelected(true);
             }
 
             break;
@@ -1175,11 +1172,10 @@ bool TFEditor::handleModifySelection(QKeyEvent* event) {
                         points.front()->setSelected(false);
                     }
                 }
-            } else if (auto* item = activeItem()) {
-                if (!item->points.empty()) {
-                    item->points.front()->setSelected(true);
-                }
+            } else if (auto* item = activeItem(); item && (!item->points.empty())) {
+                item->points.front()->setSelected(true);
             }
+
             break;
         case Qt::Key_Up:
         case 'I':

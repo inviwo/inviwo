@@ -32,6 +32,8 @@
 #include <inviwo/core/interaction/events/eventutil.h>
 #include <inviwo/core/util/glm.h>
 
+#include <utility>
+
 namespace inviwo {
 
 TouchPoint::TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
@@ -101,10 +103,10 @@ uvec2 TouchPoint::canvasSize() const { return canvasSize_; }
 void TouchPoint::setCanvasSize(uvec2 size) { canvasSize_ = size; }
 
 dvec3 TouchPoint::ndc() const {
-    return dvec3(2.0 * posNormalized_.x - 1.0, 2.0 * posNormalized_.y - 1.0, depth_);
+    return {2.0 * posNormalized_.x - 1.0, 2.0 * posNormalized_.y - 1.0, depth_};
 }
 
-TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_(name) {}
+TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_(std::move(name)) {}
 
 TouchEvent::TouchEvent() = default;
 
@@ -120,7 +122,7 @@ const std::vector<TouchPoint>& TouchEvent::touchPoints() const { return touchPoi
 
 std::vector<TouchPoint>& TouchEvent::touchPoints() { return touchPoints_; }
 
-void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
+void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = std::move(val); }
 
 uvec2 TouchEvent::canvasSize() const {
     if (touchPoints_.empty()) {
@@ -203,17 +205,18 @@ PickingState TouchEvent::getPickingState(const std::vector<TouchPoint>& points) 
     return std::accumulate(points.begin(), points.end(), toPickingState(points.front().state()),
                            [&](PickingState ps, const TouchPoint& tp) {
                                const auto s = toPickingState(tp.state());
-                               if (ps == s)
+                               if (ps == s) {
                                    return ps;
-                               else
+                               } else {
                                    return PickingState::Updated;
+                               }
                            });
 }
 
 std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
     std::vector<const TouchPoint*> returnVec;
     if (touchPoints_.size() > 1) {
-        const TouchPoint* touchPoint1 = &touchPoints_[0];
+        const TouchPoint* touchPoint1 = touchPoints_.data();
         const TouchPoint* touchPoint2 = &touchPoints_[1];
         double distance = std::numeric_limits<float>::max();
         for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
@@ -230,7 +233,7 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
         returnVec.push_back(touchPoint1);
         returnVec.push_back(touchPoint2);
     } else if (!touchPoints_.empty()) {
-        returnVec.push_back(&touchPoints_[0]);
+        returnVec.push_back(touchPoints_.data());
     }
     return returnVec;
 }

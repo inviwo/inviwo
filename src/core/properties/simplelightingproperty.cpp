@@ -30,6 +30,8 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view SimpleLightingProperty::getClassIdentifier() const { return classIdentifier; }
@@ -40,15 +42,16 @@ SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : SimpleLightingProperty{
-          identifier, displayName,       help,     LightingConfig{.position = position},
-          camera,     invalidationLevel, semantics} {}
+          identifier, displayName,       std::move(help),     LightingConfig{.position = position},
+          camera,     invalidationLevel, std::move(semantics)} {}
 
 SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                                std::string_view displayName, Document help,
                                                const LightingConfig& config, CameraProperty* camera,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, help, invalidationLevel, semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics))
     , shadingMode_("shadingMode", "Shading",
                    OptionPropertyState<ShadingMode>{
                        .options = {{"none", "No Shading", ShadingMode::None},
@@ -87,8 +90,8 @@ SimpleLightingProperty::SimpleLightingProperty(std::string_view identifier,
                                                std::string_view displayName, CameraProperty* camera,
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
-    : SimpleLightingProperty{identifier, displayName,       {},       LightingConfig{},
-                             camera,     invalidationLevel, semantics} {}
+    : SimpleLightingProperty{identifier,        displayName,         {}, LightingConfig{}, camera,
+                             invalidationLevel, std::move(semantics)} {}
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
     : CompositeProperty(rhs)
@@ -110,9 +113,12 @@ SimpleLightingProperty* SimpleLightingProperty::clone() const {
 SimpleLightingProperty::~SimpleLightingProperty() = default;
 
 LightingState SimpleLightingProperty::getState() const {
-    return {shadingMode_,   lightPosition_.get(CoordinateSpace::World),
-            ambientColor_,  diffuseColor_,
-            specularColor_, specularExponent_};
+    return {.shadingMode = shadingMode_,
+            .position = lightPosition_.get(CoordinateSpace::World),
+            .ambient = ambientColor_,
+            .diffuse = diffuseColor_,
+            .specular = specularColor_,
+            .exponent = specularExponent_};
 }
 
 LightingConfig SimpleLightingProperty::config() const {

@@ -33,9 +33,7 @@
 
 #include <memory>
 
-namespace inviwo {
-
-namespace meshutil {
+namespace inviwo::meshutil {
 
 /**
  * Will construct a new mesh out of the given mesh with its position and color buffer, if existing,
@@ -51,6 +49,4 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh);
  */
 std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh);
 
-}  // namespace meshutil
-
-}  // namespace inviwo
+}  // namespace inviwo::meshutil

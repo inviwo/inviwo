@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-DataVisualizerManager::DataVisualizerManager() {}
+DataVisualizerManager::DataVisualizerManager() = default;
 
 void DataVisualizerManager::registerObject(DataVisualizer* visualizer) {
     visualizers_.push_back(visualizer);
@@ -45,7 +45,7 @@ void DataVisualizerManager::unRegisterObject(DataVisualizer* visualizer) {
 
 std::vector<FileExtension> DataVisualizerManager::getSupportedFileExtensions() const {
     std::vector<FileExtension> res;
-    for (auto& visualizer : visualizers_) {
+    for (const auto& visualizer : visualizers_) {
         auto exts = visualizer->getSupportedFileExtensions();
         res.insert(res.end(), exts.begin(), exts.end());
     }

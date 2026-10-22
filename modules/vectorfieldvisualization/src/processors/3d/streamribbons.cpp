@@ -156,17 +156,19 @@ StreamRibbonsDeprecated::StreamRibbonsDeprecated()
 
 void StreamRibbonsDeprecated::process() {
     const auto sampler = [&]() -> std::shared_ptr<const SpatialSampler<dvec3>> {
-        if (sampler_.isConnected())
+        if (sampler_.isConnected()) {
             return sampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeSampler<dvec3>>(volume_.getData());
+        }
     }();
 
     const auto vorticitySampler = [&]() -> std::shared_ptr<const StreamLine3DTracer::Sampler> {
-        if (vorticitySampler_.isConnected())
+        if (vorticitySampler_.isConnected()) {
             return vorticitySampler_.getData();
-        else
+        } else {
             return std::make_shared<VolumeDoubleSampler<3>>(vorticityVolume_.getData());
+        }
     }();
 
     const auto mesh = std::make_shared<BasicMesh>();
@@ -188,7 +190,7 @@ void StreamRibbonsDeprecated::process() {
     size_t lineId = 0;
 
     for (const auto& seeds : seedPoints_) {
-        for (auto& p : (*seeds)) {
+        for (const auto& p : (*seeds)) {
             const vec4 P = m * vec4(p, 1.0f);
             IntegralLine line = tracer.traceFrom(vec3(P));
 
@@ -226,13 +228,14 @@ void StreamRibbonsDeprecated::process() {
                 const vec3 p0 = vec3(*position) - vort;
                 const vec3 p1 = vec3(*position) + vort;
 
-                float d;
                 switch (coloringMethod_.get()) {
-                    case ColoringMethod::Vorticity:
-                        d = glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
+                    case ColoringMethod::Vorticity: {
+                        const auto d =
+                            glm::clamp(static_cast<float>(vortictyMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;
+                    }
                     case ColoringMethod::ColorPort:
                         if (hasColors) {
                             break;
@@ -242,18 +245,20 @@ void StreamRibbonsDeprecated::process() {
                                 "instead ");
                             [[fallthrough]];
                         }
-                    default: [[fallthrough]];
-                    case ColoringMethod::Velocity:
-                        d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
+                    default:                       [[fallthrough]];
+                    case ColoringMethod::Velocity: {
+                        const auto d =
+                            glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = tf.sample(d);
                         break;
+                    }
                 }
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size() + 1));
-                vertices.push_back({p0, N, p0, c});
-                vertices.push_back({p1, N, p1, c});
+                vertices.emplace_back(p0, N, p0, c);
+                vertices.emplace_back(p1, N, p1, c);
 
                 position++;
                 velocity++;

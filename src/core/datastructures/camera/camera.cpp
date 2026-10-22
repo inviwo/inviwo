@@ -238,10 +238,10 @@ void Camera::configureProperties(CameraProperty& cp, bool attach) {
 }
 
 bool Camera::equalTo(const Camera& other) const {
-    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) ||
-             glm::any(glm::notEqual(lookTo_, other.lookTo_)) ||
-             (nearPlaneDist_ != other.nearPlaneDist_) || (farPlaneDist_ != other.farPlaneDist_) ||
-             (aspectRatio_ != other.aspectRatio_));
+    return !glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) &&
+           !glm::any(glm::notEqual(lookTo_, other.lookTo_)) &&
+           (nearPlaneDist_ == other.nearPlaneDist_) && (farPlaneDist_ == other.farPlaneDist_) &&
+           (aspectRatio_ == other.aspectRatio_);
 }
 
 }  // namespace inviwo

@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/workspacemodelroles.h>
 #include <inviwo/qt/editor/workspaceannotationsqt.h>
 
+#include <utility>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMetaType>
@@ -56,8 +57,8 @@ class IVW_QTEDITOR_API WorkspaceInfoLoader
     Q_OBJECT
 public:
     WorkspaceInfoLoader() = default;
-    WorkspaceInfoLoader(const std::filesystem::path& filename, InviwoApplication* app)
-        : filename_{filename}, app_{app} {}
+    WorkspaceInfoLoader(std::filesystem::path filename, InviwoApplication* app)
+        : filename_{std::move(filename)}, app_{app} {}
 
     void operator()();
     void submit();
@@ -107,9 +108,9 @@ private:
 
     QModelIndex getIndex(TreeItem* item, int column = 0) const;
     void updateCategory(TreeItem* item, std::vector<std::unique_ptr<TreeItem>> children);
-    void addEntry(TreeItem* root, std::unique_ptr<TreeItem> child);
+    void addEntry(TreeItem* parent, std::unique_ptr<TreeItem> child);
 
-    TreeItem* getCategory(std::string_view name) const;
+    TreeItem* getCategory(std::string_view caption) const;
 
     TreeItem* getItem(const QModelIndex& index) const;
     InviwoApplication* app_;

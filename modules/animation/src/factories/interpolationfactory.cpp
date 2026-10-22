@@ -31,8 +31,7 @@
 
 #include <modules/animation/factories/interpolationfactoryobject.h>
 
-namespace inviwo {
-namespace animation {
+namespace inviwo::animation {
 
 InterpolationFactory::InterpolationFactory(InviwoApplication* app) : app_(app) {}
 
@@ -44,5 +43,4 @@ std::unique_ptr<Interpolation> InterpolationFactory::create(std::string_view key
     return nullptr;
 }
 
-}  // namespace animation
-}  // namespace inviwo
+}  // namespace inviwo::animation

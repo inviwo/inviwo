@@ -106,11 +106,11 @@ void PythonProcessorFactoryObject::fileChanged(const std::filesystem::path&) {
 }
 
 void PythonProcessorFactoryObject::reloadProcessors() {
-    auto net = app_->getProcessorNetwork();
+    auto* net = app_->getProcessorNetwork();
     const auto processors =
         net->getProcessors();  // Save a list of the processors here since we will be
                                // modifying the list below by replacing them
-    for (auto p : processors) {
+    for (auto* p : processors) {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
             log::info(R"(Updating python processor: "{}" id: "{}")", name_, p->getIdentifier());
             if (const auto replacement = static_cast<std::shared_ptr<Processor>>(create(app_))) {
@@ -158,7 +158,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     constexpr std::string_view nameLabel{"# Name: "};
 
     const auto name = [&]() {
-        if (script.compare(0, nameLabel.size(), nameLabel) == 0) {
+        if (script.starts_with(nameLabel)) {
             const auto endl = script.find_first_of('\n');
             return trim(script.substr(nameLabel.size(), endl - nameLabel.size()));
         } else {
@@ -219,7 +219,7 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(
     try {
         const py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
         const auto p = proc.cast<ProcessorInfo>();
-        return {p, name, file};
+        return {.info = p, .name = name, .file = file};
     } catch (const std::exception& e) {
         throw Exception(SourceContext{},
                         "Failed to get ProcessorInfo for python processor: '{}'. File: {}\n{}",

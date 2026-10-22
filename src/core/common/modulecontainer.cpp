@@ -42,6 +42,7 @@
 #include <fmt/std.h>
 
 #include <ranges>
+#include <utility>
 
 namespace inviwo {
 
@@ -105,8 +106,8 @@ ModuleContainer::ModuleContainer(std::unique_ptr<InviwoModuleFactoryObject> mfo)
     , factoryObject_{std::move(mfo)}
     , module_{nullptr} {}
 
-ModuleContainer::ModuleContainer(const std::filesystem::path& libFile, bool runtimeReload)
-    : libFile_{libFile}
+ModuleContainer::ModuleContainer(std::filesystem::path libFile, bool runtimeReload)
+    : libFile_{std::move(libFile)}
     , tmpFile_{}
     , protectedModule_{false}
     , protectedLibrary_{false}
@@ -153,7 +154,7 @@ void ModuleContainer::load(bool runtimeReload) {
             throw Exception(SourceContext{}, "Unable to write temporary file {} since: {}", tmpFile,
                             ec.message());
         }
-        tmpFile_ = tmpFile;
+        tmpFile_ = std::move(tmpFile);
     }
 
     filesystem::setWorkingDirectory(filesystem::getInviwoBinDir());
@@ -246,25 +247,19 @@ void ModuleContainer::updateGraph(std::vector<ModuleContainer>& moduleContainers
         }
     }
     for (auto& cont : moduleContainers) {
-        if (cont.factoryObject_->protectedModule == ProtectedModule::on ||
+        cont.protectedModule_ =
+            cont.factoryObject_->protectedModule == ProtectedModule::on ||
             std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
                 return c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedModule_ = true;
-        } else {
-            cont.protectedModule_ = false;
-        }
+            });
     }
     for (auto& cont : moduleContainers) {
-        if (cont.libFile_.empty() || cont.factoryObject_->protectedModule == ProtectedModule::on ||
+        cont.protectedLibrary_ =
+            cont.libFile_.empty() || cont.factoryObject_->protectedModule == ProtectedModule::on ||
             std::ranges::any_of(cont.transitiveDependents, [](ModuleContainer* c) {
                 return c->libFile_.empty() ||
                        c->factoryObject_->protectedModule == ProtectedModule::on;
-            })) {
-            cont.protectedLibrary_ = true;
-        } else {
-            cont.protectedLibrary_ = false;
-        }
+            });
     }
 }
 

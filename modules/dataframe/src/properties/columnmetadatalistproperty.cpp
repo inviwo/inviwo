@@ -42,6 +42,8 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnmetadataproperty.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view ColumnMetaDataListProperty::getClassIdentifier() const { return classIdentifier; }
@@ -52,7 +54,7 @@ ColumnMetaDataListProperty::ColumnMetaDataListProperty(std::string_view identifi
                                                        PropertySemantics semantics)
     : ListProperty(identifier, displayName,
                    std::make_unique<ColumnMetaDataProperty>("column1", "Column 1"), 0,
-                   ListPropertyUIFlag::Static, invalidationLevel, semantics) {
+                   ListPropertyUIFlag::Static, invalidationLevel, std::move(semantics)) {
     setSerializationMode(PropertySerializationMode::All);
 }
 
@@ -61,7 +63,7 @@ ColumnMetaDataListProperty::ColumnMetaDataListProperty(std::string_view identifi
                                                        DataFrameInport& port,
                                                        InvalidationLevel invalidationLevel,
                                                        PropertySemantics semantics)
-    : ColumnMetaDataListProperty(identifier, displayName, invalidationLevel, semantics) {
+    : ColumnMetaDataListProperty(identifier, displayName, invalidationLevel, std::move(semantics)) {
     setPort(port);
 }
 

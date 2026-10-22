@@ -50,9 +50,7 @@
 #include <string>
 #include <utility>
 
-namespace inviwo {
-
-namespace animation {
+namespace inviwo::animation {
 class AnimationController;
 class AnimationManager;
 
@@ -145,8 +143,7 @@ Animation& WorkspaceAnimations::add(Animation anim) {
     return *animations_.back();
 }
 
-void WorkspaceAnimations::addInternal(
-    typename std::vector<std::unique_ptr<Animation>>::iterator aniIt) {
+void WorkspaceAnimations::addInternal(std::vector<std::unique_ptr<Animation>>::iterator aniIt) {
     (*aniIt)->AnimationObservable::addObserver(this);
     for (auto& track : **aniIt) {
         for (size_t seqi = 0; seqi < track.size(); seqi++) {
@@ -273,6 +270,4 @@ void WorkspaceAnimations::onKeyframeSequenceSelectionChanged(KeyframeSequence*) 
 void WorkspaceAnimations::onKeyframeTimeChanged(Keyframe*, Seconds) { onAnyChange(); }
 void WorkspaceAnimations::onKeyframeSelectionChanged(Keyframe*) { onAnyChange(); }
 
-}  // namespace animation
-
-}  // namespace inviwo
+}  // namespace inviwo::animation
