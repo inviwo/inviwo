@@ -97,12 +97,13 @@ constexpr glm::dmat4 createBasis(glm::size3_t dim, glm::dvec3 spacing) {
     return basis;
 }
 
-constexpr auto validSelectionAndDims(range_of<Selection> auto selections,
-                                     range_of<size_t> auto dimensions) {
+constexpr auto validSelectionAndDims(range_of<Selection> auto&& selections,
+                                     range_of<size_t> auto&& dimensions) {
 
-    return std::views::zip(selections, dimensions) | std::views::transform([](auto&& item) {
-               return std::tuple{std::apply(clamp, item), std::get<1>(item)};
-           }) |
+    return std::views::zip(std::views::all(std::forward<decltype(selections)>(selections)),
+                           std::views::all(std::forward<decltype(dimensions)>(dimensions))) |
+           std::views::transform(
+               [](auto&& item) { return std::tuple{std::apply(clamp, item), std::get<1>(item)}; }) |
            std::views::filter([](auto&& item) { return std::get<0>(item).count > 1; });
 }
 
