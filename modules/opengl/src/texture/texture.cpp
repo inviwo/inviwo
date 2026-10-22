@@ -373,7 +373,7 @@ void Texture::download(void* data) const {
     {
         const std::scoped_lock lock{syncMutex};
         if (syncObj != nullptr) {
-            glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
+            glWaitSync(syncObj, 0, GL_TIMEOUT_IGNORED);
         }
     }
 
@@ -410,7 +410,7 @@ void Texture::downloadToPBO() const {
     {
         const std::scoped_lock lock{syncMutex};
         if (syncObj != nullptr) {
-            glWaitSync(syncObj, GL_UNUSED_BIT, GL_TIMEOUT_IGNORED);
+            glWaitSync(syncObj, 0, GL_TIMEOUT_IGNORED);
         }
     }
 
