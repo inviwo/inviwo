@@ -166,6 +166,10 @@ if(WIN32 AND MSVC)
     endif()
 
     add_compile_options(/bigobj)
+
+    # The default 1MB stack is too small for an unoptimized (Debug) Python, i.e. the vcpkg debug
+    # python, importing numpy will overflow the stack. Upstream python_d.exe uses 12MB.
+    add_link_options($<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:/STACK:8000000>)
     
     # Add debug postfix if WIN32
     SET(CMAKE_DEBUG_POSTFIX "d")

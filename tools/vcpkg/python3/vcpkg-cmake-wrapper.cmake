@@ -57,12 +57,13 @@ if(_PythonFinder_WantLibs)
         PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
         NO_DEFAULT_PATH
     )
+    # Inviwo: the debug build uses the release ABI and names (no Py_DEBUG, no "_d"/"d" suffix)
     find_library(
         _${_PythonFinder_PREFIX}_LIBRARY_DEBUG
         NAMES
         "python@PYTHON_VERSION_MAJOR@@PYTHON_VERSION_MINOR@"
         "python@PYTHON_VERSION_MAJOR@.@PYTHON_VERSION_MINOR@"
-        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib"
+        PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib"
         NO_DEFAULT_PATH
     )
 
