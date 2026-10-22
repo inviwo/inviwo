@@ -135,6 +135,9 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Telemetry
+      uses: fwilhe2/workflow-telemetry-action@v3
+
     - name: Free Disk Space
       if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
