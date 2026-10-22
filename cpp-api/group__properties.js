@@ -1,8 +1,7 @@
 var group__properties =
 [
     [ "inviwo::AdvancedMaterialProperty", "classinviwo_1_1AdvancedMaterialProperty.html", [
-      [ "clone", "classinviwo_1_1AdvancedMaterialProperty.html#a4711821b8b316bab710899d6136dc74d", null ],
-      [ "getIndexOfRefractionTerm", "classinviwo_1_1AdvancedMaterialProperty.html#a52bb4237c9d1c49119c2d054d61b5f8a", null ]
+      [ "clone", "classinviwo_1_1AdvancedMaterialProperty.html#a4711821b8b316bab710899d6136dc74d", null ]
     ] ],
     [ "inviwo::BasisProperty", "classinviwo_1_1BasisProperty.html", [
       [ "clone", "classinviwo_1_1BasisProperty.html#a8163a2f51dbeaf6c7e585f1657d5cccd", null ],
@@ -277,7 +276,7 @@ var group__properties =
       [ "setDisplayName", "classinviwo_1_1Property.html#a8ea190fb1fbe1a3cf1fb2208a5f908e0", null ],
       [ "setIdentifier", "classinviwo_1_1Property.html#a0a3abba3208e0ed2505817d68570c525", null ],
       [ "setInitiatingWidget", "classinviwo_1_1Property.html#a24f8305fa7c29f34618054a9531946f6", null ],
-      [ "setReadOnly", "classinviwo_1_1Property.html#ac12a9e03b48fd44531a8e862c43a8d8f", null ],
+      [ "setReadOnly", "classinviwo_1_1Property.html#a8b4e91a1d606cb069d24bfe53ddac611", null ],
       [ "updateWidgets", "classinviwo_1_1Property.html#a131cc525cef66f46ea838f4093fecc4f", null ]
     ] ],
     [ "inviwo::RaycastingProperty", "classinviwo_1_1RaycastingProperty.html", [

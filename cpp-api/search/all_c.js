@@ -45,7 +45,7 @@ var searchData=
   ['materials_42',['materials',['../structinviwo_1_1amira_1_1AmiraMeshHeader.html#abb890762b7be63e444515f3ac380cfba',1,'inviwo::amira::AmiraMeshHeader']]],
   ['max_43',['max',['../classinviwo_1_1BitSet.html#acb481dee5220b3c95a554ba92e399539',1,'inviwo::BitSet']]],
   ['maxcolorattachments_44',['maxColorAttachments',['../classinviwo_1_1FrameBufferObject.html#a4d94d74a61d68b441d753e673d16ee2f',1,'inviwo::FrameBufferObject']]],
-  ['maxsize_45',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a466c3f07385df96bf731373832b6bc92',1,'inviwo::BufferObjectArray']]],
+  ['maxsize_45',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a94f2db204777b75581002dbd3762362d',1,'inviwo::BufferObjectArray']]],
   ['md2doc_46',['md2doc',['../namespaceinviwo_1_1util.html#ae84a9ec3e9841aca2ea06fa34aaaed50',1,'inviwo::util']]],
   ['measuredistance3d_47',['MeasureDistance3D',['../classinviwo_1_1plot_1_1MeasureDistance3D.html',1,'inviwo::plot']]],
   ['member_48',['From Space   To Space   Transform          Entity                           Member',['../namespaceinviwo.html#autotoc_md10',1,'']]],

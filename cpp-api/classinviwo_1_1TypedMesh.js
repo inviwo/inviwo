@@ -10,5 +10,5 @@ var classinviwo_1_1TypedMesh =
     [ "getTypedEditableRAMRepresentation", "classinviwo_1_1TypedMesh.html#ac55c52cffd1d60742c9b7c5359f0717a", null ],
     [ "getTypedRAMRepresentation", "classinviwo_1_1TypedMesh.html#a56471f44012e41d08ffde3b511d297c5", null ],
     [ "setVertex", "classinviwo_1_1TypedMesh.html#a1fe4bc9d3bdc184706236165e80c0c67", null ],
-    [ "setVertex", "classinviwo_1_1TypedMesh.html#aebfdb0a4017433d99c0f6c8d3799b526", null ]
+    [ "setVertex", "classinviwo_1_1TypedMesh.html#adb0a997e9670972ba694a4db1c17e65d", null ]
 ];

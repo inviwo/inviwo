@@ -127,8 +127,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acf69bd23c05a15f0ddb5c2caf9a4c390" id="r_acf69bd23c05a15f0ddb5c2caf9a4c390"><td class="memItemLeft" align="right" valign="top"><a id="acf69bd23c05a15f0ddb5c2caf9a4c390" name="acf69bd23c05a15f0ddb5c2caf9a4c390"></a>
 <a class="el" href="classinviwo_1_1CImgLayerReader.html">CImgLayerReader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CImgLayerReader.html">CImgLayerReader</a> &amp;that)=default</td></tr>
 <tr class="separator:acf69bd23c05a15f0ddb5c2caf9a4c390"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a129202875bb1516b36b54251773b0b55" id="r_a129202875bb1516b36b54251773b0b55"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a129202875bb1516b36b54251773b0b55">readData</a> (const std::filesystem::path &amp;filePath) override</td></tr>
-<tr class="separator:a129202875bb1516b36b54251773b0b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca9a245a68ef91fd36a090b8f3925d6b" id="r_aca9a245a68ef91fd36a090b8f3925d6b"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aca9a245a68ef91fd36a090b8f3925d6b">readData</a> (const std::filesystem::path &amp;fileName) override</td></tr>
+<tr class="separator:aca9a245a68ef91fd36a090b8f3925d6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataReaderType"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataReaderType')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataReaderType.html">inviwo::DataReaderType&lt; Layer &gt;</a></td></tr>
 <tr class="memitem:af1cd9ba423f60e9d523b249203099451 inherit pub_methods_classinviwo_1_1DataReaderType" id="r_af1cd9ba423f60e9d523b249203099451"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataReaderType</b> (const <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a> &amp;rhs)=default</td></tr>
@@ -187,6 +187,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top">
 static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
 <tr class="separator:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a60b3aaf008babaa851bd0f09fa9ac4c6"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopen</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a41855fb51848f955d3c02693e1e3c3e3"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopenAndCacheIfUrl</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_af6bcd2fc591b1b70f23ff0a366240631"><td class="memItemLeft" align="right" valign="top">static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af6bcd2fc591b1b70f23ff0a366240631">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
 <tr class="separator:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3152fa04bcbd6b376a946ef2df619d5 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_ae3152fa04bcbd6b376a946ef2df619d5"><td class="memItemLeft" align="right" valign="top">
@@ -229,8 +235,8 @@ std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExte
 
 </div>
 </div>
-<a id="a129202875bb1516b36b54251773b0b55" name="a129202875bb1516b36b54251773b0b55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a129202875bb1516b36b54251773b0b55">&#9670;&#160;</a></span>readData()</h2>
+<a id="aca9a245a68ef91fd36a090b8f3925d6b" name="aca9a245a68ef91fd36a090b8f3925d6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca9a245a68ef91fd36a090b8f3925d6b">&#9670;&#160;</a></span>readData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -241,7 +247,7 @@ std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExte
         <tr>
           <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; inviwo::CImgLayerReader::readData </td>
           <td>(</td>
-          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>filePath</em></span></td><td>)</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>fileName</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

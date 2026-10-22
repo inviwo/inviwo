@@ -95,6 +95,7 @@ $(function(){initNavTree('classinviwo_1_1JSONReader.html',''); initResizable(); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classinviwo_1_1JSONReader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::JSONReader Class Reference</div></div>
 </div><!--header-->
@@ -134,9 +135,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaa0ec1217ed0110c74fbc6f882d2e9ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32cf128df16eea4c305888d56031de06" id="r_a32cf128df16eea4c305888d56031de06"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; json &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32cf128df16eea4c305888d56031de06">readData</a> (const std::filesystem::path &amp;filePath, <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> *owner, std::stop_token stop) override</td></tr>
 <tr class="separator:a32cf128df16eea4c305888d56031de06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10df9c4c76db3daa55420a5d431a90fd" id="r_a10df9c4c76db3daa55420a5d431a90fd"><td class="memItemLeft" align="right" valign="top"><a id="a10df9c4c76db3daa55420a5d431a90fd" name="a10df9c4c76db3daa55420a5d431a90fd"></a>
-std::shared_ptr&lt; json &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>readData</b> (std::istream &amp;stream) const</td></tr>
-<tr class="separator:a10df9c4c76db3daa55420a5d431a90fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1DataReaderType"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1DataReaderType')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataReaderType.html">inviwo::DataReaderType&lt; json &gt;</a></td></tr>
 <tr class="memitem:af1cd9ba423f60e9d523b249203099451 inherit pub_methods_classinviwo_1_1DataReaderType" id="r_af1cd9ba423f60e9d523b249203099451"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>DataReaderType</b> (const <a class="el" href="classinviwo_1_1DataReaderType.html">DataReaderType</a> &amp;rhs)=default</td></tr>
@@ -180,6 +178,12 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memdesc:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set reader specific options See the documentation of the specific reader for the available options.  <br /></td></tr>
 <tr class="separator:a0ac5d98ed2647ec10447661f4f371148 inherit pub_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a4acec02c295b94fca07087412419f146" id="r_a4acec02c295b94fca07087412419f146"><td class="memItemLeft" align="right" valign="top"><a id="a4acec02c295b94fca07087412419f146" name="a4acec02c295b94fca07087412419f146"></a>
+static std::shared_ptr&lt; json &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>readData</b> (std::istream &amp;stream)</td></tr>
+<tr class="separator:a4acec02c295b94fca07087412419f146"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1DataReaderType"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1DataReaderType')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1DataReaderType.html">inviwo::DataReaderType&lt; json &gt;</a></td></tr>
@@ -191,6 +195,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top">
 static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
 <tr class="separator:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a60b3aaf008babaa851bd0f09fa9ac4c6"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopen</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a41855fb51848f955d3c02693e1e3c3e3"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopenAndCacheIfUrl</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_af6bcd2fc591b1b70f23ff0a366240631"><td class="memItemLeft" align="right" valign="top">static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af6bcd2fc591b1b70f23ff0a366240631">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
 <tr class="separator:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3152fa04bcbd6b376a946ef2df619d5 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_ae3152fa04bcbd6b376a946ef2df619d5"><td class="memItemLeft" align="right" valign="top">

@@ -20,7 +20,6 @@ var classinviwo_1_1FrameBufferObject =
     [ "attachTexture", "classinviwo_1_1FrameBufferObject.html#af10bf6ceae8892d69ad95c98aa2eb8e3", null ],
     [ "attachTextureLayer", "classinviwo_1_1FrameBufferObject.html#a801d39952d1d4b099caba3baf09c02d0", null ],
     [ "attachTextureLayer", "classinviwo_1_1FrameBufferObject.html#a23a9e8d832886f19b7f71fe1f832847a", null ],
-    [ "deactivate", "classinviwo_1_1FrameBufferObject.html#a2115434086e16507a13f538b80f5b03f", null ],
     [ "detachAllTextures", "classinviwo_1_1FrameBufferObject.html#ab1854a4e49cefc2ff79849bd6a60c4ab", null ],
     [ "detachTexture", "classinviwo_1_1FrameBufferObject.html#ac44ffea94a6317a69cfa409657870b53", null ],
     [ "getID", "classinviwo_1_1FrameBufferObject.html#aea84c51082c99c3ecdbd68bd7231ab68", null ],

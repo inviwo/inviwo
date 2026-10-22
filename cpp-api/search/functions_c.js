@@ -34,7 +34,7 @@ var searchData=
   ['matchesall_31',['matchesAll',['../structinviwo_1_1FileExtension.html#a933daf0d826a00d6764846297b3cc931',1,'inviwo::FileExtension']]],
   ['max_32',['max',['../classinviwo_1_1BitSet.html#acb481dee5220b3c95a554ba92e399539',1,'inviwo::BitSet']]],
   ['maxcolorattachments_33',['maxColorAttachments',['../classinviwo_1_1FrameBufferObject.html#a4d94d74a61d68b441d753e673d16ee2f',1,'inviwo::FrameBufferObject']]],
-  ['maxsize_34',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a466c3f07385df96bf731373832b6bc92',1,'inviwo::BufferObjectArray']]],
+  ['maxsize_34',['maxSize',['../classinviwo_1_1BufferObjectArray.html#a94f2db204777b75581002dbd3762362d',1,'inviwo::BufferObjectArray']]],
   ['md2doc_35',['md2doc',['../namespaceinviwo_1_1util.html#ae84a9ec3e9841aca2ea06fa34aaaed50',1,'inviwo::util']]],
   ['min_36',['min',['../classinviwo_1_1BitSet.html#a8beb156da38b56beb3b91748d224308d',1,'inviwo::BitSet']]],
   ['minextentboundingbox_37',['minExtentBoundingBox',['../namespaceinviwo_1_1util.html#a8a14a7558e0da4bfc9982899b3f53672',1,'inviwo::util']]],

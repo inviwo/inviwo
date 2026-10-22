@@ -136,8 +136,8 @@ AssimpLogLevel&#160;</td><td class="memItemRight" valign="bottom"><b>getLogLevel
 <tr class="memitem:a43ed46c747bd6ce17dadf777710f4b8f" id="r_a43ed46c747bd6ce17dadf777710f4b8f"><td class="memItemLeft" align="right" valign="top"><a id="a43ed46c747bd6ce17dadf777710f4b8f" name="a43ed46c747bd6ce17dadf777710f4b8f"></a>
 <a class="el" href="classinviwo_1_1AssimpReader.html">AssimpReader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1AssimpReader.html">AssimpReader</a> &amp;that)=default</td></tr>
 <tr class="separator:a43ed46c747bd6ce17dadf777710f4b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2b235cc8a70e3feb7bd11ba29fbebcc" id="r_ab2b235cc8a70e3feb7bd11ba29fbebcc"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab2b235cc8a70e3feb7bd11ba29fbebcc">readData</a> (const std::filesystem::path &amp;filePath) override</td></tr>
-<tr class="separator:ab2b235cc8a70e3feb7bd11ba29fbebcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11719e752e6b99823b29cb89108ffae4" id="r_a11719e752e6b99823b29cb89108ffae4"><td class="memItemLeft" align="right" valign="top">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11719e752e6b99823b29cb89108ffae4">readData</a> (const std::filesystem::path &amp;url) override</td></tr>
+<tr class="separator:a11719e752e6b99823b29cb89108ffae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb4f4d432909da3d0c36de60e23b8641" id="r_acb4f4d432909da3d0c36de60e23b8641"><td class="memItemLeft" align="right" valign="top"><a id="acb4f4d432909da3d0c36de60e23b8641" name="acb4f4d432909da3d0c36de60e23b8641"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setFixInvalidDataFlag</b> (bool enable)</td></tr>
 <tr class="separator:acb4f4d432909da3d0c36de60e23b8641"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,6 +199,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_addecd9d0240e6cca4dd6a6d8cc32faf0"><td class="memItemLeft" align="right" valign="top">
 static std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>downloadAndCacheIfUrl</b> (const std::filesystem::path &amp;url)</td></tr>
 <tr class="separator:addecd9d0240e6cca4dd6a6d8cc32faf0 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a60b3aaf008babaa851bd0f09fa9ac4c6"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopen</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a60b3aaf008babaa851bd0f09fa9ac4c6 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_a41855fb51848f955d3c02693e1e3c3e3"><td class="memItemLeft" align="right" valign="top">
+static <a class="el" href="classinviwo_1_1filesystem_1_1FileHandle.html">filesystem::FileHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><b>fopenAndCacheIfUrl</b> (const std::filesystem::path &amp;path, const char *mode)</td></tr>
+<tr class="separator:a41855fb51848f955d3c02693e1e3c3e3 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_af6bcd2fc591b1b70f23ff0a366240631"><td class="memItemLeft" align="right" valign="top">static std::ifstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1DataReader.html#af6bcd2fc591b1b70f23ff0a366240631">open</a> (const std::filesystem::path &amp;path, std::ios_base::openmode mode=std::ios_base::in)</td></tr>
 <tr class="separator:af6bcd2fc591b1b70f23ff0a366240631 inherit pro_static_methods_classinviwo_1_1DataReader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3152fa04bcbd6b376a946ef2df619d5 inherit pro_static_methods_classinviwo_1_1DataReader" id="r_ae3152fa04bcbd6b376a946ef2df619d5"><td class="memItemLeft" align="right" valign="top">
@@ -278,8 +284,8 @@ std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExte
 
 </div>
 </div>
-<a id="ab2b235cc8a70e3feb7bd11ba29fbebcc" name="ab2b235cc8a70e3feb7bd11ba29fbebcc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2b235cc8a70e3feb7bd11ba29fbebcc">&#9670;&#160;</a></span>readData()</h2>
+<a id="a11719e752e6b99823b29cb89108ffae4" name="a11719e752e6b99823b29cb89108ffae4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11719e752e6b99823b29cb89108ffae4">&#9670;&#160;</a></span>readData()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -290,7 +296,7 @@ std::vector&lt; <a class="el" href="structinviwo_1_1FileExtension.html">FileExte
         <tr>
           <td class="memname">virtual std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; inviwo::AssimpReader::readData </td>
           <td>(</td>
-          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>filePath</em></span></td><td>)</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>url</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

@@ -375,16 +375,16 @@ template&lt;typename Result , template&lt; class &gt; class Predicate, typename 
 <p>Dispatch functionality to retrieve the actual underlaying LayerRamPrecision. The dispatcher takes a generic lambda as argument. Code will be instantiated for all the <a class="el" href="classinviwo_1_1DataFormat.html">DataFormat</a> types by default. But by suppling the template <code>Predicate</code> argument the list of formats to instantiate can be filtered. Hence if one knows that only Vector types are applicable there is no need to write generic code that also works for scalars.</p>
 <p>Example of counting the number of elements larger then 0: </p><div class="fragment"><div class="line">LayerRam* layerram = ...; <span class="comment">// of some glm vector type.</span></div>
 <div class="line"><span class="keyword">auto</span> count = layerram-&gt;dispatch&lt;size_t, dispatching::filter::Vecs&gt;([](<span class="keyword">auto</span> lrprecision) {</div>
-<div class="line">    <span class="keyword">using </span>LayerType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
-<div class="line">    <span class="keyword">using </span>ValueType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5">util::PrecisionValueType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
+<div class="line">    <span class="keyword">using </span>LayerType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#a903fd61aa4f431832d693c1a50d75b4d">util::PrecisionType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
+<div class="line">    <span class="keyword">using </span>ValueType = <a class="code hl_typedef" href="namespaceinviwo_1_1util.html#a5541f6c9a5557fca12a6ec5ce460ace4">util::PrecisionValueType</a>&lt;<span class="keyword">decltype</span>(lrprecision)&gt;;</div>
 <div class="line"> </div>
 <div class="line">    ValueType* data = lrprecision-&gt;getDataTyped();</div>
 <div class="line">    <span class="keyword">auto</span> dim = lrprecision-&gt;getDimensions();</div>
 <div class="line">    <span class="keywordflow">return</span> std::count_if(data, data + dim.x * dim.y,</div>
 <div class="line">                         [](<span class="keyword">auto</span> x){return x &gt; ValueType{0};});</div>
 <div class="line">});</div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_a4c5cc1457325e4cf1c8756319d5e83c5"><div class="ttname"><a href="namespaceinviwo_1_1util.html#a4c5cc1457325e4cf1c8756319d5e83c5">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">typename PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:508</div></div>
-<div class="ttc" id="anamespaceinviwo_1_1util_html_ab1e4eff95e999c0f37072af916d5d93b"><div class="ttname"><a href="namespaceinviwo_1_1util.html#ab1e4eff95e999c0f37072af916d5d93b">inviwo::util::PrecisionType</a></div><div class="ttdeci">typename std::remove_pointer&lt; typename std::remove_const&lt; T &gt;::type &gt;::type PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:490</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_a5541f6c9a5557fca12a6ec5ce460ace4"><div class="ttname"><a href="namespaceinviwo_1_1util.html#a5541f6c9a5557fca12a6ec5ce460ace4">inviwo::util::PrecisionValueType</a></div><div class="ttdeci">PrecisionType&lt; T &gt;::type PrecisionValueType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:508</div></div>
+<div class="ttc" id="anamespaceinviwo_1_1util_html_a903fd61aa4f431832d693c1a50d75b4d"><div class="ttname"><a href="namespaceinviwo_1_1util.html#a903fd61aa4f431832d693c1a50d75b4d">inviwo::util::PrecisionType</a></div><div class="ttdeci">std::remove_pointer_t&lt; std::remove_const_t&lt; T &gt; &gt; PrecisionType</div><div class="ttdef"><b>Definition</b> formatdispatching.h:490</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
 Template arguments:</h1>
 <ul>

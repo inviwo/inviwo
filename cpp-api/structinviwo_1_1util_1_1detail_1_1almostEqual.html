@@ -102,14 +102,16 @@ $(function(){initNavTree('structinviwo_1_1util_1_1detail_1_1almostEqual.html',''
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a157f165c47684caffa79baecf38d5106" id="r_a157f165c47684caffa79baecf38d5106"><td class="memTemplParams" colspan="2"><a id="a157f165c47684caffa79baecf38d5106" name="a157f165c47684caffa79baecf38d5106"></a>
-template&lt;typename U  = T, std::enable_if_t&lt; std::is_floating_point_v&lt; U &gt;, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:a157f165c47684caffa79baecf38d5106"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (const T &amp;x, const T &amp;y, int ulp)</td></tr>
-<tr class="separator:a157f165c47684caffa79baecf38d5106"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac44d9fccd27519583e387b940a26a977" id="r_ac44d9fccd27519583e387b940a26a977"><td class="memTemplParams" colspan="2"><a id="ac44d9fccd27519583e387b940a26a977" name="ac44d9fccd27519583e387b940a26a977"></a>
-template&lt;typename U  = T, std::enable_if_t&lt;!std::is_floating_point_v&lt; U &gt;, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:ac44d9fccd27519583e387b940a26a977"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (const T &amp;x, const T &amp;y, int)</td></tr>
-<tr class="separator:ac44d9fccd27519583e387b940a26a977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae13ffb0b8fefd5bb6d1a93b9a1088ee9" id="r_ae13ffb0b8fefd5bb6d1a93b9a1088ee9"><td class="memTemplParams" colspan="2"><a id="ae13ffb0b8fefd5bb6d1a93b9a1088ee9" name="ae13ffb0b8fefd5bb6d1a93b9a1088ee9"></a>
+template&lt;typename U  = T&gt; <br />
+requires (std::is_floating_point_v&lt;U&gt;)</td></tr>
+<tr class="memitem:ae13ffb0b8fefd5bb6d1a93b9a1088ee9"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (const T &amp;x, const T &amp;y, int ulp)</td></tr>
+<tr class="separator:ae13ffb0b8fefd5bb6d1a93b9a1088ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac074cffd284c3fb4eb73bf151181c80c" id="r_ac074cffd284c3fb4eb73bf151181c80c"><td class="memTemplParams" colspan="2"><a id="ac074cffd284c3fb4eb73bf151181c80c" name="ac074cffd284c3fb4eb73bf151181c80c"></a>
+template&lt;typename U  = T&gt; <br />
+requires (!std::is_floating_point_v&lt;U&gt;)</td></tr>
+<tr class="memitem:ac074cffd284c3fb4eb73bf151181c80c"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (const T &amp;x, const T &amp;y, int)</td></tr>
+<tr class="separator:ac074cffd284c3fb4eb73bf151181c80c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/inviwo/core/util/<b>glm.h</b></li>

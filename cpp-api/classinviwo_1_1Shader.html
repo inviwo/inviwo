@@ -96,6 +96,7 @@ $(function(){initNavTree('classinviwo_1_1Shader.html',''); initResizable(); });
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classinviwo_1_1Shader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::Shader Class Reference</div></div>
 </div><!--header-->
@@ -106,12 +107,12 @@ Public Types</h2></td></tr>
 <tr class="memitem:aeeb0d13907e3984ea23c090ea4e57e5f" id="r_aeeb0d13907e3984ea23c090ea4e57e5f"><td class="memItemLeft" align="right" valign="top"><a id="aeeb0d13907e3984ea23c090ea4e57e5f" name="aeeb0d13907e3984ea23c090ea4e57e5f"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Build</b> = <a class="el" href="classinviwo_1_1detail_1_1Build.html">detail::Build</a></td></tr>
 <tr class="separator:aeeb0d13907e3984ea23c090ea4e57e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e17280dbde780f18b109e0a1742f316" id="r_a7e17280dbde780f18b109e0a1742f316"><td class="memItemLeft" align="right" valign="top"><a id="a7e17280dbde780f18b109e0a1742f316" name="a7e17280dbde780f18b109e0a1742f316"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = typename std::vector&lt;<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a>&gt;::const_iterator</td></tr>
-<tr class="separator:a7e17280dbde780f18b109e0a1742f316"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed5d7b1791200cd04f5b8c2658dfc967" id="r_aed5d7b1791200cd04f5b8c2658dfc967"><td class="memItemLeft" align="right" valign="top"><a id="aed5d7b1791200cd04f5b8c2658dfc967" name="aed5d7b1791200cd04f5b8c2658dfc967"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = typename std::vector&lt;<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a>&gt;::iterator</td></tr>
-<tr class="separator:aed5d7b1791200cd04f5b8c2658dfc967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab38429987f8fed1d60763784d362050" id="r_aab38429987f8fed1d60763784d362050"><td class="memItemLeft" align="right" valign="top"><a id="aab38429987f8fed1d60763784d362050" name="aab38429987f8fed1d60763784d362050"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a>&gt;::const_iterator</td></tr>
+<tr class="separator:aab38429987f8fed1d60763784d362050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fb818a4269c91cc245b45fdba261ded" id="r_a4fb818a4269c91cc245b45fdba261ded"><td class="memItemLeft" align="right" valign="top"><a id="a4fb818a4269c91cc245b45fdba261ded" name="a4fb818a4269c91cc245b45fdba261ded"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a>&gt;::iterator</td></tr>
+<tr class="separator:a4fb818a4269c91cc245b45fdba261ded"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16981b27f88413975cf0deb194094e8a" id="r_a16981b27f88413975cf0deb194094e8a"><td class="memItemLeft" align="right" valign="top"><a id="a16981b27f88413975cf0deb194094e8a" name="a16981b27f88413975cf0deb194094e8a"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>OnError</b> : std::uint8_t { <b>Warn</b>
 , <b>Throw</b>
  }</td></tr>
@@ -142,9 +143,6 @@ const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> (
 <tr class="memitem:a55ba88b3efc63ef92412639a4703983b" id="r_a55ba88b3efc63ef92412639a4703983b"><td class="memItemLeft" align="right" valign="top"><a id="a55ba88b3efc63ef92412639a4703983b" name="a55ba88b3efc63ef92412639a4703983b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>build</b> ()</td></tr>
 <tr class="separator:a55ba88b3efc63ef92412639a4703983b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b96802c427df441233cdfafa522aa9f" id="r_a1b96802c427df441233cdfafa522aa9f"><td class="memItemLeft" align="right" valign="top"><a id="a1b96802c427df441233cdfafa522aa9f" name="a1b96802c427df441233cdfafa522aa9f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>deactivate</b> ()</td></tr>
-<tr class="separator:a1b96802c427df441233cdfafa522aa9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdc4dc5478f172b8bdd5e24fc813e131" id="r_acdc4dc5478f172b8bdd5e24fc813e131"><td class="memItemLeft" align="right" valign="top"><a id="acdc4dc5478f172b8bdd5e24fc813e131" name="acdc4dc5478f172b8bdd5e24fc813e131"></a>
 iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
 <tr class="separator:acdc4dc5478f172b8bdd5e24fc813e131"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -261,9 +259,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniform</b> (std::
 <tr class="memitem:a7ddd8cf3bf927e1689beda0dab7c5695" id="r_a7ddd8cf3bf927e1689beda0dab7c5695"><td class="memItemLeft" align="right" valign="top"><a id="a7ddd8cf3bf927e1689beda0dab7c5695" name="a7ddd8cf3bf927e1689beda0dab7c5695"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniform</b> (std::string_view name, const mat4 &amp;value) const</td></tr>
 <tr class="separator:a7ddd8cf3bf927e1689beda0dab7c5695"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b95eb62aa303bec2124069de06cec26" id="r_a7b95eb62aa303bec2124069de06cec26"><td class="memItemLeft" align="right" valign="top"><a id="a7b95eb62aa303bec2124069de06cec26" name="a7b95eb62aa303bec2124069de06cec26"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniform</b> (std::string_view name, const <a class="el" href="classinviwo_1_1TextureUnit.html">TextureUnit</a> &amp;value) const</td></tr>
-<tr class="separator:a7b95eb62aa303bec2124069de06cec26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad31f70045ebd23f583c348af277079ab" id="r_ad31f70045ebd23f583c348af277079ab"><td class="memItemLeft" align="right" valign="top"><a id="ad31f70045ebd23f583c348af277079ab" name="ad31f70045ebd23f583c348af277079ab"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniform</b> (std::string_view name, const <a class="el" href="classinviwo_1_1TextureUnit.html">TextureUnit</a> &amp;texUnit) const</td></tr>
+<tr class="separator:ad31f70045ebd23f583c348af277079ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a365777a571fd2c5dd8ca2c8839247119" id="r_a365777a571fd2c5dd8ca2c8839247119"><td class="memItemLeft" align="right" valign="top"><a id="a365777a571fd2c5dd8ca2c8839247119" name="a365777a571fd2c5dd8ca2c8839247119"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniform</b> (std::string_view name, double value) const</td></tr>
 <tr class="separator:a365777a571fd2c5dd8ca2c8839247119"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -408,6 +406,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setUniformWarningLeve
 <tr class="memitem:a7f23d8155cf7c85cb89b8a54a2b64b8c" id="r_a7f23d8155cf7c85cb89b8a54a2b64b8c"><td class="memItemLeft" align="right" valign="top"><a id="a7f23d8155cf7c85cb89b8a54a2b64b8c" name="a7f23d8155cf7c85cb89b8a54a2b64b8c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Shader</b> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1ShaderObject.html">ShaderObject</a> &gt; &gt; &amp;shaderObjects, <a class="el" href="classinviwo_1_1detail_1_1Build.html">Build</a> buildShader=Build::Yes)</td></tr>
 <tr class="separator:a7f23d8155cf7c85cb89b8a54a2b64b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:adac7f1f0a0a8432c16ebc93fcb88ddd8" id="r_adac7f1f0a0a8432c16ebc93fcb88ddd8"><td class="memItemLeft" align="right" valign="top"><a id="adac7f1f0a0a8432c16ebc93fcb88ddd8" name="adac7f1f0a0a8432c16ebc93fcb88ddd8"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>deactivate</b> ()</td></tr>
+<tr class="separator:adac7f1f0a0a8432c16ebc93fcb88ddd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a767ff63df739787df98860be45099693" name="a767ff63df739787df98860be45099693"></a>

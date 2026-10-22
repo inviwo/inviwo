@@ -105,8 +105,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa46b9e2268cd5e8d225ed09b3190d8e2" id="r_aa46b9e2268cd5e8d225ed09b3190d8e2"><td class="memTemplParams" colspan="2">template&lt;class F , class... Args&gt; </td></tr>
 <tr class="memitem:aa46b9e2268cd5e8d225ed09b3190d8e2"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa46b9e2268cd5e8d225ed09b3190d8e2">enqueue</a> (F &amp;&amp;f, Args &amp;&amp;... args) -&gt; std::future&lt; std::invoke_result_t&lt; F, Args... &gt; &gt;</td></tr>
 <tr class="separator:aa46b9e2268cd5e8d225ed09b3190d8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77b8211f558063fb0a27b823c1b8585e" id="r_a77b8211f558063fb0a27b823c1b8585e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77b8211f558063fb0a27b823c1b8585e">enqueueRaw</a> (std::function&lt; void()&gt; f)</td></tr>
-<tr class="separator:a77b8211f558063fb0a27b823c1b8585e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6217d472b71654050dd5f5279dd43305" id="r_a6217d472b71654050dd5f5279dd43305"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6217d472b71654050dd5f5279dd43305">enqueueRaw</a> (std::function&lt; void()&gt; task)</td></tr>
+<tr class="separator:a6217d472b71654050dd5f5279dd43305"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6040cf1330044fd615869abb73c8f276" id="r_a6040cf1330044fd615869abb73c8f276"><td class="memItemLeft" align="right" valign="top"><a id="a6040cf1330044fd615869abb73c8f276" name="a6040cf1330044fd615869abb73c8f276"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getQueueSize</b> ()</td></tr>
 <tr class="separator:a6040cf1330044fd615869abb73c8f276"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,8 +145,8 @@ template&lt;class F , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a77b8211f558063fb0a27b823c1b8585e" name="a77b8211f558063fb0a27b823c1b8585e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77b8211f558063fb0a27b823c1b8585e">&#9670;&#160;</a></span>enqueueRaw()</h2>
+<a id="a6217d472b71654050dd5f5279dd43305" name="a6217d472b71654050dd5f5279dd43305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6217d472b71654050dd5f5279dd43305">&#9670;&#160;</a></span>enqueueRaw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,7 +154,7 @@ template&lt;class F , class... Args&gt; </div>
         <tr>
           <td class="memname">void inviwo::ThreadPool::enqueueRaw </td>
           <td>(</td>
-          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>f</em></span></td><td>)</td>
+          <td class="paramtype">std::function&lt; void()&gt;</td>          <td class="paramname"><span class="paramname"><em>task</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

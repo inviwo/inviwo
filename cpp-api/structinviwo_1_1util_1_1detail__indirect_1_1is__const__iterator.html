@@ -103,14 +103,14 @@ $(function(){initNavTree('structinviwo_1_1util_1_1detail__indirect_1_1is__const_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7e96478464ffad55e8ceec3033431a33" id="r_a7e96478464ffad55e8ceec3033431a33"><td class="memItemLeft" align="right" valign="top"><a id="a7e96478464ffad55e8ceec3033431a33" name="a7e96478464ffad55e8ceec3033431a33"></a>
-typedef std::iterator_traits&lt; Iterator &gt;::pointer&#160;</td><td class="memItemRight" valign="bottom"><b>pointer</b></td></tr>
-<tr class="separator:a7e96478464ffad55e8ceec3033431a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4bbd33d98528c3c2383446d4e26f7f3" id="r_af4bbd33d98528c3c2383446d4e26f7f3"><td class="memItemLeft" align="right" valign="top"><a id="af4bbd33d98528c3c2383446d4e26f7f3" name="af4bbd33d98528c3c2383446d4e26f7f3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>pointer</b> = std::iterator_traits&lt;Iterator&gt;::pointer</td></tr>
+<tr class="separator:af4bbd33d98528c3c2383446d4e26f7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:acff4807f66ccca78be942ec605d774da" id="r_acff4807f66ccca78be942ec605d774da"><td class="memItemLeft" align="right" valign="top"><a id="acff4807f66ccca78be942ec605d774da" name="acff4807f66ccca78be942ec605d774da"></a>
-static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> = std::is_const&lt;typename std::remove_pointer&lt;pointer&gt;::type&gt;::value</td></tr>
+static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>value</b> = std::is_const_v&lt;std::remove_pointer_t&lt;pointer&gt;&gt;</td></tr>
 <tr class="separator:acff4807f66ccca78be942ec605d774da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>

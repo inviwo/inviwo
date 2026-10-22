@@ -94,14 +94,33 @@ $(function(){initNavTree('structinviwo_1_1util_1_1detailzip_1_1proxy.html',''); 
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structinviwo_1_1util_1_1detailzip_1_1proxy-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::util::detailzip::proxy&lt; Ts &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8746fe4827d74f21b11e74ff9990db62" id="r_a8746fe4827d74f21b11e74ff9990db62"><td class="memItemLeft" align="right" valign="top"><a id="a8746fe4827d74f21b11e74ff9990db62" name="a8746fe4827d74f21b11e74ff9990db62"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>first_type</b> = std::tuple_element_t&lt;0, std::tuple&lt;Ts..., void&gt;&gt;</td></tr>
+<tr class="separator:a8746fe4827d74f21b11e74ff9990db62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9432dea6754a8250a8d194f8a7574ba6" id="r_a9432dea6754a8250a8d194f8a7574ba6"><td class="memItemLeft" align="right" valign="top"><a id="a9432dea6754a8250a8d194f8a7574ba6" name="a9432dea6754a8250a8d194f8a7574ba6"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>second_type</b> = std::tuple_element_t&lt;1, std::tuple&lt;Ts..., void, void&gt;&gt;</td></tr>
+<tr class="separator:a9432dea6754a8250a8d194f8a7574ba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38ef4ade7a7c129d3a81521163c2c292" id="r_a38ef4ade7a7c129d3a81521163c2c292"><td class="memItemLeft" align="right" valign="top"><a id="a38ef4ade7a7c129d3a81521163c2c292" name="a38ef4ade7a7c129d3a81521163c2c292"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>third_type</b> = std::tuple_element_t&lt;2, std::tuple&lt;Ts..., void, void, void&gt;&gt;</td></tr>
+<tr class="separator:a38ef4ade7a7c129d3a81521163c2c292"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:acacc9bbd0caca38564b7162515fa777e" id="r_acacc9bbd0caca38564b7162515fa777e"><td class="memTemplParams" colspan="2"><a id="acacc9bbd0caca38564b7162515fa777e" name="acacc9bbd0caca38564b7162515fa777e"></a>
+template&lt;typename Us  = std::tuple&lt;Ts...&gt;&gt; <br />
+requires (1 &lt;= std::tuple_size_v&lt;Us&gt;)</td></tr>
+<tr class="memitem:acacc9bbd0caca38564b7162515fa777e"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>first</b> () const</td></tr>
+<tr class="separator:acacc9bbd0caca38564b7162515fa777e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a385dc938c6310283400b3d6d022b2c7b" id="r_a385dc938c6310283400b3d6d022b2c7b"><td class="memTemplParams" colspan="2"><a id="a385dc938c6310283400b3d6d022b2c7b" name="a385dc938c6310283400b3d6d022b2c7b"></a>
 template&lt;std::size_t N&gt; </td></tr>
 <tr class="memitem:a385dc938c6310283400b3d6d022b2c7b"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get</b> () const</td></tr>
@@ -141,6 +160,22 @@ template&lt;typename... Us&gt; </td></tr>
 template&lt;typename... Us&gt; </td></tr>
 <tr class="memitem:a6bbedeac46d6866431798b43043c6180"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>proxy</b> (Us &amp;&amp;... args)</td></tr>
 <tr class="separator:a6bbedeac46d6866431798b43043c6180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a332f48bbd5e1098396b41f890cb483f1" id="r_a332f48bbd5e1098396b41f890cb483f1"><td class="memTemplParams" colspan="2"><a id="a332f48bbd5e1098396b41f890cb483f1" name="a332f48bbd5e1098396b41f890cb483f1"></a>
+template&lt;typename Us  = std::tuple&lt;Ts...&gt;&gt; <br />
+requires (2 &lt;= std::tuple_size_v&lt;Us&gt;)</td></tr>
+<tr class="memitem:a332f48bbd5e1098396b41f890cb483f1"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>second</b> () const</td></tr>
+<tr class="separator:a332f48bbd5e1098396b41f890cb483f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a120371f6c94bbe71b068ea17fdcc51fb" id="r_a120371f6c94bbe71b068ea17fdcc51fb"><td class="memTemplParams" colspan="2"><a id="a120371f6c94bbe71b068ea17fdcc51fb" name="a120371f6c94bbe71b068ea17fdcc51fb"></a>
+template&lt;typename Us  = std::tuple&lt;Ts...&gt;&gt; <br />
+requires (3 &lt;= std::tuple_size_v&lt;Us&gt;)</td></tr>
+<tr class="memitem:a120371f6c94bbe71b068ea17fdcc51fb"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>third</b> () const</td></tr>
+<tr class="separator:a120371f6c94bbe71b068ea17fdcc51fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a94529aef2231c30c981134eda10b8fcc" id="r_a94529aef2231c30c981134eda10b8fcc"><td class="memItemLeft" align="right" valign="top"><a id="a94529aef2231c30c981134eda10b8fcc" name="a94529aef2231c30c981134eda10b8fcc"></a>
+std::tuple&lt; Ts... &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="separator:a94529aef2231c30c981134eda10b8fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/inviwo/core/util/<b>zip.h</b></li>

@@ -148,7 +148,7 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a0955ee799169ed70bbcc4871d7723fc9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const flags::flags&lt; T &gt; &amp;data, SerializationTarget target=SerializationTarget::Node)</td></tr>
 <tr class="separator:a0955ee799169ed70bbcc4871d7723fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c0073de4d11bfa83bb04215af509542" id="r_a6c0073de4d11bfa83bb04215af509542"><td class="memTemplParams" colspan="2"><a id="a6c0073de4d11bfa83bb04215af509542" name="a6c0073de4d11bfa83bb04215af509542"></a>
-template&lt;typename Mat , typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; Mat &gt;::value==2, int &gt;::type  = 0&gt; </td></tr>
+template&lt;typename Mat , std::enable_if_t&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; Mat &gt;::value==2, int &gt;  = 0&gt; </td></tr>
 <tr class="memitem:a6c0073de4d11bfa83bb04215af509542"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const Mat &amp;data)</td></tr>
 <tr class="separator:a6c0073de4d11bfa83bb04215af509542"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a546859fb918cb6ecebdfc443faf589a7" id="r_a546859fb918cb6ecebdfc443faf589a7"><td class="memItemLeft" align="right" valign="top"><a id="a546859fb918cb6ecebdfc443faf589a7" name="a546859fb918cb6ecebdfc443faf589a7"></a>
@@ -196,7 +196,7 @@ requires (std::is_integral_v&lt;T&gt; || std::is_floating_point_v&lt;T&gt;)</td>
 <tr class="memitem:a7971376c63279c4c0ef7cc5618877918"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const T &amp;data, SerializationTarget target=SerializationTarget::Node)</td></tr>
 <tr class="separator:a7971376c63279c4c0ef7cc5618877918"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a645986abd390964c2e85c7ce2853b23b" id="r_a645986abd390964c2e85c7ce2853b23b"><td class="memTemplParams" colspan="2"><a id="a645986abd390964c2e85c7ce2853b23b" name="a645986abd390964c2e85c7ce2853b23b"></a>
-template&lt;typename T , typename std::enable_if&lt; std::is_enum&lt; T &gt;::value, int &gt;::type  = 0&gt; </td></tr>
+template&lt;typename T , std::enable_if_t&lt; std::is_enum_v&lt; T &gt;, int &gt;  = 0&gt; </td></tr>
 <tr class="memitem:a645986abd390964c2e85c7ce2853b23b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const T &amp;data, SerializationTarget target=SerializationTarget::Node)</td></tr>
 <tr class="separator:a645986abd390964c2e85c7ce2853b23b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a966caeca8c0b2618bc29422266acebdf" id="r_a966caeca8c0b2618bc29422266acebdf"><td class="memTemplParams" colspan="2"><a id="a966caeca8c0b2618bc29422266acebdf" name="a966caeca8c0b2618bc29422266acebdf"></a>
@@ -211,7 +211,7 @@ template&lt;class T &gt; </td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const unsigned char &amp;data, SerializationTarget target=SerializationTarget::Node)</td></tr>
 <tr class="separator:a05cf97f69bd750a00332c29831e1fc40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ef1b15a41e3ccb29c7a5567d1906524" id="r_a1ef1b15a41e3ccb29c7a5567d1906524"><td class="memTemplParams" colspan="2"><a id="a1ef1b15a41e3ccb29c7a5567d1906524" name="a1ef1b15a41e3ccb29c7a5567d1906524"></a>
-template&lt;typename Vec , typename std::enable_if&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; Vec &gt;::value==1, int &gt;::type  = 0&gt; </td></tr>
+template&lt;typename Vec , std::enable_if_t&lt; <a class="el" href="structinviwo_1_1util_1_1rank.html">util::rank</a>&lt; Vec &gt;::value==1, int &gt;  = 0&gt; </td></tr>
 <tr class="memitem:a1ef1b15a41e3ccb29c7a5567d1906524"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (std::string_view key, const Vec &amp;data)</td></tr>
 <tr class="separator:a1ef1b15a41e3ccb29c7a5567d1906524"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3b23b73aed27ebf623b67cefc409fe0" id="r_af3b23b73aed27ebf623b67cefc409fe0"><td class="memItemLeft" align="right" valign="top"><a id="af3b23b73aed27ebf623b67cefc409fe0" name="af3b23b73aed27ebf623b67cefc409fe0"></a>

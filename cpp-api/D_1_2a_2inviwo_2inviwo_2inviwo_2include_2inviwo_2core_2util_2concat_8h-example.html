@@ -202,8 +202,7 @@ $(function(){initNavTree('D_1_2a_2inviwo_2inviwo_2inviwo_2include_2inviwo_2core_
 <div class="line">        <span class="keyword">using </span>RangeAt = std::tuple_element_t&lt;I, Ranges_&gt;;</div>
 <div class="line"> </div>
 <div class="line">        <span class="keyword">using </span>IterVariant =</div>
-<div class="line">            <span class="keyword">typename</span> detail::concat_iter_variant_helper&lt;Ranges_,</div>
-<div class="line">                                                        std::index_sequence_for&lt;Rs...&gt;&gt;::type;</div>
+<div class="line">            detail::concat_iter_variant_helper&lt;Ranges_, std::index_sequence_for&lt;Rs...&gt;&gt;::type;</div>
 <div class="line"> </div>
 <div class="line">        Parent* parent_ = <span class="keyword">nullptr</span>;</div>
 <div class="line">        IterVariant current_{};</div>

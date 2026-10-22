@@ -104,17 +104,19 @@ $(function(){initNavTree('classinviwo_1_1detail_1_1Build.html',''); initResizabl
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3452f650f3668e45f9a6316d58138ee2" id="r_a3452f650f3668e45f9a6316d58138ee2"><td class="memTemplParams" colspan="2"><a id="a3452f650f3668e45f9a6316d58138ee2" name="a3452f650f3668e45f9a6316d58138ee2"></a>
-template&lt;typename T , std::enable_if_t&lt;!std::is_same_v&lt; T, bool &gt; &amp;&amp;std::is_constructible_v&lt; bool, T &gt;, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:a3452f650f3668e45f9a6316d58138ee2"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Build</b> (T value) noexcept</td></tr>
-<tr class="separator:a3452f650f3668e45f9a6316d58138ee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3452f650f3668e45f9a6316d58138ee2" id="r_a3452f650f3668e45f9a6316d58138ee2"><td class="memTemplParams" colspan="2"><a id="a3452f650f3668e45f9a6316d58138ee2" name="a3452f650f3668e45f9a6316d58138ee2"></a>
-template&lt;typename T , std::enable_if_t&lt; std::is_same_v&lt; T, bool &gt;, int &gt;  = 0&gt; </td></tr>
-<tr class="memitem:a3452f650f3668e45f9a6316d58138ee2"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Build</b> (T value) noexcept</td></tr>
-<tr class="separator:a3452f650f3668e45f9a6316d58138ee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bc7a492b76c1e1d5659e772da7d2225" id="r_a5bc7a492b76c1e1d5659e772da7d2225"><td class="memItemLeft" align="right" valign="top"><a id="a5bc7a492b76c1e1d5659e772da7d2225" name="a5bc7a492b76c1e1d5659e772da7d2225"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator bool</b> ()</td></tr>
-<tr class="separator:a5bc7a492b76c1e1d5659e772da7d2225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca69c28f189621a4f2ad5caaf739afb" id="r_adca69c28f189621a4f2ad5caaf739afb"><td class="memTemplParams" colspan="2"><a id="adca69c28f189621a4f2ad5caaf739afb" name="adca69c28f189621a4f2ad5caaf739afb"></a>
+template&lt;typename T &gt; <br />
+requires (!std::is_same_v&lt;T, bool&gt; &amp;&amp; std::is_constructible_v&lt;bool, T&gt;)</td></tr>
+<tr class="memitem:adca69c28f189621a4f2ad5caaf739afb"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Build</b> (T value) noexcept</td></tr>
+<tr class="separator:adca69c28f189621a4f2ad5caaf739afb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaa686f0ebca594f9d0d77466bedd2c2" id="r_aeaa686f0ebca594f9d0d77466bedd2c2"><td class="memTemplParams" colspan="2"><a id="aeaa686f0ebca594f9d0d77466bedd2c2" name="aeaa686f0ebca594f9d0d77466bedd2c2"></a>
+template&lt;typename T &gt; <br />
+requires (std::is_same_v&lt;T, bool&gt;)</td></tr>
+<tr class="memitem:aeaa686f0ebca594f9d0d77466bedd2c2"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>Build</b> (T value) noexcept</td></tr>
+<tr class="separator:aeaa686f0ebca594f9d0d77466bedd2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0948dc6f3bc6ece4388fce6f8d54edf2" id="r_a0948dc6f3bc6ece4388fce6f8d54edf2"><td class="memItemLeft" align="right" valign="top"><a id="a0948dc6f3bc6ece4388fce6f8d54edf2" name="a0948dc6f3bc6ece4388fce6f8d54edf2"></a>
+constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>operator bool</b> () const</td></tr>
+<tr class="separator:a0948dc6f3bc6ece4388fce6f8d54edf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>

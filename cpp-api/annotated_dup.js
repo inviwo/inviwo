@@ -251,6 +251,9 @@ var annotated_dup =
         [ "SwScale", "classinviwo_1_1ffmpeg_1_1SwScale.html", null ],
         [ "Video", "classinviwo_1_1ffmpeg_1_1Video.html", "classinviwo_1_1ffmpeg_1_1Video" ]
       ] ],
+      [ "filesystem", "namespaceinviwo_1_1filesystem.html", [
+        [ "FileHandle", "classinviwo_1_1filesystem_1_1FileHandle.html", null ]
+      ] ],
       [ "filters", null, [
         [ "ItemFilter", "structinviwo_1_1filters_1_1ItemFilter.html", "structinviwo_1_1filters_1_1ItemFilter" ]
       ] ],
@@ -1887,7 +1890,7 @@ var annotated_dup =
       [ "Transform", "classinviwo_1_1Transform.html", "classinviwo_1_1Transform" ],
       [ "TransformationList", "classinviwo_1_1TransformationList.html", "classinviwo_1_1TransformationList" ],
       [ "Transformer", "classinviwo_1_1Transformer.html", null ],
-      [ "Transformer< T, typename std::enable_if< util::is_floating_point< T >::value >::type >", "classinviwo_1_1Transformer_3_01T_00_01typename_01std_1_1enable__if_3_01util_1_1is__floating__poi8021285cfd2189c6e2886140b1bddf32.html", null ],
+      [ "Transformer< T, std::enable_if_t< util::is_floating_point< T >::value > >", "classinviwo_1_1Transformer_3_01T_00_01std_1_1enable__if__t_3_01util_1_1is__floating__point_3_01T_01_4_1_1value_01_4_01_4.html", null ],
       [ "TransformListProperty", "classinviwo_1_1TransformListProperty.html", "classinviwo_1_1TransformListProperty" ],
       [ "TransformRasterization", "classinviwo_1_1TransformRasterization.html", "classinviwo_1_1TransformRasterization" ],
       [ "TraversingVersionConverter", "classinviwo_1_1TraversingVersionConverter.html", "classinviwo_1_1TraversingVersionConverter" ],
@@ -2037,10 +2040,10 @@ var annotated_dup =
       [ "hash< inviwo::resource::GL >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html", null ],
       [ "hash< inviwo::resource::PY >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html", null ],
       [ "hash< inviwo::resource::RAM >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html", null ],
+      [ "hash< inviwo::ShaderSegment::Placeholder >", "structstd_1_1hash_3_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html", null ],
       [ "hash< inviwo::ShaderType >", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", null ],
       [ "hash< std::pair< T, U > >", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", null ],
       [ "hash< std::tuple< TT... > >", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", null ],
-      [ "hash< typename inviwo::ShaderSegment::Placeholder >", "structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html", null ],
       [ "tuple_element< N, ::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ],
       [ "tuple_size<::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ]
     ] ]

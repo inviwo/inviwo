@@ -178,6 +178,6 @@ var searchData=
   ['volumetospatialsampler_175',['VolumeToSpatialSampler',['../classinviwo_1_1VolumeToSpatialSampler.html',1,'inviwo']]],
   ['volumetotetramesh_176',['VolumeToTetraMesh',['../classinviwo_1_1VolumeToTetraMesh.html',1,'inviwo']]],
   ['volumevoronoisegmentation_177',['VolumeVoronoiSegmentation',['../classinviwo_1_1VolumeVoronoiSegmentation.html',1,'inviwo']]],
-  ['voronoisegmentation_178',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9',1,'inviwo::util']]],
+  ['voronoisegmentation_178',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aded1b46bbb6461d4dee4d48a702c46c8',1,'inviwo::util']]],
   ['voxelvolume_179',['voxelVolume',['../namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc',1,'inviwo::util']]]
 ];

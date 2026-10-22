@@ -96,6 +96,7 @@ $(function(){initNavTree('classinviwo_1_1BufferObjectArray.html',''); initResiza
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classinviwo_1_1BufferObjectArray-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">inviwo::BufferObjectArray Class Reference</div></div>
 </div><!--header-->
@@ -114,10 +115,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>BindingType</b> = <a
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71" id="r_ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71">attachBufferObject</a> (const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *obj, GLuint location, <a class="el" href="classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6">BindingType</a> bindingType=BindingType::Native)</td></tr>
-<tr class="separator:ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91f02bfd8ab804668198da6f1ccd5de3" id="r_a91f02bfd8ab804668198da6f1ccd5de3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91f02bfd8ab804668198da6f1ccd5de3">attachBufferObjectEnforce</a> (const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *obj, GLuint location, <a class="el" href="classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6">BindingType</a> bindingType=BindingType::Native)</td></tr>
-<tr class="separator:a91f02bfd8ab804668198da6f1ccd5de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37b27f8589a1adce8f2663a87feae688" id="r_a37b27f8589a1adce8f2663a87feae688"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37b27f8589a1adce8f2663a87feae688">attachBufferObject</a> (const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *bufferObject, GLuint location, <a class="el" href="classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6">BindingType</a> bindingType=BindingType::Native)</td></tr>
+<tr class="separator:a37b27f8589a1adce8f2663a87feae688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18d3827e639077303a29ae9d0976d36" id="r_ac18d3827e639077303a29ae9d0976d36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac18d3827e639077303a29ae9d0976d36">attachBufferObjectEnforce</a> (const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *bufferObject, GLuint location, <a class="el" href="classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6">BindingType</a> bindingType=BindingType::Native)</td></tr>
+<tr class="separator:ac18d3827e639077303a29ae9d0976d36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a801c4360e4339c6ef2bfadc03c088729" id="r_a801c4360e4339c6ef2bfadc03c088729"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a801c4360e4339c6ef2bfadc03c088729">bind</a> () const</td></tr>
 <tr class="separator:a801c4360e4339c6ef2bfadc03c088729"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf35da45324d9f05897f81b40bfe1f6e" id="r_aaf35da45324d9f05897f81b40bfe1f6e"><td class="memItemLeft" align="right" valign="top"><a id="aaf35da45324d9f05897f81b40bfe1f6e" name="aaf35da45324d9f05897f81b40bfe1f6e"></a>
@@ -139,23 +140,26 @@ const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *&#
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isActive</b> () const</td></tr>
 <tr class="memdesc:a12d4856e8d73044ab7ff74888c3c89fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this VAO is currently bound. <br /></td></tr>
 <tr class="separator:a12d4856e8d73044ab7ff74888c3c89fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a466c3f07385df96bf731373832b6bc92" id="r_a466c3f07385df96bf731373832b6bc92"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize</a> () const</td></tr>
-<tr class="separator:a466c3f07385df96bf731373832b6bc92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a489ac7fdadcef6ff4303b368dde9f17b" id="r_a489ac7fdadcef6ff4303b368dde9f17b"><td class="memItemLeft" align="right" valign="top"><a id="a489ac7fdadcef6ff4303b368dde9f17b" name="a489ac7fdadcef6ff4303b368dde9f17b"></a>
 <a class="el" href="classinviwo_1_1BufferObjectArray.html">BufferObjectArray</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1BufferObjectArray.html">BufferObjectArray</a> &amp;that)</td></tr>
 <tr class="separator:a489ac7fdadcef6ff4303b368dde9f17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32169a4570d8eed7a19364690eb04312" id="r_a32169a4570d8eed7a19364690eb04312"><td class="memItemLeft" align="right" valign="top"><a id="a32169a4570d8eed7a19364690eb04312" name="a32169a4570d8eed7a19364690eb04312"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (size_t location, <a class="el" href="classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6">BindingType</a> bindingType)</td></tr>
 <tr class="separator:a32169a4570d8eed7a19364690eb04312"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3cd1cd991bc3b71df399866af8167de" id="r_ae3cd1cd991bc3b71df399866af8167de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3cd1cd991bc3b71df399866af8167de">unbind</a> () const</td></tr>
-<tr class="separator:ae3cd1cd991bc3b71df399866af8167de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a94f2db204777b75581002dbd3762362d" id="r_a94f2db204777b75581002dbd3762362d"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize</a> ()</td></tr>
+<tr class="separator:a94f2db204777b75581002dbd3762362d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1389234f0385f8f6bb2f4136fd680d5" id="r_ac1389234f0385f8f6bb2f4136fd680d5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1389234f0385f8f6bb2f4136fd680d5">unbind</a> ()</td></tr>
+<tr class="separator:ac1389234f0385f8f6bb2f4136fd680d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Inviwo wrapper for OpengL Vertex Array Objects (VAO) </p>
 <p>Handles the creation and deletion of OpenGL VAOs. Has functions for attaching and detaching buffer objects. It also keeps track of all attached buffers and corresponding attribute locations. </p><dl class="section note"><dt>Note</dt><dd>An OpenGL Vertex Array Object is tied to a render context and only valid within the same render context that was active when creating it. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71" name="ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71">&#9670;&#160;</a></span>attachBufferObject()</h2>
+<a id="a37b27f8589a1adce8f2663a87feae688" name="a37b27f8589a1adce8f2663a87feae688"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37b27f8589a1adce8f2663a87feae688">&#9670;&#160;</a></span>attachBufferObject()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -163,7 +167,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
         <tr>
           <td class="memname">void inviwo::BufferObjectArray::attachBufferObject </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *</td>          <td class="paramname"><span class="paramname"><em>obj</em>, </span></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *</td>          <td class="paramname"><span class="paramname"><em>bufferObject</em>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -181,16 +185,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"><a class="el" href="classinviwo_1_1Exception.html">Exception</a></td><td>if another buffer object is alread attached to location <code>location</code>. </td></tr>
-    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize()</a>. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize()</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd>attachBufferObjectForce <a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>attachBufferObjectForce <a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize</a> </dd></dl>
 
 </div>
 </div>
-<a id="a91f02bfd8ab804668198da6f1ccd5de3" name="a91f02bfd8ab804668198da6f1ccd5de3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91f02bfd8ab804668198da6f1ccd5de3">&#9670;&#160;</a></span>attachBufferObjectEnforce()</h2>
+<a id="ac18d3827e639077303a29ae9d0976d36" name="ac18d3827e639077303a29ae9d0976d36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac18d3827e639077303a29ae9d0976d36">&#9670;&#160;</a></span>attachBufferObjectEnforce()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -198,7 +202,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
         <tr>
           <td class="memname">void inviwo::BufferObjectArray::attachBufferObjectEnforce </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *</td>          <td class="paramname"><span class="paramname"><em>obj</em>, </span></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1BufferObject.html">BufferObject</a> *</td>          <td class="paramname"><span class="paramname"><em>bufferObject</em>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -215,11 +219,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
 <p>Enforce the attachment of buffer object <code>obj</code> to a specific location <code>location</code>. Overrides any existing binding for this location. </p><dl class="section pre"><dt>Precondition</dt><dd>The <a class="el" href="classinviwo_1_1BufferObjectArray.html" title="Inviwo wrapper for OpengL Vertex Array Objects (VAO)">BufferObjectArray</a> must be bound </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize()</a>. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize()</a>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="#ab4ed3fa0c4cb89dd0d19fe1e1b5f4a71">attachBufferObject</a> <a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a37b27f8589a1adce8f2663a87feae688">attachBufferObject</a> <a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize</a> </dd></dl>
 
 </div>
 </div>
@@ -276,7 +280,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
 <p>Detach the buffer object at location <code>location</code>, if attached, and disable that vertex attribute array. </p><dl class="section pre"><dt>Precondition</dt><dd>The <a class="el" href="classinviwo_1_1BufferObjectArray.html" title="Inviwo wrapper for OpengL Vertex Array Objects (VAO)">BufferObjectArray</a> must be bound </dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a466c3f07385df96bf731373832b6bc92">maxSize()</a>. </td></tr>
+    <tr><td class="paramname"><a class="el" href="classinviwo_1_1RangeException.html">RangeException</a></td><td>if <code>location</code> is invalid. That is <code>location</code> &gt;= <a class="el" href="#a94f2db204777b75581002dbd3762362d">maxSize()</a>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -301,37 +305,53 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setBindingType</b> (s
 
 </div>
 </div>
-<a id="a466c3f07385df96bf731373832b6bc92" name="a466c3f07385df96bf731373832b6bc92"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a466c3f07385df96bf731373832b6bc92">&#9670;&#160;</a></span>maxSize()</h2>
+<a id="a94f2db204777b75581002dbd3762362d" name="a94f2db204777b75581002dbd3762362d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f2db204777b75581002dbd3762362d">&#9670;&#160;</a></span>maxSize()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t inviwo::BufferObjectArray::maxSize </td>
+          <td class="memname">static size_t inviwo::BufferObjectArray::maxSize </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Return the maximum number of buffers that can be attached to a VAO as supported by the OpenGL hardware. The result corresponds to <code>GL_MAX_VERTEX_ATTRIBS</code>. </p><dl class="section return"><dt>Returns</dt><dd>maximum number of buffers that can be attached to this <a class="el" href="classinviwo_1_1BufferObjectArray.html" title="Inviwo wrapper for OpengL Vertex Array Objects (VAO)">BufferObjectArray</a> </dd></dl>
 
 </div>
 </div>
-<a id="ae3cd1cd991bc3b71df399866af8167de" name="ae3cd1cd991bc3b71df399866af8167de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3cd1cd991bc3b71df399866af8167de">&#9670;&#160;</a></span>unbind()</h2>
+<a id="ac1389234f0385f8f6bb2f4136fd680d5" name="ac1389234f0385f8f6bb2f4136fd680d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1389234f0385f8f6bb2f4136fd680d5">&#9670;&#160;</a></span>unbind()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void inviwo::BufferObjectArray::unbind </td>
+          <td class="memname">static void inviwo::BufferObjectArray::unbind </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Unbind the VAO by binding id 0 </p>
 

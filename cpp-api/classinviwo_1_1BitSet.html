@@ -131,26 +131,28 @@ Public Types</h2></td></tr>
 template&lt;class T &gt; </td></tr>
 <tr class="memitem:a62ff245dd4f88cd696ecd656d259bc61"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_iterator</b> = util::is_detected&lt;iterator_category, T&gt;</td></tr>
 <tr class="separator:a62ff245dd4f88cd696ecd656d259bc61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a614ed821cd91be38c8ec54683d262c4f" id="r_a614ed821cd91be38c8ec54683d262c4f"><td class="memTemplParams" colspan="2"><a id="a614ed821cd91be38c8ec54683d262c4f" name="a614ed821cd91be38c8ec54683d262c4f"></a>
+<tr class="memitem:ad6b51d1ecebc28572c12382823597b1c" id="r_ad6b51d1ecebc28572c12382823597b1c"><td class="memTemplParams" colspan="2"><a id="ad6b51d1ecebc28572c12382823597b1c" name="ad6b51d1ecebc28572c12382823597b1c"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a614ed821cd91be38c8ec54683d262c4f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>iterator_category</b> = typename std::iterator_traits&lt;T&gt;::iterator_category</td></tr>
-<tr class="separator:a614ed821cd91be38c8ec54683d262c4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6b51d1ecebc28572c12382823597b1c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>iterator_category</b> = std::iterator_traits&lt;T&gt;::iterator_category</td></tr>
+<tr class="separator:ad6b51d1ecebc28572c12382823597b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af55febfe5b8985959504e225ad5c410f" id="r_af55febfe5b8985959504e225ad5c410f"><td class="memItemLeft" align="right" valign="top"><a id="af55febfe5b8985959504e225ad5c410f" name="af55febfe5b8985959504e225ad5c410f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (const std::vector&lt; bool &gt; &amp;v)</td></tr>
 <tr class="separator:af55febfe5b8985959504e225ad5c410f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a13c7723703de4edebb2a6dfb06e1fd" id="r_a0a13c7723703de4edebb2a6dfb06e1fd"><td class="memTemplParams" colspan="2"><a id="a0a13c7723703de4edebb2a6dfb06e1fd" name="a0a13c7723703de4edebb2a6dfb06e1fd"></a>
-template&lt;typename InputIt , class  = typename std::enable_if_t&lt;is_iterator&lt;InputIt&gt;::value&gt;&gt; </td></tr>
-<tr class="memitem:a0a13c7723703de4edebb2a6dfb06e1fd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add</b> (InputIt begin, InputIt end)</td></tr>
-<tr class="separator:a0a13c7723703de4edebb2a6dfb06e1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeca2ef36ff4218d862e7186369fec5aa" id="r_aeca2ef36ff4218d862e7186369fec5aa"><td class="memTemplParams" colspan="2"><a id="aeca2ef36ff4218d862e7186369fec5aa" name="aeca2ef36ff4218d862e7186369fec5aa"></a>
+template&lt;typename InputIt &gt; <br />
+requires is_iterator&lt;InputIt&gt;::value</td></tr>
+<tr class="memitem:aeca2ef36ff4218d862e7186369fec5aa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add</b> (InputIt begin, InputIt end)</td></tr>
+<tr class="separator:aeca2ef36ff4218d862e7186369fec5aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42c3a152400708afa1609e250b730c45" id="r_a42c3a152400708afa1609e250b730c45"><td class="memItemLeft" align="right" valign="top"><a id="a42c3a152400708afa1609e250b730c45" name="a42c3a152400708afa1609e250b730c45"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::span&lt; const uint32_t &gt; span)</td></tr>
 <tr class="separator:a42c3a152400708afa1609e250b730c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fbd8aa31a817f8fbdc03e20edb76310" id="r_a3fbd8aa31a817f8fbdc03e20edb76310"><td class="memTemplParams" colspan="2">template&lt;typename... Ts, typename  = std::enable_if_t&lt;std::conjunction_v&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;&gt;&gt; </td></tr>
-<tr class="memitem:a3fbd8aa31a817f8fbdc03e20edb76310"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a3fbd8aa31a817f8fbdc03e20edb76310">add</a> (Ts &amp;&amp;... values)</td></tr>
-<tr class="separator:a3fbd8aa31a817f8fbdc03e20edb76310"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329152e6d4d256866c45e75fb3ae75b2" id="r_a329152e6d4d256866c45e75fb3ae75b2"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; <br />
+requires (std::conjunction_v&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;)</td></tr>
+<tr class="memitem:a329152e6d4d256866c45e75fb3ae75b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a329152e6d4d256866c45e75fb3ae75b2">add</a> (Ts &amp;&amp;... values)</td></tr>
+<tr class="separator:a329152e6d4d256866c45e75fb3ae75b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac998e38bdacf5435ff980a20c8398e08" id="r_ac998e38bdacf5435ff980a20c8398e08"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac998e38bdacf5435ff980a20c8398e08">addChecked</a> (uint32_t v)</td></tr>
 <tr class="separator:ac998e38bdacf5435ff980a20c8398e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7701f1579885da0a064382817f7c6686" id="r_a7701f1579885da0a064382817f7c6686"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7701f1579885da0a064382817f7c6686">addRange</a> (uint32_t <a class="el" href="#a8beb156da38b56beb3b91748d224308d">min</a>, uint32_t <a class="el" href="#acb481dee5220b3c95a554ba92e399539">max</a>)</td></tr>
@@ -173,17 +175,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (std::span&lt
 <tr class="memitem:a228fc82324adb13291bebb10af793c2b" id="r_a228fc82324adb13291bebb10af793c2b"><td class="memItemLeft" align="right" valign="top"><a id="a228fc82324adb13291bebb10af793c2b" name="a228fc82324adb13291bebb10af793c2b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BitSet</b> (const std::vector&lt; bool &gt; &amp;v)</td></tr>
 <tr class="separator:a228fc82324adb13291bebb10af793c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7775644ee8162856dc6b13241d023547" id="r_a7775644ee8162856dc6b13241d023547"><td class="memTemplParams" colspan="2"><a id="a7775644ee8162856dc6b13241d023547" name="a7775644ee8162856dc6b13241d023547"></a>
-template&lt;typename InputIt , class  = std::enable_if_t&lt;is_iterator&lt;InputIt&gt;::value&gt;&gt; </td></tr>
-<tr class="memitem:a7775644ee8162856dc6b13241d023547"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>BitSet</b> (InputIt begin, InputIt end)</td></tr>
-<tr class="separator:a7775644ee8162856dc6b13241d023547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36127e9d762cd1e0a3e88923cc5ebd28" id="r_a36127e9d762cd1e0a3e88923cc5ebd28"><td class="memTemplParams" colspan="2"><a id="a36127e9d762cd1e0a3e88923cc5ebd28" name="a36127e9d762cd1e0a3e88923cc5ebd28"></a>
+template&lt;typename InputIt &gt; <br />
+requires (is_iterator&lt;InputIt&gt;::value)</td></tr>
+<tr class="memitem:a36127e9d762cd1e0a3e88923cc5ebd28"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>BitSet</b> (InputIt begin, InputIt end)</td></tr>
+<tr class="separator:a36127e9d762cd1e0a3e88923cc5ebd28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30ce67441068290a24b051d97a88fe0a" id="r_a30ce67441068290a24b051d97a88fe0a"><td class="memItemLeft" align="right" valign="top"><a id="a30ce67441068290a24b051d97a88fe0a" name="a30ce67441068290a24b051d97a88fe0a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BitSet</b> (std::span&lt; const uint32_t &gt; span)</td></tr>
 <tr class="separator:a30ce67441068290a24b051d97a88fe0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a009319b816ac9e2926ed269749a1c691" id="r_a009319b816ac9e2926ed269749a1c691"><td class="memTemplParams" colspan="2"><a id="a009319b816ac9e2926ed269749a1c691" name="a009319b816ac9e2926ed269749a1c691"></a>
-template&lt;typename... Ts, class  = std::enable_if_t&lt;                                  std::conjunction&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;::value&gt;&gt; </td></tr>
-<tr class="memitem:a009319b816ac9e2926ed269749a1c691"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>BitSet</b> (Ts &amp;&amp;... values)</td></tr>
-<tr class="separator:a009319b816ac9e2926ed269749a1c691"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa51c6f5a25f4f44b468acb4fe63faf2f" id="r_aa51c6f5a25f4f44b468acb4fe63faf2f"><td class="memTemplParams" colspan="2"><a id="aa51c6f5a25f4f44b468acb4fe63faf2f" name="aa51c6f5a25f4f44b468acb4fe63faf2f"></a>
+template&lt;typename... Ts&gt; <br />
+requires (std::conjunction_v&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;)</td></tr>
+<tr class="memitem:aa51c6f5a25f4f44b468acb4fe63faf2f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>BitSet</b> (Ts &amp;&amp;... values)</td></tr>
+<tr class="separator:aa51c6f5a25f4f44b468acb4fe63faf2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abad6ddf1f01a670339a80690244afa9b" id="r_abad6ddf1f01a670339a80690244afa9b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abad6ddf1f01a670339a80690244afa9b">cardinality</a> () const</td></tr>
 <tr class="separator:abad6ddf1f01a670339a80690244afa9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a69be9eee4acd6ba18ce6b2a2032366" id="r_a9a69be9eee4acd6ba18ce6b2a2032366"><td class="memItemLeft" align="right" valign="top"><a id="a9a69be9eee4acd6ba18ce6b2a2032366" name="a9a69be9eee4acd6ba18ce6b2a2032366"></a>
@@ -290,13 +294,14 @@ std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operato
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>represents a bitset based on roaring bitmaps provided by the CRoaring library </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3fbd8aa31a817f8fbdc03e20edb76310" name="a3fbd8aa31a817f8fbdc03e20edb76310"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fbd8aa31a817f8fbdc03e20edb76310">&#9670;&#160;</a></span>add()</h2>
+<a id="a329152e6d4d256866c45e75fb3ae75b2" name="a329152e6d4d256866c45e75fb3ae75b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a329152e6d4d256866c45e75fb3ae75b2">&#9670;&#160;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... Ts, typename  = std::enable_if_t&lt;std::conjunction_v&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;&gt;&gt; </div>
+template&lt;typename... Ts&gt; <br />
+requires (std::conjunction_v&lt;std::is_convertible&lt;Ts, uint32_t&gt;...&gt;)</div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">

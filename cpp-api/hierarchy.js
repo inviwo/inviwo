@@ -237,6 +237,7 @@ var hierarchy =
     [ "inviwo::detail::concat_fn", "structinviwo_1_1detail_1_1concat__fn.html", null ],
     [ "inviwo::detail::concat_iter_variant_helper< Ranges, Seq >", "structinviwo_1_1detail_1_1concat__iter__variant__helper.html", null ],
     [ "inviwo::detail::concat_iter_variant_helper< Ranges, std::index_sequence< Is... > >", "structinviwo_1_1detail_1_1concat__iter__variant__helper_3_01Ranges_00_01std_1_1index__sequence_3_01Is_8_8_8_01_4_01_4.html", null ],
+    [ "inviwo::detail::concat_iter_variant_helper< Ranges_, std::index_sequence_for< Rs... > >", "structinviwo_1_1detail_1_1concat__iter__variant__helper.html", null ],
     [ "inviwo::marching::Config", "structinviwo_1_1marching_1_1Config.html", null ],
     [ "inviwo::utilgl::BlendModeState::Config", "structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html", null ],
     [ "inviwo::dispatching::detail::Cons< typename, typename >", "structinviwo_1_1dispatching_1_1detail_1_1Cons.html", null ],
@@ -1243,7 +1244,7 @@ var hierarchy =
             [ "inviwo::animation::CameraLinearInterpolation", "classinviwo_1_1animation_1_1CameraLinearInterpolation.html", null ],
             [ "inviwo::animation::CameraSphericalInterpolation", "classinviwo_1_1animation_1_1CameraSphericalInterpolation.html", null ]
           ] ],
-          [ "inviwo::animation::InterpolationTyped< Key, typename Key::value_type >", "classinviwo_1_1animation_1_1InterpolationTyped.html", null ],
+          [ "inviwo::animation::InterpolationTyped< Key, Key::value_type >", "classinviwo_1_1animation_1_1InterpolationTyped.html", null ],
           [ "inviwo::animation::InterpolationTyped< ValueKeyframe< IsoValueCollection >, IsoValueCollection >", "classinviwo_1_1animation_1_1InterpolationTyped.html", [
             [ "inviwo::animation::IsoValuePropertyInterpolationBlend", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationBlend.html", null ],
             [ "inviwo::animation::IsoValuePropertyInterpolationFade", "classinviwo_1_1animation_1_1IsoValuePropertyInterpolationFade.html", null ]
@@ -1442,6 +1443,7 @@ var hierarchy =
       [ "inviwo::MultiFileProperty", "classinviwo_1_1MultiFileProperty.html", null ]
     ] ],
     [ "inviwo::FileExtension", "structinviwo_1_1FileExtension.html", null ],
+    [ "inviwo::filesystem::FileHandle", "classinviwo_1_1filesystem_1_1FileHandle.html", null ],
     [ "inviwo::FileObserver", "classinviwo_1_1FileObserver.html", [
       [ "inviwo::FileShaderResource", "classinviwo_1_1FileShaderResource.html", null ],
       [ "inviwo::PythonProcessorFactoryObject", "classinviwo_1_1PythonProcessorFactoryObject.html", null ],
@@ -1555,10 +1557,10 @@ var hierarchy =
     [ "std::hash< inviwo::resource::GL >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1GL_01_4.html", null ],
     [ "std::hash< inviwo::resource::PY >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1PY_01_4.html", null ],
     [ "std::hash< inviwo::resource::RAM >", "structstd_1_1hash_3_01inviwo_1_1resource_1_1RAM_01_4.html", null ],
+    [ "std::hash< inviwo::ShaderSegment::Placeholder >", "structstd_1_1hash_3_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html", null ],
     [ "std::hash< inviwo::ShaderType >", "structstd_1_1hash_3_01inviwo_1_1ShaderType_01_4.html", null ],
     [ "std::hash< std::pair< T, U > >", "structstd_1_1hash_3_01std_1_1pair_3_01T_00_01U_01_4_01_4.html", null ],
     [ "std::hash< std::tuple< TT... > >", "structstd_1_1hash_3_01std_1_1tuple_3_01TT_8_8_8_01_4_01_4.html", null ],
-    [ "std::hash< typename inviwo::ShaderSegment::Placeholder >", "structstd_1_1hash_3_01typename_01inviwo_1_1ShaderSegment_1_1Placeholder_01_4.html", null ],
     [ "inviwo::util::hashtuple::HashValueImpl< Tuple, Index >", "structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl.html", null ],
     [ "inviwo::util::hashtuple::HashValueImpl< Tuple, 0 >", "structinviwo_1_1util_1_1hashtuple_1_1HashValueImpl_3_01Tuple_00_010_01_4.html", null ],
     [ "inviwo::detail::hasProcessorInfo< T >", "classinviwo_1_1detail_1_1hasProcessorInfo.html", null ],
@@ -1708,6 +1710,7 @@ var hierarchy =
     [ "inviwo::util::sequence< T >::iterator", "structinviwo_1_1util_1_1sequence_1_1iterator.html", null ],
     [ "inviwo::views::set_transform< V1, V2, Comp, Fn >::iterator", "classinviwo_1_1views_1_1set__transform_1_1iterator.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< T >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
+    [ "inviwo::util::detailzip::iterator_tools< Iterables >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools.html", null ],
     [ "inviwo::util::detailzip::iterator_tools< std::tuple< Ts... > >", "structinviwo_1_1util_1_1detailzip_1_1iterator__tools_3_01std_1_1tuple_3_01Ts_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::pool::detail::JobTraits< Job >", "structinviwo_1_1pool_1_1detail_1_1JobTraits.html", null ],
     [ "inviwo::JSONConverter< Base >", "classinviwo_1_1JSONConverter.html", [
@@ -3611,7 +3614,7 @@ var hierarchy =
       [ "inviwo::ProcessorTrampoline", "classinviwo_1_1ProcessorTrampoline.html", null ]
     ] ],
     [ "inviwo::Transformer< T, Enable >", "classinviwo_1_1Transformer.html", null ],
-    [ "inviwo::Transformer< T, typename std::enable_if< util::is_floating_point< T >::value >::type >", "classinviwo_1_1Transformer_3_01T_00_01typename_01std_1_1enable__if_3_01util_1_1is__floating__poi8021285cfd2189c6e2886140b1bddf32.html", null ],
+    [ "inviwo::Transformer< T, std::enable_if_t< util::is_floating_point< T >::value > >", "classinviwo_1_1Transformer_3_01T_00_01std_1_1enable__if__t_3_01util_1_1is__floating__point_3_01T_01_4_1_1value_01_4_01_4.html", null ],
     [ "inviwo::util::TransformIterator< Transform, Iter >", "structinviwo_1_1util_1_1TransformIterator.html", null ],
     [ "std::true_type", null, [
       [ "inviwo::util::detail::is_string< LCString, void >", "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html", null ],

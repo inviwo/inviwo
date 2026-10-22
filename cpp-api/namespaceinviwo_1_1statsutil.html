@@ -113,21 +113,28 @@ IVW_MODULE_PLOTTING_API <a class="el" href="structinviwo_1_1statsutil_1_1Regresi
 <tr class="memitem:a22ffe2a3d60fdbb55adfdc3c9893bde6" id="r_a22ffe2a3d60fdbb55adfdc3c9893bde6"><td class="memItemLeft" align="right" valign="top"><a id="a22ffe2a3d60fdbb55adfdc3c9893bde6" name="a22ffe2a3d60fdbb55adfdc3c9893bde6"></a>
 IVW_MODULE_PLOTTING_API std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (std::ostream &amp;os, <a class="el" href="structinviwo_1_1statsutil_1_1RegresionResult.html">RegresionResult</a> res)</td></tr>
 <tr class="separator:a22ffe2a3d60fdbb55adfdc3c9893bde6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadd88798eec33f67b58834ca3311a3f9" id="r_aadd88798eec33f67b58834ca3311a3f9"><td class="memTemplParams" colspan="2">template&lt;typename T , typename std::enable_if&lt;!<a class="el" href="structinviwo_1_1util_1_1is__floating__point.html">util::is_floating_point</a>&lt; T &gt;::value, int &gt;::type  = 0&gt; </td></tr>
-<tr class="memitem:aadd88798eec33f67b58834ca3311a3f9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aadd88798eec33f67b58834ca3311a3f9">percentiles</a> (std::vector&lt; T &gt; data, const std::vector&lt; double &gt; &amp;percentiles)</td></tr>
-<tr class="memdesc:aadd88798eec33f67b58834ca3311a3f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute value below a percentage of observations in the data. Uses the nearest rank method, i.e. ceil(percentile * N), where N = number of elements in data.  <br /></td></tr>
-<tr class="separator:aadd88798eec33f67b58834ca3311a3f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a302c6a9fdccf5429873b24d5354eabed" id="r_a302c6a9fdccf5429873b24d5354eabed"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; <br />
+requires (!<a class="el" href="structinviwo_1_1util_1_1is__floating__point.html">util::is_floating_point</a>&lt;T&gt;::value)</td></tr>
+<tr class="memitem:a302c6a9fdccf5429873b24d5354eabed"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a302c6a9fdccf5429873b24d5354eabed">percentiles</a> (std::vector&lt; T &gt; data, const std::vector&lt; double &gt; &amp;percentiles)</td></tr>
+<tr class="memdesc:a302c6a9fdccf5429873b24d5354eabed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute value below a percentage of observations in the data. Uses the nearest rank method, i.e. ceil(percentile * N), where N = number of elements in data.  <br /></td></tr>
+<tr class="separator:a302c6a9fdccf5429873b24d5354eabed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae873c8d798a7e40e1c5ec83956bd4d28" id="r_ae873c8d798a7e40e1c5ec83956bd4d28"><td class="memTemplParams" colspan="2"><a id="ae873c8d798a7e40e1c5ec83956bd4d28" name="ae873c8d798a7e40e1c5ec83956bd4d28"></a>
+template&lt;typename T &gt; <br />
+requires <a class="el" href="structinviwo_1_1util_1_1is__floating__point.html">util::is_floating_point</a>&lt;T&gt;::value</td></tr>
+<tr class="memitem:ae873c8d798a7e40e1c5ec83956bd4d28"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>percentiles</b> (std::vector&lt; T &gt; data, const std::vector&lt; double &gt; &amp;percentiles)</td></tr>
+<tr class="separator:ae873c8d798a7e40e1c5ec83956bd4d28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>statsutil </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="aadd88798eec33f67b58834ca3311a3f9" name="aadd88798eec33f67b58834ca3311a3f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadd88798eec33f67b58834ca3311a3f9">&#9670;&#160;</a></span>percentiles()</h2>
+<a id="a302c6a9fdccf5429873b24d5354eabed" name="a302c6a9fdccf5429873b24d5354eabed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a302c6a9fdccf5429873b24d5354eabed">&#9670;&#160;</a></span>percentiles()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T , typename std::enable_if&lt;!<a class="el" href="structinviwo_1_1util_1_1is__floating__point.html">util::is_floating_point</a>&lt; T &gt;::value, int &gt;::type  = 0&gt; </div>
+template&lt;typename T &gt; <br />
+requires (!<a class="el" href="structinviwo_1_1util_1_1is__floating__point.html">util::is_floating_point</a>&lt;T&gt;::value)</div>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; T &gt; inviwo::statsutil::percentiles </td>
@@ -143,8 +150,8 @@ template&lt;typename T , typename std::enable_if&lt;!<a class="el" href="structi
 </div><div class="memdoc">
 
 <p>Compute value below a percentage of observations in the data. Uses the nearest rank method, i.e. ceil(percentile * N), where N = number of elements in data. </p>
-<p>NaNs (Not a Numbers) are excluded from the computation. The following example will return {1,2} </p><div class="fragment"><div class="line"><span class="keyword">auto</span> <a class="code hl_function" href="#aadd88798eec33f67b58834ca3311a3f9">percentiles</a> = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});</div>
-<div class="ttc" id="anamespaceinviwo_1_1statsutil_html_aadd88798eec33f67b58834ca3311a3f9"><div class="ttname"><a href="#aadd88798eec33f67b58834ca3311a3f9">inviwo::statsutil::percentiles</a></div><div class="ttdeci">std::vector&lt; T &gt; percentiles(std::vector&lt; T &gt; data, const std::vector&lt; double &gt; &amp;percentiles)</div><div class="ttdoc">Compute value below a percentage of observations in the data. Uses the nearest rank method,...</div><div class="ttdef"><b>Definition</b> statsutils.h:84</div></div>
+<p>NaNs (Not a Numbers) are excluded from the computation. The following example will return {1,2} </p><div class="fragment"><div class="line"><span class="keyword">auto</span> <a class="code hl_function" href="#a302c6a9fdccf5429873b24d5354eabed">percentiles</a> = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});</div>
+<div class="ttc" id="anamespaceinviwo_1_1statsutil_html_a302c6a9fdccf5429873b24d5354eabed"><div class="ttname"><a href="#a302c6a9fdccf5429873b24d5354eabed">inviwo::statsutil::percentiles</a></div><div class="ttdeci">std::vector&lt; T &gt; percentiles(std::vector&lt; T &gt; data, const std::vector&lt; double &gt; &amp;percentiles)</div><div class="ttdoc">Compute value below a percentage of observations in the data. Uses the nearest rank method,...</div><div class="ttdef"><b>Definition</b> statsutils.h:84</div></div>
 </div><!-- fragment --><p> See also <a href="https://en.wikipedia.org/wiki/Percentile">https://en.wikipedia.org/wiki/Percentile</a></p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

@@ -102,12 +102,12 @@ $(function(){initNavTree('structinviwo_1_1dispatching_1_1detail_1_1Filter_3_01Pr
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a635bfd230c77ddb79bd94a48b80d98f8" id="r_a635bfd230c77ddb79bd94a48b80d98f8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a635bfd230c77ddb79bd94a48b80d98f8">type</a></td></tr>
-<tr class="separator:a635bfd230c77ddb79bd94a48b80d98f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a1dc1691a91382eb4ea40011ddd15ef" id="r_a7a1dc1691a91382eb4ea40011ddd15ef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a1dc1691a91382eb4ea40011ddd15ef">type</a></td></tr>
+<tr class="separator:a7a1dc1691a91382eb4ea40011ddd15ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a635bfd230c77ddb79bd94a48b80d98f8" name="a635bfd230c77ddb79bd94a48b80d98f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a635bfd230c77ddb79bd94a48b80d98f8">&#9670;&#160;</a></span>type</h2>
+<a id="a7a1dc1691a91382eb4ea40011ddd15ef" name="a7a1dc1691a91382eb4ea40011ddd15ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a1dc1691a91382eb4ea40011ddd15ef">&#9670;&#160;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -119,10 +119,10 @@ template&lt;template&lt; class &gt; class Predicate, typename Head , typename...
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> <span class="keyword">typename</span> std::conditional&lt;</div>
-<div class="line">        Predicate&lt;Head&gt;::value,</div>
-<div class="line">        <span class="keyword">typename</span> Cons&lt;Head, <span class="keyword">typename</span> <a class="code hl_enumvalue" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">Filter</a>&lt;Predicate, Tail...&gt;::type&gt;::type,</div>
-<div class="line">        <span class="keyword">typename</span> <a class="code hl_enumvalue" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">Filter</a>&lt;Predicate, Tail...&gt;::type&gt;::type</div>
+<b>Initial value:</b><div class="fragment"><div class="line"> </div>
+<div class="line">        std::conditional_t&lt;Predicate&lt;Head&gt;::value,</div>
+<div class="line">                           <span class="keyword">typename</span> Cons&lt;Head, <span class="keyword">typename</span> <a class="code hl_enumvalue" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">Filter</a>&lt;Predicate, Tail...&gt;::type&gt;::type,</div>
+<div class="line">                           <span class="keyword">typename</span> <a class="code hl_enumvalue" href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">Filter</a>&lt;Predicate, Tail...&gt;::type&gt;</div>
 <div class="ttc" id="anamespaceinviwo_html_a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a"><div class="ttname"><a href="namespaceinviwo.html#a5057c694371488c9c8dbf86d7e909d6dad7778d0c64b6ba21494c97f77a66885a">inviwo::BrushingAction::Filter</a></div><div class="ttdeci">@ Filter</div><div class="ttdoc">filter the given indices and mark them as removed</div></div>
 </div><!-- fragment -->
 </div>

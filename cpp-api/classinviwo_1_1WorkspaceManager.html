@@ -108,39 +108,39 @@ Public Types</h2></td></tr>
 <tr class="memitem:a7ddafd6a8a40edb3043f50b122f06ef1" id="r_a7ddafd6a8a40edb3043f50b122f06ef1"><td class="memItemLeft" align="right" valign="top"><a id="a7ddafd6a8a40edb3043f50b122f06ef1" name="a7ddafd6a8a40edb3043f50b122f06ef1"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>allocator_type</b> = std::pmr::polymorphic_allocator&lt;std::byte&gt;</td></tr>
 <tr class="separator:a7ddafd6a8a40edb3043f50b122f06ef1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae22410cf327bad91234e8ca67ef9b628" id="r_ae22410cf327bad91234e8ca67ef9b628"><td class="memItemLeft" align="right" valign="top"><a id="ae22410cf327bad91234e8ca67ef9b628" name="ae22410cf327bad91234e8ca67ef9b628"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ClearCallback</b> = typename ClearDispatcher::Callback</td></tr>
-<tr class="separator:ae22410cf327bad91234e8ca67ef9b628"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2c4d9d9ba52e1b8b0f343aa0dc55daa" id="r_ad2c4d9d9ba52e1b8b0f343aa0dc55daa"><td class="memItemLeft" align="right" valign="top"><a id="ad2c4d9d9ba52e1b8b0f343aa0dc55daa" name="ad2c4d9d9ba52e1b8b0f343aa0dc55daa"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ClearHandle</b> = typename ClearDispatcher::Handle</td></tr>
-<tr class="separator:ad2c4d9d9ba52e1b8b0f343aa0dc55daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a890350231ae97d1b05c663ac30093" id="r_a00a890350231ae97d1b05c663ac30093"><td class="memItemLeft" align="right" valign="top"><a id="a00a890350231ae97d1b05c663ac30093" name="a00a890350231ae97d1b05c663ac30093"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ClearCallback</b> = ClearDispatcher::Callback</td></tr>
+<tr class="separator:a00a890350231ae97d1b05c663ac30093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a215873d76b56ad4a6a117740dbba5770" id="r_a215873d76b56ad4a6a117740dbba5770"><td class="memItemLeft" align="right" valign="top"><a id="a215873d76b56ad4a6a117740dbba5770" name="a215873d76b56ad4a6a117740dbba5770"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ClearHandle</b> = ClearDispatcher::Handle</td></tr>
+<tr class="separator:a215873d76b56ad4a6a117740dbba5770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfc9bc799e1bbb798f3701f91bc5af1a" id="r_adfc9bc799e1bbb798f3701f91bc5af1a"><td class="memItemLeft" align="right" valign="top"><a id="adfc9bc799e1bbb798f3701f91bc5af1a" name="adfc9bc799e1bbb798f3701f91bc5af1a"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>DeserializationCallback</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a>&amp;)&gt;</td></tr>
 <tr class="separator:adfc9bc799e1bbb798f3701f91bc5af1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1ee070c3111a68dfb1c5178ab804156" id="r_ad1ee070c3111a68dfb1c5178ab804156"><td class="memItemLeft" align="right" valign="top"><a id="ad1ee070c3111a68dfb1c5178ab804156" name="ad1ee070c3111a68dfb1c5178ab804156"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>DeserializationHandle</b> = typename DeserializationDispatcher::Handle</td></tr>
-<tr class="separator:ad1ee070c3111a68dfb1c5178ab804156"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08af31aa02b454e2a582d14a219470e1" id="r_a08af31aa02b454e2a582d14a219470e1"><td class="memItemLeft" align="right" valign="top"><a id="a08af31aa02b454e2a582d14a219470e1" name="a08af31aa02b454e2a582d14a219470e1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DeserializationHandle</b> = DeserializationDispatcher::Handle</td></tr>
+<tr class="separator:a08af31aa02b454e2a582d14a219470e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8cab7adfbac42142f106c8529aa7695" id="r_ae8cab7adfbac42142f106c8529aa7695"><td class="memItemLeft" align="right" valign="top"><a id="ae8cab7adfbac42142f106c8529aa7695" name="ae8cab7adfbac42142f106c8529aa7695"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ExceptionHandler</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1SourceContext.html">SourceContext</a>)&gt;</td></tr>
 <tr class="separator:ae8cab7adfbac42142f106c8529aa7695"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ec83f1273ea63fe2cebd6baa1ec6ad1" id="r_a1ec83f1273ea63fe2cebd6baa1ec6ad1"><td class="memItemLeft" align="right" valign="top"><a id="a1ec83f1273ea63fe2cebd6baa1ec6ad1" name="a1ec83f1273ea63fe2cebd6baa1ec6ad1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedCallback</b> = typename ModifiedDispatcher::Callback</td></tr>
-<tr class="separator:a1ec83f1273ea63fe2cebd6baa1ec6ad1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e065ee8297cd0d6b645af250da5d34e" id="r_a9e065ee8297cd0d6b645af250da5d34e"><td class="memItemLeft" align="right" valign="top"><a id="a9e065ee8297cd0d6b645af250da5d34e" name="a9e065ee8297cd0d6b645af250da5d34e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedChangedCallback</b> = typename ModifiedChangedDispatcher::Callback</td></tr>
-<tr class="separator:a9e065ee8297cd0d6b645af250da5d34e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a6814785fcaf6fd0e055ff76fd3b2e7" id="r_a1a6814785fcaf6fd0e055ff76fd3b2e7"><td class="memItemLeft" align="right" valign="top"><a id="a1a6814785fcaf6fd0e055ff76fd3b2e7" name="a1a6814785fcaf6fd0e055ff76fd3b2e7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedChangedHandle</b> = typename ModifiedChangedDispatcher::Handle</td></tr>
-<tr class="separator:a1a6814785fcaf6fd0e055ff76fd3b2e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7ef41e23e86346cd14cc4984d0c9b84" id="r_ac7ef41e23e86346cd14cc4984d0c9b84"><td class="memItemLeft" align="right" valign="top"><a id="ac7ef41e23e86346cd14cc4984d0c9b84" name="ac7ef41e23e86346cd14cc4984d0c9b84"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedHandle</b> = typename ModifiedDispatcher::Handle</td></tr>
-<tr class="separator:ac7ef41e23e86346cd14cc4984d0c9b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba680a89fdddd6719c7d0ea71d842427" id="r_aba680a89fdddd6719c7d0ea71d842427"><td class="memItemLeft" align="right" valign="top"><a id="aba680a89fdddd6719c7d0ea71d842427" name="aba680a89fdddd6719c7d0ea71d842427"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedCallback</b> = ModifiedDispatcher::Callback</td></tr>
+<tr class="separator:aba680a89fdddd6719c7d0ea71d842427"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada498734a22d1efcb5d172d2448a9a8a" id="r_ada498734a22d1efcb5d172d2448a9a8a"><td class="memItemLeft" align="right" valign="top"><a id="ada498734a22d1efcb5d172d2448a9a8a" name="ada498734a22d1efcb5d172d2448a9a8a"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedChangedCallback</b> = ModifiedChangedDispatcher::Callback</td></tr>
+<tr class="separator:ada498734a22d1efcb5d172d2448a9a8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2295f24462207898f741973941ced058" id="r_a2295f24462207898f741973941ced058"><td class="memItemLeft" align="right" valign="top"><a id="a2295f24462207898f741973941ced058" name="a2295f24462207898f741973941ced058"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedChangedHandle</b> = ModifiedChangedDispatcher::Handle</td></tr>
+<tr class="separator:a2295f24462207898f741973941ced058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a63e541c2a5314a032fa295337923ea" id="r_a0a63e541c2a5314a032fa295337923ea"><td class="memItemLeft" align="right" valign="top"><a id="a0a63e541c2a5314a032fa295337923ea" name="a0a63e541c2a5314a032fa295337923ea"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ModifiedHandle</b> = ModifiedDispatcher::Handle</td></tr>
+<tr class="separator:a0a63e541c2a5314a032fa295337923ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6b167884f77c2a25cf7fc4044ed368d" id="r_aa6b167884f77c2a25cf7fc4044ed368d"><td class="memItemLeft" align="right" valign="top"><a id="aa6b167884f77c2a25cf7fc4044ed368d" name="aa6b167884f77c2a25cf7fc4044ed368d"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>SerializationCallback</b> = std::function&lt;void(<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a>&amp;)&gt;</td></tr>
 <tr class="separator:aa6b167884f77c2a25cf7fc4044ed368d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77078e7f482c6428ee4e3459a418512e" id="r_a77078e7f482c6428ee4e3459a418512e"><td class="memItemLeft" align="right" valign="top"><a id="a77078e7f482c6428ee4e3459a418512e" name="a77078e7f482c6428ee4e3459a418512e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>SerializationHandle</b> = typename SerializationDispatcher::Handle</td></tr>
-<tr class="separator:a77078e7f482c6428ee4e3459a418512e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20b7a5f6aaccd3f036d665a6ad3ac90d" id="r_a20b7a5f6aaccd3f036d665a6ad3ac90d"><td class="memItemLeft" align="right" valign="top"><a id="a20b7a5f6aaccd3f036d665a6ad3ac90d" name="a20b7a5f6aaccd3f036d665a6ad3ac90d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>SerializationHandle</b> = SerializationDispatcher::Handle</td></tr>
+<tr class="separator:a20b7a5f6aaccd3f036d665a6ad3ac90d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>

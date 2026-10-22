@@ -1,7 +1,7 @@
 var classinviwo_1_1BitSet =
 [
     [ "BitSetIterator", "classinviwo_1_1BitSet_1_1BitSetIterator.html", null ],
-    [ "add", "classinviwo_1_1BitSet.html#a3fbd8aa31a817f8fbdc03e20edb76310", null ],
+    [ "add", "classinviwo_1_1BitSet.html#a329152e6d4d256866c45e75fb3ae75b2", null ],
     [ "addChecked", "classinviwo_1_1BitSet.html#ac998e38bdacf5435ff980a20c8398e08", null ],
     [ "addRange", "classinviwo_1_1BitSet.html#a7701f1579885da0a064382817f7c6686", null ],
     [ "addRangeClosed", "classinviwo_1_1BitSet.html#a1f99720d32c179d40c6c9093c80e99f9", null ],

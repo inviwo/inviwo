@@ -13,6 +13,6 @@ var searchData=
   ['visitmatchingnodesrecursive_10',['visitMatchingNodesRecursive',['../namespaceinviwo_1_1xml.html#a1355fad8f8813d8f27b8eaee8b4c38a2',1,'inviwo::xml']]],
   ['volume_11',['Volume',['../classinviwo_1_1Volume.html#a9b4f6c0253fbef968715478ff006346d',1,'inviwo::Volume']]],
   ['volumeramdistancetransform_12',['volumeRAMDistanceTransform',['../namespaceinviwo_1_1util.html#a21094bd4eae6e9a668b25cf52d70fa2c',1,'inviwo::util']]],
-  ['voronoisegmentation_13',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aa9402f8b933d12f71410d3cc938691e9',1,'inviwo::util']]],
+  ['voronoisegmentation_13',['voronoiSegmentation',['../namespaceinviwo_1_1util.html#aded1b46bbb6461d4dee4d48a702c46c8',1,'inviwo::util']]],
   ['voxelvolume_14',['voxelVolume',['../namespaceinviwo_1_1util.html#a4fde21434664ba9e965614cfdf7890fc',1,'inviwo::util']]]
 ];

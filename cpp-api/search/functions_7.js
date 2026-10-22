@@ -27,7 +27,7 @@ var searchData=
   ['hex2urgb_24',['hex2urgb',['../namespaceinviwo_1_1color.html#a7dc9568e7c62d0db62b4b6ebade35468',1,'inviwo::color']]],
   ['hex2urgba_25',['hex2urgba',['../namespaceinviwo_1_1color.html#a1d815b3c721bc7221a9da213ce0179c8',1,'inviwo::color']]],
   ['hidewidget_26',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
-  ['highlight_27',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
+  ['highlight_27',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a8acc0d51654973762500eadce40958d4',1,'inviwo::BrushingAndLinkingManager']]],
   ['highlightcode_28',['highlightCode',['../namespaceinviwo_1_1util.html#a4cf5815c2544c315646a7c3f91bd3cb0',1,'inviwo::util']]],
   ['hsl2rgb_29',['hsl2rgb',['../namespaceinviwo_1_1color.html#a8d0e0863995cedb80bc5799c3f149048',1,'inviwo::color']]],
   ['hsv2rgb_30',['hsv2rgb',['../namespaceinviwo_1_1color.html#a0da20ba4dfc221f8708ad12ab20ffe06',1,'inviwo::color']]]
