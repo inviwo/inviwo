@@ -39,7 +39,7 @@ namespace inviwo::util {
 
 // https://isocpp.org/blog/2015/01/for-each-arg-eric-niebler
 template <class F, class... Args>
-auto for_each_argument(F&& f, Args&&... args) {
+constexpr auto for_each_argument(F&& f, Args&&... args) {
     return (void)std::initializer_list<int>{0, (f(std::forward<Args>(args)), 0)...},
            std::forward<F>(f);
 }
@@ -47,11 +47,11 @@ auto for_each_argument(F&& f, Args&&... args) {
 namespace detail {
 
 template <typename F, typename TupleType, size_t... Is>
-auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType&& t) {
+constexpr auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType&& t) {
     return (void)std::initializer_list<int>{0, (f(std::get<Is>(t)), 0)...}, std::forward<F>(f);
 }
 template <typename F, typename TupleType1, typename TupleType2, size_t... Is>
-auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, TupleType2&& t2) {
+constexpr auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, TupleType2&& t2) {
     return (void)std::initializer_list<int>{0, (f(std::get<Is>(t1), std::get<Is>(t2)), 0)...},
            std::forward<F>(f);
 }
@@ -59,14 +59,14 @@ auto for_each_in_tuple_impl(F&& f, std::index_sequence<Is...>, TupleType1&& t1, 
 }  // namespace detail
 
 template <typename F, typename TupleType>
-void for_each_in_tuple(F&& f, TupleType&& t) {
+constexpr void for_each_in_tuple(F&& f, TupleType&& t) {
     detail::for_each_in_tuple_impl(
         std::forward<F>(f),
         std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<TupleType>>>{},
         std::forward<TupleType>(t));
 }
 template <typename F, typename TupleType1, typename TupleType2>
-void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
+constexpr void for_each_in_tuple(F&& f, TupleType1&& t1, TupleType2&& t2) {
     detail::for_each_in_tuple_impl(std::forward<F>(f),
                                    std::make_index_sequence<std::min(
                                        std::tuple_size_v<std::remove_reference_t<TupleType1>>,
@@ -95,7 +95,7 @@ struct for_each_type;
 template <typename T>
 struct for_each_type<std::tuple<T>> {
     template <class F, class... Args>
-    auto operator()(F&& f, Args&&... args) {
+    constexpr auto operator()(F&& f, Args&&... args) {
         f.template operator()<T>(std::forward<Args>(args)...);
         return std::forward<F>(f);
     }
@@ -104,7 +104,7 @@ struct for_each_type<std::tuple<T>> {
 template <class T, class... Types>
 struct for_each_type<std::tuple<T, Types...>> {
     template <class F, class... Args>
-    auto operator()(F&& f, Args&&... args) {
+    constexpr auto operator()(F&& f, Args&&... args) {
         f.template operator()<T>(std::forward<Args>(args)...);
         return for_each_type<std::tuple<Types...>>{}(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
@@ -135,7 +135,7 @@ private:
     template <typename AType>
     struct nestedhelper {
         template <typename BType, class F, class... Args>
-        auto operator()(F&& f, Args&&... args) {
+        constexpr auto operator()(F&& f, Args&&... args) {
             f.template operator()<AType, BType>(std::forward<Args>(args)...);
         }
     };
@@ -143,7 +143,7 @@ private:
     template <typename BTs>
     struct helper {
         template <typename AType, class F, class... Args>
-        auto operator()(F&& f, Args&&... args) {
+        constexpr auto operator()(F&& f, Args&&... args) {
             for_each_type<BTs>{}(nestedhelper<AType>{}, std::forward<F>(f),
                                  std::forward<Args>(args)...);
         }
@@ -151,7 +151,7 @@ private:
 
 public:
     template <class F, class... Args>
-    auto operator()(F&& f, Args&&... args) {
+    constexpr auto operator()(F&& f, Args&&... args) {
         for_each_type<std::tuple<ATypes...>>{}(helper<std::tuple<BTypes...>>{}, std::forward<F>(f),
                                                std::forward<Args>(args)...);
     }

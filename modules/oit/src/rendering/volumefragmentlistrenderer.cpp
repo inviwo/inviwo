@@ -129,7 +129,7 @@ bool VolumeFragmentListRenderer::postPass(
     // check if enough space was available
     if (numFrags > fragmentSize_) {
         // we have to resize the fragment storage buffer
-        fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
+        fragmentSize_ = static_cast<size_t>(1.1f * static_cast<float>(numFrags));
 
         // unbind texture
         textureUnits_.clear();

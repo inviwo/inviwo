@@ -104,9 +104,6 @@ private:
 
     std::string toolTipText_;
 
-    // Hacks for gestures
-    int lastNumFingers_{0};
-
     bool handleTouch_{true};
     bool handleGestures_{true};
 

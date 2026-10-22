@@ -75,7 +75,7 @@ void LayerBinary::preProcess(TextureUnitContainer&, Shader& shader, const Layer&
 LayerConfig LayerBinary::outputConfig(const Layer& input) const {
     auto format = input.getDataFormat();
     return input.config().updateFrom(
-        {.format = DataFormatBase::get(format->getNumericType(), 1, format->getPrecision()),
+        {.formatId = DataFormatBase::find(format->getNumericType(), 1, format->getPrecision()),
          .swizzleMask = swizzlemasks::defaultData(1),
          .dataRange = DataMapper::defaultDataRangeFor(input.getDataFormat()),
          .valueRange = dvec2{0.0, 1.0}});

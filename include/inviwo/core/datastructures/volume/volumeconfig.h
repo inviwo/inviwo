@@ -46,7 +46,7 @@ class VolumeRepresentation;
 
 struct IVW_CORE_API VolumeReprConfig {
     std::optional<size3_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
+    std::optional<DataFormatId> formatId = std::nullopt;
     std::optional<SwizzleMask> swizzleMask = std::nullopt;
     std::optional<InterpolationType> interpolation = std::nullopt;
     std::optional<Wrapping3D> wrapping = std::nullopt;
@@ -58,7 +58,7 @@ struct IVW_CORE_API VolumeReprConfig {
 
 struct IVW_CORE_API VolumeConfig {
     std::optional<size3_t> dimensions = std::nullopt;
-    const DataFormatBase* format = nullptr;
+    std::optional<DataFormatId> formatId = std::nullopt;
     std::optional<SwizzleMask> swizzleMask = std::nullopt;
     std::optional<InterpolationType> interpolation = std::nullopt;
     std::optional<Wrapping3D> wrapping = std::nullopt;
@@ -68,11 +68,11 @@ struct IVW_CORE_API VolumeConfig {
     std::optional<Axis> valueAxis = std::nullopt;
     std::optional<glm::dvec2> dataRange = std::nullopt;
     std::optional<glm::dvec2> valueRange = std::nullopt;
-    std::optional<glm::mat4> model = std::nullopt;
-    std::optional<glm::mat4> world = std::nullopt;
+    std::optional<glm::dmat4> model = std::nullopt;
+    std::optional<glm::dmat4> world = std::nullopt;
 
     static constexpr auto defaultDimensions = size3_t(128, 128, 128);
-    static inline const DataFormatBase* defaultFormat = DataUInt8::get();
+    static constexpr const DataFormatId defaultFormatId = DataUInt8::id();
     static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
     static constexpr auto defaultInterpolation = InterpolationType::Linear;
     static constexpr auto defaultWrapping = wrapping3d::clampAll;
@@ -80,28 +80,40 @@ struct IVW_CORE_API VolumeConfig {
     static inline const auto defaultYAxis = Axis{.name = "y", .unit = Unit{}};
     static inline const auto defaultZAxis = Axis{.name = "z", .unit = Unit{}};
     static inline const auto defaultValueAxis = Axis{};
-    static glm::dvec2 defaultDataRange(const DataFormatBase* format = defaultFormat);
-    static glm::dvec2 defaultValueRange(const DataFormatBase* format = defaultFormat);
-    static constexpr auto defaultModel = glm::mat4{1.0f};
-    static constexpr auto defaultWorld = glm::mat4{1.0f};
+    static constexpr glm::dvec2 defaultDataRange(DataFormatId formatId = defaultFormatId);
+    static constexpr glm::dvec2 defaultValueRange(DataFormatId formatId = defaultFormatId);
+    static constexpr auto defaultModel = glm::dmat4{1.0};
+    static constexpr auto defaultWorld = glm::dmat4{1.0};
 
     [[nodiscard]] DataMapper dataMap() const;
     [[nodiscard]] DataMapper dataMap(const DataMapper& defaultMapper) const;
     VolumeConfig& updateFrom(const VolumeConfig& config);
     [[nodiscard]] VolumeReprConfig reprConfig() const;
-
     [[nodiscard]] VolumeConfig orDefault() const;
 
     constexpr bool operator==(const VolumeConfig&) const = default;
 
-    auto tie() {
-        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+    constexpr auto tie() {
+        return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         zAxis, valueAxis, dataRange, valueRange, model, world);
     }
-    auto tie() const {
-        return std::tie(dimensions, format, swizzleMask, interpolation, wrapping, xAxis, yAxis,
+    constexpr auto tie() const {
+        return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         zAxis, valueAxis, dataRange, valueRange, model, world);
+    }
+    static constexpr auto defaults() {
+        return std::tuple(defaultDimensions, defaultFormatId, defaultSwizzleMask,
+                          defaultInterpolation, defaultWrapping, defaultXAxis, defaultYAxis,
+                          defaultZAxis, defaultValueAxis, defaultDataRange(), defaultValueRange(),
+                          defaultModel, defaultWorld);
     }
 };
+
+constexpr dvec2 VolumeConfig::defaultDataRange(DataFormatId formatId) {
+    return DataMapper::defaultDataRangeFor(DataFormatBase::get(formatId));
+}
+constexpr dvec2 VolumeConfig::defaultValueRange(DataFormatId formatId) {
+    return defaultDataRange(formatId);
+}
 
 }  // namespace inviwo

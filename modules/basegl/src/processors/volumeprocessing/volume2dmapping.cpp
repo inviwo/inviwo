@@ -66,7 +66,7 @@ void Volume2DMapping::preProcess(TextureUnitContainer& cont, Shader& shader, Vol
     utilgl::bindAndSetUniforms(shader, cont, tfLookup_);
     utilgl::setUniforms(shader, channel_[0], channel_[1]);
 
-    config.format = tfLookup_.getData()->getDataFormat();
+    config.formatId = tfLookup_.getData()->getDataFormatId();
     config.swizzleMask = tfLookup_.getData()->getSwizzleMask();
     config.dataRange = tfLookup_.getData()->dataMap.dataRange;
     config.valueRange = tfLookup_.getData()->dataMap.valueRange;

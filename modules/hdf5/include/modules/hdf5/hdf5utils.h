@@ -82,9 +82,9 @@ IVW_MODULE_HDF5_API std::vector<OptionPropertyIntOption> conversionOptions();
 
 /**
  * Map the selected index of the "Convert to type" property to a data format. Index 0 (no
- * conversion) returns nullptr.
+ * conversion) returns std::nullopt.
  */
-IVW_MODULE_HDF5_API const DataFormatBase* conversionFormat(size_t index);
+IVW_MODULE_HDF5_API std::optional<DataFormatId> conversionFormat(size_t index);
 
 inline constexpr auto dataSetInfoToOption = [](const DataSetInfo& info) {
     return OptionPropertyStringOption{info.path.toString(), util::dataSetDescription(info),

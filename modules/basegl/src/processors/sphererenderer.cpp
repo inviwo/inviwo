@@ -143,8 +143,9 @@ void SphereRenderer::process() {
 
         utilgl::setUniforms(shader, camera_, lighting_, config_, clip_, bnl_, periodic_, labels_,
                             texture_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                           2.0f / outport_.getDimensions().y));
+        shader.setUniform("viewport",
+                          vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                               2.0f / static_cast<float>(outport_.getDimensions().y)));
 
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
 

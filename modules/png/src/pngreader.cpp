@@ -160,7 +160,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(FILE* fp, std::string_vi
     const auto dimensions = size2_t(width, height);
     auto layer = std::make_shared<Layer>(LayerConfig{
         .dimensions = dimensions,
-        .format = DataFormatBase::get(inviwo::NumericType::UnsignedInteger, channels, bit_depth),
+        .formatId = DataFormatBase::find(inviwo::NumericType::UnsignedInteger, channels, bit_depth),
         .swizzleMask = swizzleMask,
         .model = LayerConfig::aspectPreservingModelMatrixFromDimensions(dimensions)});
 

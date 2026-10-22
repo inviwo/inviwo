@@ -43,7 +43,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
     VolumeReuseCache& gradients, pool::Progress progress, std::stop_token stop) {
 
     const VolumeConfig scalarCfg = {.dimensions = dims,
-                                    .format = DataFloat32::get(),
+                                    .formatId = DataFormatId::Float32,
                                     .swizzleMask = swizzlemasks::defaultData(1),
                                     .interpolation = InterpolationType::Linear,
                                     .dataRange = dvec2{-1.0, 1.0},
@@ -51,7 +51,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> createVolumes(
                                     .model = basis};
 
     const VolumeConfig gradientCfg = {.dimensions = dims,
-                                      .format = DataVec3Float32::get(),
+                                      .formatId = DataFormatId::Vec3Float32,
                                       .swizzleMask = swizzlemasks::defaultData(3),
                                       .interpolation = InterpolationType::Linear,
                                       .dataRange = dvec2{-1.0, 1.0},
