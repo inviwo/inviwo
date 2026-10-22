@@ -299,7 +299,7 @@ LayerRAMPrecision<T>::LayerRAMPrecision(const LayerReprConfig& config)
                         config.interpolation.value_or(LayerConfig::defaultInterpolation),
                         config.wrapping.value_or(LayerConfig::defaultWrapping)} {
 
-    if (config.formatId.value_or(LayerConfig::defaultFormatId) != getDataFormatId()) {
+    if (config.formatId && *config.formatId != getDataFormatId()) {
         throw Exception("Creating representation with unmatched type and format");
     }
 }
