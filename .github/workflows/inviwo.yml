@@ -137,6 +137,9 @@ jobs:
     steps:
     - name: Telemetry
       uses: fwilhe2/workflow-telemetry-action@v3
+      with:
+        comment_on_pr: false
+        charts: sparkline
 
     - name: Free Disk Space
       if: matrix.system == 'linux'
@@ -255,7 +258,7 @@ jobs:
     name: "Ccache Statistics"
     needs: build
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
     - name: "Clone Inviwo"
       uses: actions/checkout@v7
@@ -633,7 +636,7 @@ jobs:
 
   create-changelog:
     name: "Create Changelog"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
     - name: "Generate Changelog"
       id: changelog
@@ -661,7 +664,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v7
@@ -704,7 +707,7 @@ jobs:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression, create-changelog]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     
     steps:
     - name: "Download installer"
