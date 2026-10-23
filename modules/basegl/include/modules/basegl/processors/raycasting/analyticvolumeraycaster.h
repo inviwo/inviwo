@@ -52,8 +52,13 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API AnalyticVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    AnalyticVolumeRaycaster(std::string_view identifier = "", std::string_view displayName = "");
-    virtual ~AnalyticVolumeRaycaster() = default;
+    explicit AnalyticVolumeRaycaster(std::string_view identifier = "",
+                                     std::string_view displayName = "");
+    AnalyticVolumeRaycaster(const AnalyticVolumeRaycaster&) = delete;
+    AnalyticVolumeRaycaster& operator=(const AnalyticVolumeRaycaster&) = delete;
+    AnalyticVolumeRaycaster(AnalyticVolumeRaycaster&&) = delete;
+    AnalyticVolumeRaycaster& operator=(AnalyticVolumeRaycaster&&) = delete;
+    ~AnalyticVolumeRaycaster() = default;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
