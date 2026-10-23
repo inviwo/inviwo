@@ -141,7 +141,7 @@ def safeget(dct, *keys, failure=None):
 
 
 def find_pyconfig(path):
-    while path != "":
+    while path != "" and path != os.path.sep:
         if os.path.exists(toPath(path, "pyconfig.ini")):
             return toPath(path, "pyconfig.ini")
         else:
