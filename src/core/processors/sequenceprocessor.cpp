@@ -67,7 +67,7 @@ const ProcessorInfo SequenceProcessor::processorInfo_{
     "Sequence",                      // Display name
     "Meta",                          // Category
     CodeState::Stable,               // Code state
-    "Composites",                    // Tags
+    "Sequences",                     // Tags
     "A processor for wrapping ProcessorNetworks"_help,
     false};
 
