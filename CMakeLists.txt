@@ -124,6 +124,10 @@ if(IVW_ENABLE_PYTHON)
             "Python 3 installation.\n")
     endif()
 
+    message(STATUS "Python Debug: VCPKG_MANIFEST_FEATURES: ${VCPKG_MANIFEST_FEATURES}")
+    message(STATUS "Python Debug: VCPKG_INSTALLED_DIR: ${VCPKG_INSTALLED_DIR}")
+    message(STATUS "Python Debug: Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+
     if("python" IN_LIST VCPKG_MANIFEST_FEATURES)
         if(DEFINED VCPKG_INSTALLED_DIR)
             cmake_path(IS_PREFIX VCPKG_INSTALLED_DIR ${Python3_EXECUTABLE} NORMALIZE isVcpkgPython)
