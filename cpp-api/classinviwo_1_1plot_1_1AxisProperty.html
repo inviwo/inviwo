@@ -169,6 +169,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a09b6145580d25fe92fd0e1a403c9c9f4" id="r_a09b6145580d25fe92fd0e1a403c9c9f4"><td class="memItemLeft" align="right" valign="top"><a id="a09b6145580d25fe92fd0e1a403c9c9f4" name="a09b6145580d25fe92fd0e1a403c9c9f4"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>AxisProperty</b> (std::string_view identifier, std::string_view displayName, Orientation orientation=Orientation::Horizontal, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a09b6145580d25fe92fd0e1a403c9c9f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3954c5ddeb64ce44a3612f7084dfa1" id="r_a5b3954c5ddeb64ce44a3612f7084dfa1"><td class="memItemLeft" align="right" valign="top"><a id="a5b3954c5ddeb64ce44a3612f7084dfa1" name="a5b3954c5ddeb64ce44a3612f7084dfa1"></a>
+<a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>clearCategoricalData</b> ()</td></tr>
+<tr class="separator:a5b3954c5ddeb64ce44a3612f7084dfa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42afb33ed34ca597f48b5652b0dd47b8" id="r_a42afb33ed34ca597f48b5652b0dd47b8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42afb33ed34ca597f48b5652b0dd47b8">clone</a> () const override</td></tr>
 <tr class="separator:a42afb33ed34ca597f48b5652b0dd47b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa411e8ebc8d5a137a90cfec14389dd03" id="r_aa411e8ebc8d5a137a90cfec14389dd03"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa411e8ebc8d5a137a90cfec14389dd03">getClassIdentifier</a> () const override</td></tr>
@@ -178,6 +181,8 @@ dvec2&#160;</td><td class="memItemRight" valign="bottom"><b>getRange</b> () cons
 <tr class="separator:a9f49996f5d816d722b14067857bd58f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2a05cb3a5394ba7cbd61097236e2368" id="r_af2a05cb3a5394ba7cbd61097236e2368"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2a05cb3a5394ba7cbd61097236e2368">invokeEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="separator:af2a05cb3a5394ba7cbd61097236e2368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe20eed0bf09206e65e1ac492274f6ce" id="r_abe20eed0bf09206e65e1ac492274f6ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe20eed0bf09206e65e1ac492274f6ce">isCategorical</a> () const</td></tr>
+<tr class="separator:abe20eed0bf09206e65e1ac492274f6ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb39942bd178cc493b5491692db14d35" id="r_abb39942bd178cc493b5491692db14d35"><td class="memItemLeft" align="right" valign="top"><a id="abb39942bd178cc493b5491692db14d35" name="abb39942bd178cc493b5491692db14d35"></a>
 <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&amp;)=delete</td></tr>
 <tr class="separator:abb39942bd178cc493b5491692db14d35"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,6 +196,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (Orientation 
 <tr class="memitem:a1d14fa4b81d41adefe081e533ec81918" id="r_a1d14fa4b81d41adefe081e533ec81918"><td class="memItemLeft" align="right" valign="top"><a id="a1d14fa4b81d41adefe081e533ec81918" name="a1d14fa4b81d41adefe081e533ec81918"></a>
 virtual <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setCaption</b> (std::string_view title)</td></tr>
 <tr class="separator:a1d14fa4b81d41adefe081e533ec81918"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835219514792069df2480cc003940114" id="r_a835219514792069df2480cc003940114"><td class="memTemplParams" colspan="2">template&lt;std::ranges::input_range R&gt; <br />
+requires std::convertible_to&lt;std::ranges::range_reference_t&lt;R&gt;, std::string&gt;</td></tr>
+<tr class="memitem:a835219514792069df2480cc003940114"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a835219514792069df2480cc003940114">setCategoricalData</a> (R categories)</td></tr>
+<tr class="memdesc:a835219514792069df2480cc003940114"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the given range <code>categories</code> is non-empty, axis labeling is done with these categorical labels instead of regular axis labeling.  <br /></td></tr>
+<tr class="separator:a835219514792069df2480cc003940114"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc0c6f5733da1b032935df15fe5aeaef" id="r_abc0c6f5733da1b032935df15fe5aeaef"><td class="memItemLeft" align="right" valign="top"><a id="abc0c6f5733da1b032935df15fe5aeaef" name="abc0c6f5733da1b032935df15fe5aeaef"></a>
 <a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>setColor</b> (const vec4 &amp;c)</td></tr>
 <tr class="memdesc:abc0c6f5733da1b032935df15fe5aeaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">set all colors to <code>c</code>, i.e. axis, ticks, labels, and caption <br /></td></tr>
@@ -936,6 +946,53 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a>.</p>
+
+</div>
+</div>
+<a id="abe20eed0bf09206e65e1ac492274f6ce" name="abe20eed0bf09206e65e1ac492274f6ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe20eed0bf09206e65e1ac492274f6ce">&#9670;&#160;</a></span>isCategorical()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool inviwo::plot::AxisProperty::isCategorical </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if categories are currently set </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a835219514792069df2480cc003940114" title="If the given range categories is non-empty, axis labeling is done with these categorical labels inste...">setCategoricalData</a> </dd></dl>
+
+</div>
+</div>
+<a id="a835219514792069df2480cc003940114" name="a835219514792069df2480cc003940114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a835219514792069df2480cc003940114">&#9670;&#160;</a></span>setCategoricalData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::ranges::input_range R&gt; <br />
+requires std::convertible_to&lt;std::ranges::range_reference_t&lt;R&gt;, std::string&gt;</div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1plot_1_1AxisProperty.html">AxisProperty</a> &amp; inviwo::plot::AxisProperty::setCategoricalData </td>
+          <td>(</td>
+          <td class="paramtype">R</td>          <td class="paramname"><span class="paramname"><em>categories</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>If the given range <code>categories</code> is non-empty, axis labeling is done with these categorical labels instead of regular axis labeling. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">categories</td><td>list of categorical labels </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

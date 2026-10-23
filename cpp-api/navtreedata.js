@@ -84,15 +84,15 @@ var NAVTREEINDEX =
 "classinviwo_1_1VolumeSource.html",
 "classinviwo_1_1animation_1_1BaseKeyframeSequence.html#aa7b6c50652b019b82a22f740cf632e25",
 "classinviwo_1_1animation_1_1WorkspaceAnimations.html#a64aa1dc29b4d1718404dc189bd36e486",
-"classinviwo_1_1plot_1_1MajorTickProperty.html",
-"functions_t.html",
-"namespaceinviwo_1_1meshutil.html#aefab0ef45f52d52f4003e6ca5e1da8a7",
-"namespaceinviwo_1_1util.html#aded1b46bbb6461d4dee4d48a702c46c8",
-"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1unique__ptr_3_01T_00_01D_01_4_00_01A_01_4_01_4.html",
-"structinviwo_1_1ProcessorTraits_3_01BasisTransform_3_01Mesh_01_4_01_4.html",
-"structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4",
-"structinviwo_1_1util_1_1BuildInfo_1_1ModulesDir.html",
-"structstd_1_1hash_3_01inviwo_1_1ProcessorPair_01_4.html"
+"classinviwo_1_1plot_1_1LayerAxis.html",
+"functions_p.html",
+"namespaceinviwo_1_1meshutil.html#ab1b287f94ada0d7b15c0e40f0fea831d",
+"namespaceinviwo_1_1util.html#adddd3009e57cad26baf545989a534a83",
+"structinviwo_1_1DataTraits_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01T_01_4_00_01A_01_4_01_4.html",
+"structinviwo_1_1ProcessorListModel_1_1Node.html",
+"structinviwo_1_1ValueWrapper.html#a50961ad3f4c97dc0cbbfe471ef7d7e4c",
+"structinviwo_1_1util_1_1BufferDispatcher.html",
+"structstd_1_1hash_3_01inviwo_1_1FileExtension_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
