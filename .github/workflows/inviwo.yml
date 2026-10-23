@@ -182,7 +182,7 @@ jobs:
         # changing the default feature set built for regular PRs.
         if [[ "${{ contains(github.event.pull_request.labels.*.name, 'full-vcpkg-features') }}" == "true" ]]; then
           ALL=$(jq -r '.features | keys | join(";")' inviwo/vcpkg.json)
-          echo "override=-DVCPKG_MANIFEST_FEATURES=${ALL}" >> "$GITHUB_OUTPUT"
+          echo "override=-DVCPKG_MANIFEST_FEATURES=\"${ALL}\"" >> "$GITHUB_OUTPUT"
         else
           echo "override=" >> "$GITHUB_OUTPUT"
         fi
