@@ -47,6 +47,8 @@
 #include <string_view>
 #include <vector>
 #include <optional>
+#include <type_traits>
+#include <ranges>
 
 namespace inviwo::plot {
 
@@ -102,6 +104,22 @@ public:
     AxisProperty& setRange(const dvec2& range);
 
     /**
+     * @brief If the given range @p categories is non-empty, axis labeling is done with these
+     * categorical labels instead of regular axis labeling.
+     * @param categories  list of categorical labels
+     */
+    template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, std::string>
+    AxisProperty& setCategoricalData(R categories);
+    AxisProperty& clearCategoricalData();
+    /**
+     * @brief
+     * @return true if categories are currently set
+     * @see setCategoricalData
+     */
+    bool isCategorical() const;
+
+    /**
      * @brief set all colors to \p c, i.e. axis, ticks, labels, and caption
      */
     AxisProperty& setColor(const vec4& c);
@@ -152,5 +170,17 @@ public:
 private:
     ButtonGroupProperty alignment_;
 };
+
+template <std::ranges::input_range R>
+        requires std::convertible_to<std::ranges::range_reference_t<R>, std::string>
+AxisProperty& AxisProperty::setCategoricalData(R categories) {
+    categories_.clear();
+    if (categories.empty()) {
+        return *this;
+    }
+    categories_.reserve(categories.size());
+    std::ranges::copy(categories, std::back_inserter(categories_));
+    return *this;
+}
 
 }  // namespace inviwo::plot

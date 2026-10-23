@@ -239,6 +239,13 @@ AxisProperty& AxisProperty::setRange(const dvec2& range) {
     return *this;
 }
 
+AxisProperty& AxisProperty::clearCategoricalData() {
+    categories_.clear();
+    return *this;
+}
+
+bool AxisProperty::isCategorical() const { return !categories_.empty(); }
+
 AxisProperty& AxisProperty::setColor(const vec4& c) {
     color_.set(c);
     captionSettings_.color_.set(c);
@@ -291,15 +298,22 @@ void AxisProperty::update(AxisData& data) const {
     data.caption = captionSettings_.title_.get();
     captionSettings_.update(data.captionSettings);
 
-    updateLabelPositions(data.majorPositions, data.minorPositions, labelingAlgorithm_.get(),
-                         data.range, majorTicks_.numberOfTicks.get(), minorTicks_.frequency.get(),
-                         minorTicks_.fillAxis.get());
+    if (!categories_.empty()) {
+        linearRange(
+            {.start = 0.0, .stop = static_cast<double>(categories_.size()) - 1.0, .step = 1.0},
+            data.majorPositions);
+        updateLabels(data.labels, categories_);
+        data.minorPositions.clear();
+    } else {
+        updateLabelPositions(data.majorPositions, data.minorPositions, labelingAlgorithm_.get(),
+                             data.range, majorTicks_.numberOfTicks.get(),
+                             minorTicks_.frequency.get(), minorTicks_.fillAxis.get());
 
+        updateLabels(data.labels, data.majorPositions, labelSettings_.title_.get());
+        majorTicks_.update(data.major);
+        minorTicks_.update(data.minor);
+    }
     labelSettings_.update(data.labelSettings);
-    updateLabels(data.labels, data.majorPositions, labelSettings_.title_.get());
-
-    majorTicks_.update(data.major);
-    minorTicks_.update(data.minor);
 }
 
 void AxisProperty::invokeEvent(Event* event) {

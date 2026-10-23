@@ -298,6 +298,12 @@ void ScatterPlotGL::setXAxisData(const Column* col) {
         points_.xCoord = col->getBuffer();
         minmaxX_ = vec2(col->getRange());
         properties_.xAxis_.setRange(minmaxX_);
+        if (col->getColumnType() == ColumnType::Categorical) {
+            properties_.xAxis_.setCategoricalData(
+                static_cast<const CategoricalColumn*>(col)->getCategories());
+        } else {
+            properties_.xAxis_.clearCategoricalData();
+        }
     } else {
         points_.xCoord = nullptr;
     }
@@ -309,6 +315,12 @@ void ScatterPlotGL::setYAxisData(const Column* col) {
         points_.yCoord = col->getBuffer();
         minmaxY_ = vec2(col->getRange());
         properties_.yAxis_.setRange(minmaxY_);
+        if (col->getColumnType() == ColumnType::Categorical) {
+            properties_.yAxis_.setCategoricalData(
+                static_cast<const CategoricalColumn*>(col)->getCategories());
+        } else {
+            properties_.yAxis_.clearCategoricalData();
+        }
     } else {
         points_.yCoord = nullptr;
     }
