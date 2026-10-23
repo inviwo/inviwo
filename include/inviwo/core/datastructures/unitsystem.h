@@ -71,8 +71,9 @@ constexpr std::array<Unit, 4> defaultAxesUnits = {Unit{}, Unit{}, Unit{}, Unit{}
 template <size_t N>
 std::array<Axis, N> defaultAxes() {
     static_assert(N <= defaultAxesNames.size());
-    return util::make_array<N>(
-        [](auto i) { return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]}; });
+    return util::make_array<N>([](auto i) {
+        return Axis{std::string{defaultAxesNames[i]}, defaultAxesUnits[i]};
+    });
 }
 
 }  // namespace util
@@ -367,4 +368,15 @@ struct fmt::formatter<::inviwo::Unit> {
         return formatter_.format(std::string_view{buff.data(), buff.size()}, ctx);
     }
 };
+
+template <>
+struct fmt::formatter<inviwo::Axis> : fmt::formatter<fmt::string_view> {
+    template <typename FormatContext>
+    auto format(const inviwo::Axis& axis, FormatContext& ctx) const {
+        fmt::memory_buffer buff;
+        fmt::format_to(std::back_inserter(buff), "{}{: [}", axis.name, axis.unit);
+        return formatter<fmt::string_view>::format(fmt::string_view(buff.data(), buff.size()), ctx);
+    }
+};
+
 #endif
