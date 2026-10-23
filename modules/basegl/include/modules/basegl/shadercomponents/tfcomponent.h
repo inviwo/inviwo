@@ -65,10 +65,9 @@ IVW_MODULE_BASEGL_API void addSegmentsFor(std::vector<ShaderComponent::Segment>&
  * In Absolute mode, a TFParameters uniform is added and the shader define TF_ABSOLUTE_{ID}
  * is set to enable the absolute-mode applyTF overloads.
  */
-class TFComponent : public ShaderComponent {
+class IVW_MODULE_BASEGL_API TFComponent : public ShaderComponent {
 public:
-    TFComponent(std::string_view identifier, std::string_view name, Document help,
-                VolumeInport& volume);
+    TFComponent(std::string_view identifier, std::string_view name, Document help, TFData tfdata);
 
     virtual std::string_view getName() const override;
 
