@@ -82,6 +82,8 @@ IVW_MODULE_HDF5_API std::shared_ptr<BufferBase> getBufferAtPathAsType(
 
 IVW_MODULE_HDF5_API glm::dmat4 getBasis(const Handle& handle);
 
+IVW_MODULE_HDF5_API glm::dvec2 getRange(const Handle& handle);
+
 }  // namespace hdf5
 
 }  // namespace inviwo
