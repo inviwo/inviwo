@@ -204,7 +204,12 @@ void HDF5ToVolume::process() try {
             const auto rangeInfo = dataRangeMatches_[dataRangeSelection_.getSelectedIndex() - 2];
             valueRange_ = getRange(*data + rangeInfo.path);
             // TODO(martin): what about actual data range of type?
-            dataRange_.set(valueRange_);
+            if (volume->getDataFormat()->getNumericType() == NumericType::Float) {
+                dataRange_.set(valueRange_);
+            } else {
+                dataRange_.set(
+                    dvec2{volume->getDataFormat()->getMin(), volume->getDataFormat()->getMax()});
+            }
             break;
         }
     }
