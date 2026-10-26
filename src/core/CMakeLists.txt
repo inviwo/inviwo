@@ -267,6 +267,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequencecompositesource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequenceprocessor.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequenceprocessorfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/sequenceselect.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
@@ -690,6 +691,7 @@ set(SOURCE_FILES
     processors/sequencecompositesink.cpp
     processors/sequencecompositesource.cpp
     processors/sequenceprocessor.cpp
+    processors/sequenceprocessorfactoryobject.cpp
     processors/sequenceselect.cpp
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
