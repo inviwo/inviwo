@@ -63,8 +63,8 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(std::string_view identifier,
     : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, std::move(semantics))
     , header_{"header", "Header"}
     , type_{"type", "Type"}
-    , range_("range", "Range", range.x, range.y, -DataFloat64::max(), DataFloat64::max(), 0.0, 0.0,
-             InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , range_("range", "Range", range.x, range.y, -DataFloat64::max(), DataFloat64::max(), 0.00001,
+             0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , unit_{"unit", "Unit"}
     , drop_{"drop", "Drop", false} {
 
