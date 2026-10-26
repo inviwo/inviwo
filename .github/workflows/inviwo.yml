@@ -135,6 +135,12 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Telemetry
+      uses: fwilhe2/workflow-telemetry-action@v3
+      with:
+        comment_on_pr: false
+        charts: sparkline
+
     - name: Free Disk Space
       if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
@@ -167,19 +173,12 @@ jobs:
       shell: bash
       run: cp inviwo/.github/presets/${{ matrix.system }}.json inviwo/CMakeUserPresets.json
 
+
     - name: "Determine vcpkg feature override"
       id: vcpkg-features
-      shell: bash
-      run: |
-        # The "full-vcpkg-features" label (used by the vcpkg baseline-update PR) builds every
-        # optional vcpkg feature so a baseline bump is validated across all ports, without
-        # changing the default feature set built for regular PRs.
-        if [[ "${{ contains(github.event.pull_request.labels.*.name, 'full-vcpkg-features') }}" == "true" ]]; then
-          ALL=$(jq -r '.features | keys | join(";")' inviwo/vcpkg.json)
-          echo "override=-DVCPKG_MANIFEST_FEATURES=${ALL}" >> "$GITHUB_OUTPUT"
-        else
-          echo "override=" >> "$GITHUB_OUTPUT"
-        fi
+      uses: ./inviwo/.github/actions/full-vcpkg-features
+      with:
+        system: ${{ matrix.system }}
 
     - name: "Configure CMake"
       shell: bash
@@ -252,7 +251,7 @@ jobs:
     name: "Ccache Statistics"
     needs: build
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
     - name: "Clone Inviwo"
       uses: actions/checkout@v7
@@ -630,7 +629,7 @@ jobs:
 
   create-changelog:
     name: "Create Changelog"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
     - name: "Generate Changelog"
       id: changelog
@@ -658,7 +657,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v7
@@ -701,7 +700,7 @@ jobs:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression, create-changelog]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     
     steps:
     - name: "Download installer"

@@ -1,0 +1,37 @@
+name: 'Determine vcpkg feature override'
+description: 'Build as many vcpkg port as possible'
+
+inputs:
+  system:
+    description: "system current used"
+    required: true
+
+outputs:
+  override:
+    description: "Vcpkg features override"
+    value: ${{ steps.vcpkg-features.outputs.override }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Determine vcpkg feature override"
+      id: vcpkg-features
+      shell: bash
+      run: |
+        # The "full-vcpkg-features" label (used by the vcpkg baseline-update PR) builds every
+        # optional vcpkg feature so a baseline bump is validated across all ports, without
+        # changing the default feature set built for regular PRs.
+        if [[ "${{ contains(github.event.pull_request.labels.*.name, 'full-vcpkg-features') }}" == "true" ]]
+        then
+          AVOID='"ttk", "or-tools", "graphviz", "nanovg", "sgct-tracy"'
+          if [[ "${{ inputs.system != 'windows' }}" == "true" ]]
+          then
+            AVOID="${AVOID}, \"sgct\""
+          fi
+          ALL=$(jq -r ".features | keys | map(select(IN(${AVOID}) | not)) | join(\";\")" inviwo/vcpkg.json)
+          echo "selected features: ${ALL}"
+          echo "override=-DVCPKG_MANIFEST_FEATURES=\"${ALL}\"" >> "$GITHUB_OUTPUT"
+        else
+          echo "selected features: -"
+          echo "override=" >> "$GITHUB_OUTPUT"
+        fi
