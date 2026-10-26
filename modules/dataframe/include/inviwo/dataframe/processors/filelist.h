@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -47,6 +48,8 @@ namespace inviwo {
 
 class IVW_MODULE_DATAFRAME_API FileList : public Processor {
 public:
+    enum class Mode : std::uint8_t { Files, Directories, Both };
+
     FileList();
     FileList(const FileList&) = delete;
     FileList(FileList&&) = delete;
@@ -70,6 +73,7 @@ private:
     DataOutport<DataFrame> outport_;
     BrushingAndLinkingInport bnlInport_;
     BrushingAndLinkingOutport bnlOutport_;
+    OptionProperty<Mode> mode_;
     DirectoryProperty directory_;
     ButtonProperty refresh_;
     StringProperty filter_;
