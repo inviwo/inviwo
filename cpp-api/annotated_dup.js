@@ -616,6 +616,8 @@ var annotated_dup =
       [ "AlternativeShaderComponent", "classinviwo_1_1AlternativeShaderComponent.html", "classinviwo_1_1AlternativeShaderComponent" ],
       [ "AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
       [ "AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
+      [ "AnalyticEntryExitComponent", "classinviwo_1_1AnalyticEntryExitComponent.html", "classinviwo_1_1AnalyticEntryExitComponent" ],
+      [ "AnalyticVolumeRaycaster", "classinviwo_1_1AnalyticVolumeRaycaster.html", "classinviwo_1_1AnalyticVolumeRaycaster" ],
       [ "AnglePropertyWidgetQt", "classinviwo_1_1AnglePropertyWidgetQt.html", "classinviwo_1_1AnglePropertyWidgetQt" ],
       [ "AngleRadiusWidget", "classinviwo_1_1AngleRadiusWidget.html", null ],
       [ "AnimationModule", "classinviwo_1_1AnimationModule.html", "classinviwo_1_1AnimationModule" ],

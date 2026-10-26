@@ -990,6 +990,7 @@ var hierarchy =
         [ "inviwo::SequenceToDataFrame< T >", "classinviwo_1_1SequenceToDataFrame.html", null ],
         [ "inviwo::ShaderComponentProcessorBase", "classinviwo_1_1ShaderComponentProcessorBase.html", [
           [ "inviwo::VolumeRaycasterBase", "classinviwo_1_1VolumeRaycasterBase.html", [
+            [ "inviwo::AnalyticVolumeRaycaster", "classinviwo_1_1AnalyticVolumeRaycaster.html", null ],
             [ "inviwo::AtlasVolumeRaycaster", "classinviwo_1_1AtlasVolumeRaycaster.html", null ],
             [ "inviwo::LightVolumeRaycaster", "classinviwo_1_1LightVolumeRaycaster.html", null ],
             [ "inviwo::MultiChannelVolumeRaycaster", "classinviwo_1_1MultiChannelVolumeRaycaster.html", null ],
@@ -1856,6 +1857,8 @@ var hierarchy =
             [ "inviwo::FontFaceOptionProperty", "classinviwo_1_1FontFaceOptionProperty.html", null ]
           ] ],
           [ "inviwo::OptionProperty< std::string >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Shape >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< CoordinateSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColoringGroup >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< colorbrewer::Family >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< int >", "classinviwo_1_1OptionProperty.html", [
@@ -1891,7 +1894,6 @@ var hierarchy =
           [ "inviwo::OptionProperty< size_t >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< IntegralLineProperties::Direction >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< IntegralLineProperties::IntegrationScheme >", "classinviwo_1_1OptionProperty.html", null ],
-          [ "inviwo::OptionProperty< CoordinateSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BrushBy >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Output >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< IntegrationDirection >", "classinviwo_1_1OptionProperty.html", null ],
@@ -3148,6 +3150,8 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< inviwo::FileExtension >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< std::filesystem::path >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< std::string >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Shape >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< CoordinateSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColoringGroup >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< colorbrewer::Family >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< int >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3181,7 +3185,6 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< size_t >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< IntegralLineProperties::Direction >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< IntegralLineProperties::IntegrationScheme >", "classinviwo_1_1OptionPropertyOption.html", null ],
-      [ "inviwo::OptionPropertyOption< CoordinateSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BrushBy >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Output >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< IntegrationDirection >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3413,6 +3416,7 @@ var hierarchy =
       [ "inviwo::IsoTFComponent< 1 >", "classinviwo_1_1IsoTFComponent.html", null ],
       [ "inviwo::IsoTFComponent< 4 >", "classinviwo_1_1IsoTFComponent.html", null ],
       [ "inviwo::AlternativeShaderComponent", "classinviwo_1_1AlternativeShaderComponent.html", null ],
+      [ "inviwo::AnalyticEntryExitComponent", "classinviwo_1_1AnalyticEntryExitComponent.html", null ],
       [ "inviwo::AtlasComponent", "classinviwo_1_1AtlasComponent.html", null ],
       [ "inviwo::BackgroundComponent", "classinviwo_1_1BackgroundComponent.html", null ],
       [ "inviwo::CameraComponent", "classinviwo_1_1CameraComponent.html", null ],
