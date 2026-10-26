@@ -73,16 +73,22 @@ const ProcessorInfo FileList::processorInfo_{
     "DataFrame",              // Category
     CodeState::Experimental,  // Code state
     Tags::CPU,                // Tags
-    R"(Generate a DataFrame from a file listing of a directory)"_unindentHelp,
+    R"(Generate a DataFrame from a content listing of a directory)"_unindentHelp,
 };
 
 const ProcessorInfo& FileList::getProcessorInfo() const { return processorInfo_; }
 
 FileList::FileList()
     : Processor{}
-    , outport_{"outport", "<description of the generated outport data>"_help}
+    , outport_{"outport", "DataFrame containing the contents of a directory"_help}
     , bnlInport_{"bnlInport"}
     , bnlOutport_{"bnlOutport"}
+    , mode_{"mode",
+            "Mode",
+            "Set the matching type of filenames to be included"_help,
+            {{"files", "Files", Mode::Files},
+             {"directories", "Directories", Mode::Directories},
+             {"both", "Files & Directories", Mode::Both}}}
     , directory_{"directory", "Directory"}
     , refresh_{"refresh", "Refresh"}
     , filter_{"filter", "Filter",
@@ -99,7 +105,7 @@ FileList::FileList()
     , running_{false} {
 
     addPorts(outport_, bnlInport_, bnlOutport_);
-    addProperties(directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
+    addProperties(mode_, directory_, refresh_, filter_, selectedIndex_, selected_, highlightIndex_,
                   highlight_, cycleFiles_);
 
     selected_.setReadOnly(true);
@@ -203,9 +209,20 @@ void FileList::process() {
         regex.emplace(filter_.get());
     }
 
+    auto filetypeFilter = [mode =
+                               mode_.get()]() -> bool (*)(const std::filesystem::directory_entry&) {
+        switch (mode) {
+            using enum Mode;
+            case Files:       return [](auto& item) { return item.is_regular_file(); };
+            case Directories: return [](auto& item) { return item.is_directory(); };
+            case Both:        [[fallthrough]];
+            default:
+                return [](auto& item) { return item.is_regular_file() || item.is_directory(); };
+        }
+    }();
+
     files_ = std::filesystem::directory_iterator(directory_.get()) |
-             std::views::filter([](auto& item) { return item.is_regular_file(); }) |
-             std::views::filter([&](auto& item) {
+             std::views::filter(filetypeFilter) | std::views::filter([&](auto& item) {
                  return regex ? std::regex_search(item.path().generic_string(), *regex) : true;
              }) |
              std::ranges::to<std::vector>();
@@ -216,6 +233,12 @@ void FileList::process() {
     df->addCategoricalColumn("Name", files_ | std::views::transform([](auto& item) {
                                          return item.path().filename().generic_string();
                                      }) | std::ranges::to<std::vector>());
+    df->addCategoricalColumn("Stem", files_ | std::views::transform([](auto& item) {
+                                         return item.path().stem().generic_string();
+                                     }) | std::ranges::to<std::vector>());
+    df->addCategoricalColumn("Extension", files_ | std::views::transform([](auto& item) {
+                                              return item.path().extension().generic_string();
+                                          }) | std::ranges::to<std::vector>());
     df->addColumn("Size", files_ | std::views::transform([](auto& item) {
                               return static_cast<int>(item.file_size());
                           }) | std::ranges::to<std::vector>());

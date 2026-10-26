@@ -141,7 +141,7 @@ PythonEditorWidget* PythonMenu::newEditor() {
     editor->restore();
 
     for (const auto& e : editors_) {
-        if (e->pos() == editor->pos()) {
+        if (e && e->pos() == editor->pos()) {
             const auto newPos =
                 utilqt::movePointOntoDesktop(editor->pos() + QPoint{50, 50}, editor->size());
             editor->move(newPos);

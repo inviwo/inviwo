@@ -95,7 +95,7 @@ ScatterPlotGL::Properties::Properties(std::string_view identifier, std::string_v
     , minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
     , tf_("transferFunction", "Transfer Function",
           TransferFunction({{.pos = 0.0, .color = vec4(1.0f)}, {.pos = 1.0, .color = vec4(1.0f)}}))
-    , color_("defaultColor", "Color", util::ordinalColor(1.0f, 0.0f, 0.0f, 1.0f))
+    , color_("defaultColor", "Color", util::ordinalColor(0.6f, 0.6f, 0.65f, 1.0f))
 
     , showHighlighted_("showHighlighted", "Show Highlighted", true, vec3(1.0f, 0.906f, 0.612f))
     , showSelected_("showSelected", "Show Selected", true, vec3(1.0f, 0.769f, 0.247f))

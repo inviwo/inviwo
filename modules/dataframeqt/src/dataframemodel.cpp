@@ -129,7 +129,8 @@ std::function<QVariant(int)> getToolTipFunc(const Column* col, bool categoryIndi
         case ColumnType::Categorical:
             if (!categoryIndices) {
                 return [cc = static_cast<const CategoricalColumn*>(col)](int row) -> QVariant {
-                    return QString("Key: %1").arg(cc->getId(row));
+                    const auto id = cc->getId(row);
+                    return QString("Key: %1\n%2").arg(id).arg(cc->getCategories()[id]);
                 };
             } else {
                 return [](int) { return QVariant(); };
@@ -251,20 +252,25 @@ QVariant DataFrameModel::headerData(int section, Qt::Orientation orientation, in
         const Column* col = data_->getColumn(section).get();
         auto tooltip = [col, section]() {
             if (col->getColumnType() == ColumnType::Categorical) {
-                return QString("<b>%0</b> (Column %1)\nCategorical (%2 categories)")
+                return QString(
+                           "<div><b>%0</b> (Column %1)</div>"
+                           "<div>Categorical (%2 categories)</div>")
                     .arg(utilqt::toQString(col->getHeader()))
                     .arg(section)
                     .arg(static_cast<const CategoricalColumn*>(col)->getCategories().size());
             } else {
-                return QString("<b>%0</b> (Column %1)\nOrdinal (%2)")
+                return QString("<div><b>%0</b> (Column %1)</div><div>Ordinal (%2)</div>")
                     .arg(utilqt::toQString(col->getHeader()))
                     .arg(section)
                     .arg(utilqt::toQString(col->getBuffer()->getDataFormat()->getString()));
             }
         }();
+        if (const auto unit = col->getUnit(); unit != inviwo::Unit{}) {
+            tooltip.append(QString("<div>Unit [%1]</div>").arg(fmt::format("{}", unit)));
+        }
         if (col->getCustomRange()) {
             const dvec2 range = col->getCustomRange().value();
-            tooltip.append(QString("\nColumn Range [%1, %2]").arg(range.x).arg(range.y));
+            tooltip.append(QString("<div>Column Range [%1, %2]</div>").arg(range.x).arg(range.y));
         }
         return tooltip;
     }
