@@ -37,7 +37,7 @@
 // This means that we cannot rely on cl_khr_3d_image_writes
 // being correctly defined and must use our own define.
 #ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
-    #pragma OPENCL_EXTENSION cl_khr_3d_image_writes : enable
+    #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
     #define image_3d_write_uint8_t __write_only image3d_t
     #define image_3d_write_uint16_t __write_only image3d_t
     #define image_3d_write_uint32_t __write_only image3d_t
