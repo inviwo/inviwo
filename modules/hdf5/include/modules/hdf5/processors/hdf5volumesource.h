@@ -34,15 +34,12 @@
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/hdf5utils.h>
 #include <modules/hdf5/properties/dimselectionsproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
-#include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/datastructures/volumereusecache.h>
 
@@ -70,6 +67,7 @@ protected:
 private:
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
+    std::vector<DataSetInfo> dataRangeMatches_;
 
     Inport inport_;
     VolumeOutport outport_;
@@ -80,6 +78,11 @@ private:
     OptionPropertyString basisSelection_;
     DoubleMat4Property basis_;
     DoubleVec3Property spacing_;
+
+    CompositeProperty dataRangeGroup_;
+    OptionPropertyString dataRangeSelection_;
+    DoubleVec2Property dataRange_;
+    DoubleVec2Property valueRange_;
 
     VolumeInformationProperty information_;
 

@@ -285,7 +285,6 @@ std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
         }
     });
 
-
     log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
               fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
               layer->getDataFormat()->getString(), dataset.getFileName());
@@ -359,6 +358,29 @@ glm::dmat4 getBasis(const Handle& handle) {
                         handle.getPath().toString());
     }
     return basis;
+}
+
+glm::dvec2 getRange(const Handle& handle) {
+    glm::dvec2 range{0.0, 1.0};
+    const auto dataset = handle.open();
+    const H5::DataSpace space = dataset.getSpace();
+    const int rank = space.getSimpleExtentNdims();
+    if (rank != 1) {
+        throw Exception(SourceContext{}, "Could not create Range from: {} Invalid rank",
+                        handle.getPath().toString());
+    }
+    std::vector<hsize_t> dims(rank);
+    space.getSimpleExtentDims(dims.data());
+
+    static constexpr std::array<size_t, 1> rangeDim{2};
+
+    if (std::ranges::equal(dims, rangeDim)) {
+        dataset.read(glm::value_ptr(range), H5::PredType::NATIVE_DOUBLE);
+    } else {
+        throw Exception(SourceContext{}, "Could not create Range from: {} Invalid dimensions",
+                        handle.getPath().toString());
+    }
+    return range;
 }
 
 }  // namespace inviwo::hdf5
