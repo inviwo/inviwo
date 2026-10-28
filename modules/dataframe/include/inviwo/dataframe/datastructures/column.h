@@ -390,7 +390,7 @@ public:
     /**
      * Return the categorical value in row @p idx.
      */
-    const std::string& get(size_t idx) const;
+    std::string_view get(size_t idx) const;
     virtual std::string getAsString(size_t idx) const override;
     ///@}
 

@@ -185,7 +185,7 @@ void CategoricalColumn::set(size_t idx, std::uint32_t id) {
     buffer_->getEditableRAMRepresentation()->set(idx, id);
 }
 
-const std::string& CategoricalColumn::get(size_t idx) const { return lookUpTable_[getId(idx)]; }
+std::string_view CategoricalColumn::get(size_t idx) const { return lookUpTable_[getId(idx)]; }
 
 std::uint32_t CategoricalColumn::getId(size_t idx) const {
     return buffer_->getRAMRepresentation()->get(idx);
@@ -193,7 +193,7 @@ std::uint32_t CategoricalColumn::getId(size_t idx) const {
 
 double CategoricalColumn::getAsDouble(size_t idx) const { return static_cast<double>(getId(idx)); }
 
-std::string CategoricalColumn::getAsString(size_t idx) const { return get(idx); }
+std::string CategoricalColumn::getAsString(size_t idx) const { return std::string{get(idx)}; }
 
 std::vector<std::string> CategoricalColumn::getValues() const {
     const auto& data = buffer_->getRAMRepresentation()->getDataContainer();
