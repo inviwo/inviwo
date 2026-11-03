@@ -101,7 +101,8 @@ if(UNIX AND NOT APPLE AND IVW_PACKAGE_INSTALLER)
             COMPONENT Application)
     install(FILES "${CMAKE_CURRENT_LIST_DIR}/AppRun"
             DESTINATION ".."
-            COMPONENT Application)
+            COMPONENT Application
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     install(FILES "${IVW_ROOT_DIR}/resources/inviwo.appdata.xml" 
             DESTINATION "${IVW_SHARE_INSTALL_DIR}/metainfo"
             COMPONENT Application)
