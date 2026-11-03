@@ -30,8 +30,68 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/exception.h>
 
-namespace inviwo::util {
+namespace inviwo {
+
+struct IVW_CORE_API LinearMap {
+    double inputOffset = 0.0;
+    double scale = 1.0;
+    double outputOffset = 0.0;
+
+    constexpr double map(double input) const noexcept {
+        return (input - inputOffset) * scale + outputOffset;
+    }
+
+    constexpr double mapDelta(double delta) const noexcept { return delta * scale; }
+
+    constexpr glm::dvec2 mapRange(glm::dvec2 range) const noexcept {
+        return {map(range.x), map(range.y)};
+    }
+
+    constexpr bool isInvertible() const noexcept { return scale != 0.0; }
+
+    constexpr LinearMap invert() const {
+        if (scale == 0.0) {
+            throw Exception("Cannot invert a map with zero scale");
+        }
+
+        return {
+            .inputOffset = outputOffset,
+            .scale = 1.0 / scale,
+            .outputOffset = inputOffset,
+        };
+    }
+    constexpr LinearMap then(const LinearMap& next) const noexcept { return compose(next, *this); }
+
+    static constexpr LinearMap compose(const LinearMap& outer, const LinearMap& inner) noexcept {
+        return {
+            .inputOffset = inner.inputOffset,
+            .scale = inner.scale * outer.scale,
+            .outputOffset = outer.map(inner.outputOffset),
+        };
+    }
+    template <typename... Rest>
+        requires(sizeof...(Rest) > 0 && (std::same_as<Rest, LinearMap> && ...))
+    static constexpr LinearMap
+        compose(const LinearMap& outer, const LinearMap& inner, const Rest&... rest) noexcept {
+        return compose(outer, compose(inner, rest...));
+    }
+
+    static constexpr LinearMap from(glm::dvec2 source, glm::dvec2 destination) {
+        if (source.x == source.y) {
+            throw Exception("Source range must have nonzero width");
+        }
+
+        return {
+            .inputOffset = source.x,
+            .scale = (destination.y - destination.x) / (source.y - source.x),
+            .outputOffset = destination.x,
+        };
+    }
+};
+
+namespace util {
 
 template <typename T>
 constexpr T linearMap(T val, glm::vec<2, T> from, glm::vec<2, T> to) noexcept {
@@ -91,4 +151,6 @@ constexpr glm::mat<C, R, T> linearMapFromNormalized(glm::mat<C, R, T> val,
     return val * (to.y - to.x) + to.x;
 }
 
-}  // namespace inviwo::util
+}  // namespace util
+
+}  // namespace inviwo

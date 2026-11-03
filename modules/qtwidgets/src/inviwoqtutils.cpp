@@ -162,16 +162,15 @@ QPen cosmeticPen(const QBrush& brush, qreal width, Qt::PenStyle s, Qt::PenCapSty
     return pen;
 }
 
-void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
-    const auto range = tf.getRange();
-
+void paint(const TransferFunction& tf, LinearMap normalizePos, QPainter& painter,
+           const QRectF& rect) {
     QLinearGradient gradient;
 
     for (const auto& point : tf) {
         vec4 curColor = point.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        const auto nPos = util::linearMap(point.getPosition(), range, dvec2{0.0, 1.0});
+        const auto nPos = normalizePos.map(point.getPosition());
         gradient.setColorAt(nPos, utilqt::toQColor(curColor));
     }
 
@@ -182,8 +181,8 @@ void paint(const TransferFunction& tf, QPainter& painter, const QRectF& rect) {
     painter.fillRect(rect, gradient);
 }
 
-void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF& rect) {
-    const auto range = isoValues.getRange();
+void paint(const IsoValueCollection& isoValues, LinearMap normalizePos, QPainter& painter,
+           const QRectF& rect) {
 
     // draw a small hour glass for each iso value
     const double halfWidth = 6.0;
@@ -197,9 +196,7 @@ void paint(const IsoValueCollection& isoValues, QPainter& painter, const QRectF&
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
-        const auto nPos = range.x == range.y
-                              ? 0.5
-                              : util::linearMap(isoValue.getPosition(), range, dvec2{0.0, 1.0});
+        const auto nPos = normalizePos.map(isoValue.getPosition());
         const auto pos = nPos * rect.width();
 
         painter.setBrush(utilqt::toQColor(curColor));
@@ -230,12 +227,22 @@ void paintMask(const dvec2& mask, const dvec2& range, QPainter& painter, const Q
     }
 }
 
+namespace {
+
+constexpr LinearMap getMap(const auto& thing) {
+    auto range = thing.getRange();
+    if (range.x == range.y) range = dvec2{range.x - 0.5, range.x + 0.5};
+    return LinearMap::from(range, {0.0, 1.0});
+};
+
+}  // namespace
+
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QPixmap pixmap{size};
     QPainter painter{&pixmap};
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
-    paint(tf, painter, rect);
+    paint(tf, getMap(tf), painter, rect);
     return pixmap;
 }
 
@@ -244,7 +251,7 @@ QPixmap toQPixmap(const TransferFunctionProperty& property, const QSize& size) {
     QPainter painter{&pixmap};
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
-    paint(property.get(), painter, rect);
+    paint(property.get(), getMap(property.get()), painter, rect);
     return pixmap;
 }
 
@@ -253,7 +260,7 @@ QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
     QPainter painter{&pixmap};
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
-    paint(property.get(), painter, rect);
+    paint(property.get(), getMap(property.get()), painter, rect);
     return pixmap;
 }
 
@@ -262,8 +269,18 @@ QPixmap toQPixmap(const IsoTFProperty& property, const QSize& size) {
     QPainter painter{&pixmap};
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
-    paint(property.tf_.get(), painter, rect);
-    paint(property.isovalues_.get(), painter, rect);
+
+    const auto isoTfRange = [&]() {
+        const auto tfRange = property.tf_.get().getRange();
+        const auto isoRange = property.isovalues_.get().getRange();
+        const auto range = dvec2{std::min(tfRange.x, isoRange.x), std::max(tfRange.y, isoRange.y)};
+        if (range.x == range.y) return dvec2{range.x - 0.5, range.x + 0.5};
+        return range;
+    }();
+    const auto map = LinearMap::from(isoTfRange, {0.0, 1.0});
+
+    paint(property.tf_.get(), map, painter, rect);
+    paint(property.isovalues_.get(), map, painter, rect);
     return pixmap;
 }
 
@@ -272,12 +289,12 @@ QPixmap toQPixmap(const TFPropertyConcept& propertyConcept, const QSize& size) {
     QPainter painter{&pixmap};
     const QRectF rect{QPointF(0, 0), size};
     paintCheckerBoard(painter, rect);
-
+    const auto map = getMap(propertyConcept);
     if (const auto* tf = propertyConcept.getTransferFunction()) {
-        paint(*tf, painter, rect);
+        paint(*tf, map, painter, rect);
     }
     if (const auto* isoValues = propertyConcept.getIsovalues()) {
-        paint(*isoValues, painter, rect);
+        paint(*isoValues, map, painter, rect);
     }
     return pixmap;
 }
@@ -542,9 +559,7 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
                     case QImage::Format_RGBA8888_Premultiplied:
                         img = img.convertToFormat(QImage::Format_RGBX8888);
                         break;
-                    default:
-                        img = img.convertToFormat(QImage::Format_RGB32);
-                        break;
+                    default: img = img.convertToFormat(QImage::Format_RGB32); break;
                 }
             }
         }

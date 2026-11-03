@@ -58,7 +58,7 @@ uniform mat4 trafo = mat4(1);
 uniform vec2 screenDim;
 uniform vec2 screenDimInv;
 
-uniform RangeConversionMap tfRange = RangeConversionMap(0.0, 1.0, 0.0);
+uniform RangeConversionMap isoMap = RangeConversionMap(0.0, 1.0, 0.0);
 
 flat in int instanceID[];
 out vec4 color_;
@@ -78,7 +78,7 @@ void main() {
 
     float isoPosition = isovalues.values[instanceID[0]];
     // renormalize position with respect to selected TF range
-    isoPosition = (isoPosition - tfRange.outputOffset) / tfRange.scale + tfRange.inputOffset;
+    isoPosition = (isoPosition - isoMap.inputOffset) * isoMap.scale + isoMap.outputOffset;
 
     float pos = isoPosition * screenDim.x;
     vec4 isocolor = vec4(isovalues.colors[instanceID[0]].rgb, 1.0);
