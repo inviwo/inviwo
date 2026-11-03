@@ -127,6 +127,7 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/shadercomponentutil.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/sphericalentryexitpoints.h
     include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
@@ -265,6 +266,7 @@ set(SOURCE_FILES
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/shadercomponentutil.cpp
     src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/sphericalentryexitpoints.cpp
     src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
