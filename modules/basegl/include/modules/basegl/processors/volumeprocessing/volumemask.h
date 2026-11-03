@@ -32,13 +32,11 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/basegl/algorithm/masking.h>
 
 namespace inviwo {
 
@@ -62,9 +60,7 @@ private:
     BoolProperty maskNaN_;
     BoolProperty maskInf_;
 
-    std::shared_ptr<StringShaderResource> frag_;
-    Shader shader_;
-    FrameBufferObject fbo_;
+    mask::MaskTool maskTool_;
 };
 
 }  // namespace inviwo

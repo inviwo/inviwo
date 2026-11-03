@@ -6,6 +6,7 @@ set(HEADER_FILES
     include/modules/basegl/algorithm/dataminmaxgl.h
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/algorithm/masking.h
     include/modules/basegl/algorithm/volumenormalization.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
@@ -148,6 +149,7 @@ set(SOURCE_FILES
     src/algorithm/dataminmaxgl.cpp
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
+    src/algorithm/masking.cpp
     src/algorithm/volumenormalization.cpp
     src/baseglmodule.cpp
     src/datastructures/linedata.cpp
