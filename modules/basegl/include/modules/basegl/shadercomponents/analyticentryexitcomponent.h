@@ -96,6 +96,19 @@ public:
     FloatVec3Property center;
     FloatProperty radius;
 
+    glm::dmat4 model() const {
+        switch (shape.getSelectedValue()) {
+            case Shape::Sphere: {
+                const auto r = static_cast<double>(radius.get());
+                return glm::scale(glm::translate(dmat4{1.0}, dvec3{center.get()}), dvec3{r});
+            }
+            case Shape::Parallelepiped:
+            default:
+                return dmat4{dvec4{dvec3{edge1.get()}, 0.0}, dvec4{dvec3{edge2.get()}, 0.0},
+                             dvec4{dvec3{edge3.get()}, 0.0}, dvec4{dvec3{origin.get()}, 1.0}};
+        }
+    }
+
 private:
     std::function<glm::dmat4(CoordinateSpace from, CoordinateSpace to)> getTransform_;
     std::string cameraName_;
