@@ -19,6 +19,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/rangeutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/searchdsl.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/syntaxhighlight.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/tuplealgorithms.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/factoryutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
@@ -477,6 +478,7 @@ set(SOURCE_FILES
     algorithm/rangeutils.cpp
     algorithm/searchdsl.cpp
     algorithm/syntaxhighlight.cpp
+    algorithm/tuplealgorithms.cpp
     common/factoryutil.cpp
     common/inviwoapplication.cpp
     common/inviwoapplicationutil.cpp

@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volume.h>
+
+#include <inviwo/core/algorithm/tuplealgorithms.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/algorithm/histogram1d.h>
 #include <inviwo/core/util/document.h>
@@ -174,23 +176,12 @@ Document Volume::getInfo() const {
     doc.append("b", "Volume", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
 
-    tb(H("Format"), getDataFormat()->getString());
-    tb(H("Dimension"), getDimensions());
-    tb(H("SwizzleMask"), getSwizzleMask());
-    tb(H("Interpolation"), getInterpolation());
-    tb(H("Wrapping"), getWrapping());
-    tb(H("Data Range"), dataMap.dataRange);
-    tb(H("Value Range"), dataMap.valueRange);
-    tb(H("Value"), fmt::format("{}{: [}", dataMap.valueAxis.name, dataMap.valueAxis.unit));
-    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
-    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
-    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
+    util::tuple_zip_for_each(
+        [&](auto&& v, auto&& d, auto&& n) { tb(H(camelCaseToHeader(n)), v.value_or(d)); },
+        config().values(), VolumeConfig::defaults(), VolumeConfig::names());
 
-    tb(H("Basis"), getBasis());
-    tb(H("Offset"), getOffset());
-
-    histograms_.forEach([&](const Histogram1D& histogram, size_t channel) {
-        tb(H("Stats"), fmt::format("Channel {} Min: {}, Mean: {}, Max: {}, Std: {}", channel,
+    histograms_.forEach([&](const Histogram1D& histogram, size_t) {
+        tb(H("Stats"), fmt::format("{} Min: {}, Mean: {}, Max: {}, Std: {}", histogram.name,
                                    histogram.dataStats.min, histogram.dataStats.mean,
                                    histogram.dataStats.max, histogram.dataStats.standardDeviation));
         tb(H("Percentiles"),

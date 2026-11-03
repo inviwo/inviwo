@@ -29,16 +29,22 @@
 
 #include <inviwo/core/datastructures/volume/temporalvolume.h>
 
+#include <inviwo/core/algorithm/tuplealgorithms.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdfuture.h>
-
-#include <algorithm>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/format.h>
 #include <fmt/chrono.h>
+
+#include <algorithm>
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace inviwo {
 
@@ -332,31 +338,25 @@ Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {
     tb(H("Frames"), data.size());
     if (!data.empty()) {
 
-        auto formatAxis = [](const Axis& a) { return fmt::format("{}{: [}", a.name, a.unit); };
-
         const auto [first, last] = data.timeRange();
         tb(H("Time Range"), fmt::format("[{}, {}]", first, last));
 
-        const VolumeConfig& prototype = data.prototype();
-
-        tb(H("dimensions"), prototype.dimensions.value_or(VolumeConfig::defaultDimensions));
-        tb(H("formatId"), prototype.formatId.value_or(VolumeConfig::defaultFormatId));
-        tb(H("swizzleMask"), prototype.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
-        tb(H("interpolation"),
-           prototype.interpolation.value_or(VolumeConfig::defaultInterpolation));
-        tb(H("wrapping"), prototype.wrapping.value_or(VolumeConfig::defaultWrapping));
-        tb(H("xAxis"), formatAxis(prototype.xAxis.value_or(VolumeConfig::defaultXAxis)));
-        tb(H("yAxis"), formatAxis(prototype.yAxis.value_or(VolumeConfig::defaultYAxis)));
-        tb(H("zAxis"), formatAxis(prototype.zAxis.value_or(VolumeConfig::defaultZAxis)));
-        tb(H("valueAxis"),
-           formatAxis(prototype.valueAxis.value_or(VolumeConfig::defaultValueAxis)));
-        tb(H("dataRange"), prototype.dataRange.value_or(
-                               VolumeConfig::defaultDataRange(VolumeConfig::defaultFormatId)));
-        tb(H("valueRange"), prototype.valueRange.value_or(
-                                VolumeConfig::defaultValueRange(VolumeConfig::defaultFormatId)));
-        tb(H("model"), prototype.model.value_or(VolumeConfig::defaultModel));
-        tb(H("world"), prototype.world.value_or(VolumeConfig::defaultWorld));
+        util::tuple_zip_for_each(
+            [&](auto&& v, auto&& d, auto&& n) { tb(H(camelCaseToHeader(n)), v.value_or(d)); },
+            data.prototype().values(), VolumeConfig::defaults(), VolumeConfig::names());
     }
+
+    data.histograms_.forEach([&](const Histogram1D& histogram, size_t) {
+        tb(H("Stats"), fmt::format("{} Min: {}, Mean: {}, Max: {}, Std: {}", histogram.name,
+                                   histogram.dataStats.min, histogram.dataStats.mean,
+                                   histogram.dataStats.max, histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+    });
+
     return doc;
 }
 

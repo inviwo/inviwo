@@ -97,27 +97,11 @@ namespace {
 std::vector<std::string> mismatch(const VolumeConfig& a, const VolumeConfig& b) {
     std::vector<std::string> res;
 
-    constexpr auto format = util::overloaded{
-        [](const std::optional<Axis>& a, std::string& out) {
-            if (a.has_value()) {
-                fmt::format_to(std::back_inserter(out), "{}{: [}", a->name, a->unit);
-            } else {
-                out += "<none>";
-            }
-        },
-        [](const DataFormatBase* f, std::string& out) {
-            if (f) {
-                out += f->getString();
-            } else {
-                out += "<none>";
-            }
-        },
-        [](const auto& a, std::string& out) {
-            if (a.has_value()) {
-                fmt::format_to(std::back_inserter(out), "{}", *a);
-            } else {
-                out += "<none>";
-            }
+    constexpr auto format = [](const auto& a, std::string& out) {
+        if (a.has_value()) {
+            fmt::format_to(std::back_inserter(out), "{}", *a);
+        } else {
+            out += "<none>";
         }
     };
 
@@ -130,7 +114,7 @@ std::vector<std::string> mismatch(const VolumeConfig& a, const VolumeConfig& b) 
                 format(b, str);
             }
         },
-        a.tie(), b.tie());
+        a.values(), b.values());
 
     return res;
 }

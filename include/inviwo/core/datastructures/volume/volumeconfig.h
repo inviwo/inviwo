@@ -93,11 +93,11 @@ struct IVW_CORE_API VolumeConfig {
 
     constexpr bool operator==(const VolumeConfig&) const = default;
 
-    constexpr auto tie() {
+    constexpr auto values() {
         return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         zAxis, valueAxis, dataRange, valueRange, model, world);
     }
-    constexpr auto tie() const {
+    constexpr auto values() const {
         return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         zAxis, valueAxis, dataRange, valueRange, model, world);
     }
@@ -106,6 +106,11 @@ struct IVW_CORE_API VolumeConfig {
                           defaultInterpolation, defaultWrapping, defaultXAxis, defaultYAxis,
                           defaultZAxis, defaultValueAxis, defaultDataRange(), defaultValueRange(),
                           defaultModel, defaultWorld);
+    }
+    static constexpr auto names() {
+        return std::to_array<std::string_view>(
+            {"dimensions", "formatId", "swizzleMask", "interpolation", "wrapping", "xAxis", "yAxis",
+             "zAxis", "valueAxis", "dataRange", "valueRange", "model", "world"});
     }
 };
 

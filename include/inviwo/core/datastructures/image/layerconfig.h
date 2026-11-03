@@ -89,11 +89,11 @@ struct IVW_CORE_API LayerConfig {
 
     static glm::dmat4 aspectPreservingModelMatrixFromDimensions(size2_t dimensions);
 
-    constexpr auto tie() {
+    constexpr auto values() {
         return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         valueAxis, dataRange, valueRange, model, world);
     }
-    constexpr auto tie() const {
+    constexpr auto values() const {
         return std::tie(dimensions, formatId, swizzleMask, interpolation, wrapping, xAxis, yAxis,
                         valueAxis, dataRange, valueRange, model, world);
     }
@@ -102,6 +102,11 @@ struct IVW_CORE_API LayerConfig {
                           defaultInterpolation, defaultWrapping, defaultXAxis, defaultYAxis,
                           defaultValueAxis, defaultDataRange(), defaultValueRange(), defaultModel,
                           defaultWorld);
+    }
+    static constexpr auto names() {
+        return std::to_array<std::string_view>(
+            {"dimensions", "formatId", "swizzleMask", "interpolation", "wrapping", "xAxis", "yAxis",
+             "valueAxis", "dataRange", "valueRange", "model", "world"});
     }
 };
 
