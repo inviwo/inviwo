@@ -53,9 +53,9 @@ class IVW_CORE_API MetaDataOwner {
 public:
     MetaDataOwner() = default;
     MetaDataOwner(const MetaDataOwner& rhs) = default;
-    MetaDataOwner(MetaDataOwner& rhs) = default;
+    MetaDataOwner(MetaDataOwner&& rhs) = default;
     MetaDataOwner& operator=(const MetaDataOwner& rhs) = default;
-    MetaDataOwner& operator=(MetaDataOwner&) = default;
+    MetaDataOwner& operator=(MetaDataOwner&& rhs) = default;
     ~MetaDataOwner() = default;
 
     // copy the meta data from src to *this

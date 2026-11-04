@@ -38,6 +38,10 @@ namespace inviwo {
 class IVW_CORE_API MetaDataFactory : public CloningFactory<MetaData> {
 public:
     MetaDataFactory() = default;
+    MetaDataFactory(const MetaDataFactory&) = delete;
+    MetaDataFactory(MetaDataFactory&&) = delete;
+    MetaDataFactory& operator=(const MetaDataFactory&) = delete;
+    MetaDataFactory& operator=(MetaDataFactory&&) = delete;
     virtual ~MetaDataFactory() = default;
 };
 

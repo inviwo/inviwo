@@ -39,6 +39,10 @@ class IVW_CORE_API PositionMetaData : public IntVec2MetaData {
 public:
     PositionMetaData();
     PositionMetaData(int x, int y);
+    PositionMetaData(const PositionMetaData&) = default;
+    PositionMetaData(PositionMetaData&&) = default;
+    PositionMetaData& operator=(const PositionMetaData&) = default;
+    PositionMetaData& operator=(PositionMetaData&&) = default;
     virtual ~PositionMetaData();
 
     virtual std::string_view getClassIdentifier() const override { return classIdentifier; }

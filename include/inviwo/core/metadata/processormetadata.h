@@ -49,6 +49,8 @@ public:
     ProcessorMetaData();
     ProcessorMetaData(const ProcessorMetaData& rhs) = default;
     ProcessorMetaData& operator=(const ProcessorMetaData& that) = default;
+    ProcessorMetaData(ProcessorMetaData&& rhs) = default;
+    ProcessorMetaData& operator=(ProcessorMetaData&& that) = default;
     virtual ~ProcessorMetaData() = default;
 
     virtual std::string_view getClassIdentifier() const override { return classIdentifier; }
