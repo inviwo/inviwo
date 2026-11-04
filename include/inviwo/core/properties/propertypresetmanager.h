@@ -37,6 +37,7 @@
 #include <flags/flags.h>
 
 #include <map>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,7 @@ namespace inviwo {
 class InviwoApplication;
 class Property;
 
-enum class PropertyPresetType { Property = 1, Workspace = 2, Application = 4 };
+enum class PropertyPresetType : std::uint8_t { Property = 1, Workspace = 2, Application = 4 };
 ALLOW_FLAGS_FOR_ENUM(PropertyPresetType)
 using PropertyPresetTypes = flags::flags<PropertyPresetType>;
 
@@ -55,6 +56,10 @@ using PropertyPresetTypes = flags::flags<PropertyPresetType>;
 class IVW_CORE_API PropertyPresetManager {
 public:
     explicit PropertyPresetManager(InviwoApplication* app);
+    PropertyPresetManager(const PropertyPresetManager&) = delete;
+    PropertyPresetManager(PropertyPresetManager&&) = delete;
+    PropertyPresetManager& operator=(const PropertyPresetManager&) = delete;
+    PropertyPresetManager& operator=(PropertyPresetManager&&) = delete;
     virtual ~PropertyPresetManager() = default;
 
     bool loadPreset(const std::string& name, Property* property, PropertyPresetType type) const;

@@ -44,6 +44,11 @@ class FileDialog;
 
 class IVW_CORE_API FileRequestable {
 public:
+    FileRequestable() = default;
+    FileRequestable(const FileRequestable&) = default;
+    FileRequestable(FileRequestable&&) = default;
+    FileRequestable& operator=(const FileRequestable&) = default;
+    FileRequestable& operator=(FileRequestable&&) = default;
     virtual ~FileRequestable() = default;
     /**
      *	Ask the user to supply a file, return true if successful
@@ -59,7 +64,7 @@ public:
              std::string_view contentType);
 
     void addNameFilter(std::string_view filter);
-    void addNameFilter(FileExtension filter);
+    void addNameFilter(const FileExtension& filter);
     void addNameFilters(const std::vector<FileExtension>& filters);
     void clearNameFilters();
     const std::vector<FileExtension>& getNameFilters() const;
@@ -97,6 +102,7 @@ protected:
      * But the order is arbitrary.
      */
     template <typename Arg, typename... Args>
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the arguments are only read
     [[nodiscard]] static constexpr bool any_of(Arg&& arg, Args&&... args) {
         return (arg || ... || args);
     }
@@ -183,6 +189,9 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FileProperty(const FileProperty& rhs) = default;
+    FileProperty(FileProperty&& rhs) : FileProperty(static_cast<const FileProperty&>(rhs)) {}
+    FileProperty& operator=(const FileProperty&) = delete;
+    FileProperty& operator=(FileProperty&&) = delete;
 
     FileProperty& operator=(const std::filesystem::path& file);
     virtual FileProperty* clone() const override;

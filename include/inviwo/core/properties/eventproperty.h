@@ -133,6 +133,9 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(const EventProperty& rhs);
+    EventProperty(EventProperty&& rhs) : EventProperty(static_cast<const EventProperty&>(rhs)) {}
+    EventProperty& operator=(const EventProperty&) = delete;
+    EventProperty& operator=(EventProperty&&) = delete;
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 
