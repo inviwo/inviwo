@@ -58,6 +58,10 @@ class IVW_CORE_API CanvasProcessor : public Processor,
                                      public ImageExporter {
 public:
     explicit CanvasProcessor(InviwoApplication* app);
+    CanvasProcessor(const CanvasProcessor&) = delete;
+    CanvasProcessor(CanvasProcessor&&) = delete;
+    CanvasProcessor& operator=(const CanvasProcessor&) = delete;
+    CanvasProcessor& operator=(CanvasProcessor&&) = delete;
     virtual ~CanvasProcessor();
 
     virtual void process() override;

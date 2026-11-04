@@ -41,6 +41,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <optional>
 #include <stop_token>
 
@@ -109,17 +110,17 @@ private:
  * Settings for the PoolProcessor
  * @see PoolProcessor
  */
-enum class Option {
+enum class Option : std::uint8_t {
     /// Also call done for old jobs, by default old jobs will be discarded.
-    KeepOldResults = 1 << 0,
+    KeepOldResults = 1U << 0U,
     /// Don't submit new jobs while old ones are running. The last submission will be
     /// queued and submitted when the current one is finished
-    QueuedDispatch = 1 << 1,
+    QueuedDispatch = 1U << 1U,
     /// Wait for a small delay (500ms) of inactivity before submitting a job
-    DelayDispatch = 1 << 2,
+    DelayDispatch = 1U << 2U,
     /// Delay invalidation of outports until the job is finished. This
     /// will override the default processor invalidation.
-    DelayInvalidation = 1 << 3
+    DelayInvalidation = 1U << 3U
 };
 
 }  // namespace pool

@@ -49,6 +49,10 @@ class IVW_CORE_API ProcessorFactoryObject {
 public:
     ProcessorFactoryObject(ProcessorInfo info, std::string_view typeName)
         : info_(std::move(info)), typeName_{typeName} {}
+    ProcessorFactoryObject(const ProcessorFactoryObject&) = delete;
+    ProcessorFactoryObject(ProcessorFactoryObject&&) = delete;
+    ProcessorFactoryObject& operator=(const ProcessorFactoryObject&) = delete;
+    ProcessorFactoryObject& operator=(ProcessorFactoryObject&&) = delete;
     virtual ~ProcessorFactoryObject() = default;
 
     virtual std::shared_ptr<Processor> create(InviwoApplication* app) const = 0;
@@ -81,6 +85,10 @@ public:
     ProcessorFactoryObjectTemplate()
         : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo(),
                                  util::demangle(typeid(T).name())) {}
+    ProcessorFactoryObjectTemplate(const ProcessorFactoryObjectTemplate&) = delete;
+    ProcessorFactoryObjectTemplate(ProcessorFactoryObjectTemplate&&) = delete;
+    ProcessorFactoryObjectTemplate& operator=(const ProcessorFactoryObjectTemplate&) = delete;
+    ProcessorFactoryObjectTemplate& operator=(ProcessorFactoryObjectTemplate&&) = delete;
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
     virtual std::shared_ptr<Processor> create(

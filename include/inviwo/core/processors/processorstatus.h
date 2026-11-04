@@ -33,13 +33,14 @@
 #include <inviwo/core/util/sourcecontext.h>
 #include <inviwo/core/util/exception.h>
 
+#include <cstdint>
 #include <string_view>
 
 namespace inviwo {
 
 class IVW_CORE_API ProcessorStatus {
 public:
-    enum class Status { Ready, NotReady, Error };
+    enum class Status : std::uint8_t { Ready, NotReady, Error };
 
     constexpr ProcessorStatus(bool ready) : status_{ready ? Ready : NotReady}, reason_{} {}
 
@@ -52,6 +53,7 @@ public:
     constexpr ProcessorStatus(ProcessorStatus&&) noexcept = default;
     constexpr ProcessorStatus& operator=(const ProcessorStatus&) noexcept = default;
     constexpr ProcessorStatus& operator=(ProcessorStatus&&) noexcept = default;
+    ~ProcessorStatus() = default;
 
     constexpr ProcessorStatus& operator=(bool ready) {
         status_ = ready ? Ready : NotReady;

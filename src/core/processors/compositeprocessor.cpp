@@ -143,7 +143,7 @@ ProcessorNetwork& CompositeProcessor::getSubNetwork() { return *subNetwork_; }
 void CompositeProcessor::loadSubNetwork(const std::filesystem::path& file) {
     if (std::filesystem::is_regular_file(file)) {
         subNetwork_->clear();
-        auto* wm = app_->getWorkspaceManager();
+        const auto* wm = app_->getWorkspaceManager();
         auto ifs = std::ifstream(file);
         auto d = wm->createWorkspaceDeserializer(
             ifs, filesystem::getPath(PathType::Workspaces) / "dummy.inv");
@@ -306,9 +306,8 @@ CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composi
     superProperty->setSerializationMode(PropertySerializationMode::All);
     superProperty->setMetaData<IntMetaData>(meta::index, index);
 
-    const auto it = std::lower_bound(comp.begin(), comp.end(), index, [&](Property* prop, int b) {
-        const auto a = prop->getMetaData<IntMetaData>(meta::index, 0);
-        return a < b;
+    const auto it = std::ranges::lower_bound(comp, index, {}, [](Property* prop) {
+        return prop->getMetaData<IntMetaData>(meta::index, 0);
     });
     comp.insertProperty(std::distance(comp.begin(), it), superProperty.get(), false);
 

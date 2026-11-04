@@ -51,12 +51,11 @@ public:
     explicit CanvasProcessorWidget(Processor* p);
     virtual Canvas* getCanvas() const = 0;
 
-protected:
-    virtual void propagateResizeEvent() = 0;
-
-private:
     virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
     virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
+
+protected:
+    virtual void propagateResizeEvent() = 0;
 };
 
 }  // namespace inviwo

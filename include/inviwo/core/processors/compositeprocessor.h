@@ -101,6 +101,10 @@ public:
      */
     CompositeProcessor(std::string_view identifier, std::string_view displayName,
                        InviwoApplication* app, const std::filesystem::path& filename = "");
+    CompositeProcessor(const CompositeProcessor&) = delete;
+    CompositeProcessor(CompositeProcessor&&) = delete;
+    CompositeProcessor& operator=(const CompositeProcessor&) = delete;
+    CompositeProcessor& operator=(CompositeProcessor&&) = delete;
     virtual ~CompositeProcessor();
 
     /**
@@ -178,6 +182,7 @@ private:
     void registerProperty(Property* prop);
     void unregisterProperty(Property* prop);
 
+public:
     // PropertyObserver overrides
     virtual void onSetIdentifier(Property* orgProp, const std::string& identifier) override;
     virtual void onSetDisplayName(Property* orgProp, const std::string& displayName) override;
@@ -195,6 +200,7 @@ private:
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
+private:
     InviwoApplication* app_;
 
     bool isProcessing_ = false;
