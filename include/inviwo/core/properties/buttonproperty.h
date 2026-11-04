@@ -46,7 +46,7 @@ namespace inviwo {
  *
  * @see ButtonPropertyWidgetQt
  */
-class IVW_CORE_API ButtonProperty : public Property {
+class IVW_CORE_API ButtonProperty final : public Property {
 
 public:
     virtual std::string_view getClassIdentifier() const override;
@@ -70,7 +70,10 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    ButtonProperty(const ButtonProperty& rhs);
+    ButtonProperty(const ButtonProperty& rhs) = default;
+    ButtonProperty(ButtonProperty&& rhs) = default;
+    ButtonProperty& operator=(const ButtonProperty&) = default;
+    ButtonProperty& operator=(ButtonProperty&&) = default;
     ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
@@ -90,7 +93,7 @@ public:
      * @see propertyModified
      * @see onChange
      */
-    virtual void pressButton();
+    void pressButton();
 
     virtual ButtonProperty& propertyModified() override;  // override for custom onChange behavior
 

@@ -31,6 +31,8 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view BoolCompositeProperty::getClassIdentifier() const { return classIdentifier; }
@@ -38,7 +40,7 @@ std::string_view BoolCompositeProperty::getClassIdentifier() const { return clas
 BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
                                              std::string_view displayName, Document help,
                                              bool checked, InvalidationLevel invalidationLevel,
-                                             PropertySemantics semantics)
+                                             const PropertySemantics& semantics)
     : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel, semantics)
     , checked_("checked", "", checked, invalidationLevel, semantics) {
     addProperty(checked_);
@@ -47,7 +49,7 @@ BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
 BoolCompositeProperty::BoolCompositeProperty(std::string_view identifier,
                                              std::string_view displayName, bool checked,
                                              InvalidationLevel invalidationLevel,
-                                             PropertySemantics semantics)
+                                             const PropertySemantics& semantics)
     : BoolCompositeProperty(identifier, displayName, Document{}, checked, invalidationLevel,
                             semantics) {}
 

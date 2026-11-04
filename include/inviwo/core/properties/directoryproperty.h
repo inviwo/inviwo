@@ -60,6 +60,10 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     DirectoryProperty(const DirectoryProperty& rhs);
+    DirectoryProperty(DirectoryProperty&& rhs)
+        : DirectoryProperty(static_cast<const DirectoryProperty&>(rhs)) {}
+    DirectoryProperty& operator=(const DirectoryProperty&) = delete;
+    DirectoryProperty& operator=(DirectoryProperty&&) = delete;
     virtual DirectoryProperty* clone() const override;
 
     virtual ~DirectoryProperty();

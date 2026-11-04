@@ -36,8 +36,9 @@ std::string_view PlaneProperty::getClassIdentifier() const { return classIdentif
 
 PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,
                              vec3 position, vec3 normal, vec4 color,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : BoolCompositeProperty(identifier, displayName, true, invalidationLevel, std::move(semantics))
+                             InvalidationLevel invalidationLevel,
+                             const PropertySemantics& semantics)
+    : BoolCompositeProperty(identifier, displayName, true, invalidationLevel, semantics)
     , position_("position", "Position", position, vec3(0.0f), vec3(1.0f), vec3(0.01f),
                 InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
     , normal_("normal", "Normal", normal, vec3(-1.0f), vec3(1.0f), vec3(0.01f),
@@ -53,9 +54,10 @@ PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displ
 }
 
 PlaneProperty::PlaneProperty(std::string_view identifier, std::string_view displayName,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                             InvalidationLevel invalidationLevel,
+                             const PropertySemantics& semantics)
     : PlaneProperty(identifier, displayName, vec3(0.5f), vec3(0.0f, 0.0f, 1.0f), vec4(1.0f),
-                    invalidationLevel, std::move(semantics)) {}
+                    invalidationLevel, semantics) {}
 
 PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
     : BoolCompositeProperty(rhs)

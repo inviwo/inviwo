@@ -39,6 +39,7 @@
 #include <inviwo/core/io/serialization/serialization.h>
 
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -53,7 +54,7 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , path_{}
     , displayName_("displayName", std::string(displayName))
     , readOnly_("readonly", readOnly == ReadOnly::Yes)
-    , semantics_("semantics", semantics)
+    , semantics_("semantics", std::move(semantics))
     , visible_("visible", true)
     , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
@@ -70,7 +71,7 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
 
 Property::Property(std::string_view identifier, std::string_view displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, Document{}, invalidationLevel, semantics) {}
+    : Property(identifier, displayName, Document{}, invalidationLevel, std::move(semantics)) {}
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
@@ -110,6 +111,29 @@ Property::Property(Property&& rhs)
     , autoLinkTo_{std::move(rhs.autoLinkTo_)}
     , help_{std::move(rhs.help_)} {}
 
+Property& Property::operator=(const Property& that) {
+    if (this != &that) {
+        PropertyObservable::operator=(that);
+        MetaDataOwner::operator=(that);
+        onChangeCallback_ = that.onChangeCallback_;
+        serializationMode_ = that.serializationMode_;
+        identifier_ = that.identifier_;
+        path_.clear();
+        displayName_ = that.displayName_;
+        readOnly_ = that.readOnly_;
+        semantics_ = that.semantics_;
+        visible_ = that.visible_;
+        propertyModified_ = that.propertyModified_;
+        invalidationLevel_ = that.invalidationLevel_;
+        owner_ = nullptr;
+        propertyWidgets_.clear();
+        initiatingWidget_ = nullptr;
+        autoLinkTo_ = that.autoLinkTo_;
+        help_ = that.help_;
+    }
+    return *this;
+}
+
 Property& Property::operator=(Property&& that) {
     if (this != &that) {
         PropertyObservable::operator=(std::move(that));
@@ -134,7 +158,7 @@ Property& Property::operator=(Property&& that) {
 }
 
 Property::~Property() {
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         owner->removeProperty(this);
     }
 }
@@ -254,9 +278,9 @@ Property& Property::propertyModified() {
     onChangeCallback_.invokeAll();
     setModified();
 
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         // Evaluate property links
-        if (auto processor = owner->getProcessor()) {
+        if (auto* processor = owner->getProcessor()) {
             processor->notifyObserversAboutPropertyChange(this);
         }
 
@@ -353,8 +377,8 @@ Document Property::getDescription() const {
     tb(H("Identifier"), identifier_);
     tb(H("Class Identifier"), getClassIdentifier());
     tb(H("Path"), getPath());
-    util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
-                            semantics_, visible_);
+    util::for_each_argument([&tb](const auto& p) { tb(H(camelCaseToHeader(p.name)), p.value); },
+                            readOnly_, semantics_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
 
     return doc;
@@ -371,8 +395,8 @@ void Property::accept(NetworkVisitor& visitor) { visitor.visit(*this); }
 // modified is __not__ called. This state changes should not effect the outcome of a
 // network evaluation.
 void Property::notifyAboutChange() {
-    if (auto owner = getOwner()) {
-        if (auto processor = owner->getProcessor()) {
+    if (auto* owner = getOwner()) {
+        if (auto* processor = owner->getProcessor()) {
             // By putting a nullptr here we will avoid evaluation links.
             processor->notifyObserversAboutPropertyChange(nullptr);
         }
@@ -399,7 +423,7 @@ bool Property::needsSerialization() const {
         case PropertySerializationMode::All:     return true;
         case PropertySerializationMode::None:    return false;
         case PropertySerializationMode::Default: [[fallthrough]];
-        default:                                 return !isDefaultState() || !getMetaDataMap()->empty();
+        default: return !isDefaultState() || !getMetaDataMap()->empty();
     }
 }
 

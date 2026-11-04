@@ -71,6 +71,10 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     ImageEditorProperty(const ImageEditorProperty& rhs);
+    ImageEditorProperty(ImageEditorProperty&& rhs)
+        : ImageEditorProperty(static_cast<const ImageEditorProperty&>(rhs)) {}
+    ImageEditorProperty& operator=(const ImageEditorProperty&) = delete;
+    ImageEditorProperty& operator=(ImageEditorProperty&&) = delete;
 
     virtual ImageEditorProperty* clone() const override;
     virtual ~ImageEditorProperty();

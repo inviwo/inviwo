@@ -68,7 +68,7 @@ void CompositeProperty::setOwner(PropertyOwner* owner) {
 }
 
 void CompositeProperty::set(const Property* srcProperty) {
-    if (const auto compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty)) {
+    if (const auto* const compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty)) {
         set(compositeSrcProp);
     }
 }
@@ -109,7 +109,7 @@ void CompositeProperty::setValid() {
 CompositeProperty& CompositeProperty::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     collapsed_.setAsDefault();
-    for (auto elem : properties_) {
+    for (auto* elem : properties_) {
         elem->setCurrentStateAsDefault();
     }
     return *this;
@@ -117,7 +117,7 @@ CompositeProperty& CompositeProperty::setCurrentStateAsDefault() {
 
 CompositeProperty& CompositeProperty::resetToDefaultState() {
     const NetworkLock lock(this);
-    for (auto elem : properties_) {
+    for (auto* elem : properties_) {
         elem->resetToDefaultState();
     }
     return *this;
@@ -174,7 +174,7 @@ void CompositeProperty::accept(NetworkVisitor& visitor) {
 }
 
 InviwoApplication* CompositeProperty::getInviwoApplication() {
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         return owner->getInviwoApplication();
     } else {
         return nullptr;
@@ -182,7 +182,7 @@ InviwoApplication* CompositeProperty::getInviwoApplication() {
 }
 
 Processor* CompositeProperty::getProcessor() {
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         return owner->getProcessor();
     } else {
         return nullptr;
@@ -190,7 +190,7 @@ Processor* CompositeProperty::getProcessor() {
 }
 
 const Processor* CompositeProperty::getProcessor() const {
-    if (const auto owner = getOwner()) {
+    if (const auto* const owner = getOwner()) {
         return owner->getProcessor();
     } else {
         return nullptr;
@@ -210,18 +210,18 @@ CompositeProperty& CompositeProperty::setCollapsed(CollapseAction action, Collap
     switch (target) {
         case CollapseTarget::Recursive:
             setCollapsed(action == CollapseAction::Collapse);
-            for (auto p : getCompositeProperties()) {
+            for (auto* p : getCompositeProperties()) {
                 p->setCollapsed(action, target);
             }
             break;
         case CollapseTarget::Children:
-            for (auto p : getCompositeProperties()) {
+            for (auto* p : getCompositeProperties()) {
                 p->setCollapsed(action == CollapseAction::Collapse);
             }
             break;
         case CollapseTarget::Siblings:
-            if (auto parent = this->getOwner()) {
-                for (auto p : parent->getCompositeProperties()) {
+            if (const auto* parent = this->getOwner()) {
+                for (auto* p : parent->getCompositeProperties()) {
                     p->setCollapsed(action == CollapseAction::Collapse);
                 }
             }

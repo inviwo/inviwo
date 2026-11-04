@@ -142,7 +142,7 @@ ScatterPlotProcessor::ScatterPlotProcessor()
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         });
-    addInteractionHandler(&scatterPlot_);
+
     scatterPlot_.properties_.margins_.setLowerLeftMargin({65.0f, 60.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
     scatterPlot_.properties_.yAxis_.captionSettings_.setChecked(true);

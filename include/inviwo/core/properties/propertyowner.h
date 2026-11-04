@@ -51,7 +51,7 @@ class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable, public virtua
 public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
-    PropertyOwner& operator=(const PropertyOwner& that) = delete;
+
     /**
      * @brief Removes all properties and notifies its observers of the removal.
      */
@@ -171,6 +171,7 @@ protected:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
     PropertyOwner(PropertyOwner&& rhs);
+    PropertyOwner& operator=(const PropertyOwner& that);
     PropertyOwner& operator=(PropertyOwner&& that);
 
     void forEachProperty(std::function<void(Property&)> callback,

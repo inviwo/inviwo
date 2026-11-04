@@ -55,13 +55,17 @@ public:
         std::string_view identifier, std::string_view displayName, bool checked = false,
         vec3 color = vec3(1.0f, 0.906f, 0.612f), float alpha = 0.75f,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
+        const PropertySemantics& semantics = PropertySemantics::Default);
     SelectionColorProperty(
         std::string_view identifier, std::string_view displayName, Document help,
         bool checked = false, vec3 color = vec3(1.0f, 0.906f, 0.612f), float alpha = 0.75f,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
+        const PropertySemantics& semantics = PropertySemantics::Default);
     SelectionColorProperty(const SelectionColorProperty& rhs);
+    SelectionColorProperty(SelectionColorProperty&& rhs)
+        : SelectionColorProperty(static_cast<const SelectionColorProperty&>(rhs)) {}
+    SelectionColorProperty& operator=(const SelectionColorProperty&) = delete;
+    SelectionColorProperty& operator=(SelectionColorProperty&&) = delete;
     virtual ~SelectionColorProperty() = default;
 
     virtual SelectionColorProperty* clone() const override;

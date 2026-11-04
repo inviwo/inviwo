@@ -130,7 +130,7 @@ public:
     IsoValueProperty isovalues_;
     TransferFunctionProperty tf_;
 
-protected:
+public:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;

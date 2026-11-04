@@ -81,6 +81,10 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(const CameraProperty& rhs);
+    CameraProperty(CameraProperty&& rhs)
+        : CameraProperty(static_cast<const CameraProperty&>(rhs)) {}
+    CameraProperty& operator=(const CameraProperty&) = delete;
+    CameraProperty& operator=(CameraProperty&&) = delete;
 
     operator const Camera&() const;
 

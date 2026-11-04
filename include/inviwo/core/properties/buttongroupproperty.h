@@ -46,7 +46,7 @@ namespace inviwo {
  * them.
  * @see ButtonGroupPropertyWidgetQt
  */
-class IVW_CORE_API ButtonGroupProperty : public Property {
+class IVW_CORE_API ButtonGroupProperty final : public Property {
 public:
     struct IVW_CORE_API Button {
         std::optional<std::string> name = std::nullopt;
@@ -76,8 +76,13 @@ public:
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
-    ButtonGroupProperty(const ButtonGroupProperty& rhs);
+    ButtonGroupProperty(const ButtonGroupProperty& rhs) = default;
+    ButtonGroupProperty(ButtonGroupProperty&& rhs) = default;
+    ButtonGroupProperty& operator=(const ButtonGroupProperty&) = default;
+    ButtonGroupProperty& operator=(ButtonGroupProperty&&) = default;
+
     ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
+
     virtual ButtonGroupProperty* clone() const override;
     virtual ~ButtonGroupProperty() = default;
 
@@ -109,10 +114,8 @@ public:
     virtual ButtonGroupProperty& resetToDefaultState() override;
 
 private:
-    void updateHelp();
-    std::vector<Button> buttons_;
     Document partialHelp_;
-
+    std::vector<Button> buttons_;
     size_t buttonPressed_ = std::numeric_limits<size_t>::max();
 };
 

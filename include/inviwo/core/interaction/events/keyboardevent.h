@@ -65,7 +65,7 @@ public:
      * Platform-independent code for key.
      * @note Does not differentiate between lower and uppercase letters. Use text instead.
      */
-    virtual IvwKey key() const;
+    IvwKey key() const;
     void setKey(IvwKey button);
 
     /*
