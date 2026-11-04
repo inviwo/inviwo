@@ -32,13 +32,19 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/modulecallback.h>
 
+#include <cstdint>
 #include <string>
 
 namespace inviwo {
 
 class InviwoModule;
 
-enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
+enum class ModuleCallBackActionState : std::uint8_t {
+    Default = 0,
+    Enabled = 1,
+    Disabled = 2,
+    Custom = 3
+};
 
 /**
  * A Module can register ModuleCallbackActions with the InviwoApplication. These action will the

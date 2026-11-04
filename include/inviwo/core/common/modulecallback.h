@@ -39,6 +39,10 @@ namespace inviwo {
 class IVW_CORE_API CallbackWithSingleArgument {
 public:
     CallbackWithSingleArgument() = default;
+    CallbackWithSingleArgument(const CallbackWithSingleArgument&) = default;
+    CallbackWithSingleArgument(CallbackWithSingleArgument&&) = default;
+    CallbackWithSingleArgument& operator=(const CallbackWithSingleArgument&) = default;
+    CallbackWithSingleArgument& operator=(CallbackWithSingleArgument&&) = default;
     virtual ~CallbackWithSingleArgument() = default;
     virtual void invoke(void*) const = 0;
 };
@@ -49,6 +53,10 @@ public:
     using fPointer = void (T::*)(U*);
 
     BaseModuleCallback(T* obj, fPointer functionPtr) : functionPtr_(functionPtr), obj_(obj) {}
+    BaseModuleCallback(const BaseModuleCallback&) = default;
+    BaseModuleCallback(BaseModuleCallback&&) = default;
+    BaseModuleCallback& operator=(const BaseModuleCallback&) = default;
+    BaseModuleCallback& operator=(BaseModuleCallback&&) = default;
 
     virtual ~BaseModuleCallback() = default;
 
@@ -75,6 +83,10 @@ private:
 class IVW_CORE_API ModuleCallback {
 public:
     ModuleCallback() : callBack_{} {}
+    ModuleCallback(const ModuleCallback&) = delete;
+    ModuleCallback(ModuleCallback&&) = default;
+    ModuleCallback& operator=(const ModuleCallback&) = delete;
+    ModuleCallback& operator=(ModuleCallback&&) = default;
     virtual ~ModuleCallback() = default;
 
     template <typename U>

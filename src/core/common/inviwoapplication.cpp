@@ -244,8 +244,8 @@ void InviwoApplication::registerModules(RuntimeModuleLoading token) {
 }
 
 void InviwoApplication::registerModules(RuntimeModuleLoading token,
-                                        std::function<bool(std::string_view)> isEnabled) {
-    moduleManager_->registerModules(token, std::move(isEnabled));
+                                        const std::function<bool(std::string_view)>& isEnabled) {
+    moduleManager_->registerModules(token, isEnabled);
 }
 
 ModuleManager& InviwoApplication::getModuleManager() { return *moduleManager_; }

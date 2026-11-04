@@ -45,6 +45,7 @@
 #include <string>
 #include <functional>
 #include <ranges>
+#include <utility>
 
 #include <fmt/std.h>
 
@@ -287,14 +288,14 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
     std::span<const std::filesystem::path> searchPaths,
-    std::function<bool(std::string_view)> isEnabled) {
+    const std::function<bool(std::string_view)>& isEnabled) {
 
     return findRuntimeModules(searchPaths, isEnabled, isRuntimeModuleReloadingEnabled());
 }
 
 std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
     std::span<const std::filesystem::path> searchPaths,
-    std::function<bool(std::string_view)> isEnabled, bool runtimeReloading) {
+    const std::function<bool(std::string_view)>& isEnabled, bool runtimeReloading) {
 
     const auto libraryTypes = SharedLibrary::libraryFileExtensions();
     // Remove unsupported files and files belonging to already loaded modules.
@@ -331,7 +332,7 @@ std::vector<ModuleContainer> ModuleManager::findRuntimeModules(
 }
 
 void ModuleManager::registerModules(RuntimeModuleLoading,
-                                    std::function<bool(std::string_view)> isEnabled,
+                                    const std::function<bool(std::string_view)>& isEnabled,
                                     const std::function<void(std::string_view)>& progressCallback) {
     // Perform the following steps
     // 1. Recursively get all library files and the folders they are in
@@ -386,12 +387,12 @@ InviwoModuleFactoryObject* ModuleManager::getFactoryObject(std::string_view iden
 }
 
 std::shared_ptr<std::function<void()>> ModuleManager::onModulesDidRegister(
-    std::function<void()> callback) {
+    const std::function<void()>& callback) {
     return onModulesDidRegister_.add(callback);
 }
 
 std::shared_ptr<std::function<void()>> ModuleManager::onModulesWillUnregister(
-    std::function<void()> callback) {
+    const std::function<void()>& callback) {
     return onModulesWillUnregister_.add(callback);
 }
 

@@ -54,7 +54,9 @@ class IVW_CORE_API ModuleManager {
 public:
     explicit ModuleManager(InviwoApplication* app);
     ModuleManager(const ModuleManager& rhs) = delete;
+    ModuleManager(ModuleManager&& rhs) = delete;
     ModuleManager& operator=(const ModuleManager& that) = delete;
+    ModuleManager& operator=(ModuleManager&& that) = delete;
     ~ModuleManager();
 
     /*
@@ -84,7 +86,7 @@ public:
      */
     void registerModules(
         RuntimeModuleLoading,
-        std::function<bool(std::string_view)> isEnabled = ModuleManager::getEnabledFilter(),
+        const std::function<bool(std::string_view)>& isEnabled = ModuleManager::getEnabledFilter(),
         const std::function<void(std::string_view)>& progressCallback = nullptr);
 
     std::vector<ModuleContainer> findRuntimeModules(
@@ -92,11 +94,11 @@ public:
 
     std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths,
-        std::function<bool(std::string_view)> isEnabled);
+        const std::function<bool(std::string_view)>& isEnabled);
 
     static std::vector<ModuleContainer> findRuntimeModules(
         std::span<const std::filesystem::path> searchPaths,
-        std::function<bool(std::string_view)> isEnabled, bool runtimeReloading);
+        const std::function<bool(std::string_view)>& isEnabled, bool runtimeReloading);
 
     auto getInviwoModules() {
         static constexpr auto notNull = [](ModuleContainer& cont) -> bool {
@@ -145,12 +147,14 @@ public:
      * @brief Register callback for monitoring when modules have been registered.
      * Invoked in registerModules.
      */
-    std::shared_ptr<std::function<void()>> onModulesDidRegister(std::function<void()> callback);
+    std::shared_ptr<std::function<void()>> onModulesDidRegister(
+        const std::function<void()>& callback);
     /**
      * @brief Register callback for monitoring when modules have been registered.
      * Invoked in unregisterModules.
      */
-    std::shared_ptr<std::function<void()>> onModulesWillUnregister(std::function<void()> callback);
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister(
+        const std::function<void()>& callback);
 
     static std::function<bool(std::string_view)> getEnabledFilter();
     void reloadModules();

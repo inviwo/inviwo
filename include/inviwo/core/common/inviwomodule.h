@@ -475,7 +475,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationConverter(
     std::unique_ptr<RepresentationConverter<BaseRepr>> converter) {
 
-    if (auto* metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
+    if (const auto* metaFactory = util::getRepresentationConverterMetaFactory(app_)) {
         if (auto factory = metaFactory->getConverterFactory<BaseRepr>()) {
             if (factory->registerObject(converter.get())) {
                 representationConvertersUnRegFunctors_.push_back(
@@ -490,7 +490,7 @@ template <typename BaseRepr>
 void InviwoModule::registerRepresentationFactoryObject(
     std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation) {
 
-    if (auto* metaFactory = util::getRepresentationMetaFactory(app_)) {
+    if (const auto* metaFactory = util::getRepresentationMetaFactory(app_)) {
         if (auto factory = metaFactory->getRepresentationFactory<BaseRepr>()) {
             if (factory->registerObject(representation.get())) {
                 representationUnRegFunctors_.push_back(

@@ -62,6 +62,8 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
     , licenses(std::move(someLicenses))
     , protectedModule(aProtectedModule) {}
 
+namespace {
+
 /**
  * @brief Sorts modules according to their dependencies.
  *
@@ -75,7 +77,7 @@ InviwoModuleFactoryObject::InviwoModuleFactoryObject(
  * @param tmpVisited Modules being searched
  * @param sorted Module names, sorted after dependencies.
  */
-static void recursiveTopologicalModuleFactoryObjectSort(
+void recursiveTopologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator end, const std::string& lname,
     std::unordered_set<std::string>& visited, std::unordered_set<std::string>& tmpVisited,
@@ -100,6 +102,8 @@ static void recursiveTopologicalModuleFactoryObjectSort(
     visited.insert(lname);
     sorted.insert(sorted.begin(), lname);
 }
+
+}  // namespace
 
 void topologicalModuleFactoryObjectSort(
     std::vector<std::unique_ptr<InviwoModuleFactoryObject>>::iterator start,
