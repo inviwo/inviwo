@@ -466,11 +466,6 @@ public:
 
     static constexpr int processorNetworkVersion() { return processorNetworkVersion_; }
 
-private:
-    // Assign an identifier and display name, if none is set.
-    static void assignIdentifierAndName(Processor& p, std::string_view name);
-    void removeProcessorHelper(Processor* processor);
-
     // PropertyOwnerObserver overrides
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
@@ -487,6 +482,11 @@ private:
     virtual void onProcessorMetaDataPositionChange() override;
     virtual void onProcessorMetaDataVisibilityChange() override;
     virtual void onProcessorMetaDataSelectionChange() override;
+
+private:
+    // Assign an identifier and display name, if none is set.
+    static void assignIdentifierAndName(Processor& p, std::string_view name);
+    void removeProcessorHelper(Processor* processor);
 
     void addPropertyOwnerObservation(PropertyOwner*);
     void removePropertyOwnerObservation(PropertyOwner*);

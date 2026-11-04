@@ -33,13 +33,14 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <functional>
 
 namespace inviwo {
 
 class Processor;
 
-enum class EvaluationType { InitResource, PortOnChange, Process, NotReady };
+enum class EvaluationType : std::uint8_t { InitResource, PortOnChange, Process, NotReady };
 
 constexpr std::string_view enumToStr(EvaluationType type) {
     switch (type) {

@@ -111,6 +111,9 @@ void ProcessorNetworkConverter::traverseNodes(TxElement* node, updateType update
     }
 }
 
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
+// The update functions are passed as member function pointers to traverseNodes, so they can't be
+// static.
 void ProcessorNetworkConverter::updateProcessorType(TxElement* node) {
     const auto& key = node->Value();
 
@@ -633,7 +636,7 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
                         TxElement newNode("MetaDataItem");
                         newNode.SetAttribute("type", std::get<1>(item));
                         newNode.SetAttribute("key", std::get<2>(item));
-                        auto data = n->Clone();
+                        auto* data = n->Clone();
                         data->SetValue("MetaData");
                         newNode.LinkEndChild(data);
                         parent->InsertEndChild(newNode);
@@ -858,7 +861,7 @@ void ProcessorNetworkConverter::updatePositionProperties(TxElement* node) {
             if (auto* lightPosition =
                     xml::getElement(prop, "Properties/Property&identifier=lightPosition")) {
 
-                auto pos = lightPosition->Clone();
+                const auto* pos = lightPosition->Clone();
                 TxElement propNode{"Properties"};
                 propNode.InsertEndChild(*pos);
 
@@ -925,5 +928,6 @@ void ProcessorNetworkConverter::updateTF(TxElement* node) {
          .attributes = {{.name = "type", .value = "org.inviwo.IsoValueProperty"}}},
         rename);
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
 }  // namespace inviwo

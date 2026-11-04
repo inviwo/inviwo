@@ -46,6 +46,10 @@ public:
         Base64Image() = default;
         Base64Image(std::string name, std::string base64jpeg, int w, int h);
         explicit Base64Image(std::string name, std::string base64jpeg = "", ivec2 size = ivec2{0});
+        Base64Image(const Base64Image&) = default;
+        Base64Image(Base64Image&&) = default;
+        Base64Image& operator=(const Base64Image&) = default;
+        Base64Image& operator=(Base64Image&&) = default;
         virtual ~Base64Image() = default;
 
         bool isValid() const;
@@ -70,6 +74,10 @@ public:
     explicit WorkspaceAnnotations(const std::filesystem::path& path,
                                   InviwoApplication* app = util::getInviwoApplication());
 
+    WorkspaceAnnotations(const WorkspaceAnnotations&) = delete;
+    WorkspaceAnnotations(WorkspaceAnnotations&&) = delete;
+    WorkspaceAnnotations& operator=(const WorkspaceAnnotations&) = delete;
+    WorkspaceAnnotations& operator=(WorkspaceAnnotations&&) = delete;
     virtual ~WorkspaceAnnotations() = default;
 
     void setTitle(const std::string& title);
@@ -111,10 +119,10 @@ public:
 
     ModifiedHandle onModified(const ModifiedCallback& callback);
 
-protected:
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty) override;
 
+protected:
     StringProperty title_;
     StringProperty author_;
     StringProperty tags_;

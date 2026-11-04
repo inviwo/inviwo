@@ -89,6 +89,10 @@ public:
     using ModifiedHandle = ModifiedDispatcher::Handle;
 
     explicit WorkspaceManager(InviwoApplication* app);
+    WorkspaceManager(const WorkspaceManager&) = delete;
+    WorkspaceManager(WorkspaceManager&&) = delete;
+    WorkspaceManager& operator=(const WorkspaceManager&) = delete;
+    WorkspaceManager& operator=(WorkspaceManager&&) = delete;
     ~WorkspaceManager();
 
     /**

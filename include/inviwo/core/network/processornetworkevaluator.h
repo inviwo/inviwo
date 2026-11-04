@@ -47,10 +47,13 @@ class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
 
 public:
     explicit ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
+    ProcessorNetworkEvaluator(const ProcessorNetworkEvaluator&) = delete;
+    ProcessorNetworkEvaluator(ProcessorNetworkEvaluator&&) = delete;
+    ProcessorNetworkEvaluator& operator=(const ProcessorNetworkEvaluator&) = delete;
+    ProcessorNetworkEvaluator& operator=(ProcessorNetworkEvaluator&&) = delete;
     virtual ~ProcessorNetworkEvaluator();
     void setExceptionHandler(EvaluationErrorHandler handler);
 
-private:
     // ProcessorNetworkObserver overrides
     virtual void onProcessorNetworkEvaluateRequest() override;
     virtual void onProcessorNetworkUnlocked() override;
@@ -63,6 +66,7 @@ private:
     virtual void onProcessorSinkChanged(Processor*) override;
     virtual void onProcessorActiveConnectionsChanged(Processor*) override;
 
+private:
     void requestEvaluate();
     void evaluate();
 

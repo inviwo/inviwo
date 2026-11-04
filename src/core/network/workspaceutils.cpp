@@ -43,8 +43,9 @@
 
 namespace inviwo::util {
 
-void forEachWorkspaceInDirRecursive(const std::filesystem::path& path,
-                                    std::function<void(const std::filesystem::path&)> callback) {
+void forEachWorkspaceInDirRecursive(
+    const std::filesystem::path& path,
+    const std::function<void(const std::filesystem::path&)>& callback) {
 
     if (!std::filesystem::is_directory(path)) return;
 
@@ -119,7 +120,7 @@ size_t updateWorkspaces(InviwoApplication* app, const std::filesystem::path& pat
 }
 
 void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
-                             std::function<void()> updateGui) {
+                             const std::function<void()>& updateGui) {
     size_t total = 0;
     for (const auto& m : app->getModuleManager().getInviwoModules()) {
         forEachWorkspaceInDirRecursive(m.getPath(ModulePath::Workspaces),
@@ -134,7 +135,7 @@ void updateExampleWorkspaces(InviwoApplication* app, DryRun dryRun,
 }
 
 void updateRegressionWorkspaces(InviwoApplication* app, DryRun dryRun,
-                                std::function<void()> updateGui) {
+                                const std::function<void()>& updateGui) {
     size_t total = 0;
     for (const auto& m : app->getModuleManager().getInviwoModules()) {
         forEachWorkspaceInDirRecursive(m.getPath(ModulePath::RegressionTests),
