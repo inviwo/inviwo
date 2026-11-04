@@ -72,6 +72,10 @@ class IVW_CORE_API MeshDrawer {
     friend class MeshDrawerFactory;  // Access to create
 public:
     MeshDrawer() = default;
+    MeshDrawer(const MeshDrawer&) = default;
+    MeshDrawer(MeshDrawer&&) = default;
+    MeshDrawer& operator=(const MeshDrawer&) = default;
+    MeshDrawer& operator=(MeshDrawer&&) = default;
     virtual ~MeshDrawer() = default;
 
     /**
