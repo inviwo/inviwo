@@ -17,6 +17,10 @@ FIXFLAGS=()
 if [[ "$MODE" == "fix" ]]; then
   FIXFLAGS=(-fix -format -style=file)
 fi
+# Optional: CHECKS="-*,check-a,check-b" restricts the run (and the fixes) to those checks.
+if [[ -n "$CHECKS" ]]; then
+  FIXFLAGS+=(-checks="$CHECKS")
+fi
 
 "$LLVM/run-clang-tidy" -p "$BUILD" \
   -clang-tidy-binary "$LLVM/clang-tidy" \
