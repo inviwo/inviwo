@@ -43,6 +43,10 @@ class IVW_CORE_API PortInspectorFactoryObject {
 public:
     PortInspectorFactoryObject(std::string_view portClassIdentifier,
                                std::filesystem::path inspectorWorkspaceFileName);
+    PortInspectorFactoryObject(const PortInspectorFactoryObject&) = delete;
+    PortInspectorFactoryObject(PortInspectorFactoryObject&&) = delete;
+    PortInspectorFactoryObject& operator=(const PortInspectorFactoryObject&) = delete;
+    PortInspectorFactoryObject& operator=(PortInspectorFactoryObject&&) = delete;
     ~PortInspectorFactoryObject() = default;
 
     std::unique_ptr<PortInspector> create();

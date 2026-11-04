@@ -60,6 +60,10 @@ public:
     friend class ProcessorNetwork;
     friend class ProcessorNetworkEvaluator;
 
+    Inport(const Inport&) = delete;
+    Inport(Inport&&) = delete;
+    Inport& operator=(const Inport&) = delete;
+    Inport& operator=(Inport&&) = delete;
     virtual ~Inport();
 
     virtual bool isConnected() const override;

@@ -46,6 +46,10 @@ namespace inviwo {
 class IVW_CORE_API InportFactoryObject {
 public:
     InportFactoryObject(std::string_view classIdentifier, std::string_view typeName);
+    InportFactoryObject(const InportFactoryObject&) = delete;
+    InportFactoryObject(InportFactoryObject&&) = delete;
+    InportFactoryObject& operator=(const InportFactoryObject&) = delete;
+    InportFactoryObject& operator=(InportFactoryObject&&) = delete;
     virtual ~InportFactoryObject() = default;
 
     virtual std::unique_ptr<Inport> create() = 0;
@@ -66,6 +70,10 @@ public:
         static_assert(std::is_base_of_v<Inport, T>, "All inports must derive from Inport");
     }
 
+    InportFactoryObjectTemplate(const InportFactoryObjectTemplate&) = delete;
+    InportFactoryObjectTemplate(InportFactoryObjectTemplate&&) = delete;
+    InportFactoryObjectTemplate& operator=(const InportFactoryObjectTemplate&) = delete;
+    InportFactoryObjectTemplate& operator=(InportFactoryObjectTemplate&&) = delete;
     virtual ~InportFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Inport> create() override {
@@ -80,6 +88,10 @@ public:
 class IVW_CORE_API OutportFactoryObject {
 public:
     OutportFactoryObject(std::string_view classIdentifier, std::string_view typeName);
+    OutportFactoryObject(const OutportFactoryObject&) = delete;
+    OutportFactoryObject(OutportFactoryObject&&) = delete;
+    OutportFactoryObject& operator=(const OutportFactoryObject&) = delete;
+    OutportFactoryObject& operator=(OutportFactoryObject&&) = delete;
     virtual ~OutportFactoryObject() = default;
 
     virtual std::unique_ptr<Outport> create() = 0;
@@ -100,6 +112,10 @@ public:
         static_assert(std::is_base_of_v<Outport, T>, "All outports must derive from Outport");
     }
 
+    OutportFactoryObjectTemplate(const OutportFactoryObjectTemplate&) = delete;
+    OutportFactoryObjectTemplate(OutportFactoryObjectTemplate&&) = delete;
+    OutportFactoryObjectTemplate& operator=(const OutportFactoryObjectTemplate&) = delete;
+    OutportFactoryObjectTemplate& operator=(OutportFactoryObjectTemplate&&) = delete;
     virtual ~OutportFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Outport> create() override {

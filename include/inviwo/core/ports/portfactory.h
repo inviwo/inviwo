@@ -39,6 +39,10 @@ class IVW_CORE_API InportFactory : public Factory<Inport, std::string_view, std:
                                    public StandardFactory<Inport, InportFactoryObject> {
 public:
     InportFactory() = default;
+    InportFactory(const InportFactory&) = delete;
+    InportFactory(InportFactory&&) = delete;
+    InportFactory& operator=(const InportFactory&) = delete;
+    InportFactory& operator=(InportFactory&&) = delete;
     virtual ~InportFactory() = default;
 
     using StandardFactory<Inport, InportFactoryObject>::create;
@@ -53,6 +57,10 @@ class IVW_CORE_API OutportFactory : public Factory<Outport, std::string_view, st
                                     public StandardFactory<Outport, OutportFactoryObject> {
 public:
     OutportFactory() = default;
+    OutportFactory(const OutportFactory&) = delete;
+    OutportFactory(OutportFactory&&) = delete;
+    OutportFactory& operator=(const OutportFactory&) = delete;
+    OutportFactory& operator=(OutportFactory&&) = delete;
     virtual ~OutportFactory() = default;
 
     using StandardFactory<Outport, OutportFactoryObject>::create;

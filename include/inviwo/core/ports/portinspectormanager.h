@@ -76,6 +76,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
+
 private:
     using PortInspectorMap = std::map<std::string, std::unique_ptr<PortInspector>>;
 
@@ -85,8 +87,6 @@ private:
     static void insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
                               Outport* outport, bool bidirectionalAutoLinks);
     static void removeNetwork(PortInspector* portInspector, ProcessorNetwork* network);
-
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
 
     void removePortInspector(PortInspectorMap::iterator it);
 
