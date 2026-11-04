@@ -76,6 +76,10 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     StringProperty(const StringProperty& rhs);
+    StringProperty(StringProperty&& rhs)
+        : StringProperty(static_cast<const StringProperty&>(rhs)) {}
+    StringProperty& operator=(const StringProperty&) = delete;
+    StringProperty& operator=(StringProperty&&) = delete;
     StringProperty& operator=(const std::string& value);
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;

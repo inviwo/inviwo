@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
+#include <cstdint>
 #include <optional>
 
 namespace inviwo {
@@ -54,8 +55,8 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.PositionProperty"};
 
-    enum class CoordinateOffset { None, CameraLookAt, Custom };
-    enum class ApplyOffset { No, Yes };
+    enum class CoordinateOffset : std::uint8_t { None, CameraLookAt, Custom };
+    enum class ApplyOffset : std::uint8_t { No, Yes };
 
     PositionProperty(std::string_view identifier, std::string_view displayName, Document help,
                      const vec3& position = vec3{0.0f},
@@ -71,6 +72,11 @@ public:
                      PropertySemantics positionSemantics = PropertySemantics::Default,
                      InvalidationLevel = InvalidationLevel::InvalidResources);
     PositionProperty(const PositionProperty& rhs);
+    PositionProperty(PositionProperty&& rhs)
+        : PositionProperty(static_cast<const PositionProperty&>(rhs)) {}
+    PositionProperty& operator=(const PositionProperty&) = delete;
+    PositionProperty& operator=(PositionProperty&&) = delete;
+    virtual ~PositionProperty() = default;
     [[nodiscard]] virtual PositionProperty* clone() const override;
 
     /**
@@ -119,7 +125,7 @@ public:
     /**
      * Set the property semantics of the position property to \p semantics
      */
-    void setPositionSemantics(PropertySemantics semantics);
+    void setPositionSemantics(const PropertySemantics& semantics);
 
     virtual void deserialize(Deserializer& d) override;
 

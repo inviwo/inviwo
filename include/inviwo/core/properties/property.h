@@ -44,6 +44,7 @@
 #include <functional>
 #include <type_traits>
 #include <vector>
+#include <cstdint>
 #include <string>
 #include <string_view>
 
@@ -80,7 +81,7 @@ struct PropertyTraits {
     static constexpr std::string_view classIdentifier() { return util::classIdentifier<T>(); }
 };
 
-enum class ReadOnly { No, Yes };
+enum class ReadOnly : std::uint8_t { No, Yes };
 
 /**
  *	@defgroup properties Properties
@@ -132,6 +133,14 @@ public:
     Property(std::string_view identifier, std::string_view displayName,
              InvalidationLevel invalidationLevel,
              PropertySemantics semantics = PropertySemantics::Default);
+
+    /**
+     * Properties do not support copy assignment.
+     * To assign the "value" of a property to an other property the Property::set(const Property*
+     * src) function should be used
+     * @see set
+     */
+    Property& operator=(const Property& that) = delete;
 
     /**
      * Creates a clone of this property. The clone will have the same identifier, hence the
@@ -392,7 +401,8 @@ public:
         OnChangeBlocker() = delete;
         OnChangeBlocker(const OnChangeBlocker&) = delete;
         OnChangeBlocker(OnChangeBlocker&&) = delete;
-        OnChangeBlocker& operator=(OnChangeBlocker) = delete;
+        OnChangeBlocker& operator=(const OnChangeBlocker&) = delete;
+        OnChangeBlocker& operator=(OnChangeBlocker&&) = delete;
         ~OnChangeBlocker();
 
     private:
@@ -408,13 +418,6 @@ protected:
     Property(const Property& rhs);
     Property(Property&& rhs);
 
-    /**
-     * Properties do not support copy assignment.
-     * To assign the "value" of a property to an other property the Property::set(const Property*
-     * src) function should be used
-     * @see set
-     */
-    Property& operator=(const Property& that) = delete;
     Property& operator=(Property&& that);
 
     void notifyAboutChange();
@@ -445,7 +448,7 @@ private:
 
 namespace util {
 
-enum class OverwriteState { Yes, No };
+enum class OverwriteState : std::uint8_t { Yes, No };
 
 /**
  * Update the default state of \p property to \p state and set the current state to \p state if \p

@@ -57,6 +57,9 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     BoolProperty(const BoolProperty& rhs);
+    BoolProperty(BoolProperty&& rhs) : BoolProperty(static_cast<const BoolProperty&>(rhs)) {}
+    BoolProperty& operator=(const BoolProperty&) = delete;
+    BoolProperty& operator=(BoolProperty&&) = delete;
     BoolProperty& operator=(const bool& value);
     virtual BoolProperty* clone() const override;
     virtual ~BoolProperty();

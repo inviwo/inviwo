@@ -47,14 +47,18 @@ public:
     BoolCompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
                           bool checked = false,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                          PropertySemantics semantics = PropertySemantics::Default);
+                          const PropertySemantics& semantics = PropertySemantics::Default);
 
     BoolCompositeProperty(std::string_view identifier, std::string_view displayName,
                           bool checked = false,
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                          PropertySemantics semantics = PropertySemantics::Default);
+                          const PropertySemantics& semantics = PropertySemantics::Default);
 
     BoolCompositeProperty(const BoolCompositeProperty& rhs);
+    BoolCompositeProperty(BoolCompositeProperty&& rhs)
+        : BoolCompositeProperty(static_cast<const BoolCompositeProperty&>(rhs)) {}
+    BoolCompositeProperty& operator=(const BoolCompositeProperty&) = delete;
+    BoolCompositeProperty& operator=(BoolCompositeProperty&&) = delete;
 
     virtual BoolCompositeProperty* clone() const override;
     virtual ~BoolCompositeProperty();

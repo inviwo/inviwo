@@ -51,9 +51,13 @@ public:
     VolumeIndicatorProperty(
         std::string_view identifier, std::string_view displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
+        const PropertySemantics& semantics = PropertySemantics::Default);
 
     VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs);
+    VolumeIndicatorProperty(VolumeIndicatorProperty&& rhs)
+        : VolumeIndicatorProperty(static_cast<const VolumeIndicatorProperty&>(rhs)) {}
+    VolumeIndicatorProperty& operator=(const VolumeIndicatorProperty&) = delete;
+    VolumeIndicatorProperty& operator=(VolumeIndicatorProperty&&) = delete;
     virtual VolumeIndicatorProperty* clone() const override;
     virtual ~VolumeIndicatorProperty();
 

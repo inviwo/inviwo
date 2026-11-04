@@ -77,6 +77,10 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonGroupProperty(const ButtonGroupProperty& rhs);
+    ButtonGroupProperty(ButtonGroupProperty&& rhs)
+        : ButtonGroupProperty(static_cast<const ButtonGroupProperty&>(rhs)) {}
+    ButtonGroupProperty& operator=(const ButtonGroupProperty&) = delete;
+    ButtonGroupProperty& operator=(ButtonGroupProperty&&) = delete;
     ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
     virtual ButtonGroupProperty* clone() const override;
     virtual ~ButtonGroupProperty() = default;

@@ -77,7 +77,7 @@ ButtonProperty::~ButtonProperty() = default;
 
 void ButtonProperty::set(const Property* src) {
     bool* ptr = nullptr;
-    if (auto boolprop = dynamic_cast<const ButtonProperty*>(src);
+    if (const auto* boolprop = dynamic_cast<const ButtonProperty*>(src);
         boolprop && (boolprop->buttonPressed_)) {
         ptr = &buttonPressed_;
     }

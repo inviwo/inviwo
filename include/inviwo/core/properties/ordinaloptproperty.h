@@ -154,7 +154,7 @@ public:
         PropertySemantics semantics = OrdinalOptPropertyState<T>::defaultSemantics());
 
     OrdinalOptProperty(std::string_view identifier, std::string_view displayName,
-                       OrdinalOptPropertyState<T> state);
+                       const OrdinalOptPropertyState<T>& state);
 
     OrdinalOptProperty(const OrdinalOptProperty<T>& rhs) = default;
     OrdinalOptProperty(OrdinalOptProperty<T>&& rhs) = default;
@@ -533,7 +533,8 @@ OrdinalOptProperty<T>::OrdinalOptProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics, ReadOnly readOnly)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics),
+               readOnly)
     , value_{value}
     , defaultValue_{value}
     , minValue_("minvalue", minValue.first)
@@ -560,12 +561,13 @@ OrdinalOptProperty<T>::OrdinalOptProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics)
-    : OrdinalOptProperty{identifier, displayName, Document{},        value,    minValue,
-                         maxValue,   increment,   invalidationLevel, semantics} {}
+    : OrdinalOptProperty{identifier, displayName,       Document{},
+                         value,      minValue,          maxValue,
+                         increment,  invalidationLevel, std::move(semantics)} {}
 
 template <typename T>
 OrdinalOptProperty<T>::OrdinalOptProperty(std::string_view identifier, std::string_view displayName,
-                                          OrdinalOptPropertyState<T> state)
+                                          const OrdinalOptPropertyState<T>& state)
     : OrdinalOptProperty{identifier,
                          displayName,
                          state.help,
@@ -884,7 +886,7 @@ Document OrdinalOptProperty<T>::getDescription() const {
 
     Document doc = Property::getDescription();
 
-    utildoc::TableBuilder tb(doc.handle(), P::end());
+    utildoc::TableBuilder tb(doc.handle(), P::end());  // NOLINT(misc-const-correctness)
     tb(H("Has value"), value_.has_value() ? "yes" : "no");
 
     const T val = value();

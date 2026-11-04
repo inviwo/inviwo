@@ -57,9 +57,13 @@ public:
     MarginProperty(std::string_view identifier, std::string_view displayName, float top = 20.0f,
                    float right = 20.0f, float bottom = 20.0f, float left = 20.0f,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                   PropertySemantics semantics = PropertySemantics::Default);
+                   const PropertySemantics& semantics = PropertySemantics::Default);
 
     MarginProperty(const MarginProperty& rhs);
+    MarginProperty(MarginProperty&& rhs)
+        : MarginProperty(static_cast<const MarginProperty&>(rhs)) {}
+    MarginProperty& operator=(const MarginProperty&) = delete;
+    MarginProperty& operator=(MarginProperty&&) = delete;
     virtual MarginProperty* clone() const override;
 
     virtual ~MarginProperty() = default;
