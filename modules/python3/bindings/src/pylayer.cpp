@@ -71,6 +71,8 @@ void exposeLayer(pybind11::module& m) {
         .def("clone", [](Layer& self) { return self.clone(); })
         .def("setDimensions", &Layer::setDimensions)
         .def_property_readonly("layertype", &Layer::getLayerType)
+        .def_property("dimensions", &Layer::getDimensions, &Layer::setDimensions)
+        .def_property_readonly("format", &Layer::getDataFormat)
         .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
         .def_property("interpolation", &Layer::getInterpolation, &Layer::setInterpolation)
         .def_property("wrapping", &Layer::getWrapping, &Layer::setWrapping)
@@ -135,6 +137,7 @@ void exposeLayer(pybind11::module& m) {
         .def_property_readonly("layertype", &LayerRepresentation::getLayerType)
         .def_property("dimensions", &LayerRepresentation::getDimensions,
                       &LayerRepresentation::setDimensions)
+        .def_property_readonly("format", &LayerRepresentation::getDataFormat)
         .def_property("swizzleMask", &LayerRepresentation::getSwizzleMask,
                       &LayerRepresentation::setSwizzleMask)
         .def_property("interpolation", &LayerRepresentation::getInterpolation,
@@ -144,7 +147,6 @@ void exposeLayer(pybind11::module& m) {
         .def("isValid", &LayerRepresentation::isValid)
         .def("setValid", &LayerRepresentation::setValid)
         .def("getOwner", &LayerRepresentation::getOwner)
-        .def_property_readonly("format", &LayerRepresentation::getDataFormat)
         .def("__repr__", [](const LayerRepresentation& self) {
             return fmt::format(
                 "<LayerRepresentation:\n  type = {}\n  format = {}\n  dimensions = {}\n  "

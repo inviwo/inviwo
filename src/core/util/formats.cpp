@@ -66,4 +66,6 @@ size_t commonFormatPrecision(std::span<const DataFormatBase*> formats) {
 
 }  // namespace util
 
+const DataFormatBase* DataFormatBase::getInternal(DataFormatId id) { return getImpl(id); }
+
 }  // namespace inviwo

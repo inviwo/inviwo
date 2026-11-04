@@ -236,6 +236,9 @@ protected:
     DataFormatBase& operator=(const DataFormatBase&) = default;
     DataFormatBase& operator=(DataFormatBase&&) = default;
 
+    static constexpr const DataFormatBase* getImpl(DataFormatId id);
+    static const DataFormatBase* getInternal(DataFormatId id);
+
     DataFormatId formatId_;
     size_t rank_;
     size_t components_;
@@ -553,7 +556,7 @@ constexpr DataFormatId DataFormatBase::getId() const { return formatId_; }
 
 constexpr const DataFormatBase* DataFormatBase::get() { return get(DataFormatId::NotSpecialized); }
 
-constexpr const DataFormatBase* DataFormatBase::get(DataFormatId id) {
+constexpr const DataFormatBase* DataFormatBase::getImpl(DataFormatId id) {
     static constexpr auto N = std::tuple_size_v<DefaultDataTypes>;
     static_assert(N + 1 == static_cast<size_t>(DataFormatId::NumberOfFormats));
     static constexpr auto formats = util::build_array<N + 1>([&](auto idx) {
@@ -570,6 +573,14 @@ constexpr const DataFormatBase* DataFormatBase::get(DataFormatId id) {
         throw DataFormatException(SourceContext{}, "Invalid format id {}", static_cast<int>(id));
     }
     return &formats[static_cast<size_t>(id)];
+}
+
+constexpr const DataFormatBase* DataFormatBase::get(DataFormatId id) {
+    if consteval {
+        return getImpl(id);
+    } else {
+        return getInternal(id);
+    }
 }
 
 constexpr std::optional<DataFormatId> DataFormatBase::find(std::string_view name) {

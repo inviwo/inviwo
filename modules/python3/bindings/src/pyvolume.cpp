@@ -69,6 +69,9 @@ void exposeVolume(pybind11::module& m) {
              py::arg("wrapping") = wrapping3d::clampAll)
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
         .def("clone", [](Volume& self) { return self.clone(); })
+
+        .def_property("dimensions", &Volume::getDimensions, &Volume::setDimensions)
+        .def_property_readonly("format", &Volume::getDataFormat)
         .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
         .def_property("interpolation", &Volume::getInterpolation, &Volume::setInterpolation)
         .def_property("wrapping", &Volume::getWrapping, &Volume::setWrapping)
@@ -118,6 +121,7 @@ void exposeVolume(pybind11::module& m) {
     py::classh<VolumeRepresentation>(m, "VolumeRepresentation")
         .def_property("dimensions", &VolumeRepresentation::getDimensions,
                       &VolumeRepresentation::setDimensions)
+        .def_property_readonly("format", &VolumeRepresentation::getDataFormat)
         .def_property("swizzleMask", &VolumeRepresentation::getSwizzleMask,
                       &VolumeRepresentation::setSwizzleMask)
         .def_property("interpolation", &VolumeRepresentation::getInterpolation,
@@ -127,7 +131,13 @@ void exposeVolume(pybind11::module& m) {
         .def("isValid", &VolumeRepresentation::isValid)
         .def("setValid", &VolumeRepresentation::setValid)
         .def("getOwner", &VolumeRepresentation::getOwner)
-        .def_property_readonly("format", &VolumeRepresentation::getDataFormat);
+        .def("__repr__", [](const VolumeRepresentation& self) {
+            return fmt::format(
+                "<VolumeRepresentation:\n format = {}\n  dimensions = {}\n  "
+                "swizzlemask = {}\n  interpolation = {}\n  wrapping = {}\n>",
+                self.getDataFormat()->getString(), self.getDimensions(), self.getSwizzleMask(),
+                self.getInterpolation(), self.getWrapping());
+        });
 
     py::classh<VolumePy, VolumeRepresentation>(m, "VolumePy")
         .def(py::init<py::array, const SwizzleMask&, InterpolationType, const Wrapping3D&>(),
