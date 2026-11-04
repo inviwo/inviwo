@@ -34,6 +34,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -126,7 +127,7 @@ static_assert(std::ranges::is_sorted(kGlslKeywords));
 // clang-format on
 
 // Language detection
-enum class Language { Cpp, Python, Glsl, Unknown };
+enum class Language : std::uint8_t { Cpp, Python, Glsl, Unknown };
 
 Language detectLang(std::string_view lang) {
     if (lang == "cpp" || lang == "c++" || lang == "cxx" || lang == "cc" || lang == "c") {

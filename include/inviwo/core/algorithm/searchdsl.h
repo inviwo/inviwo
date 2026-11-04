@@ -81,6 +81,7 @@ public:
     SearchDSL(SearchDSL&&) = delete;
     SearchDSL& operator=(const SearchDSL&) = delete;
     SearchDSL& operator=(SearchDSL&&) = delete;
+    ~SearchDSL() = default;
 
     Document description() const {
         Document doc;
@@ -88,7 +89,7 @@ public:
         auto b = doc.append("html").append("body");
         b.append("p", "Supported keys (shortcut):");
         using H = utildoc::TableBuilder::Header;
-        utildoc::TableBuilder tb(b, P::end());
+        utildoc::TableBuilder tb(b, P::end());  // NOLINT(misc-const-correctness)
 
         for (auto& item : items_) {
             if (item.shortcut.empty()) {

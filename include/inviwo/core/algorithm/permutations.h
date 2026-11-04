@@ -137,7 +137,7 @@ template <typename T>
 class Combinations {
 public:
     Combinations(std::span<T> values, size_t r)
-        : pool{values}, indices{makeVectorRange<ptrdiff_t>(0, r)} {
+        : pool{values}, indices{makeVectorRange<ptrdiff_t>(0, static_cast<ptrdiff_t>(r))} {
 
         if (indices.size() > pool.size() || indices.empty()) {
             throw Exception("Invalid combinations size larger than input");
