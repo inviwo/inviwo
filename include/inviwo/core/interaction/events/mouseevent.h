@@ -47,6 +47,8 @@ public:
 
     MouseEvent(const MouseEvent& rhs) = default;
     MouseEvent& operator=(const MouseEvent& that) = default;
+    MouseEvent(MouseEvent&& rhs) = default;
+    MouseEvent& operator=(MouseEvent&& that) = default;
     virtual MouseEvent* clone() const override;
     virtual ~MouseEvent() = default;
 

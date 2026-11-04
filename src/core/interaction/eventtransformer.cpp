@@ -105,6 +105,7 @@ struct SM {
         };
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
             *state<Idle>    + event<Move>                         / (updateView, sendEvent) = state<Idle>,
             state<Idle>     + event<Release>                      / (updateView, sendEvent) = state<Idle>,
@@ -118,6 +119,7 @@ struct SM {
             state<Pressing> + event<Release> [diffView && zeroMB] / (sendEvent, updateView) = state<Idle>,
             state<Pressing> + event<Wheel>                        / (sendEvent)             = state<Pressing>
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
@@ -184,6 +186,7 @@ struct SM {
         };
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
             *state<Idle>    + event<NoGesture>         / (updateView, sendEvent) = state<Idle>,
             state<Idle>     + event<Started>           / (updateView, sendEvent) = state<Active>,
@@ -198,6 +201,7 @@ struct SM {
             state<Active> + event<Finished> [diffView] / (sendEvent, updateView) = state<Idle>,
             state<Active> + event<Canceled>            / sendEvent               = state<Idle>
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
@@ -354,7 +358,7 @@ void EventTransformer::propagateEvent(Event* event, const Propagator& propagate)
 }
 
 void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case MouseState::Press: {
             state.sm.process_event(mouse::Press{event, getViewIdx(event.ndc()), propagate});
@@ -376,12 +380,12 @@ void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
 }
 
 void EventTransformer::propagateEvent(WheelEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     state.sm.process_event(mouse::Wheel{event, getViewIdx(event.ndc()), propagate});
 }
 
 void EventTransformer::propagateEvent(GestureEvent& event, GestureSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case GestureState::NoGesture: {
             state.sm.process_event(gesture::NoGesture{event, getViewIdx(event.ndc()), propagate});

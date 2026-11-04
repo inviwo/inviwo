@@ -55,6 +55,10 @@ public:
 
     virtual CameraTrackball* clone() const override;
 
+    CameraTrackball(const CameraTrackball&) = default;
+    CameraTrackball(CameraTrackball&&) = delete;
+    CameraTrackball& operator=(const CameraTrackball&) = delete;
+    CameraTrackball& operator=(CameraTrackball&&) = delete;
     virtual ~CameraTrackball();
 };
 

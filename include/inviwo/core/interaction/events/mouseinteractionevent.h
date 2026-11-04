@@ -49,6 +49,8 @@ public:
 
     MouseInteractionEvent(const MouseInteractionEvent& rhs) = default;
     MouseInteractionEvent& operator=(const MouseInteractionEvent& that) = default;
+    MouseInteractionEvent(MouseInteractionEvent&& rhs) = default;
+    MouseInteractionEvent& operator=(MouseInteractionEvent&& that) = default;
     virtual MouseInteractionEvent* clone() const override = 0;
     virtual ~MouseInteractionEvent() = default;
 

@@ -63,6 +63,8 @@ public:
     virtual ~PickingEvent();
     PickingEvent(const PickingEvent&);
     PickingEvent& operator=(const PickingEvent&);
+    PickingEvent(PickingEvent&&) = default;
+    PickingEvent& operator=(PickingEvent&&) = default;
 
     virtual PickingEvent* clone() const override;
 

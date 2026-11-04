@@ -36,6 +36,9 @@
 #include <inviwo/core/util/constexprhash.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <cstdint>
+#include <utility>
+
 namespace inviwo {
 
 /**
@@ -152,7 +155,7 @@ protected:
  */
 class IVW_CORE_API TouchDevice {
 public:
-    enum class DeviceType {
+    enum class DeviceType : std::uint8_t {
         TouchScreen = 0,  ///< Touch points are physically located on screen
         TouchPad,         ///< Touch points are not on the screen. More similar to mouse
     };
@@ -162,7 +165,7 @@ public:
     void setType(DeviceType type) { type_ = type; }
 
     std::string getName() const { return name_; }
-    void setName(std::string name) { name_ = name; }
+    void setName(std::string name) { name_ = std::move(name); }
 
 private:
     DeviceType type_;
@@ -181,6 +184,10 @@ public:
                KeyModifiers modifiers);
 
     virtual TouchEvent* clone() const override;
+    TouchEvent(const TouchEvent&) = default;
+    TouchEvent(TouchEvent&&) = default;
+    TouchEvent& operator=(const TouchEvent&) = default;
+    TouchEvent& operator=(TouchEvent&&) = default;
     virtual ~TouchEvent() = default;
 
     bool hasTouchPoints() const;

@@ -46,6 +46,8 @@ public:
     explicit InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
     InteractionEvent(const InteractionEvent& rhs) = default;
     InteractionEvent& operator=(const InteractionEvent& that) = default;
+    InteractionEvent(InteractionEvent&& rhs) = default;
+    InteractionEvent& operator=(InteractionEvent&& that) = default;
     virtual InteractionEvent* clone() const override = 0;
     virtual ~InteractionEvent() = default;
 

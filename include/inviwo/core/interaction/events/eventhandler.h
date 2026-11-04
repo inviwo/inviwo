@@ -39,6 +39,10 @@ class IVW_CORE_API EventHandler {
 
 public:
     EventHandler() = default;
+    EventHandler(const EventHandler&) = default;
+    EventHandler(EventHandler&&) = default;
+    EventHandler& operator=(const EventHandler&) = default;
+    EventHandler& operator=(EventHandler&&) = default;
     virtual ~EventHandler() = default;
 
     void broadcast(Event* event) const;

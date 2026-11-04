@@ -54,6 +54,8 @@ public:
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
+    KeyboardEvent(KeyboardEvent&& rhs) = default;
+    KeyboardEvent& operator=(KeyboardEvent&& that) = default;
     virtual KeyboardEvent* clone() const override;
     virtual ~KeyboardEvent() = default;
 
