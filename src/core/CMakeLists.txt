@@ -128,8 +128,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/axisrangeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/contextmenuevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/event.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventhandler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventlistener.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventmatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventpropagator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventutil.h
@@ -568,8 +566,6 @@ set(SOURCE_FILES
     interaction/events/axisrangeevent.cpp
     interaction/events/contextmenuevent.cpp
     interaction/events/event.cpp
-    interaction/events/eventhandler.cpp
-    interaction/events/eventlistener.cpp
     interaction/events/eventmatcher.cpp
     interaction/events/eventutil.cpp
     interaction/events/gestureevent.cpp

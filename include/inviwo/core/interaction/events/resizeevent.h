@@ -54,12 +54,13 @@ class Outport;
  * @see ImageOutport
  * @see Processor::addPort
  */
-class IVW_CORE_API ResizeEvent : public Event {
+class IVW_CORE_API ResizeEvent final : public Event {
 public:
     explicit ResizeEvent(size2_t canvasSize);
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
-
+    ResizeEvent(ResizeEvent&& rhs) noexcept = default;
+    ResizeEvent& operator=(ResizeEvent&& that) noexcept = default;
     virtual ResizeEvent* clone() const override;
     virtual ~ResizeEvent() = default;
 
@@ -72,6 +73,7 @@ public:
     static constexpr uint64_t chash();
 
     virtual void print(fmt::memory_buffer& buff) const override;
+
 
 private:
     size2_t size_;

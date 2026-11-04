@@ -41,8 +41,15 @@ class Outport;
  */
 class IVW_CORE_API EventPropagator {
 public:
+    EventPropagator() = default;
     virtual ~EventPropagator() = default;
     virtual void propagateEvent(Event* event, Outport* source) = 0;
+
+protected:
+    EventPropagator(const EventPropagator&) = default;
+    EventPropagator(EventPropagator&&) = default;
+    EventPropagator& operator=(const EventPropagator&) = default;
+    EventPropagator& operator=(EventPropagator&&) = default;
 };
 
 }  // namespace inviwo
