@@ -1006,7 +1006,7 @@ void Trackball::recenterFocusPoint(Event* event) {
         return;
     }
 
-    if (auto mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+    if (const auto* mouseEvent = dynamic_cast<MouseEvent*>(event)) {
         const auto p = mouseEvent->ndc();
 
         if (std::abs(p.z - 1.0) < glm::epsilon<decltype(p.z)>()) return;

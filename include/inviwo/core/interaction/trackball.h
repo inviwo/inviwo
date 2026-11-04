@@ -44,6 +44,8 @@
 #include <glm/gtx/vec_swizzle.hpp>
 #include <glm/gtc/epsilon.hpp>
 
+#include <cstdint>
+
 namespace inviwo {
 
 class Event;
@@ -62,11 +64,8 @@ public:
      * @see CameraTrackball
      */
     explicit Trackball(TrackballObject* object);
-
     Trackball(std::string_view identifier, std::string_view displayName,
               TrackballObject* object = nullptr);
-
-    Trackball(const Trackball& rhs);
     virtual Trackball* clone() const override;
     virtual ~Trackball();
 
@@ -103,7 +102,12 @@ public:
     dvec3 getWorldSpaceTranslationFromNDCSpace(const dvec3& fromNDC, const dvec3& toNDC);
 
 protected:
-    enum class Direction { Up = 0, Down, Left, Right };
+    Trackball(const Trackball& rhs);
+    Trackball(Trackball&&) = delete;
+    Trackball& operator=(const Trackball&) = delete;
+    Trackball& operator=(Trackball&&) = delete;
+
+    enum class Direction : std::uint8_t { Up = 0, Down, Left, Right };
 
     static dvec3 mapNormalizedMousePosToTrackball(const dvec2& mousePos, double radius = 1.0);
     void rotateTrackBall(const dvec3& fromTrackballPos, const dvec3& toTrackballPos);

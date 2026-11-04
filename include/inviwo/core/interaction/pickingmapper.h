@@ -50,7 +50,7 @@ public:
      * create a PickingAction to associate those indices the the supplied action. The processor
      * argument should be the processor where the picking colors are drawn.
      */
-    PickingMapper(Processor* p, size_t size, std::function<void(PickingEvent*)> callback,
+    PickingMapper(Processor* p, size_t size, const std::function<void(PickingEvent*)>& callback,
                   PickingManager* manager = PickingManager::getPtr());
 
     PickingMapper(const PickingMapper& rhs) = delete;

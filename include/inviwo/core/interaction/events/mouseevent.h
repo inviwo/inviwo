@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MouseEvent : public MouseInteractionEvent {
+class IVW_CORE_API MouseEvent final : public MouseInteractionEvent {
 public:
     explicit MouseEvent(MouseButton button = MouseButton::Left,
                         MouseState state = MouseState::Press,
@@ -44,9 +44,10 @@ public:
                         KeyModifiers modifiers = KeyModifiers(flags::empty),
                         dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
                         double depth = 1.0);
-
     MouseEvent(const MouseEvent& rhs) = default;
     MouseEvent& operator=(const MouseEvent& that) = default;
+    MouseEvent(MouseEvent&& rhs) noexcept = default;
+    MouseEvent& operator=(MouseEvent&& that) noexcept = default;
     virtual MouseEvent* clone() const override;
     virtual ~MouseEvent() = default;
 

@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/ports/inport.h>
+
+#include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/stdextensions.h>

@@ -57,12 +57,12 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
 
     switch (event->hash()) {
         case MouseEvent::chash(): {
-            auto me = static_cast<MouseEvent*>(event);
+            auto* me = static_cast<MouseEvent*>(event);
             mouseState_.propagateEvent(me, propagator, pickId(me->pos()));
             break;
         }
         case WheelEvent::chash(): {
-            auto me = static_cast<WheelEvent*>(event);
+            auto* me = static_cast<WheelEvent*>(event);
             mouseState_.propagateEvent(me, propagator, pickId(me->pos()));
             break;
         }

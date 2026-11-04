@@ -35,17 +35,28 @@
 #include <string_view>
 #include <iosfwd>
 #include <array>
+#include <cstdint>
 
 #include <flags/flags.h>
 #include <fmt/format.h>
 
 namespace inviwo {
 
-enum class MouseButton { None = 0, Left = 1 << 0, Middle = 1 << 1, Right = 1 << 2 };
+enum class MouseButton : std::uint8_t {
+    None = 0,
+    Left = 1U << 0U,
+    Middle = 1U << 1U,
+    Right = 1U << 2U
+};
 ALLOW_FLAGS_FOR_ENUM(MouseButton)
 using MouseButtons = flags::flags<MouseButton>;
 
-enum class MouseState { Press = 1 << 0, Move = 1 << 1, Release = 1 << 2, DoubleClick = 1 << 3 };
+enum class MouseState : std::uint8_t {
+    Press = 1U << 0U,
+    Move = 1U << 1U,
+    Release = 1U << 2U,
+    DoubleClick = 1U << 3U
+};
 ALLOW_FLAGS_FOR_ENUM(MouseState)
 using MouseStates = flags::flags<MouseState>;
 

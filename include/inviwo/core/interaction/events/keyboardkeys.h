@@ -32,32 +32,33 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <string_view>
 #include <flags/flags.h>
 #include <fmt/base.h>
 
 namespace inviwo {
 
-enum class KeyModifier {
+enum class KeyModifier : std::uint8_t {
     None = 0,
-    Control = 1 << 0,
-    Shift = 1 << 1,
-    Alt = 1 << 2,
-    Super = 1 << 3,
-    Menu = 1 << 4,
-    Meta = 1 << 5
+    Control = 1U << 0U,
+    Shift = 1U << 1U,
+    Alt = 1U << 2U,
+    Super = 1U << 3U,
+    Menu = 1U << 4U,
+    Meta = 1U << 5U
 };
 ALLOW_FLAGS_FOR_ENUM(KeyModifier)
 using KeyModifiers = flags::flags<KeyModifier>;
 
-enum class KeyState {
-    Press = 1 << 0,
-    Release = 1 << 1,
+enum class KeyState : std::uint8_t {
+    Press = 1U << 0U,
+    Release = 1U << 1U,
 };
 ALLOW_FLAGS_FOR_ENUM(KeyState)
 using KeyStates = flags::flags<KeyState>;
 
-enum class IvwKey {
+enum class IvwKey : std::int16_t {
     Undefined = -2,
     // key codes based on glfw
     Unknown = -1,
