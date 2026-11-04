@@ -46,7 +46,7 @@ namespace inviwo {
 namespace {
 
 void writeUncompressedBytes(const std::filesystem::path& path, const void* source, size_t bytes) {
-    auto file = filesystem::FileHandle{path, "wb"};
+    const auto file = filesystem::FileHandle{path, "wb"};
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }

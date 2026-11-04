@@ -34,6 +34,7 @@
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/exception.h>
 
+#include <cstdint>
 #include <vector>
 #include <ios>
 #include <any>
@@ -44,7 +45,7 @@ namespace filesystem {
 class FileHandle;
 }  // namespace filesystem
 
-enum class Overwrite { No, Yes };
+enum class Overwrite : std::uint8_t { No, Yes };
 
 /**
  * @ingroup dataio
@@ -62,7 +63,7 @@ public:
     virtual ~DataWriter() = default;
 
     const std::vector<FileExtension>& getExtensions() const;
-    void addExtension(FileExtension ext);
+    void addExtension(const FileExtension& ext);
 
     Overwrite getOverwrite() const;
     void setOverwrite(Overwrite val);
@@ -86,7 +87,10 @@ public:
      * @param value the new value for the option
      * @return true if the option was recognized and set, otherwise false
      */
-    virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
+    virtual bool setOption(
+        [[maybe_unused]] std::string_view key,
+        // NOLINTNEXTLINE(performance-unnecessary-value-param) overrides may consume it
+        [[maybe_unused]] std::any value) {
         return false;
     }
 

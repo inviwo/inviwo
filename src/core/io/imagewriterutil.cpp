@@ -60,7 +60,7 @@ void saveLayer(const Layer& layer) {
     fileDialog->setContentType("image");
     fileDialog->setCurrentDirectory("");
 
-    auto writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
+    const auto* writerFactory = InviwoApplication::getPtr()->getDataWriterFactory();
     fileDialog->addExtensions(writerFactory->getExtensionsForType<Layer>());
 
     if (fileDialog->show()) {

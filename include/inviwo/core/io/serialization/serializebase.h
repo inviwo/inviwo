@@ -33,6 +33,7 @@
 
 #include <inviwo/core/io/serialization/serializeconstants.h>
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <bitset>
@@ -46,7 +47,7 @@ class TiXmlDocument;
 
 namespace inviwo {
 
-enum class SerializationTarget { Node, Attribute };
+enum class SerializationTarget : std::uint8_t { Node, Attribute };
 
 class NodeSwitch;
 class Serializable;

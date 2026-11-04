@@ -41,6 +41,13 @@ public:
     virtual ~Serializable() = default;
     virtual void serialize(Serializer& s) const = 0;
     virtual void deserialize(Deserializer& d) = 0;
+
+protected:
+    Serializable() = default;
+    Serializable(const Serializable&) = default;
+    Serializable(Serializable&&) = default;
+    Serializable& operator=(const Serializable&) = default;
+    Serializable& operator=(Serializable&&) = default;
 };
 
 }  // namespace inviwo

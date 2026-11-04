@@ -39,6 +39,7 @@
 
 #include <flags/flags.h>
 
+#include <cstdint>
 #include <type_traits>
 #include <list>
 #include <bitset>
@@ -51,7 +52,7 @@
 
 namespace inviwo {
 
-enum class WorkspaceSaveMode : int { Disk = 1 << 0, Undo = 1 << 1 };
+enum class WorkspaceSaveMode : std::uint8_t { Disk = 1U << 0U, Undo = 1U << 1U };
 ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
 using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 

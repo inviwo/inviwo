@@ -53,7 +53,7 @@ namespace inviwo::util {
 template <typename T>
 void saveData(const T& data, const std::filesystem::path& filePath, const FileExtension& extension,
               Overwrite overwrite) {
-    auto* factory = util::getDataWriterFactory();
+    const auto* factory = util::getDataWriterFactory();
     if (auto writer = factory->getWriterForTypeAndExtension<T>(extension, filePath)) {
         writer->setOverwrite(overwrite);
         writer->writeData(&data, filePath);
@@ -80,7 +80,7 @@ std::optional<std::filesystem::path> saveData(const T& data, const std::filesyst
                                               std::string_view name,
                                               const std::vector<FileExtension>& extensions,
                                               Overwrite overwrite) {
-    auto* factory = util::getDataWriterFactory();
+    const auto* factory = util::getDataWriterFactory();
 
     for (const auto& extension : extensions) {
         if (auto writer = factory->getWriterForTypeAndExtension<T>(extension.extension)) {

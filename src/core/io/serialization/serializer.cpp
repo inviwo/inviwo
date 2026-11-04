@@ -46,7 +46,8 @@ Serializer::Serializer(const std::filesystem::path& fileName, std::string_view r
                        int version, allocator_type alloc)
     : SerializeBase(fileName, alloc) {
     try {
-        auto decl = alloc.new_object<TiXmlDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
+        auto* decl =
+            alloc.new_object<TiXmlDeclaration>(SerializeConstants::XmlVersion, "UTF-8", "");
         doc_->LinkEndChild(decl);
         rootElement_ = alloc.new_object<TiXmlElement>(rootElement);
         auto& attr = rootElement_->AddAttribute(SerializeConstants::VersionAttribute);

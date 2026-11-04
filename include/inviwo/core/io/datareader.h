@@ -82,7 +82,7 @@ public:
     virtual ~DataReader() = default;
 
     const std::vector<FileExtension>& getExtensions() const;
-    void addExtension(FileExtension ext);
+    void addExtension(const FileExtension& ext);
 
     /**
      * @brief Set reader specific options
@@ -91,7 +91,10 @@ public:
      * @param value the new value for the option
      * @return true if the option was recognized and set, otherwise false
      */
-    virtual bool setOption([[maybe_unused]] std::string_view key, [[maybe_unused]] std::any value) {
+    virtual bool setOption(
+        [[maybe_unused]] std::string_view key,
+        // NOLINTNEXTLINE(performance-unnecessary-value-param) overrides may consume it
+        [[maybe_unused]] std::any value) {
         return false;
     }
 

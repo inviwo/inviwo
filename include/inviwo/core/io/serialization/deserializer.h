@@ -42,6 +42,7 @@
 
 #include <flags/flags.h>
 
+#include <cstdint>
 #include <type_traits>
 #include <list>
 #include <istream>
@@ -65,29 +66,25 @@ class InviwoApplication;
 
 namespace detail {
 template <typename T>
-concept is_transparent = requires { typename T::key_compare::is_transparent; } ||
-                         requires {
-                             typename T::hasher::is_transparent;
-                             typename T::key_equal::is_transparent;
-                         };
+concept is_transparent = requires { typename T::key_compare::is_transparent; } || requires {
+    typename T::hasher::is_transparent;
+    typename T::key_equal::is_transparent;
+};
 
 template <typename T>
 concept derefClassIdentifiable = requires(const T& t) {
-                                     {
-                                         t->getClassIdentifier()
-                                         } -> std::equality_comparable_with<std::string_view>;
-                                 };
+    { t->getClassIdentifier() } -> std::equality_comparable_with<std::string_view>;
+};
 
 template <typename T>
 concept is_shared_ptr = requires { typename T::element_type; } &&
                         std::same_as<T, std::shared_ptr<typename T::element_type>>;
 
 template <typename T>
-concept is_unique_ptr =
-    requires {
-        typename T::element_type;
-        typename T::deleter_type;
-    } && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
+concept is_unique_ptr = requires {
+    typename T::element_type;
+    typename T::deleter_type;
+} && std::same_as<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
 
 }  // namespace detail
 
@@ -145,31 +142,31 @@ struct MapFunctions {
 
 template <typename T, typename Functions>
 concept IdentifiableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-                                    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
-                                    { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
-                                    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
-                                    { std::invoke(f.onNew, t, i) };
-                                    { std::invoke(f.onRemove, s) };
-                                    { std::invoke(f.onMove, t, i) };
-                                };
+    { std::invoke(f.getID, t) } -> std::same_as<std::string_view>;
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.shouldMakeNew, s, i) } -> std::same_as<bool>;
+    { std::invoke(f.canRecreate, s, i) } -> std::same_as<bool>;
+    { std::invoke(f.onNew, t, i) };
+    { std::invoke(f.onRemove, s) };
+    { std::invoke(f.onMove, t, i) };
+};
 
 template <typename T, typename Functions>
 concept IndexableFunctions = requires(T& t, Functions f, size_t i, std::string_view s) {
-                                 { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                 { std::invoke(f.onNew, t, i) };
-                                 { std::invoke(f.onRemove, t, i) };
-                             };
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.onNew, t, i) };
+    { std::invoke(f.onRemove, t, i) };
+};
 
 template <typename K, typename T, typename Functions>
 concept MappableFunctions = requires(const K& k, T& t, Functions f, size_t i, std::string_view s) {
-                                { std::invoke(f.idTransform, s) } -> std::same_as<K>;
-                                { std::invoke(f.makeNew) } -> std::same_as<T>;
-                                { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
-                                { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
-                                { std::invoke(f.onNew, k, t) };
-                                { std::invoke(f.onRemove, k) };
-                            };
+    { std::invoke(f.idTransform, s) } -> std::same_as<K>;
+    { std::invoke(f.makeNew) } -> std::same_as<T>;
+    { std::invoke(f.shouldMakeNew, k) } -> std::same_as<bool>;
+    { std::invoke(f.canRecreate, k) } -> std::same_as<bool>;
+    { std::invoke(f.onNew, k, t) };
+    { std::invoke(f.onRemove, k) };
+};
 
 }  // namespace deserializer
 
@@ -264,7 +261,7 @@ public:
     void deserialize(std::string_view key, std::array<T, N>& cont,
                      std::string_view itemKey = "item");
 
-    enum class Result { NoChange, Modified, NotFound };
+    enum class Result : std::uint8_t { NoChange, Modified, NotFound };
     template <std::regular T, typename A>
     Result deserializeTrackChanges(std::string_view key, std::vector<T, A>& sVector,
                                    std::string_view itemKey = "item");
@@ -406,8 +403,8 @@ public:
     template <class T>
     void deserialize(std::string_view key, T& sObj)
         requires requires(T& t, Deserializer& d) {
-                     { t.deserialize(d) };
-                 };
+            { t.deserialize(d) };
+        };
 
     std::optional<std::string_view> attribute(std::string_view key) const;
     std::optional<std::string_view> attribute(std::string_view child, std::string_view key) const;
@@ -518,6 +515,10 @@ class DeserializationErrorHandle {
 public:
     template <typename... Args>
     explicit DeserializationErrorHandle(Deserializer& d, Args&&... args);
+    DeserializationErrorHandle(const DeserializationErrorHandle&) = delete;
+    DeserializationErrorHandle(DeserializationErrorHandle&&) = delete;
+    DeserializationErrorHandle& operator=(const DeserializationErrorHandle&) = delete;
+    DeserializationErrorHandle& operator=(DeserializationErrorHandle&&) = delete;
     virtual ~DeserializationErrorHandle();
     T& getHandler();
 
@@ -726,8 +727,8 @@ void reorder(Functions& f, C& list, const std::pmr::vector<std::string_view>& or
             continue;
         }
 
-        while (dst < list.size() &&
-               std::find(order.begin() + i, order.end(), f.getID(list[dst])) == order.end()) {
+        while (dst < list.size() && std::find(order.begin() + static_cast<std::ptrdiff_t>(i),
+                                              order.end(), f.getID(list[dst])) == order.end()) {
             ++dst;
         }
 
@@ -1123,8 +1124,8 @@ void Deserializer::deserializeAs(std::string_view key, std::unique_ptr<T>& data)
 template <typename T>
 void Deserializer::deserialize(std::string_view key, T& sObj)
     requires requires(T& t, Deserializer& d) {
-                 { t.deserialize(d) };
-             }
+        { t.deserialize(d) };
+    }
 {
     if (const NodeSwitch nodeSwitch{*this, key}) {
         sObj.deserialize(*this);

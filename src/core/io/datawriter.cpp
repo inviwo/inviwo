@@ -51,7 +51,7 @@ DataWriter& DataWriter::operator=(const DataWriter& that) {
 }
 
 const std::vector<FileExtension>& DataWriter::getExtensions() const { return extensions_; }
-void DataWriter::addExtension(FileExtension ext) { extensions_.push_back(ext); }
+void DataWriter::addExtension(const FileExtension& ext) { extensions_.push_back(ext); }
 
 Overwrite DataWriter::getOverwrite() const { return overwrite_; }
 void DataWriter::setOverwrite(Overwrite val) { overwrite_ = val; }

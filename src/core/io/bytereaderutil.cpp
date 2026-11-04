@@ -75,7 +75,7 @@ void util::readBytesIntoBuffer(const std::filesystem::path& path, size_t offset,
                                std::stop_token stop) {
     const auto filePath = net::downloadAndCacheIfUrl(path);
 
-    auto file = filesystem::FileHandle{filePath, "rb"};
+    const auto file = filesystem::FileHandle{filePath, "rb"};
     if (!file) {
         throw DataReaderException(SourceContext{}, "Could not open file: {:?g}", path);
     }
