@@ -61,6 +61,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/util/glformatutils.h>
 #include <modules/plotting/datastructures/axisdata.h>
 #include <modules/plotting/datastructures/tickdata.h>
 #include <modules/plotting/properties/axisproperty.h>
@@ -127,6 +128,13 @@ ColorScaleLegend::ColorScaleLegend()
                                      std::numeric_limits<double>::max()})
                           .set(PropertySemantics::Text)
                           .set(ReadOnly::Yes)}
+    , tfRange_{"tfRange", "TF Range",
+               MinMaxPropertyState<double>{.valueMin = 0.0, .valueMax = 1.0, .increment = 0.0001}
+                   .set("Range of the Transfer Function"_help)
+                   .setRange(
+                       {std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()})
+                   .set(PropertySemantics::Text)
+                   .set(ReadOnly::Yes)}
     , customTFValueRange_{"customTFValueRange", "Custom TF Range",
                           MinMaxPropertyState<double>{
                               .valueMin = 0.0, .valueMax = 1.0, .increment = 0.0001}
@@ -209,7 +217,7 @@ ColorScaleLegend::ColorScaleLegend()
     volumeInport_.setOptional(true);
     addPorts(inport_, volumeInport_, outport_);
 
-    overrideTFRange_.addProperties(dataValueRange_, customTFValueRange_);
+    overrideTFRange_.addProperties(dataValueRange_, tfRange_, customTFValueRange_);
     overrideTFRange_.setCollapsed(true);
 
     // legend position
@@ -324,22 +332,45 @@ void ColorScaleLegend::process() {
     }
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
 
-    // determine value range
-    dvec2 dataValueRange{0.0, 1.0};
-    if (volumeInport_.isConnected() && volumeInport_.hasData()) {
-        dataValueRange = volumeInport_.getData()->dataMap.valueRange;
-    }
+    const auto valueRange = [&]() -> dvec2 {
+        if (volumeInport_.isConnected() && volumeInport_.hasData()) {
+            return volumeInport_.getData()->dataMap.valueRange;
+        } else {
+            return {0.0, 1.0};
+        }
+    }();
+    dataValueRange_.set(valueRange);
 
-    dvec2 tfRange{dataValueRange};
-    double tfScale = 1.0;
-    double tfOffset = 0.0;
-    if (overrideTFRange_.isChecked()) {
-        tfRange = customTFValueRange_.get();
-        tfScale = (tfRange[1] - tfRange[0]) / (dataValueRange[1] - dataValueRange[0]);
-        tfOffset = (tfRange[0] - dataValueRange[0]) / (dataValueRange[1] - dataValueRange[0]);
-    }
-    dataValueRange_.set(dataValueRange);
-    axis_.setRange(tfRange);
+    const auto tfRange = [&]() -> dvec2 {
+        if (isotfComposite_.tf_.get().getMode() == PrimitiveSetMode::Absolute) {
+            return isotfComposite_.tf_.get().getRange();
+        } else {
+            return valueRange;
+        }
+    }();
+    const auto isoRange = [&]() {
+        if (isotfComposite_.isovalues_.get().getMode() == PrimitiveSetMode::Absolute) {
+            return isotfComposite_.isovalues_.get().getRange();
+        } else {
+            return valueRange;
+        }
+    }();
+    const auto isoTfRange = [&]() {
+        const auto range = dvec2{std::min(tfRange.x, isoRange.x), std::max(tfRange.y, isoRange.y)};
+        if (range.x == range.y) return dvec2{range.x - 0.5, range.x + 0.5};
+        return range;
+    }();
+
+    tfRange_.set(isoTfRange);
+
+    const auto axisRange = [&]() -> dvec2 {
+        if (overrideTFRange_.isChecked()) {
+            return customTFValueRange_.get();
+        } else {
+            return isoTfRange;
+        }
+    }();
+    axis_.setRange(axisRange);
 
     const ivec2 dimensions = outport_.getDimensions();
     const auto [bottomLeft, legendSize, axisStart, axisEnd] = getPositions(dimensions);
@@ -347,30 +378,34 @@ void ColorScaleLegend::process() {
     const utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     const utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-    TextureUnitContainer units;
-    const utilgl::Activate<Shader> activate(&shader_);
-    utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
-    utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_, checkerBoardSize_,
-                        isotfComposite_);
-    shader_.setUniform("legendOrientation",
-                       (orientation_ == AxisProperty::Orientation::Horizontal) ? 0 : 1);
-    shader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
-    shader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
-    shader_.setUniform("pickingId", static_cast<int>(picking_.getPickingId(0)));
-
-    if (backgroundStyle_ == BackgroundStyle::NoBackground) {
-        shader_.setUniform("backgroundColor", vec4(0.0f));
-    } else {
-        shader_.setUniform("backgroundColor", bgColor_);
-    }
-
-    const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
-    shader_.setUniform("viewport", view);
     {
+        TextureUnitContainer units;
+        const utilgl::Activate<Shader> activate(&shader_);
+        utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
+        utilgl::setUniforms(shader_, axis_.color_, borderWidth_, backgroundStyle_,
+                            checkerBoardSize_, isotfComposite_);
+        shader_.setUniform("legendOrientation",
+                           (orientation_ == AxisProperty::Orientation::Horizontal) ? 0 : 1);
+
+        const auto map = LinearMap::from({0, 1}, axisRange).then(LinearMap::from(tfRange, {0, 1}));
+        shader_.setUniform("tfRange.inputOffset", map.inputOffset);
+        shader_.setUniform("tfRange.scale", map.scale);
+        shader_.setUniform("tfRange.outputOffset", map.outputOffset);
+        shader_.setUniform("pickingId", static_cast<int>(picking_.getPickingId(0)));
+
+        if (backgroundStyle_ == BackgroundStyle::NoBackground) {
+            shader_.setUniform("backgroundColor", vec4(0.0f));
+        } else {
+            shader_.setUniform("backgroundColor", bgColor_);
+        }
+
+        const ivec4 view{bottomLeft - ivec2{borderWidth_}, legendSize + ivec2{borderWidth_ * 2}};
+        shader_.setUniform("viewport", view);
+
         const utilgl::ViewportState viewport(view);
         utilgl::singleDrawImagePlaneRect();
 
-        if (!isotfComposite_.isovalues_.get().empty() && isovalues_) {
+        if (isovalues_ && !isotfComposite_.isovalues_.get().empty()) {
             isoValueShader_.activate();
 
             const MeshDrawerGL::DrawObject drawer(isovalueMesh_.getRepresentation<MeshGL>(),
@@ -388,8 +423,19 @@ void ColorScaleLegend::process() {
             }
             utilgl::setUniforms(isoValueShader_, isotfComposite_, borderWidth_, axis_.color_,
                                 triSize_);
-            isoValueShader_.setUniform("tfRange.scale", static_cast<float>(tfScale));
-            isoValueShader_.setUniform("tfRange.outputOffset", static_cast<float>(tfOffset));
+
+            const auto isoMap = [&]() {
+                if (isotfComposite_.isovalues_.get().getMode() == PrimitiveSetMode::Absolute) {
+                    return LinearMap::from(axisRange, {0, 1});
+                } else {
+                    return LinearMap::from({0, 1}, valueRange)
+                        .then(LinearMap::from(axisRange, {0, 1}));
+                }
+            }();
+            isoValueShader_.setUniform("isoMap.inputOffset", isoMap.inputOffset);
+            isoValueShader_.setUniform("isoMap.scale", isoMap.scale);
+            isoValueShader_.setUniform("isoMap.outputOffset", isoMap.outputOffset);
+
             glDrawArraysInstanced(GL_POINTS, 0, 1,
                                   static_cast<GLsizei>(isotfComposite_.isovalues_.get().size()));
         }
@@ -461,18 +507,18 @@ void ColorScaleLegend::setPlacement(Placement placement) {
     };
 
     switch (placement) {
-        case Placement::OutsideLeft:  setPositions(Vertical, true, vec2{0.0f, 0.5f}, false); break;
-        case Placement::OutsideTop:   setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false); break;
+        case Placement::OutsideLeft: setPositions(Vertical, true, vec2{0.0f, 0.5f}, false); break;
+        case Placement::OutsideTop: setPositions(Horizontal, true, vec2{0.5f, 1.0f}, false); break;
         case Placement::OutsideRight: setPositions(Vertical, false, vec2{1.0f, 0.5f}, false); break;
         case Placement::OutsideBottom:
             setPositions(Horizontal, false, vec2{0.5f, 0.0f}, false);
             break;
-        case Placement::InsideLeft:   setPositions(Vertical, false, vec2{0.0f, 0.5f}, true); break;
-        case Placement::InsideTop:    setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true); break;
-        case Placement::InsideRight:  setPositions(Vertical, true, vec2{1.0f, 0.5f}, true); break;
+        case Placement::InsideLeft: setPositions(Vertical, false, vec2{0.0f, 0.5f}, true); break;
+        case Placement::InsideTop: setPositions(Horizontal, false, vec2{0.5f, 1.0f}, true); break;
+        case Placement::InsideRight: setPositions(Vertical, true, vec2{1.0f, 0.5f}, true); break;
         case Placement::InsideBottom: setPositions(Horizontal, true, vec2{0.5f, 0.0f}, true); break;
 
-        default:                      break;
+        default: break;
     }
 }
 

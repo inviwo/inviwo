@@ -112,6 +112,7 @@ private:
 
     BoolCompositeProperty overrideTFRange_;
     DoubleMinMaxProperty dataValueRange_;
+    DoubleMinMaxProperty tfRange_;
     DoubleMinMaxProperty customTFValueRange_;
 
     // position properties
