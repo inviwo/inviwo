@@ -50,6 +50,7 @@ Checks: >
     -readability-named-parameter,
     -readability-implicit-bool-conversion,
     -readability-math-missing-parentheses,
+    -readability-redundant-lambda-parameter-list,
 
   -clang-diagnostic-unknown-pragmas,
 
