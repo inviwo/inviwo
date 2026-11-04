@@ -128,7 +128,7 @@ struct OrdinalPropertyState {
  * A property representing an Ordinal value, for example int, floats.
  */
 template <typename T>
-class OrdinalProperty : public Property {
+class OrdinalProperty final : public Property {
 public:
     using value_type = T;
     using component_type = util::value_type<T>::type;
@@ -163,9 +163,12 @@ public:
                     PropertySemantics semantics = OrdinalPropertyState<T>::defaultSemantics());
 
     OrdinalProperty(std::string_view identifier, std::string_view displayName,
-                    OrdinalPropertyState<T> state);
+                    const OrdinalPropertyState<T>& state);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs);
+    OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+    OrdinalProperty(OrdinalProperty&& rhs) = default;
+    OrdinalProperty& operator=(const OrdinalProperty&) = default;
+    OrdinalProperty& operator=(OrdinalProperty&&) = default;
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();
@@ -508,7 +511,8 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                                     const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics, ReadOnly readOnly)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics),
+               readOnly)
     , value_("value", value)
     , minValue_("minvalue", minValue.first)
     , maxValue_("maxvalue", maxValue.first)
@@ -535,12 +539,12 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                                     const std::pair<T, ConstraintBehavior>& maxValue,
                                     const T& increment, InvalidationLevel invalidationLevel,
                                     PropertySemantics semantics)
-    : OrdinalProperty{identifier, displayName, Document{},        value,    minValue,
-                      maxValue,   increment,   invalidationLevel, semantics} {}
+    : OrdinalProperty{identifier, displayName,       Document{},          value, minValue, maxValue,
+                      increment,  invalidationLevel, std::move(semantics)} {}
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_view displayName,
-                                    OrdinalPropertyState<T> state)
+                                    const OrdinalPropertyState<T>& state)
     : OrdinalProperty{identifier,
                       displayName,
                       state.help,
@@ -565,10 +569,7 @@ OrdinalProperty<T>::OrdinalProperty(std::string_view identifier, std::string_vie
                       std::pair{maxValue, ConstraintBehavior::Editable},
                       increment,
                       invalidationLevel,
-                      semantics} {}
-
-template <typename T>
-OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+                      std::move(semantics)} {}
 
 template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {

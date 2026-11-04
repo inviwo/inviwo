@@ -162,9 +162,9 @@ void exposeCompositeProperties(const py::module& m) {
                                })
         .def_property("selectedExtension", &FilePatternProperty::getSelectedExtension,
                       &FilePatternProperty::setSelectedExtension)
-        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(std::string)>(
+        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(const std::string&)>(
                                   &FilePatternProperty::addNameFilter))
-        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(FileExtension)>(
+        .def("addNameFilter", static_cast<void (FilePatternProperty::*)(const FileExtension&)>(
                                   &FilePatternProperty::addNameFilter))
         .def("clearNameFilters", &FilePatternProperty::clearNameFilters);
 }

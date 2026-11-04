@@ -41,6 +41,10 @@ class Property;
 class IVW_CORE_API PropertyConverterManager {
 public:
     PropertyConverterManager();
+    PropertyConverterManager(const PropertyConverterManager&) = delete;
+    PropertyConverterManager(PropertyConverterManager&&) = delete;
+    PropertyConverterManager& operator=(const PropertyConverterManager&) = delete;
+    PropertyConverterManager& operator=(PropertyConverterManager&&) = delete;
     virtual ~PropertyConverterManager();
 
     bool registerObject(PropertyConverter* converter);

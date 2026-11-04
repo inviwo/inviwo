@@ -43,6 +43,10 @@ namespace inviwo {
 class IVW_CORE_API PropertyWidgetFactory : public Factory<PropertyWidget, Property*> {
 public:
     PropertyWidgetFactory();
+    PropertyWidgetFactory(const PropertyWidgetFactory&) = delete;
+    PropertyWidgetFactory(PropertyWidgetFactory&&) = delete;
+    PropertyWidgetFactory& operator=(const PropertyWidgetFactory&) = delete;
+    PropertyWidgetFactory& operator=(PropertyWidgetFactory&&) = delete;
     virtual ~PropertyWidgetFactory();
 
     virtual bool registerObject(PropertyWidgetFactoryObject* propertyWidget);

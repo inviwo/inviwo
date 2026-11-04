@@ -94,7 +94,7 @@ std::string_view ListProperty::getClassIdentifierForWidget() const {
 }
 
 void ListProperty::set(const Property* src) {
-    if (const auto listproperty = dynamic_cast<const ListProperty*>(src)) {
+    if (const auto* const listproperty = dynamic_cast<const ListProperty*>(src)) {
         set(listproperty);
     }
 }
@@ -165,7 +165,7 @@ Property* ListProperty::constructProperty(size_t prefabIndex) {
     }
 
     if ((maxNumElements_ == size_t{0}) || (size() + 1 < maxNumElements_)) {
-        auto property = prefabs_.value[prefabIndex]->clone();
+        auto* property = prefabs_.value[prefabIndex]->clone();
         IVW_ASSERT(
             property->getClassIdentifier() == prefabs_.value[prefabIndex]->getClassIdentifier(),
             "Class identifier mismatch after cloning, does your property implement clone?");
@@ -220,7 +220,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
 }
 
 Property* ListProperty::removeProperty(std::vector<Property*>::iterator it) {
-    auto result = CompositeProperty::removeProperty(it);
+    auto* result = CompositeProperty::removeProperty(it);
     invalidate(CompositeProperty::getInvalidationLevel());
     return result;
 }

@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 
+#include <utility>
+
 namespace inviwo {
 
 std::string_view PositionProperty::getClassIdentifier() const { return classIdentifier; }
@@ -56,7 +58,7 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
     , position_{"position", "Position",
                 util::ordinalSymmetricVector(position, 10.0f)
                     .set("Spatial position in the reference coordinate space"_help)
-                    .set(positionSemantics)}
+                    .set(std::move(positionSemantics))}
     , coordinateOffsetMode_("coordinateOffsetMode", "Offset",
                             "Preset for the positional offset below."_help,
                             {{"none", "No offset", CoordinateOffset::None},
@@ -121,7 +123,7 @@ PositionProperty::PositionProperty(std::string_view identifier, std::string_view
                                    CameraProperty* camera, PropertySemantics positionSemantics,
                                    InvalidationLevel invalidationLevel)
     : PositionProperty(identifier, displayName, Document{}, position, coordinateSpace, camera,
-                       positionSemantics, invalidationLevel) {}
+                       std::move(positionSemantics), invalidationLevel) {}
 
 PositionProperty::PositionProperty(const PositionProperty& rhs)
     : CompositeProperty{rhs}
@@ -217,7 +219,7 @@ vec3 PositionProperty::convertToWorld(const vec3& pos, CoordinateSpace sourceSpa
     return transformer.transformPosition(pos, sourceSpace, CoordinateSpace::World);
 }
 
-void PositionProperty::setPositionSemantics(PropertySemantics semantics) {
+void PositionProperty::setPositionSemantics(const PropertySemantics& semantics) {
     position_.setSemantics(semantics);
 }
 
