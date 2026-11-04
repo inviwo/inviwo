@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/algorithm/markdown.h>
 
 #include <vector>
@@ -48,9 +47,7 @@ class CompositeProperty;
 class InviwoApplication;
 class NetworkVisitor;
 
-class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
-                                   public virtual Serializable,
-                                   public EventListener {
+class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable, public virtual Serializable {
 public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
@@ -166,7 +163,7 @@ public:
     virtual void setAllPropertiesCurrentStateAsDefault();
     virtual void resetAllProperties();
 
-    virtual void invokeEvent(Event* event) override;
+    virtual void invokeEvent(Event* event);
 
     virtual InviwoApplication* getInviwoApplication() = 0;
 

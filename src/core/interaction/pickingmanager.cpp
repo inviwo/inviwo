@@ -62,9 +62,9 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
         lastIndex_ += size;
         // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking
         // colors
-        if (lastIndex_ >= (1 << 24)) {
+        if (lastIndex_ >= (1U << 24U)) {
             log::warn("More than {} picking IDs in use. Unreliable picking behavior expected.",
-                      (1 << 24));
+                      (1U << 24U));
         }
         pickObj = pickingActions_.back().get();
     }
@@ -125,7 +125,7 @@ const PickingAction* PickingManager::getPickingActionFromIndex(size_t index) con
         [](const std::unique_ptr<PickingAction>& p) { return p->getPickingId(0); });
 
     if (std::distance(pickingActions_.begin(), pIt) > 0) {
-        auto po = (*(--pIt)).get();
+        const auto* po = (*(--pIt)).get();
         if (po->isIndex(index)) {
             return po;
         }
@@ -159,28 +159,30 @@ namespace {
 // First the left four bits are swapped with the right four bits.
 // Then all adjacent pairs are swapped and then all adjacent single bits.
 // This results in a reversed order.
-std::uint8_t reverse(std::uint8_t b) {
-    b = static_cast<std::uint8_t>((b & 0xF0) >> 4 | (b & 0x0F) << 4);
-    b = static_cast<std::uint8_t>((b & 0xCC) >> 2 | (b & 0x33) << 2);
-    b = static_cast<std::uint8_t>((b & 0xAA) >> 1 | (b & 0x55) << 1);
-    return b;
+std::uint8_t reverse(std::uint8_t value) {
+    std::uint32_t b = value;
+    b = ((b & 0xF0U) >> 4U) | ((b & 0x0FU) << 4U);
+    b = ((b & 0xCCU) >> 2U) | ((b & 0x33U) << 2U);
+    b = ((b & 0xAAU) >> 1U) | ((b & 0x55U) << 1U);
+    return static_cast<std::uint8_t>(b);
 }
 }  // namespace
 
 uvec3 PickingManager::indexToColor(size_t id) {
     const auto index = static_cast<std::uint32_t>(id);
 
-    std::uint8_t r = 0;
-    std::uint8_t g = 0;
-    std::uint8_t b = 0;
+    std::uint32_t r = 0;
+    std::uint32_t g = 0;
+    std::uint32_t b = 0;
 
-    for (int i = 0; i < 8; ++i) {
-        r |= ((index & (1 << (3 * i + 2))) >> (2 * i + 2));
-        g |= ((index & (1 << (3 * i + 1))) >> (2 * i + 1));
-        b |= ((index & (1 << (3 * i + 0))) >> (2 * i + 0));
+    for (std::uint32_t i = 0; i < 8; ++i) {
+        r |= ((index & (1U << (3U * i + 2U))) >> (2U * i + 2U));
+        g |= ((index & (1U << (3U * i + 1U))) >> (2U * i + 1U));
+        b |= ((index & (1U << (3U * i + 0U))) >> (2U * i + 0U));
     }
 
-    return uvec3{reverse(r), reverse(g), reverse(b)};
+    return uvec3{reverse(static_cast<std::uint8_t>(r)), reverse(static_cast<std::uint8_t>(g)),
+                 reverse(static_cast<std::uint8_t>(b))};
 }
 
 size_t PickingManager::colorToIndex(uvec3 color) {
@@ -189,10 +191,10 @@ size_t PickingManager::colorToIndex(uvec3 color) {
     const std::uint32_t b = reverse(static_cast<std::uint8_t>(color[2]));
 
     std::uint32_t index = 0;
-    for (int i = 0; i < 8; ++i) {
-        index |= ((b & (1 << i)) << (0 + 2 * i));
-        index |= ((g & (1 << i)) << (1 + 2 * i));
-        index |= ((r & (1 << i)) << (2 + 2 * i));
+    for (std::uint32_t i = 0; i < 8; ++i) {
+        index |= ((b & (1U << i)) << (0U + 2U * i));
+        index |= ((g & (1U << i)) << (1U + 2U * i));
+        index |= ((r & (1U << i)) << (2U + 2U * i));
     }
     return index;
 }

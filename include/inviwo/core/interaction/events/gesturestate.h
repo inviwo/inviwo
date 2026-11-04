@@ -32,21 +32,22 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <flags/flags.h>
 
 namespace inviwo {
 
-enum class GestureType { Pan = 1 << 0, Pinch = 1 << 1, Swipe = 1 << 2 };
+enum class GestureType : std::uint8_t { Pan = 1U << 0U, Pinch = 1U << 1U, Swipe = 1U << 2U };
 
 ALLOW_FLAGS_FOR_ENUM(GestureType)
 using GestureTypes = flags::flags<GestureType>;
 
-enum class GestureState {
-    NoGesture = 1 << 0,
-    Started = 1 << 2,
-    Updated = 1 << 3,
-    Finished = 1 << 4,
-    Canceled = 1 << 5
+enum class GestureState : std::uint8_t {
+    NoGesture = 1U << 0U,
+    Started = 1U << 2U,
+    Updated = 1U << 3U,
+    Finished = 1U << 4U,
+    Canceled = 1U << 5U
 };
 
 ALLOW_FLAGS_FOR_ENUM(GestureState)

@@ -47,7 +47,7 @@ class Camera;
  * @brief Handles object interaction in images.
  * @see PickingManager
  */
-class IVW_CORE_API PickingEvent : public Event {
+class IVW_CORE_API PickingEvent final : public Event {
 public:
     PickingEvent(const PickingAction* pickingAction, InteractionEvent* event, PickingState state,
                  PickingPressState pressState, PickingPressItem pressItem,
@@ -59,10 +59,11 @@ public:
                  PickingHoverState hoverState, PickingPressItems pressedState,
                  size_t pickedGlobalId, size_t currentGlobalId, size_t pressedGlobalId,
                  size_t previousGlobalId, dvec3 pressedNDC, dvec3 previousNDC);
-
-    virtual ~PickingEvent();
     PickingEvent(const PickingEvent&);
     PickingEvent& operator=(const PickingEvent&);
+    PickingEvent(PickingEvent&&) noexcept = default;
+    PickingEvent& operator=(PickingEvent&&) noexcept = default;
+    virtual ~PickingEvent();
 
     virtual PickingEvent* clone() const override;
 

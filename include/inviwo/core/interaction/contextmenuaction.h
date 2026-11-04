@@ -78,10 +78,10 @@ struct ContextMenuSubmenu {
  */
 enum class ContextMenuCategory : int {  // NOLINT(performance-enum-size)
     Empty = 0,
-    Image = 1 << 0,     //!< Save and copy image layers @see utilqt::addImageActions
-    View = 1 << 1,      //!< Adjust camera view @see utilqt::addViewActions
-    Widget = 1 << 2,    //!< Show/hide canvas, fullscreen @see CanvasProcessorWidgetQt::contextMenu
-    Callback = 1 << 3,  //!< Additional actions for custom callbacks triggering ContextMenuEvent
+    Image = 1U << 0U,   //!< Save and copy image layers @see utilqt::addImageActions
+    View = 1U << 1U,    //!< Adjust camera view @see utilqt::addViewActions
+    Widget = 1U << 2U,  //!< Show/hide canvas, fullscreen @see CanvasProcessorWidgetQt::contextMenu
+    Callback = 1U << 3U,  //!< Additional actions for custom callbacks triggering ContextMenuEvent
 };
 
 ALLOW_FLAGS_FOR_ENUM(ContextMenuCategory)

@@ -39,7 +39,6 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/util/glm.h>
 

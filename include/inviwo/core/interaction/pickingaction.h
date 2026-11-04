@@ -49,6 +49,10 @@ public:
     using Callback = std::function<void(PickingEvent*)>;
 
     explicit PickingAction(size_t id, size_t size = 1);
+    PickingAction(const PickingAction&) = default;
+    PickingAction(PickingAction&&) = default;
+    PickingAction& operator=(const PickingAction&) = default;
+    PickingAction& operator=(PickingAction&&) = default;
     virtual ~PickingAction();
 
     /**
