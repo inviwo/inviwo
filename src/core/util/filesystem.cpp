@@ -309,9 +309,9 @@ fs::path getInviwoUserSettingsPath() {
 
 #elifdef __APPLE__
     char path[PATH_MAX];
-    auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
-                                                      SYSDIR_DOMAIN_MASK_USER);
-    if ((state = sysdir_get_next_search_path_enumeration(state, path))) {
+    const auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
+                                                            SYSDIR_DOMAIN_MASK_USER);
+    if (sysdir_get_next_search_path_enumeration(state, path) != 0) {
         ss << expandTilde(path) << "/org.inviwo.network-editor";
     } else {
         throw Exception("Failed to get settings folder");
@@ -537,6 +537,7 @@ bool wildcardStringMatch(const std::string& pattern, const std::string& str) {
     return (*patternPtr == '\0');
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 bool wildcardStringMatchDigits(const std::string& pattern, const std::string& str, int& index,
                                bool matchLess, bool matchMore) {
 
@@ -565,7 +566,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
             }
             if (matchLess) {
                 // less digits (eat up all '#')
-                while ((*patternPtr != '\0') && (*patternPtr == '#') && (!isdigit(*strPtr))) {
+                while ((*patternPtr == '#') && (!isdigit(*strPtr))) {
                     ++patternPtr;
                 }
             }

@@ -60,6 +60,7 @@ public:
     BoolProperty(BoolProperty&& rhs) : BoolProperty(static_cast<const BoolProperty&>(rhs)) {}
     BoolProperty& operator=(const BoolProperty&) = delete;
     BoolProperty& operator=(BoolProperty&&) = delete;
+    // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
     BoolProperty& operator=(const bool& value);
     virtual BoolProperty* clone() const override;
     virtual ~BoolProperty();

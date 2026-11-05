@@ -185,6 +185,7 @@ public:
         data_.swap(other);
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     void swap(std::vector<std::pair<std::shared_ptr<const Data>, std::shared_ptr<Data>>>&& other) {
         data_.swap(other);
     }

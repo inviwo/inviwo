@@ -355,6 +355,7 @@ struct IVW_CORE_API State {
 
 template <typename Result, typename Done>
 struct StateTemplate : State {
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     StateTemplate(std::weak_ptr<PoolProcessor> processor, size_t count, Done&& done)
         : State(processor, count), futures{}, done{std::forward<Done>(done)} {}
 
@@ -386,6 +387,7 @@ struct JobTraits {
 }  // namespace pool::detail
 
 template <typename Result, typename Done>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 inline void PoolProcessor::callDone(
     InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p,

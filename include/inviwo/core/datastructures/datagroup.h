@@ -87,7 +87,8 @@ protected:
     DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& that);
     DataGroup(DataGroup&& rhs) : DataGroup(static_cast<const DataGroup&>(rhs)) {}
     DataGroup& operator=(DataGroup&& that) {
-        return operator=(static_cast<const DataGroup&>(that));
+        operator=(static_cast<const DataGroup&>(that));
+        return *this;
     }
 
     mutable std::mutex mutex_;

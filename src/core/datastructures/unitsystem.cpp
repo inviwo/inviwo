@@ -97,6 +97,7 @@ constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 template <typename OP>
 constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op) {
+    // NOLINTNEXTLINE(readability-use-anyofallof) structured binding over constexpr table
     for (auto&& [name, abbr, getter] : baseUnits) {
         const auto aPow = std::invoke(getter, a);
         const auto bPow = std::invoke(getter, b);
@@ -108,6 +109,7 @@ constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 
 constexpr bool isSubset(units::detail::unit_data part, units::detail::unit_data whole) {
+    // NOLINTNEXTLINE(readability-use-anyofallof) structured binding over constexpr table
     for (auto&& [name, abbr, getter] : baseUnits) {
         const auto pPow = std::invoke(getter, part);
         const auto wPow = std::invoke(getter, whole);
@@ -176,6 +178,7 @@ std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> util::getUni
 }
 
 std::pair<double, std::vector<std::tuple<std::string_view, std::string_view, int>>>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroups,
                               UseUnitPrefixes usesPrefixes) {
 

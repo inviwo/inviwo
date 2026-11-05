@@ -107,7 +107,7 @@ ThreadPool::Worker::Worker(ThreadPool& pool, size_t index)
             state = State::Working;
             try {
                 task();
-            } catch (...) {  // Make sure we don't leak any exceptions.
+            } catch (...) {  // NOLINT(bugprone-empty-catch) Make sure we don't leak any exceptions.
             }
         }
         state = State::Done;

@@ -41,7 +41,7 @@
 namespace inviwo {
 
 class IVW_CORE_API LogStream : public std::streambuf {
-    using int_type = std::streambuf::int_type;
+    using std::streambuf::int_type;
     using size_type = std::string::size_type;
     using traits = std::string::traits_type;
 

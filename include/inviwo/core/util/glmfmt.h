@@ -134,7 +134,7 @@ public:
 
 }  // namespace detail
 
-template <typename GlmType, typename T = typename GlmType::value_type>
+template <typename GlmType, typename T = GlmType::value_type>
 struct GlmFormatter {
     detail::StringFormatter overallFormatter;
     fmt::formatter<T> elementFormatter;

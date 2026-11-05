@@ -80,6 +80,7 @@ public:
         : StringProperty(static_cast<const StringProperty&>(rhs)) {}
     StringProperty& operator=(const StringProperty&) = delete;
     StringProperty& operator=(StringProperty&&) = delete;
+    // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
     StringProperty& operator=(const std::string& value);
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;

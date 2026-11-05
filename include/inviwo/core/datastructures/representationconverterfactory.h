@@ -37,6 +37,7 @@
 #include <warn/ignore/all>
 #include <memory>
 #include <mutex>
+#include <algorithm>
 #include <typeindex>
 #include <unordered_set>
 #include <unordered_map>
@@ -135,10 +136,8 @@ bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
         converters_, [converter](const auto& elem) { return elem.second == converter; });
 
     std::erase_if(packages_, [converter](const auto& elem) {
-        for (auto& conv : elem.second->getConverters()) {
-            if (conv == converter) return true;
-        }
-        return false;
+        return std::ranges::any_of(elem.second->getConverters(),
+                                   [converter](const auto& conv) { return conv == converter; });
     });
 
     return removed > 0;
@@ -174,6 +173,7 @@ RepresentationConverterFactory<BaseRepr>::getRepresentationConverter(std::type_i
 
 template <typename BaseRepr>
 const RepresentationConverterPackage<BaseRepr>*
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id) {
     /* Implementation of Dijkstra's algorithm following
      * https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode

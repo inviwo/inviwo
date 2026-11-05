@@ -210,6 +210,8 @@ struct SM {
 
 namespace touch {
 
+// Unfinished, see TODO below
+// NOLINTBEGIN(clang-diagnostic-unused-function,clang-diagnostic-unused-variable)
 inline void transformAndSendEvent(
     const TouchEvent& /*originalEvent*/, const EventTransformer::View& /*view*/,
     const std::function<void(Event&, const EventTransformer::View&)>& /*propagate*/) {
@@ -278,6 +280,7 @@ struct SM {
     }
 };
 
+// NOLINTEND(clang-diagnostic-unused-function,clang-diagnostic-unused-variable)
 }  // namespace touch
 
 }  // namespace

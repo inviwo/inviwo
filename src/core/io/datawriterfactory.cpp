@@ -33,6 +33,8 @@
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 bool DataWriterFactory::registerObject(DataWriter* writer) {
@@ -78,10 +80,8 @@ std::unique_ptr<DataWriter> DataWriterFactory::create(const FileExtension& key) 
 bool DataWriterFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }
 
 bool DataWriterFactory::hasKey(std::string_view key) const {
-    for (const auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension, key)) return true;
-    }
-    return false;
+    return std::ranges::any_of(
+        map_, [&](const auto& elem) { return iCaseCmp(elem.first.extension, key); });
 }
 
 }  // namespace inviwo

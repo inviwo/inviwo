@@ -758,6 +758,7 @@ OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value) {
     return *this;
 }
 template <typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 OrdinalProperty<T>& OrdinalProperty<T>::setDefault(const T& value, const T& minVal, const T& maxVal,
                                                    const T& increment) {
 

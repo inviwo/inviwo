@@ -685,6 +685,7 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::setDefault(const T& minVal, const T& maxVal,
                                                          const T& increment) {
     minValue_.defaultValue = minVal;

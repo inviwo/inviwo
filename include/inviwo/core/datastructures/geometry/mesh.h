@@ -90,7 +90,10 @@ public:
 
     Mesh& operator=(const Mesh& that);
     Mesh(Mesh&& rhs) : Mesh(static_cast<const Mesh&>(rhs)) {}
-    Mesh& operator=(Mesh&& that) { return operator=(static_cast<const Mesh&>(that)); }
+    Mesh& operator=(Mesh&& that) {
+        operator=(static_cast<const Mesh&>(that));
+        return *this;
+    }
     virtual Mesh* clone() const override;
 
     virtual ~Mesh() = default;

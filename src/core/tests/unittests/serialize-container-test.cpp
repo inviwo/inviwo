@@ -63,6 +63,7 @@ TEST(SerializationContainerTest, Minimal) {
     ASSERT_EQ(5, vector[4]);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(SerialitionContainerTest, IdentifierFunctions) {
     struct Item : Serializable {
         Item() = default;
@@ -175,8 +176,6 @@ TEST(SerialitionContainerTest, MapFunctions1) {
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
 
-    const std::string str = ss.str();
-
     map["a"] = 10;
     map.erase("b");
     map["d"] = 20;
@@ -206,8 +205,6 @@ TEST(SerialitionContainerTest, MapFunctions2) {
 
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
-
-    const std::string str = ss.str();
 
     map[1] = "g";
     map.erase(2);

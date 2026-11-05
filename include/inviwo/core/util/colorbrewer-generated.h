@@ -46,6 +46,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo::colorbrewer {
 
 // clang-format off
+// NOLINTNEXTLINE(readability-enum-initial-value)
 enum class Colormap : std::uint16_t {
     Accent_1, Accent_2, Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
     Blues_3, Blues_4, Blues_5, Blues_6, Blues_7, Blues_8, Blues_9, 

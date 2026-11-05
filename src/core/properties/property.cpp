@@ -96,7 +96,7 @@ Property::Property(Property&& rhs)
     : PropertyObservable(std::move(rhs))
     , MetaDataOwner(std::move(rhs))
     , onChangeCallback_{std::move(rhs.onChangeCallback_)}
-    , serializationMode_(std::move(rhs.serializationMode_))
+    , serializationMode_(rhs.serializationMode_)
     , identifier_(std::move(rhs.identifier_))
     , path_{}
     , displayName_(std::move(rhs.displayName_))
@@ -116,7 +116,7 @@ Property& Property::operator=(Property&& that) {
         PropertyObservable::operator=(std::move(that));
         MetaDataOwner::operator=(std::move(that));
         onChangeCallback_ = std::move(that.onChangeCallback_);
-        serializationMode_ = std::move(that.serializationMode_);
+        serializationMode_ = that.serializationMode_;
         identifier_ = std::move(that.identifier_);
         path_.clear();
         displayName_ = std::move(that.displayName_);

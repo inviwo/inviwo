@@ -117,6 +117,7 @@ public:
     constexpr std::string_view build() const { return buildBuffer.data(); }
 
 private:
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     static constexpr std::strong_ordering comparePreRelease(std::string_view lhsPre,
                                                             std::string_view rhsPre) {
         if (lhsPre.empty() && rhsPre.empty()) {
@@ -232,6 +233,7 @@ constexpr Version::Version(std::string_view version) {
     }
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 constexpr Version::Version(unsigned int major, unsigned int minor, unsigned int patch,
                            std::string_view preRelease, std::string_view build)
     : major{major}, minor{minor}, patch{patch} {

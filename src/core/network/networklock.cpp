@@ -56,6 +56,7 @@ NetworkLock::NetworkLock(Processor* processor)
     : NetworkLock(processor ? processor->getNetwork() : nullptr) {}
 
 NetworkLock::NetworkLock(Property* property)
+    // NOLINTNEXTLINE(readability-avoid-nested-conditional-operator)
     : NetworkLock(property ? (property->getOwner() ? property->getOwner()->getProcessor() : nullptr)
                            : nullptr) {}
 

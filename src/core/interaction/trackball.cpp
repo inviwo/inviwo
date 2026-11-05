@@ -668,6 +668,7 @@ void Trackball::stepPan(Direction dir) {
  * This implicitly uses the Object follows Finger method.
  * The Trackball Method Dropdown is NOT influencing touch inputs!
  */
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void Trackball::touchGesture(Event* event) {
     auto* touchEvent = static_cast<TouchEvent*>(event);
 
@@ -1018,6 +1019,7 @@ void Trackball::recenterFocusPoint(Event* event) {
         setLookTo(newLookTo);
         setLookFrom(newLookFrom);
     }
+    // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
     event->markAsUsed();
 }
 

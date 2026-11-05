@@ -65,8 +65,8 @@ std::shared_ptr<Volume> ProceduralLoader::load(size_t index, std::shared_ptr<Vol
 size_t ProceduralLoader::size() const { return count_; }
 
 Seconds ProceduralLoader::time(size_t index) const {
-    return !times_.empty() ? (index < times_.size() ? times_[index] : times_.back())
-                           : Seconds{index};
+    if (times_.empty()) return Seconds{index};
+    return index < times_.size() ? times_[index] : times_.back();
 }
 
 VolumeConfig ProceduralLoader::prototype() const { return prototype_; }
@@ -183,6 +183,7 @@ std::shared_ptr<Volume> TemporalVolume::load(std::unique_lock<std::mutex>& lock,
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::shared_ptr<const Volume> TemporalVolume::get(size_t index, std::stop_token stop) const {
     if (index >= size() || stop.stop_requested()) return nullptr;
 

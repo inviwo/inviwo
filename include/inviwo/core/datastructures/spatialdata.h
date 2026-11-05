@@ -104,7 +104,8 @@ public:
     SpatialEntity& operator=(const SpatialEntity& that);
     SpatialEntity(SpatialEntity&& rhs) : SpatialEntity(static_cast<const SpatialEntity&>(rhs)) {}
     SpatialEntity& operator=(SpatialEntity&& that) {
-        return operator=(static_cast<const SpatialEntity&>(that));
+        operator=(static_cast<const SpatialEntity&>(that));
+        return *this;
     }
     virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
@@ -154,7 +155,8 @@ public:
     SpatialIdentity(SpatialIdentity&& rhs)
         : SpatialIdentity(static_cast<const SpatialIdentity&>(rhs)) {}
     SpatialIdentity& operator=(SpatialIdentity&& that) {
-        return operator=(static_cast<const SpatialIdentity&>(that));
+        operator=(static_cast<const SpatialIdentity&>(that));
+        return *this;
     }
     virtual SpatialIdentity* clone() const override;
     virtual ~SpatialIdentity();
