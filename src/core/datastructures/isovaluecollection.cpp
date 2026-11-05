@@ -43,7 +43,7 @@ std::string_view IsoValueCollection::serializationKey() const { return "IsoValue
 std::string_view IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
 
 IsoValueCollection IsoValueCollection::load(std::string_view path) {
-    auto factory = util::getDataReaderFactory();
+    const auto* factory = util::getDataReaderFactory();
 
     if (const auto tf = factory->readDataForTypeAndExtension<IsoValueCollection>(path)) {
         return *tf;
@@ -52,7 +52,7 @@ IsoValueCollection IsoValueCollection::load(std::string_view path) {
     }
 }
 void IsoValueCollection::save(const IsoValueCollection& tf, std::string_view path) {
-    auto factory = util::getDataWriterFactory();
+    const auto* factory = util::getDataWriterFactory();
 
     if (!factory->writeDataForTypeAndExtension(&tf, path)) {
         throw Exception(SourceContext{}, "Unable to save IsoValueCollection to {}", path);

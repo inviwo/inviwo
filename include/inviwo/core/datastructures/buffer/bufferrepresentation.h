@@ -67,6 +67,8 @@ protected:
                                   BufferTarget target = BufferTarget::Data);
     BufferRepresentation(const BufferRepresentation& rhs) = default;
     BufferRepresentation& operator=(const BufferRepresentation& that) = default;
+    BufferRepresentation(BufferRepresentation&& rhs) = default;
+    BufferRepresentation& operator=(BufferRepresentation&& that) = default;
 
     BufferUsage usage_;
     BufferTarget target_;

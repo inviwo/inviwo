@@ -33,17 +33,18 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <iosfwd>
+#include <cstdint>
 #include <string_view>
 
 namespace inviwo {
 
-enum class CartesianCoordinateAxis {
+enum class CartesianCoordinateAxis : std::uint8_t {
     X,  // Right
     Y,  // Up
     Z   // Into screen
 };
 
-enum class BufferType {
+enum class BufferType : std::uint8_t {
     PositionAttrib = 0,
     NormalAttrib,
     ColorAttrib,
@@ -57,16 +58,23 @@ enum class BufferType {
     Unknown
 };
 
-enum class BufferUsage { Static, Dynamic };
+enum class BufferUsage : std::uint8_t { Static, Dynamic };
 
-enum class BufferTarget {
+enum class BufferTarget : std::uint8_t {
     Data,  // Data maps to GL_ARRAY_BUFFER
     Index  // Index maps to GL_ELEMENT_ARRAY_BUFFER
 };
 
-enum class DrawType { NotSpecified = 0, Points, Lines, Triangles };
+enum class DrawType : std::uint8_t { NotSpecified = 0, Points, Lines, Triangles };
 
-enum class ConnectivityType { None = 0, Strip, Loop, Fan, Adjacency, StripAdjacency };
+enum class ConnectivityType : std::uint8_t {
+    None = 0,
+    Strip,
+    Loop,
+    Fan,
+    Adjacency,
+    StripAdjacency
+};
 
 IVW_CORE_API std::string_view enumToStr(DrawType dt);
 IVW_CORE_API std::string_view enumToStr(ConnectivityType ct);

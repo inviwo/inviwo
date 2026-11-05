@@ -147,6 +147,8 @@ protected:
     explicit LayerRAM(LayerType type = LayerType::Color);
     LayerRAM(const LayerRAM& rhs) = default;
     LayerRAM& operator=(const LayerRAM& that) = default;
+    LayerRAM(LayerRAM&& rhs) = default;
+    LayerRAM& operator=(LayerRAM&& that) = default;
 };
 
 /**
@@ -170,6 +172,11 @@ public:
 
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
+    LayerRAMPrecision(LayerRAMPrecision<T>&& rhs)
+        : LayerRAMPrecision(static_cast<const LayerRAMPrecision<T>&>(rhs)) {}
+    LayerRAMPrecision<T>& operator=(LayerRAMPrecision<T>&& that) {
+        return operator=(static_cast<const LayerRAMPrecision<T>&>(that));
+    }
     virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision();
 
@@ -546,6 +553,11 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
 
 class IVW_CORE_API LayerRamResizer {
 public:
+    LayerRamResizer() = default;
+    LayerRamResizer(const LayerRamResizer&) = default;
+    LayerRamResizer(LayerRamResizer&&) = default;
+    LayerRamResizer& operator=(const LayerRamResizer&) = default;
+    LayerRamResizer& operator=(LayerRamResizer&&) = default;
     virtual ~LayerRamResizer() = default;
 
     /**

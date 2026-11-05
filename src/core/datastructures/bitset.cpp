@@ -291,7 +291,7 @@ BitSet BitSet::fastUnion(std::span<const BitSet*> bitsets) {
     using namespace roaring;
 
     std::vector<const Roaring*> inputs;
-    for (auto b : bitsets) {
+    for (const auto* b : bitsets) {
         inputs.push_back(b->roaring_.get());
     }
 
@@ -312,7 +312,7 @@ void BitSet::writeData(std::ostream& os) const {
     std::vector<char> buf(getSizeInBytes());
     const size_t numBytes = roaring_->write(buf.data(), true);
     os << static_cast<uint32_t>(numBytes);
-    os.write(buf.data(), numBytes);
+    os.write(buf.data(), static_cast<std::streamsize>(numBytes));
 }
 
 void BitSet::readData(std::istream& is) {

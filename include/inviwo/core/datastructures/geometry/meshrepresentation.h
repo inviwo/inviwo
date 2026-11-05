@@ -44,6 +44,8 @@ public:
     MeshRepresentation() = default;
     MeshRepresentation(const MeshRepresentation& rhs) = default;
     MeshRepresentation& operator=(const MeshRepresentation& that) = default;
+    MeshRepresentation(MeshRepresentation&& rhs) = default;
+    MeshRepresentation& operator=(MeshRepresentation&& that) = default;
     virtual MeshRepresentation* clone() const override = 0;
     virtual ~MeshRepresentation() = default;
 

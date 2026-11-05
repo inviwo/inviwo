@@ -61,6 +61,8 @@ public:
                                 DiskRepresentationLoader<Repr>* loader = nullptr);
     DiskRepresentation(const DiskRepresentation& rhs) = default;
     DiskRepresentation& operator=(const DiskRepresentation& that) = default;
+    DiskRepresentation(DiskRepresentation&& rhs) = default;
+    DiskRepresentation& operator=(DiskRepresentation&& that) = default;
     virtual ~DiskRepresentation() = default;
     virtual DiskRepresentation* clone() const;
 
@@ -115,12 +117,18 @@ template <typename Repr, typename Self>
 void DiskRepresentation<Repr, Self>::updateRepresentation(std::shared_ptr<Repr> dest,
                                                           std::stop_token stop) const {
     if (!loader_) throw Exception("No loader available to update representation");
-    loader_->updateRepresentation(dest, *static_cast<const Self*>(this), std::move(stop));
+    loader_->updateRepresentation(std::move(dest), *static_cast<const Self*>(this),
+                                  std::move(stop));
 }
 
 template <typename Repr>
 class DiskRepresentationLoader {
 public:
+    DiskRepresentationLoader() = default;
+    DiskRepresentationLoader(const DiskRepresentationLoader&) = default;
+    DiskRepresentationLoader(DiskRepresentationLoader&&) = default;
+    DiskRepresentationLoader& operator=(const DiskRepresentationLoader&) = default;
+    DiskRepresentationLoader& operator=(DiskRepresentationLoader&&) = default;
     virtual ~DiskRepresentationLoader() = default;
     virtual DiskRepresentationLoader* clone() const = 0;
     virtual std::shared_ptr<Repr> createRepresentation(const Repr&, std::stop_token stop) const = 0;
