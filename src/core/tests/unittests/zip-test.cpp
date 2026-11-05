@@ -44,13 +44,15 @@
 #include <memory>
 #include <utility>
 
+namespace {
+
 template <size_t n, typename... T>
-static void print_tuple(std::ostream&, const std::tuple<T...>&)
+void print_tuple(std::ostream&, const std::tuple<T...>&)
     requires(n >= sizeof...(T))
 {}
 
 template <size_t n, typename... T>
-static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
     requires(n > 0 && n < sizeof...(T))
 {
     os << ", " << std::get<n>(tup);
@@ -58,7 +60,7 @@ static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
 }
 
 template <size_t n, typename... T>
-static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
+void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
     requires(n == 0)
 {
     os << std::get<n>(tup);
@@ -66,14 +68,14 @@ static void print_tuple(std::ostream& os, const std::tuple<T...>& tup)
 }
 
 template <typename... T>
-static std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
+std::ostream& operator<<(std::ostream& os, const std::tuple<T...>& tup) {
     os << "[";
     print_tuple<0>(os, tup);
     return os << "]";
 }
 
 template <typename... T>
-static std::ostream& operator<<(std::ostream& os, const inviwo::util::detailzip::proxy<T...>& p) {
+std::ostream& operator<<(std::ostream& os, const inviwo::util::detailzip::proxy<T...>& p) {
     os << "[";
     print_tuple<0>(os, p.data);
     return os << "]";
@@ -86,6 +88,7 @@ struct S {
     S(S&&) = delete;
     S& operator=(const S&) = delete;
     S& operator=(S&&) = delete;
+    ~S() = default;
 
     friend constexpr bool operator==(const S& a, const S& b) noexcept { return a.a_ == b.a_; }
 
@@ -94,9 +97,7 @@ struct S {
     constexpr explicit S(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-static ::std::ostream& operator<<(::std::ostream& os, const S& s) {
-    return os << "S(" << s.a_ << ")";
-}
+::std::ostream& operator<<(::std::ostream& os, const S& s) { return os << "S(" << s.a_ << ")"; }
 
 // default type
 struct D {
@@ -105,6 +106,7 @@ struct D {
     constexpr D(D&&) noexcept = default;
     D& operator=(const D&) noexcept = default;
     D& operator=(D&&) noexcept = default;
+    ~D() = default;
 
     friend constexpr bool operator==(const D& a, const D& b) noexcept { return a.a_ == b.a_; }
 
@@ -113,17 +115,19 @@ struct D {
     constexpr explicit D(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-static ::std::ostream& operator<<(::std::ostream& os, const D& d) {
-    return os << "D(" << d.a_ << ")";
-}
+::std::ostream& operator<<(::std::ostream& os, const D& d) { return os << "D(" << d.a_ << ")"; }
 
 constexpr const std::array<int, 5> ints{{1, 2, 3, 4, 5}};
 constexpr const std::array<D, 5> ds{{D{10}, D{20}, D{30}, D{40}, D{50}}};
 
+}  // namespace
+
 namespace inviwo {
 
+namespace {
+
 template <typename Zipped>
-static void forwadTest(Zipped&& iter) {
+void forwadTest(Zipped& iter) {
     using Iter = std::decay_t<decltype(iter)>::iterator;
     using util::detailzip::proxy;
 
@@ -182,7 +186,7 @@ static void forwadTest(Zipped&& iter) {
 }
 
 template <typename Zipped>
-static void bidirectionalTest(Zipped&& iter) {
+void bidirectionalTest(Zipped& iter) {
     using util::detailzip::proxy;
     {
         auto i = iter.begin();
@@ -236,7 +240,7 @@ static void bidirectionalTest(Zipped&& iter) {
 }
 
 template <typename Zipped>
-static void randomAccessTest(Zipped&& iter) {
+void randomAccessTest(Zipped& iter) {
     using util::detailzip::proxy;
     using Iter = std::decay_t<decltype(iter)>::iterator;
     // RandomAccessIterator requirements
@@ -300,6 +304,11 @@ static void randomAccessTest(Zipped&& iter) {
         EXPECT_FALSE(i >= j);
     }
 }
+
+}  // namespace
+
+// std::ranges::iota is not available in AppleClang and zip iterators are not sortable ranges
+// NOLINTBEGIN(modernize-use-ranges)
 
 TEST(ZipIterTest, ForwardIter) {
     std::forward_list<int> fl1{ints.begin(), ints.end()};
@@ -450,4 +459,7 @@ TEST(SequencerTest, increments3) {
         count -= 2;
     }
 }
+
+// NOLINTEND(modernize-use-ranges)
+
 }  // namespace inviwo

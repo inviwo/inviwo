@@ -45,7 +45,9 @@
 
 namespace inviwo {
 
-static std::vector<std::uint32_t> getIndices(const std::size_t count) {
+namespace {
+
+std::vector<std::uint32_t> getIndices(const std::size_t count) {
     std::mt19937 gen;
     gen.seed(1);
     std::uniform_int_distribution<std::uint32_t> distrib(0, 4096);
@@ -58,6 +60,8 @@ static std::vector<std::uint32_t> getIndices(const std::size_t count) {
     std::shuffle(v.begin(), v.end(), std::default_random_engine());
     return v;
 }
+
+}  // namespace
 
 TEST(bitset, constructors) {
     BitSet();

@@ -304,16 +304,22 @@ TEST(GLMTest, glmcomp4) {
     }
 }
 
+namespace {
+
 template <unsigned COLS, unsigned ROWS>
-static void test() {
+void test() {
     using M = util::glmtype<int, COLS, ROWS>::type;
     M m;
+    // The type of v is tested, it must not be const
+    // NOLINTNEXTLINE(misc-const-correctness)
     auto v = m[0];
 
     EXPECT_TRUE((std::is_same<Vector<ROWS, int>, decltype(v)>::value));
     EXPECT_TRUE((std::is_same<Vector<ROWS, int>, typename M::col_type>::value));
     EXPECT_TRUE((std::is_same<Vector<COLS, int>, typename M::row_type>::value));
 }
+
+}  // namespace
 
 TEST(GLMTest, MatrixSizeTest2by2) { test<2, 2>(); }
 TEST(GLMTest, MatrixSizeTest2by3) { test<2, 3>(); }

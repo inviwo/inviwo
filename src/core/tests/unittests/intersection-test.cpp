@@ -45,6 +45,9 @@
 
 namespace inviwo {
 
+// Views are not const-iterable, so the test variables can not be const.
+// NOLINTBEGIN(misc-const-correctness)
+
 using IntView = views::set_intersection<std::ranges::ref_view<std::vector<int>>,
                                         std::ranges::ref_view<std::vector<int>>>;
 
@@ -223,5 +226,7 @@ TEST(SetIntersection, PostIncrementReturnsCopy) {
     EXPECT_EQ(*old, 2);
     EXPECT_EQ(*it, 3);
 }
+
+// NOLINTEND(misc-const-correctness)
 
 }  // namespace inviwo

@@ -55,6 +55,8 @@ namespace inviwo {
 namespace {
 
 auto strToLayer(std::string_view str) {
+    // mutable lambda, must be non-const
+    // NOLINTNEXTLINE(misc-const-correctness)
     auto colAndRow = [line = size_t{0},
                       col = size_t{0}](char c) mutable -> std::tuple<char, size_t, size_t> {
         const auto curCol = col;
@@ -164,6 +166,8 @@ TEST(EventTransform, construct) {
 // Helper: create two side-by-side views splitting at ndc.x == 0
 // Left view: ndc.x in [-1, 0)  mapped to [-1, 1]
 // Right view: ndc.x in [0, 1]  mapped to [-1, 1]
+namespace {
+
 struct TwoViewFixture {
     std::unique_ptr<Event> e1;
     std::unique_ptr<Event> e2;
@@ -199,6 +203,8 @@ struct TwoViewFixture {
         e2Count = 0;
     }
 };
+
+}  // namespace
 
 TEST(EventTransform, MoveInLeftView) {
     TwoViewFixture f;

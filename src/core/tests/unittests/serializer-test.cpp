@@ -47,8 +47,10 @@ TEST(SerializationTest, initTest) {
     EXPECT_TRUE(true);
 }
 
+namespace {
+
 template <typename T>
-static T serializationOfType(T inValue) {
+T serializationOfType(T inValue) {
     const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;
     Serializer serializer(refpath);
@@ -59,6 +61,8 @@ static T serializationOfType(T inValue) {
     deserializer.deserialize("serializedValue", outValue);
     return outValue;
 }
+
+}  // namespace
 
 #define TYPE_TEST(n, T, v)                                                                   \
     TEST(SerializationTest, n##TypeTest) {                                                   \
@@ -133,6 +137,8 @@ NUMERIC_TESTS(longSerializationTest, long, 650004)
 NUMERIC_TESTS(longLongSerializationTest, long long, 6700089)
 NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789)
 
+namespace {
+
 class MinimumSerializableClass : public Serializable {
 public:
     explicit MinimumSerializableClass(float v = 0) : value_(v) {}
@@ -146,8 +152,10 @@ public:
     float value_;
 };
 
+}  // namespace
+
 TEST(SerializationTest, IvwSerializableClassTest) {
-    MinimumSerializableClass inValue(12);
+    const MinimumSerializableClass inValue(12);
     MinimumSerializableClass outValue;
     const auto& refpath = filesystem::findBasePath();
     std::pmr::string xml;

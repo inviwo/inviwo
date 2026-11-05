@@ -41,55 +41,59 @@ namespace inviwo {
 
 using namespace util;
 
+namespace {
+
 template <typename T>
-static T minv()
+T minv()
     requires std::is_floating_point_v<T>
 {
     return T{0.0};
 }
 
 template <typename T>
-static T minv()
+T minv()
     requires(!std::is_floating_point_v<T>)
 {
     return std::numeric_limits<T>::lowest();
 }
 
 template <typename T>
-static T maxv()
+T maxv()
     requires std::is_floating_point_v<T>
 {
     return T{1.0};
 }
 
 template <typename T>
-static T maxv()
+T maxv()
     requires(!std::is_floating_point_v<T>)
 {
     return std::numeric_limits<T>::max();
 }
 
 template <typename To, typename From>
-static void testmax(std::string_view to, std::string_view from) {
+void testmax(std::string_view to, std::string_view from) {
     const auto res = glm_convert_normalized<To>(maxv<From>());
     EXPECT_EQ(maxv<To>(), res) << "Convert range max " << from << " (" << +maxv<From>() << ") to "
                                << to << " (" << +maxv<To>() << ")";
 }
 
 template <typename To, typename From>
-static void testmin(std::string_view to, std::string_view from) {
+void testmin(std::string_view to, std::string_view from) {
     const auto res = glm_convert_normalized<To>(minv<From>());
     EXPECT_EQ(minv<To>(), res) << "Convert range min " << from << " (" << +minv<From>() << ") to "
                                << to << " (" << +minv<To>() << ")";
 }
 
 template <typename F, typename T>
-static constexpr bool testMinMax() {
+constexpr bool testMinMax() {
     return ((glm_convert_normalized<T, F>(std::numeric_limits<F>::min()) ==
              std::numeric_limits<T>::min()) &&
             (glm_convert_normalized<T, F>(std::numeric_limits<F>::max()) ==
              std::numeric_limits<T>::max()));
 }
+
+}  // namespace
 
 static_assert(testMinMax<unsigned char, unsigned char>());
 static_assert(testMinMax<unsigned short, unsigned short>());
