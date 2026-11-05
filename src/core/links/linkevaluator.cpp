@@ -94,7 +94,7 @@ void LinkEvaluator::addLink(const PropertyLink& propertyLink) {
 
 bool LinkEvaluator::canLink(const Property* src, const Property* dst) const {
     if (src == dst) return false;
-    auto* manager = network_->getApplication()->getPropertyConverterManager();
+    const auto* manager = network_->getApplication()->getPropertyConverterManager();
     return manager->canConvert(src, dst);
 }
 
@@ -147,8 +147,8 @@ std::vector<ConvertibleLink>& LinkEvaluator::getTriggeredLinksForProperty(Proper
 
 std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) {
     // check if link connectivity has been computed and cached already
-    const auto& list = (transientLinkCache_.contains(property)) ? transientLinkCache_[property]
-                                                                : addToTransientCache(property);
+    const auto& list = transientLinkCache_.contains(property) ? transientLinkCache_[property]
+                                                              : addToTransientCache(property);
 
     return util::transform(list, [](const ConvertibleLink& link) { return link.dst; });
 }

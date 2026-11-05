@@ -55,6 +55,8 @@ public:
     ProcessorWidgetMetaData();
     ProcessorWidgetMetaData(const ProcessorWidgetMetaData& rhs) = default;
     ProcessorWidgetMetaData& operator=(const ProcessorWidgetMetaData& that) = default;
+    ProcessorWidgetMetaData(ProcessorWidgetMetaData&& rhs) = default;
+    ProcessorWidgetMetaData& operator=(ProcessorWidgetMetaData&& that) = default;
     virtual ~ProcessorWidgetMetaData() = default;
 
     virtual std::string_view getClassIdentifier() const override { return classIdentifier; }

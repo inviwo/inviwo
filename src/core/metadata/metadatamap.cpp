@@ -30,6 +30,8 @@
 #include <inviwo/core/metadata/metadatamap.h>
 #include <inviwo/core/io/serialization/serializable.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 MetaDataMap::MetaDataMap(const MetaDataMap& inMap) {
@@ -109,16 +111,13 @@ void MetaDataMap::deserialize(Deserializer& d) {
 }
 
 bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
-
     if (lhs.metaData_.size() != rhs.metaData_.size()) {
         return false;
     }
-    for (const auto& _cIt : lhs.metaData_) {
-        const auto elem = rhs.metaData_.find(_cIt.first);
-        if (elem == rhs.metaData_.end()) return false;
-        if (*elem->second != *_cIt.second) return false;
-    }
-    return true;
+    return std::ranges::all_of(lhs.metaData_, [&](const auto& item) {
+        const auto elem = rhs.metaData_.find(item.first);
+        return elem != rhs.metaData_.end() && *elem->second == *item.second;
+    });
 }
 
 bool operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs) { return !operator==(lhs, rhs); }

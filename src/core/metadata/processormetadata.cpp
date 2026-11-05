@@ -89,7 +89,7 @@ void ProcessorMetaData::deserialize(Deserializer& d) {
 }
 
 bool ProcessorMetaData::equal(const MetaData& rhs) const {
-    if (auto tmp = dynamic_cast<const ProcessorMetaData*>(&rhs)) {
+    if (const auto* tmp = dynamic_cast<const ProcessorMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
                tmp->selection_ == selection_;
     } else {

@@ -21,7 +21,9 @@ Checks: >
     -cppcoreguidelines-noexcept-move-operations,
     -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
   google-*,
+    -google-readability-avoid-underscore-in-googletest-name,
   llvm-*,
+    -llvm-use-ranges,
     -llvm-include-order,
     -llvm-else-after-return,
     -llvm-header-guard,
@@ -30,6 +32,7 @@ Checks: >
     -misc-include-cleaner,
     -misc-non-private-member-variables-in-classes,
     -misc-no-recursion,
+    -misc-multiple-inheritance,
   modernize-*,
     -modernize-use-nodiscard,
     -modernize-use-trailing-return-type,
@@ -50,6 +53,8 @@ Checks: >
     -readability-named-parameter,
     -readability-implicit-bool-conversion,
     -readability-math-missing-parentheses,
+    -readability-redundant-lambda-parameter-list,
+    -readability-trailing-comma,
 
   -clang-diagnostic-unknown-pragmas,
 

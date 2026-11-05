@@ -60,6 +60,10 @@ namespace inviwo {
 class IVW_CORE_API DataVisualizer {
 public:
     DataVisualizer() = default;
+    DataVisualizer(const DataVisualizer&) = default;
+    DataVisualizer(DataVisualizer&&) = default;
+    DataVisualizer& operator=(const DataVisualizer&) = default;
+    DataVisualizer& operator=(DataVisualizer&&) = default;
     virtual ~DataVisualizer() = default;
 
     /**

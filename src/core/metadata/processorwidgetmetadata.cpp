@@ -138,7 +138,7 @@ void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
 }
 
 bool ProcessorWidgetMetaData::equal(const MetaData& rhs) const {
-    if (auto tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
+    if (const auto* tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
         return tmp->position_ == position_ && tmp->visible_ == visible_ &&
                tmp->dimensions_ == dimensions_ && tmp->fullScreen_ == fullScreen_ &&
                tmp->onTop_ == onTop_;

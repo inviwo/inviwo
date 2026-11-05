@@ -40,6 +40,10 @@ namespace inviwo {
 class IVW_CORE_API MeshDrawerFactory : public Factory<MeshDrawer, const Mesh*> {
 public:
     MeshDrawerFactory() = default;
+    MeshDrawerFactory(const MeshDrawerFactory&) = delete;
+    MeshDrawerFactory(MeshDrawerFactory&&) = delete;
+    MeshDrawerFactory& operator=(const MeshDrawerFactory&) = delete;
+    MeshDrawerFactory& operator=(MeshDrawerFactory&&) = delete;
     virtual ~MeshDrawerFactory() = default;
 
     bool registerObject(MeshDrawer* drawer);
