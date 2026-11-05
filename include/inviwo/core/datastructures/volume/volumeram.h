@@ -157,6 +157,7 @@ public:
 protected:
     VolumeRAM() = default;
     VolumeRAM(const VolumeRAM& rhs) = default;
+    VolumeRAM(VolumeRAM&& rhs) = default;
     VolumeRAM(VolumeRAM& rhs) = default;
     VolumeRAM& operator=(const VolumeRAM& that) = default;
     VolumeRAM& operator=(VolumeRAM&& that) = default;
@@ -189,6 +190,11 @@ public:
     explicit VolumeRAMPrecision(const VolumeReprConfig& config);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
+    VolumeRAMPrecision(VolumeRAMPrecision<T>&& rhs)
+        : VolumeRAMPrecision(static_cast<const VolumeRAMPrecision<T>&>(rhs)) {}
+    VolumeRAMPrecision<T>& operator=(VolumeRAMPrecision<T>&& that) {
+        return operator=(static_cast<const VolumeRAMPrecision<T>&>(that));
+    }
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
 

@@ -52,6 +52,11 @@ public:
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other);
     OrthographicCamera& operator=(const OrthographicCamera& other);
+    OrthographicCamera(OrthographicCamera&& other)
+        : OrthographicCamera(static_cast<const OrthographicCamera&>(other)) {}
+    OrthographicCamera& operator=(OrthographicCamera&& other) {
+        return operator=(static_cast<const OrthographicCamera&>(other));
+    }
     virtual OrthographicCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"OrthographicCamera"};

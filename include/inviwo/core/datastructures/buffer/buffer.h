@@ -51,6 +51,8 @@ public:
                BufferTarget target);
     BufferBase(const BufferBase& rhs) = default;
     BufferBase& operator=(const BufferBase& that) = default;
+    BufferBase(BufferBase&& rhs) = default;
+    BufferBase& operator=(BufferBase&& that) = default;
 
     virtual BufferBase* clone() const override = 0;
     virtual ~BufferBase() = default;
@@ -106,6 +108,8 @@ public:
     explicit Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
     Buffer(const Buffer<T, Target>& rhs) = default;
     Buffer<T, Target>& operator=(const Buffer<T, Target>& that) = default;
+    Buffer(Buffer<T, Target>&& rhs) = default;
+    Buffer<T, Target>& operator=(Buffer<T, Target>&& that) = default;
     virtual Buffer<T, Target>* clone() const override;
     virtual ~Buffer() = default;
 
@@ -164,7 +168,7 @@ struct IVW_CORE_API BufferDispatcher {
             case BufferTarget::Index:
                 return std::make_shared<Buffer<F, BufferTarget::Index>>(size, usage);
             case BufferTarget::Data:
-            default:                 return std::make_shared<Buffer<F, BufferTarget::Data>>(size, usage);
+            default: return std::make_shared<Buffer<F, BufferTarget::Data>>(size, usage);
         }
     }
 };
@@ -177,7 +181,7 @@ Buffer<T, Target>::Buffer() : Buffer(BufferUsage::Static) {}
 template <typename T, BufferTarget Target>
 Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)
     : BufferBase(repr->getSize(), repr->getDataFormat(), repr->getBufferUsage(), Target) {
-    addRepresentation(repr);
+    addRepresentation(std::move(repr));
 }
 
 template <typename T, BufferTarget Target>

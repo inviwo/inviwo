@@ -47,7 +47,7 @@ std::unique_ptr<DoubleRefProperty> createCameraFovProperty(
 DoubleRefProperty* updateOrCreateCameraFovProperty(CameraProperty& comp,
                                                    const std::function<double()>& get,
                                                    const std::function<void(const double&)>& set) {
-    auto fov = getCameraFovProperty(comp);
+    auto* fov = getCameraFovProperty(comp);
     if (fov) {
         fov->setGetAndSet(get, set);
     } else {
@@ -74,7 +74,7 @@ std::unique_ptr<DoubleRefProperty> createCameraWidthProperty(
 DoubleRefProperty* updateOrCreateCameraWidthProperty(
     CameraProperty& comp, const std::function<double()>& get,
     const std::function<void(const double&)>& set) {
-    auto width = getCameraWidthProperty(comp);
+    auto* width = getCameraWidthProperty(comp);
     if (width) {
         width->setGetAndSet(get, set);
     } else {
@@ -102,7 +102,7 @@ DoubleVec2RefProperty* updateOrCreateCameraEyeOffsetProperty(
     CameraProperty& comp, const std::function<dvec2()>& get,
     const std::function<void(const dvec2&)>& set) {
 
-    auto offset = getCameraEyeOffsetProperty(comp);
+    auto* offset = getCameraEyeOffsetProperty(comp);
     if (offset) {
         offset->setGetAndSet(get, set);
     } else {

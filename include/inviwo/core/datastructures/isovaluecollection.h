@@ -50,6 +50,7 @@ public:
     IsoValueCollection(const IsoValueCollection& rhs) = default;
     IsoValueCollection(IsoValueCollection&& rhs) = default;
     IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
+    IsoValueCollection& operator=(IsoValueCollection&& rhs) = default;
     virtual ~IsoValueCollection() = default;
 
     static IsoValueCollection load(std::string_view path);

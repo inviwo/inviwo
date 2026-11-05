@@ -75,6 +75,8 @@ protected:
     VolumeRepresentation() = default;
     VolumeRepresentation(const VolumeRepresentation& rhs) = default;
     VolumeRepresentation& operator=(const VolumeRepresentation& that) = default;
+    VolumeRepresentation(VolumeRepresentation&& rhs) = default;
+    VolumeRepresentation& operator=(VolumeRepresentation&& that) = default;
 };
 
 template <>

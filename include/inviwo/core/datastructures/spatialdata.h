@@ -102,6 +102,10 @@ public:
     SpatialEntity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
     SpatialEntity(const SpatialEntity& rhs);
     SpatialEntity& operator=(const SpatialEntity& that);
+    SpatialEntity(SpatialEntity&& rhs) : SpatialEntity(static_cast<const SpatialEntity&>(rhs)) {}
+    SpatialEntity& operator=(SpatialEntity&& that) {
+        return operator=(static_cast<const SpatialEntity&>(that));
+    }
     virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
 
@@ -147,6 +151,11 @@ public:
     SpatialIdentity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
     SpatialIdentity(const SpatialIdentity& rhs);
     SpatialIdentity& operator=(const SpatialIdentity& that);
+    SpatialIdentity(SpatialIdentity&& rhs)
+        : SpatialIdentity(static_cast<const SpatialIdentity&>(rhs)) {}
+    SpatialIdentity& operator=(SpatialIdentity&& that) {
+        return operator=(static_cast<const SpatialIdentity&>(that));
+    }
     virtual SpatialIdentity* clone() const override;
     virtual ~SpatialIdentity();
 
@@ -164,6 +173,8 @@ public:
     StructuredGridEntity(const dmat4& modelMatrix, const dmat4& worldMatrix);
 
     StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;
+    StructuredGridEntity(StructuredGridEntity<N>&& rhs) = default;
+    StructuredGridEntity<N>& operator=(StructuredGridEntity<N>&& that) = default;
     virtual StructuredGridEntity<N>* clone() const override = 0;
 
     virtual ~StructuredGridEntity() = default;

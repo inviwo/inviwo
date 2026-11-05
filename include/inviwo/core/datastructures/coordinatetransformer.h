@@ -36,6 +36,7 @@
 
 #include <glm/matrix.hpp>
 
+#include <cstdint>
 #include <iosfwd>
 
 namespace inviwo {
@@ -92,7 +93,7 @@ namespace inviwo {
  *  └─────────────────┘                        └─────────────────────────────────────────┘
  */
 
-enum class CoordinateSpace {
+enum class CoordinateSpace : std::uint8_t {
     Data, Model, World, Index, Clip, View
 };
 
@@ -217,11 +218,12 @@ public:
      */
     glm::dmat3 getInverseMetricTensor() const;
 
-protected:
-    SpatialCoordinateTransformer(const SpatialCoordinateTransformer&) = default;
     SpatialCoordinateTransformer(SpatialCoordinateTransformer&&) = delete;
     SpatialCoordinateTransformer& operator=(const SpatialCoordinateTransformer&) = delete;
     SpatialCoordinateTransformer& operator=(SpatialCoordinateTransformer&&) = delete;
+
+protected:
+    SpatialCoordinateTransformer(const SpatialCoordinateTransformer&) = default;
 };
 
 class IVW_CORE_API StructuredCoordinateTransformer : public SpatialCoordinateTransformer {
@@ -295,11 +297,12 @@ public:
      */
     virtual glm::dmat4 getWorldToIndexMatrix() const = 0;
 
-protected:
-    StructuredCoordinateTransformer(const StructuredCoordinateTransformer&) = default;
     StructuredCoordinateTransformer(StructuredCoordinateTransformer&&) = delete;
     StructuredCoordinateTransformer& operator=(const StructuredCoordinateTransformer&) = delete;
     StructuredCoordinateTransformer& operator=(StructuredCoordinateTransformer&&) = delete;
+
+protected:
+    StructuredCoordinateTransformer(const StructuredCoordinateTransformer&) = default;
 };
 
 class IVW_CORE_API SpatialCameraCoordinateTransformer : public SpatialCoordinateTransformer {
@@ -383,11 +386,12 @@ public:
      */
     virtual glm::dmat4 getWorldToViewMatrix() const = 0;
 
-protected:
-    SpatialCameraCoordinateTransformer(const SpatialCameraCoordinateTransformer&) = default;
     SpatialCameraCoordinateTransformer(SpatialCameraCoordinateTransformer&&) = delete;
     SpatialCameraCoordinateTransformer& operator=(const SpatialCameraCoordinateTransformer&) = delete;
     SpatialCameraCoordinateTransformer& operator=(SpatialCameraCoordinateTransformer&&) = delete;
+
+protected:
+    SpatialCameraCoordinateTransformer(const SpatialCameraCoordinateTransformer&) = default;
 };
 
 class IVW_CORE_API StructuredCameraCoordinateTransformer : public SpatialCameraCoordinateTransformer {
@@ -502,11 +506,12 @@ public:
      */
     virtual glm::dmat4 getWorldToIndexMatrix() const = 0;
     
-protected:
-    StructuredCameraCoordinateTransformer(const StructuredCameraCoordinateTransformer&) = default;
     StructuredCameraCoordinateTransformer(StructuredCameraCoordinateTransformer&&) = delete;
     StructuredCameraCoordinateTransformer& operator=(const StructuredCameraCoordinateTransformer&) = delete;
     StructuredCameraCoordinateTransformer& operator=(StructuredCameraCoordinateTransformer&&) = delete;
+
+protected:
+    StructuredCameraCoordinateTransformer(const StructuredCameraCoordinateTransformer&) = default;
 };
 
 class SpatialEntity;
@@ -527,11 +532,12 @@ public:
     virtual glm::dmat4 getWorldToDataMatrix() const;
     virtual glm::dmat4 getWorldToModelMatrix() const;
 
-protected:
-    SpatialCoordinateTransformerImpl(const SpatialCoordinateTransformerImpl& rhs) = default;
     SpatialCoordinateTransformerImpl(SpatialCoordinateTransformerImpl&& rhs) = delete;
     SpatialCoordinateTransformerImpl& operator=(const SpatialCoordinateTransformerImpl& that) = delete;
     SpatialCoordinateTransformerImpl& operator=(SpatialCoordinateTransformerImpl&& that) = delete;
+
+protected:
+    SpatialCoordinateTransformerImpl(const SpatialCoordinateTransformerImpl& rhs) = default;
     
     virtual glm::dmat4 getModelMatrix() const;
     virtual glm::dmat4 getWorldMatrix() const;
@@ -571,11 +577,12 @@ public:
     virtual glm::dmat4 getWorldToModelMatrix() const override;
     virtual glm::dmat4 getWorldToTextureMatrix() const override;
 
+    StructuredCoordinateTransformerImpl(StructuredCoordinateTransformerImpl&& rhs) = delete;
+    StructuredCoordinateTransformerImpl& operator=(const StructuredCoordinateTransformerImpl& that) = delete;
+    StructuredCoordinateTransformerImpl& operator=(StructuredCoordinateTransformerImpl&& that) = delete;
+
 protected:
     StructuredCoordinateTransformerImpl(const StructuredCoordinateTransformerImpl& rhs) = default;
-    StructuredCoordinateTransformerImpl( StructuredCoordinateTransformerImpl&& rhs) = delete;
-    StructuredCoordinateTransformerImpl& operator=(const StructuredCoordinateTransformerImpl& that) = delete;
-    StructuredCoordinateTransformerImpl& operator=( StructuredCoordinateTransformerImpl&& that) = delete;
 
     virtual glm::dmat4 getIndexMatrix() const;
     virtual glm::dmat4 getModelMatrix() const;
@@ -616,11 +623,12 @@ public:
     virtual glm::dmat4 getWorldToModelMatrix() const override;
     virtual glm::dmat4 getWorldToViewMatrix() const override;
 
-protected:
-    SpatialCameraCoordinateTransformerImpl(const SpatialCameraCoordinateTransformerImpl& rhs) = default;
     SpatialCameraCoordinateTransformerImpl(SpatialCameraCoordinateTransformerImpl&& rhs) = delete;
     SpatialCameraCoordinateTransformerImpl& operator=(const SpatialCameraCoordinateTransformerImpl& that) = delete;
     SpatialCameraCoordinateTransformerImpl& operator=(SpatialCameraCoordinateTransformerImpl&& that) = delete;
+
+protected:
+    SpatialCameraCoordinateTransformerImpl(const SpatialCameraCoordinateTransformerImpl& rhs) = default;
 
     virtual glm::dmat4 getModelMatrix() const;
     virtual glm::dmat4 getWorldMatrix() const;
@@ -683,11 +691,12 @@ public:
     virtual glm::dmat4 getWorldToTextureMatrix() const override;
     virtual glm::dmat4 getWorldToViewMatrix() const override;
 
-protected:
-    StructuredCameraCoordinateTransformerImpl(const StructuredCameraCoordinateTransformerImpl& rhs) = default;
     StructuredCameraCoordinateTransformerImpl(StructuredCameraCoordinateTransformerImpl&& rhs) = delete;
     StructuredCameraCoordinateTransformerImpl& operator=(const StructuredCameraCoordinateTransformerImpl& that) = delete;
     StructuredCameraCoordinateTransformerImpl& operator=(StructuredCameraCoordinateTransformerImpl&& that) = delete;
+
+protected:
+    StructuredCameraCoordinateTransformerImpl(const StructuredCameraCoordinateTransformerImpl& rhs) = default;
     
     virtual glm::dmat4 getIndexMatrix() const;
     virtual glm::dmat4 getModelMatrix() const;

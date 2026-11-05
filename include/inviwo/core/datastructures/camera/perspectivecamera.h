@@ -49,6 +49,11 @@ public:
     virtual ~PerspectiveCamera() = default;
     PerspectiveCamera(const PerspectiveCamera& other);
     PerspectiveCamera& operator=(const PerspectiveCamera& other);
+    PerspectiveCamera(PerspectiveCamera&& other)
+        : PerspectiveCamera(static_cast<const PerspectiveCamera&>(other)) {}
+    PerspectiveCamera& operator=(PerspectiveCamera&& other) {
+        return operator=(static_cast<const PerspectiveCamera&>(other));
+    }
     virtual PerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"PerspectiveCamera"};

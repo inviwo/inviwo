@@ -38,6 +38,10 @@ namespace inviwo {
 class IVW_CORE_API PointLight : public LightSource {
 public:
     PointLight() : LightSource() { setFieldOfView(glm::two_pi<float>()); }
+    PointLight(const PointLight&) = default;
+    PointLight(PointLight&&) = default;
+    PointLight& operator=(const PointLight&) = default;
+    PointLight& operator=(PointLight&&) = default;
     virtual ~PointLight() = default;
     virtual PointLight* clone() const override;
 

@@ -41,7 +41,7 @@ SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
 
 unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
-    auto posBuffer =
+    auto* posBuffer =
         static_cast<Vec3BufferRAM*>(buffers_[0].second->getEditableRepresentation<BufferRAM>());
     posBuffer->add(pos);
     static_cast<Vec3BufferRAM*>(buffers_[1].second->getEditableRepresentation<BufferRAM>())
