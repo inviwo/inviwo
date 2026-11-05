@@ -45,6 +45,7 @@
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/compositeprocessorfactoryobject.h>
+#include <inviwo/core/processors/sequenceprocessorfactoryobject.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyconverter.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
@@ -313,6 +314,13 @@ void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo
 
 void InviwoModule::registerCompositeProcessor(const std::filesystem::path& file) {
     auto processor = std::make_unique<CompositeProcessorFactoryObject>(file);
+    if (app_->getProcessorFactory()->registerObject(processor.get())) {
+        processors_.push_back(std::move(processor));
+    }
+}
+
+void InviwoModule::registerSequenceProcessor(const std::filesystem::path& file) {
+    auto processor = std::make_unique<SequenceProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));
     }
