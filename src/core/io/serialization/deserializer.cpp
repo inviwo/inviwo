@@ -156,12 +156,14 @@ void Deserializer::deserialize(std::string_view key, Serializable& sObj) {
 
 void Deserializer::deserialize(std::string_view key, signed char& data,
                                const SerializationTarget& target) {
+    // NOLINTNEXTLINE(bugprone-signed-char-misuse) sign extension is intended
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(std::string_view key, char& data,
                                const SerializationTarget& target) {
+    // NOLINTNEXTLINE(bugprone-signed-char-misuse) sign extension is intended
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);

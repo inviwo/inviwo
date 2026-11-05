@@ -234,6 +234,7 @@ void util::replaceSelectionWithCompositeProcessor(ProcessorNetwork& network) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void util::expandCompositeProcessorIntoNetwork(CompositeProcessor& composite) {
     try {
         // Make sure we delete the composite as the last thing we do, after any locks

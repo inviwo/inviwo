@@ -63,6 +63,7 @@ InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const ModuleSetupInfo& rhs, al
 InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(ModuleSetupInfo&& rhs)
     : name{std::move(rhs.name)}, version{rhs.version}, processors(std::move(rhs.processors)) {}
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(ModuleSetupInfo&& rhs, allocator_type alloc)
     : name{rhs.name, alloc}, version{rhs.version}, processors(rhs.processors, alloc) {}
 

@@ -249,6 +249,7 @@ struct PropertyTraits<MinMaxProperty<T>> {
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                                   Document help, T valueMin, T valueMax, T rangeMin, T rangeMax,
                                   T increment, T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics, ReadOnly readOnly)

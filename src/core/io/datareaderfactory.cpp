@@ -30,6 +30,8 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 bool DataReaderFactory::registerObject(DataReader* reader) {
@@ -73,10 +75,8 @@ std::unique_ptr<DataReader> DataReaderFactory::create(std::string_view key) cons
 }
 
 bool DataReaderFactory::hasKey(std::string_view key) const {
-    for (const auto& elem : map_) {
-        if (iCaseCmp(elem.first.extension, key)) return true;
-    }
-    return false;
+    return std::ranges::any_of(
+        map_, [&](const auto& elem) { return iCaseCmp(elem.first.extension, key); });
 }
 
 bool DataReaderFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }

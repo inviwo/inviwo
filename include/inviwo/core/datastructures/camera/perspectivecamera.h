@@ -52,7 +52,8 @@ public:
     PerspectiveCamera(PerspectiveCamera&& other)
         : PerspectiveCamera(static_cast<const PerspectiveCamera&>(other)) {}
     PerspectiveCamera& operator=(PerspectiveCamera&& other) {
-        return operator=(static_cast<const PerspectiveCamera&>(other));
+        operator=(static_cast<const PerspectiveCamera&>(other));
+        return *this;
     }
     virtual PerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;

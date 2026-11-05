@@ -44,6 +44,8 @@ namespace inviwo {
 
 namespace dispatching {
 
+// The callable is forwarded through the dispatch table as an rvalue reference
+// NOLINTBEGIN(cppcoreguidelines-rvalue-reference-param-not-moved)
 /**
  *	Exception thrown but the dispatcher when a format can't be found.
  */
@@ -470,6 +472,8 @@ struct FloatVecs : std::integral_constant<bool, (Format::rank() < 2 && Format::c
                                                  Format::numtype == NumericType::Float)> {};
 
 }  // namespace filter
+
+// NOLINTEND(cppcoreguidelines-rvalue-reference-param-not-moved)
 
 }  // namespace dispatching
 

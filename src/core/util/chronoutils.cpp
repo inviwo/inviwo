@@ -63,7 +63,6 @@ std::string msToString(double ms, bool includeZeros, bool spacing) {
     // _or_ there are more than one second
     if (seconds > 0 || (follows && includeZeros)) {
         if (follows) ss << " ";
-        follows = true;
         ss << std::setprecision(4) << (ms / 1000.0) << space << "s";
     } else {
         // less than one second, no leading minutes/hours

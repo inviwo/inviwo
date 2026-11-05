@@ -98,6 +98,7 @@ TransferFunctionProperty::TransferFunctionProperty(std::string_view identifier,
                             {.pos = 1.0, .color = vec4(1.0f, 1.0f, 1.0f, 1.0f)}}),
           std::move(port), invalidationLevel, std::move(semantics)) {}
 
+// NOLINTNEXTLINE(bugprone-copy-constructor-init) observers must not be copied
 TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionProperty& rhs)
     : Property(rhs)
     , tf_{rhs.tf_}

@@ -94,6 +94,7 @@ void TimerThread::add(std::weak_ptr<ControlBlock> controlBlock) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void TimerThread::TimerLoop() {
     for (;;) {
         std::unique_lock<std::mutex> lock(mutex_);

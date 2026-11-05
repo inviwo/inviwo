@@ -34,6 +34,7 @@
 
 namespace inviwo {
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 VolumeSequenceSampler::VolumeSequenceSampler(
     const std::shared_ptr<const VolumeSequence>& volumeSequence, bool allowLooping)
     : Spatial4DSampler<dvec3>(volumeSequence->front())

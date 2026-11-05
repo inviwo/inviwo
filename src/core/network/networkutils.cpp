@@ -308,7 +308,7 @@ void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
         }
     }
 
-    s.serialize("ProcessorNetworkVersion", network_->getVersion());
+    s.serialize("ProcessorNetworkVersion", ProcessorNetwork::getVersion());
     s.serialize("Processors", processors_, "Processor");
     s.serialize("InternalConnections", internalConnections, "Connection");
     s.serialize("ExternalConnections", externalConnections, "Connection");
@@ -483,6 +483,7 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
     return replaceProcessor(network, *newProcessor, oldProcessor);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor& newProcessor,
                                             Processor* oldProcessor) {
 

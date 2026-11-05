@@ -31,6 +31,7 @@
 
 namespace inviwo {
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 LicenseInfo::LicenseInfo(std::string_view aId, std::string_view aName, std::string_view aVersion,
                          std::string_view aUrl, std::string_view aModule, std::string_view aType,
                          const std::vector<std::string>& someFiles)

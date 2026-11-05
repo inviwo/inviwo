@@ -501,6 +501,7 @@ bool xml::renamePortIdentifier(TxElement* root, std::string_view processorClassI
     return res;
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 bool xml::renamePropertyIdentifier(TxElement* root, std::string_view processorClassId,
                                    std::string_view propertyPath, std::string_view newIdentifier) {
     bool res = false;

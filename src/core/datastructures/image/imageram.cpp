@@ -37,6 +37,7 @@ namespace inviwo {
 
 ImageRAM::ImageRAM() = default;
 
+// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 ImageRAM::ImageRAM(const ImageRAM& rhs) : ImageRepresentation(rhs) { update(true); }
 
 ImageRAM* ImageRAM::clone() const { return new ImageRAM(*this); }

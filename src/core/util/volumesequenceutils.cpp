@@ -42,10 +42,8 @@ bool hasTimestamps(const VolumeSequence& seq, bool checkfirstonly) {
     if (checkfirstonly) {
         return seq.at(0)->hasMetaData<DoubleMetaData>("timestamp");
     }
-    for (const auto v : seq) {
-        if (!v->hasMetaData<DoubleMetaData>("timestamp")) return false;
-    }
-    return true;
+    return std::ranges::all_of(
+        seq, [](const auto& v) { return v->template hasMetaData<DoubleMetaData>("timestamp"); });
 }
 
 std::pair<double, double> getTimestampRange(const VolumeSequence& seq, bool sorted) {

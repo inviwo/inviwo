@@ -105,6 +105,7 @@ private:
         return name;
     }
 
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     explicit constexpr SourceContext(std::string_view source, std::string_view file,
                                      std::string_view function, std::uint32_t line,
                                      std::uint32_t column)

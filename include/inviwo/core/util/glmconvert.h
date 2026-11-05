@@ -206,6 +206,7 @@ constexpr auto rangeRatio = []() {
 }  // namespace detail
 
 template <typename To = double, typename From>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 constexpr To glm_convert_normalized(From x) {
     if constexpr (std::is_same_v<To, From>) {
         // To == From

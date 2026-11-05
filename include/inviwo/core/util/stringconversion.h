@@ -478,6 +478,7 @@ struct IVW_CORE_API CaseInsensitiveStringHash {
 private:
     static std::size_t hash(std::string_view str) {
         if (str.size() <= 128) {
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init) filled by the copy below
             std::array<char, 128> stack;
             std::ranges::copy(str, stack.begin());
             std::transform(stack.begin(), stack.begin() + str.size(), stack.begin(),

@@ -74,6 +74,7 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
             propagateEvent(static_cast<TouchEvent*>(event), propagator);
             break;
         }
+        default: break;
     }
 
     if (!event->hasBeenUsed()) {

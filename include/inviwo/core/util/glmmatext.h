@@ -204,6 +204,7 @@ GLM_FUNC_QUALIFIER mat<C, R, T, Q> clamp(const mat<C, R, T, Q>& a, Scalar s1, Sc
 }
 
 template <length_t C, length_t R, typename T, qualifier Q>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 GLM_FUNC_QUALIFIER mat<C, R, T, Q> clamp(const mat<C, R, T, Q>& a, const mat<C, R, T, Q>& b,
                                          const mat<C, R, T, Q>& c) {
     return detail::vectorize_mat_mat_mat(static_cast<T (*)(T, T, T)>(clamp), a, b, c);

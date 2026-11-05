@@ -55,6 +55,7 @@ bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTrait
         return false;
     }
     const auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {
+        // NOLINTNEXTLINE(readability-use-anyofallof)
         for (auto&& elem : util::zip(buffersA, buffersB)) {
             auto& bufA = get<0>(elem);
             auto& bufB = get<1>(elem);
@@ -246,6 +247,7 @@ TEST(typedmesh, clone) {
     EXPECT_FALSE(mesh == *copy.get()) << "cloned mesh is not a deep copy";
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(vertexop, addVertexTraits) {
     using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
@@ -271,6 +273,7 @@ TEST(vertexop, addVertexTraits) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(vertexop, addVertex) {
     using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 

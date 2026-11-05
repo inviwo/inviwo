@@ -67,12 +67,8 @@ const std::vector<FileExtension>& FileBase::getNameFilters() const { return name
 std::vector<FileExtension>& FileBase::getNameFilters() { return nameFilters_; }
 
 bool FileBase::matchesAnyNameFilter(const std::filesystem::path& file) const {
-    for (const auto& filter : nameFilters_) {
-        if (filter.matches(file)) {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(nameFilters_,
+                               [&](const auto& filter) { return filter.matches(file); });
 }
 
 void FileBase::setAcceptMode(AcceptMode acceptMode) {
@@ -407,6 +403,7 @@ Document FileProperty::getDescription() const {
             tb(H("Directory"), file_.value);
             break;
         }
+        default: break;
     }
 
     tb(H("Selected Extension"), selectedExtension_.value);

@@ -302,6 +302,7 @@ std::vector<PropertyLink> ProcessorNetwork::getLinks() const {
 }
 
 bool ProcessorNetwork::isLinkedBidirectional(Property* src, Property* dst) const {
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     return isLinked(src, dst) && isLinked(dst, src);
 }
 

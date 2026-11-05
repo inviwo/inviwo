@@ -352,12 +352,11 @@ public:
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // integers, strings, reals
-    template <typename T,
-              std::enable_if_t<std::is_integral_v<T> || util::is_floating_point<T>::value ||
-                                   util::is_string<T>::value,
-                               int> = 0>
+    template <typename T>
     void deserialize(std::string_view key, T& data,
-                     const SerializationTarget& target = SerializationTarget::Node);
+                     const SerializationTarget& target = SerializationTarget::Node)
+        requires(std::is_integral_v<T> || util::is_floating_point<T>::value ||
+                 util::is_string<T>::value);
 
     // Enum types
     template <typename T, std::enable_if_t<std::is_enum_v<T>, int> = 0>
@@ -370,8 +369,9 @@ public:
                      const SerializationTarget& target = SerializationTarget::Node);
 
     // glm vector types
-    template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int> = 0>
-    void deserialize(std::string_view key, Vec& data);
+    template <typename Vec>
+    void deserialize(std::string_view key, Vec& data)
+        requires(util::rank<Vec>::value == 1);
 
     // glm matrix types
     template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int> = 0>
@@ -564,10 +564,11 @@ size_t Deserializer::forEachChild(std::string_view key, const F& fun, bool retri
 }
 
 // integers, strings, reals
-template <typename T, std::enable_if_t<std::is_integral_v<T> || util::is_floating_point<T>::value ||
-                                           util::is_string<T>::value,
-                                       int>>
-void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target) {
+template <typename T>
+void Deserializer::deserialize(std::string_view key, T& data, const SerializationTarget& target)
+    requires(std::is_integral_v<T> || util::is_floating_point<T>::value ||
+             util::is_string<T>::value)
+{
     static_assert(serialization::canDeserialize<T>(), "Type is not serializable");
 
     try {
@@ -607,8 +608,10 @@ void Deserializer::deserialize(std::string_view key, flags::flags<T>& data,
 }
 
 // glm vector types
-template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int>>
-void Deserializer::deserialize(std::string_view key, Vec& data) {
+template <typename Vec>
+void Deserializer::deserialize(std::string_view key, Vec& data)
+    requires(util::rank<Vec>::value == 1)
+{
     if (const NodeSwitch ns{*this, key}) {
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
             try {
@@ -639,6 +642,7 @@ void Deserializer::deserialize(std::string_view key, Mat& data) {
 
 template <size_t N>
 void Deserializer::deserialize(std::string_view key, std::bitset<N>& bits) {
+    // NOLINTNEXTLINE(readability-suspicious-call-argument)
     if (auto str = attribute(key, SerializeConstants::ContentAttribute)) {
         bits = std::bitset<N>(str->data(), str->size());
     }

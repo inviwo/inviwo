@@ -38,7 +38,8 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo {
 namespace colorbrewer {
 
-const std::vector<dvec4> &getColormap(Colormap colormap) {
+// NOLINTNEXTLINE(google-readability-function-size,readability-function-size) generated table
+const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
         // clang-format off
         // NOLINTBEGIN(modernize-use-std-numbers) quantized color channel values
@@ -51,26 +52,26 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
     return dummy;
 }
 
-glm::uint8 getMinNumberOfColorsForFamily(const Family &family) { 
-        // clang-format off
+glm::uint8 getMinNumberOfColorsForFamily(const Family& family) {
+    // clang-format off
 ##GETMINIMPL##
-    // clang-format on
-    return 0;
+        // clang-format on
+        return 0;
 }
 
-glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
+glm::uint8 getMaxNumberOfColorsForFamily(const Family& family) {
     // clang-format off
 ##GETMAXIMPL##
-    // clang-format on
-    return 0;
+        // clang-format on
+        return 0;
 }
 
-std::vector<Family> getFamiliesForCategory(const Category &category) {
+std::vector<Family> getFamiliesForCategory(const Category& category) {
     std::vector<Family> v;
     switch (category) {
         // clang-format off
 ##GETFAMILIESIMPL##
-            // clang-format on
+        // clang-format on
     }
     return v;
 }

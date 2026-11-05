@@ -102,6 +102,7 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
     evaluate();
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void ProcessorNetworkEvaluator::evaluate() {
     if (reentranceCount_ > 10) {
         log::error(

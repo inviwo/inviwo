@@ -20632,6 +20632,7 @@ std::span<const glm::vec3> get(Cyclic type) {
     return {};
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::span<const glm::vec3> get(Discrete type, DiscreteSize size) {
     switch (type) {
         case Discrete::acton:

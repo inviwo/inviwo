@@ -478,6 +478,7 @@ TEST(EventTransform, WheelEventUsedPropagation) {
     EXPECT_TRUE(wheelEvent.hasBeenUsed());
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(EventTransform, CoordinateTransformEdgeCases) {
     std::unique_ptr<Event> received;
 
