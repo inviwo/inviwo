@@ -34,6 +34,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/shadercomponents/shadercomponent.h>
@@ -59,6 +60,11 @@ class TextureUnitContainer;
  * against the volume bounding box, and it is always clipped against the near and far planes of
  * the camera.
  *
+ * A sphere can optionally be clipped to a spherical shell sector using an inner radius (relative
+ * to the radius) and longitude/latitude ranges in degrees, measured in the shape space around the
+ * z axis. Since only a single entry and exit point is produced, a ray passing through the hollow
+ * center or a clipped away sector spans the full range from the first to the last intersection.
+ *
  * Like the EntryExitComponent, the setup segment defines `entryPoint`, `exitPoint`,
  * `entryPointDepth`, `exitPointDepth`, `rayLength`, and `rayDirection`. The `surfaceNormal`
  * sampler and `useSurfaceNormals` are declared for compatibility with other components, but
@@ -83,6 +89,8 @@ public:
 
     virtual std::vector<Segment> getSegments() override;
 
+    glm::dmat4 boundingBox() const;
+
     CompositeProperty geometry;
     OptionProperty<Shape> shape;
     OptionProperty<CoordinateSpace> space;
@@ -95,19 +103,9 @@ public:
 
     FloatVec3Property center;
     FloatProperty radius;
-
-    glm::dmat4 model() const {
-        switch (shape.getSelectedValue()) {
-            case Shape::Sphere: {
-                const auto r = static_cast<double>(radius.get());
-                return glm::scale(glm::translate(dmat4{1.0}, dvec3{center.get()}), dvec3{r});
-            }
-            case Shape::Parallelepiped:
-            default:
-                return dmat4{dvec4{dvec3{edge1.get()}, 0.0}, dvec4{dvec3{edge2.get()}, 0.0},
-                             dvec4{dvec3{edge3.get()}, 0.0}, dvec4{dvec3{origin.get()}, 1.0}};
-        }
-    }
+    FloatProperty innerRadius;
+    FloatMinMaxProperty longitude;
+    FloatMinMaxProperty latitude;
 
 private:
     std::function<glm::dmat4(CoordinateSpace from, CoordinateSpace to)> getTransform_;
