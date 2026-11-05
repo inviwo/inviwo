@@ -29,62 +29,64 @@
 
 #include <inviwo/core/datastructures/geometry/plane.h>
 
+#include <inviwo/core/util/glm.h>
+
 #include <algorithm>
 #include <glm/gtx/perpendicular.hpp>
 #include <array>
 
 namespace inviwo {
 
-Plane::Plane(vec3 point, vec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
 
-float Plane::distance(const vec3& p) const { return glm::dot(p - point_, normal_); }
+Plane::Plane(dvec3 point, dvec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
 
-vec3 Plane::projectPoint(const vec3& p) const { return p - distance(p) * normal_; }
+double Plane::distance(const dvec3& p) const { return glm::dot(p - point_, normal_); }
 
-bool Plane::isInside(const vec3& p) const { return distance(p) >= 0.f; }
+dvec3 Plane::projectPoint(const dvec3& p) const { return p - distance(p) * normal_; }
 
-bool Plane::perpendicularToPlane(const vec3& p) const {
-    return (glm::abs(glm::dot(normal_, p)) < glm::epsilon<float>());
+bool Plane::isInside(const dvec3& p) const { return distance(p) >= 0.f; }
+
+bool Plane::perpendicularToPlane(const dvec3& p) const {
+    return (glm::abs(glm::dot(normal_, p)) < glm::epsilon<double>());
 }
 
-mat4 Plane::inPlaneBasis() const {
-    std::array<vec3, 3> perp = {glm::perp(vec3{1.0f, 0.0f, 0.0}, normal_),
-                                glm::perp(vec3{0.0f, 1.0f, 0.0}, normal_),
-                                glm::perp(vec3{0.0f, 0.0f, 1.0}, normal_)};
+dmat4 Plane::inPlaneBasis() const {
+    std::array<dvec3, 3> perp = {glm::perp(dvec3{1.0f, 0.0f, 0.0}, normal_),
+                                 glm::perp(dvec3{0.0f, 1.0f, 0.0}, normal_),
+                                 glm::perp(dvec3{0.0f, 0.0f, 1.0}, normal_)};
 
     const auto a1 = glm::normalize(*std::ranges::max_element(
-        perp, [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
+        perp, [](const dvec3& a, const dvec3& b) { return glm::length2(a) < glm::length2(b); }));
     const auto a2 = glm::cross(normal_, a1);
 
     return glm::translate(point_) *
-           mat4{vec4{a1, 0.0f}, vec4{a2, 0.0f}, vec4{normal_, 0.0f}, vec4{vec3{0.0f}, 1.0}};
+           dmat4{dvec4{a1, 0.0f}, dvec4{a2, 0.0f}, dvec4{normal_, 0.0f}, dvec4{dvec3{0.0f}, 1.0}};
 }
 
-void Plane::setPoint(const vec3 p) { point_ = p; }
+void Plane::setPoint(const dvec3 p) { point_ = p; }
 
-void Plane::setNormal(const vec3& n) { normal_ = glm::normalize(n); }
+void Plane::setNormal(const dvec3& n) { normal_ = glm::normalize(n); }
 
-Plane Plane::transform(const mat4& transform) const {
-    const auto newPos = vec3(transform * vec4(point_, 1.0));
-    const auto normalTransform = glm::transpose(glm::inverse(transform));
-    const auto newNormal = glm::normalize(vec3(normalTransform * vec4(normal_, 0.0)));
+Plane Plane::transform(const dmat4& transform) const {
+    const auto newPos = util::transformPos(transform, point_);
+    const auto newNormal = glm::normalize(util::transformNormal(transform, normal_));
     return {newPos, newNormal};
 }
 
-std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) const {
+std::optional<dvec3> Plane::getIntersection(const dvec3& start, const dvec3& stop) const {
     // Distance from point to plane
-    const float d = glm::dot(point_ - start, normal_);
+    const double d = glm::dot(point_ - start, normal_);
 
-    if (glm::abs(d) < glm::epsilon<float>()) {
+    if (glm::abs(d) < glm::epsilon<double>()) {
         // segment is in plane, return start point.
         return start;
     }
 
-    const vec3 segment = stop - start;
+    const dvec3 segment = stop - start;
     // Distance of segment projected onto plane normal
-    const float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
-    if (std::abs(denom) > glm::epsilon<float>()) {
-        const float tHit = d / denom;
+    const double denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
+    if (std::abs(denom) > glm::epsilon<double>()) {
+        const double tHit = d / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {
             return start + tHit * segment;
@@ -95,20 +97,20 @@ std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) 
     return std::nullopt;
 }
 
-std::optional<float> Plane::getIntersectionWeight(const vec3& start, const vec3& stop) const {
+std::optional<double> Plane::getIntersectionWeight(const dvec3& start, const dvec3& stop) const {
     // Distance from point to plane
-    const float d = glm::dot(point_ - start, normal_);
+    const double d = glm::dot(point_ - start, normal_);
 
-    if (glm::abs(d) < glm::epsilon<float>()) {
+    if (glm::abs(d) < glm::epsilon<double>()) {
         // segment is in plane, return start point.
         return 0.0f;
     }
 
-    const vec3 segment = stop - start;
+    const dvec3 segment = stop - start;
     // Distance of segment projected onto plane normal
-    const float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
-    if (std::abs(denom) > glm::epsilon<float>()) {
-        const float tHit = d / denom;
+    const double denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
+    if (std::abs(denom) > glm::epsilon<double>()) {
+        const double tHit = d / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {
             return tHit;

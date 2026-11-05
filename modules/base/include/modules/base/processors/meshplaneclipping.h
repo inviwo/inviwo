@@ -37,12 +37,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/util/glmvec.h>
-
-#include <string>
-#include <vector>
-
-#include <fmt/base.h>
 
 namespace inviwo {
 

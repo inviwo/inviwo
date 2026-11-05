@@ -33,18 +33,18 @@
 #include <inviwo/core/util/glm.h>
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 namespace inviwo {
 
 class IVW_CORE_API Plane {
 public:
     constexpr Plane() = default;
-    Plane(vec3 point, vec3 normal) noexcept;
+    Plane(dvec3 point, dvec3 normal) noexcept;
     ~Plane() = default;
 
-    const vec3& getPoint() const noexcept { return point_; }
-    const vec3& getNormal() const noexcept { return normal_; }
+    const dvec3& getPoint() const noexcept { return point_; }
+    const dvec3& getNormal() const noexcept { return normal_; }
 
     /**
      * @brief Get intersection point with plane and line segment.
@@ -56,13 +56,13 @@ public:
      * @param stop End point of segment
      * @return Intersected point if intersecting or nullopt.
      */
-    std::optional<vec3> getIntersection(const vec3& start, const vec3& stop) const;
+    std::optional<dvec3> getIntersection(const dvec3& start, const dvec3& stop) const;
 
     /**
      * Returns the intersection point as a fraction of the distance between
      * start and stop. The point would be start + retval * (stop -start)
      */
-    std::optional<float> getIntersectionWeight(const vec3& start, const vec3& stop) const;
+    std::optional<double> getIntersectionWeight(const dvec3& start, const dvec3& stop) const;
 
     /**
      * Return signed distance from plane to point, i.e. dot(x - p, normal).
@@ -74,7 +74,7 @@ public:
      *    -d     d
      * @return Negative distance if behind plane, positive otherwise.
      */
-    float distance(const vec3& p) const;
+    double distance(const dvec3& p) const;
 
     /**
      * Project point onto plane.
@@ -86,7 +86,7 @@ public:
      * @param x Point to project
      * @return point on the plane
      */
-    vec3 projectPoint(const vec3& p) const;
+    dvec3 projectPoint(const dvec3& p) const;
 
     /**
      * Check if point is on positive side of plane.
@@ -101,19 +101,19 @@ public:
      * @param point to check
      * @return true if on positive side of normal or on the plane, otherwise false
      */
-    bool isInside(const vec3& point) const;
+    bool isInside(const dvec3& point) const;
 
-    bool perpendicularToPlane(const vec3&) const;
+    bool perpendicularToPlane(const dvec3&) const;
 
     /**
      * Calculate an basis in the plane, the normal will be the last component.
      */
-    mat4 inPlaneBasis() const;
+    dmat4 inPlaneBasis() const;
 
-    void setPoint(vec3);
-    void setNormal(const vec3&);
+    void setPoint(dvec3);
+    void setNormal(const dvec3&);
 
-    Plane transform(const mat4& transform) const;
+    Plane transform(const dmat4& transform) const;
 
     static std::string_view getDataInfo();
 
@@ -122,8 +122,8 @@ public:
     static constexpr std::string_view dataName{"Plane"};
 
 private:
-    vec3 point_{0.0f, 0.0f, 0.0f};
-    vec3 normal_{0.0f, 1.0f, 0.0f};
+    dvec3 point_{0.0f, 0.0f, 0.0f};
+    dvec3 normal_{0.0f, 1.0f, 0.0f};
 };
 
 }  // namespace inviwo

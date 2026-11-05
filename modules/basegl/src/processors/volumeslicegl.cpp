@@ -37,10 +37,7 @@
 #include <inviwo/core/datastructures/geometry/plane.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/tfprimitive.h>
-#include <inviwo/core/datastructures/tfprimitiveset.h>
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/interaction/events/event.h>
@@ -63,18 +60,15 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/glmmat.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/inviwoopengl.h>
@@ -88,26 +82,16 @@
 #include <modules/opengl/volume/volumeutils.h>
 
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
-#include <functional>
 #include <limits>
 #include <optional>
 #include <string>
-#include <string_view>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include <flags/flags.h>
 #include <glm/common.hpp>
-#include <glm/detail/type_quat.hpp>
-#include <glm/exponential.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -155,20 +139,20 @@ VolumeSliceGL::VolumeSliceGL()
     , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , worldPosition_("worldPosition_", "World Position",
-                     util::ordinalSymmetricVector(vec3(0.0f), vec3(10.0f))
+                     util::ordinalSymmetricVector(dvec3(0.0), dvec3(10.0))
                          .set("Outputs the world position of the slice plane (read-only)"_help)
                          .set(InvalidationLevel::Valid))
     , planeNormal_("planeNormal", "Plane Normal",
-                   util::ordinalSymmetricVector(vec3(1.f, 0.f, 0.f), vec3(1.f))
+                   util::ordinalSymmetricVector(dvec3(1.0, 0.0, 0.0), dvec3(1.0))
                        .set("Defines the normal of the slice plane "
                             "(if slice axis is set to \"Plane Equation\")"_help))
     , planePosition_("planePosition", "Plane Position",
-                     util::ordinalSymmetricVector(vec3(0.5f), vec3(1.0f))
-                         .setMin(vec3(0.0f))
+                     util::ordinalSymmetricVector(dvec3(0.5), dvec3(1.0))
+                         .setMin(dvec3(0.0))
                          .set("Defines the origin of the slice plane "
                               "(if slice axis is set to \"Plane Equation\")"_help))
-    , imageScale_("imageScale", "Scale", "Scaling factor applied to the volume slice"_help, 1.0f,
-                  {0.1f, ConstraintBehavior::Ignore}, {10.0f, ConstraintBehavior::Ignore})
+    , imageScale_("imageScale", "Scale", "Scaling factor applied to the volume slice"_help, 1.0,
+                  {0.1, ConstraintBehavior::Ignore}, {10.0, ConstraintBehavior::Ignore})
     , rotationAroundAxis_("rotation", "Rotation (ccw)",
                           "Defines the rotation of the output image"_help,
                           {{"0", "0 deg", 0},
@@ -366,17 +350,17 @@ void VolumeSliceGL::modeChange() {
     switch (sliceAlongAxis_.get()) {
         case static_cast<int>(CartesianCoordinateAxis::X):
             sliceX_.setReadOnly(false);
-            planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
+            planeNormal_.set(dvec3{-1.0, 0.0, 0.0});
             sliceChange();
             break;
         case static_cast<int>(CartesianCoordinateAxis::Y):
             sliceY_.setReadOnly(false);
-            planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
+            planeNormal_.set(dvec3{0.0, -1.0, 0.0});
             sliceChange();
             break;
         case static_cast<int>(CartesianCoordinateAxis::Z):
             sliceZ_.setReadOnly(false);
-            planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
+            planeNormal_.set(dvec3{0.0, 0.0, -1.0});
             sliceChange();
             break;
         case 3:  // General plane
@@ -397,43 +381,42 @@ void VolumeSliceGL::planeSettingsChanged() {
     // Make sure we keep the aspect of the input data.
 
     // In texture space
-    const vec3 normal = glm::normalize(planeNormal_.get());
+    const dvec3 normal = glm::normalize(planeNormal_.get());
     const Plane plane(planePosition_.get(), normal);
 
     // In worldSpace, ignoring translation because it should not affect rotation (fixes issue #875)
-    const mat4 texToWorld(
-        mat3(mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix())));
+    const dmat4 texToWorld{
+        dmat3{inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()}};
 
-    const vec3 worldNormal(
-        glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
-    const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
+    const auto worldNormal{glm::normalize(util::transformNormal(texToWorld, normal))};
+    const auto boxrotation(glm::toMat4(glm::rotation(worldNormal, dvec3{0.0, 0.0, 1.0})));
 
     // Construct the edges of a unit box and intersect with the plane.
-    std::vector<std::optional<vec3>> points;
+    std::vector<std::optional<dvec3>> points;
     points.reserve(12);
 
-    points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
-    points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f)));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 0.0, 0.0}, dvec3{1.0, 0.0, 0.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 0.0, 0.0}, dvec3{1.0, 1.0, 0.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 1.0, 0.0}, dvec3{0.0, 1.0, 0.0}));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 1.0, 0.0}, dvec3{0.0, 0.0, 0.0}));
 
-    points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 1.0f)));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 0.0, 0.0}, dvec3{0.0, 0.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 0.0, 0.0}, dvec3{1.0, 0.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 1.0, 0.0}, dvec3{1.0, 1.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 1.0, 0.0}, dvec3{0.0, 1.0, 1.0}));
 
-    points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 1.0f), vec3(0.0f, 1.0f, 1.0f)));
-    points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f)));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 0.0, 1.0}, dvec3{1.0, 0.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 0.0, 1.0}, dvec3{1.0, 1.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{1.0, 1.0, 1.0}, dvec3{0.0, 1.0, 1.0}));
+    points.emplace_back(plane.getIntersection(dvec3{0.0, 1.0, 1.0}, dvec3{0.0, 0.0, 1.0}));
 
     // Calculate the aspect of the intersected plane in world space.
-    vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
-    vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
+    dvec2 xrange(std::numeric_limits<double>::max(), std::numeric_limits<double>::min());
+    dvec2 yrange(std::numeric_limits<double>::max(), std::numeric_limits<double>::min());
+    const auto m = boxrotation * texToWorld;
     for (auto& point : points) {
         if (point) {
-            vec4 corner = vec4(*point, 1.0f);
-            corner = boxrotation * texToWorld * corner;
+            const auto corner = util::transformPos(m, *point);
 
             xrange[0] = std::min(xrange[0], corner.x);
             xrange[1] = std::max(xrange[1], corner.x);
@@ -441,26 +424,26 @@ void VolumeSliceGL::planeSettingsChanged() {
             yrange[1] = std::max(yrange[1], corner.y);
         }
     }
-    const float sourceRatio = glm::abs((xrange[1] - xrange[0]) / (yrange[1] - yrange[0]));
+    const double sourceRatio = glm::abs((xrange[1] - xrange[0]) / (yrange[1] - yrange[0]));
 
     // Goal: define a transformation that maps the view 2D texture coordinates into
     // 3D texture coordinates at at some plane in the volume.
-    const mat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
-    const mat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
+    const dmat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
+    const dmat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
 
-    const vec2 targetDim(outport_.getDimensions());
-    const float targetRatio = targetDim.x / targetDim.y;
+    const dvec2 targetDim(outport_.getDimensions());
+    const double targetRatio = targetDim.x / targetDim.y;
 
-    const vec3 scaleSource(imageScale_ / (sourceRatio > 1.0f ? 1.0f : sourceRatio),
-                           imageScale_ * (sourceRatio > 1.0f ? sourceRatio : 1.0f), 1.0f);
+    const dvec3 scaleSource(imageScale_ / (sourceRatio > 1.0 ? 1.0 : sourceRatio),
+                            imageScale_ * (sourceRatio > 1.0 ? sourceRatio : 1.0), 1.0);
 
-    const vec3 scaleTarget(1.0f * (targetRatio < 1.0f ? 1.0f : targetRatio),
-                           1.0f / (targetRatio < 1.0f ? targetRatio : 1.0f), 1.0f);
+    const dvec3 scaleTarget(1.0 * (targetRatio < 1.0 ? 1.0 : targetRatio),
+                            1.0 / (targetRatio < 1.0 ? targetRatio : 1.0), 1.0);
 
-    mat4 rotation(
-        glm::translate(vec3(0.5f)) * glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
-        glm::scale(scaleSource) * glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
-        glm::scale(scaleTarget) * glm::translate(vec3(-0.5f)));
+    dmat4 rotation(
+        glm::translate(dvec3(0.5)) * glm::toMat4(glm::rotation(dvec3(0.0, 0.0, 1.0), normal)) *
+        glm::scale(scaleSource) * glm::rotate(imageRotation_.get(), dvec3(0.0, 0.0, 1.0)) *
+        glm::scale(scaleTarget) * glm::translate(dvec3(-0.5)));
 
     if (flipHorizontal_) rotation *= flipMatX;
     if (flipVertical_) rotation *= flipMatY;
@@ -480,9 +463,8 @@ void VolumeSliceGL::process() {
             modeChange();
         }
         if (texToWorld_ !=
-            mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix())) {
-            texToWorld_ =
-                mat4(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+            inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
+            texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
             planeSettingsChanged();
         }
     }
@@ -513,7 +495,7 @@ void VolumeSliceGL::process() {
     }
 
     utilgl::setUniforms(shader_, channel_, tfAlphaOffset_, fillColor_);
-    shader_.setUniform("sliceRotation", sliceRotation_);
+    shader_.setUniform("sliceRotation", mat4{sliceRotation_});
     shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
     shader_.setUniform("dataToClip", mat4(1.0f));
 
@@ -645,44 +627,44 @@ void VolumeSliceGL::shiftSlice(int shift) {
         }
         default:
         case 3:  {
-            vec3 newPos = planePosition_.get() +
-                          static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
-            newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+            dvec3 newPos = planePosition_.get() +
+                           static_cast<float>(shift) / 100.0 * glm::normalize(planeNormal_.get());
+            newPos = glm::clamp(newPos, dvec3(0.0), dvec3(1.0));
             planePosition_.set(newPos);
             break;
         }
     }
 }
 
-void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
+void VolumeSliceGL::setVolPosFromScreenPos(dvec2 pos) {
     if (!posPicking_.get()) return;  // position mode not enabled
 
-    const vec3 planePos = convertScreenPosToVolume(pos);
+    const auto planePos = convertScreenPosToVolume(pos);
 
     invalidateMesh();
-    planePosition_.set(vec3(planePos));
+    planePosition_.set(planePos);
 }
 
-vec2 VolumeSliceGL::getScreenPosFromVolPos() {
-    const vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
-    return pos;
+dvec2 VolumeSliceGL::getScreenPosFromVolPos() {
+    return dvec2{util::transformPos(inverseSliceRotation_, planePosition_.get())};
 }
 
-vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) const {
-    vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
-                    glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
+dvec3 VolumeSliceGL::convertScreenPosToVolume(const dvec2& screenPos, bool clamp) const {
+    dvec2 pos{util::transformPos(
+        glm::translate(dvec3(0.5, 0.5, 0.0)) * glm::translate(dvec3(-0.5, -0.5, 0.0)),
+        dvec3{screenPos, 0.0})};
 
-    if (clamp && ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f))) {
-        pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
+    if (clamp && ((pos.x < 0.0) || (pos.x > 1.0) || (pos.y < 0.0) || (pos.y > 1.0))) {
+        pos = glm::clamp(pos, dvec2(0.0), dvec2(1.0));
     }
 
-    vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
+    dvec3 newpos = util::transformPos(inverseSliceRotation_, planePosition_.get());
     newpos.x = pos.x;
     newpos.y = pos.y;
-    newpos = sliceRotation_ * newpos;
+    newpos = util::transformPos(sliceRotation_, newpos);
 
     if (clamp) {
-        newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
+        newpos = glm::clamp(newpos, dvec3(0.0), dvec3(1.0));
     }
     return {newpos};
 }
@@ -717,14 +699,14 @@ void VolumeSliceGL::updateMaxSliceNumber() {
 }
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {
-    auto wheelEvent = static_cast<WheelEvent*>(event);
+    const auto* wheelEvent = static_cast<WheelEvent*>(event);
     const int steps = static_cast<int>(wheelEvent->delta().y);
     shiftSlice(steps);
     event->markAsUsed();
 }
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
-    auto mouseEvent = static_cast<MouseEvent*>(event);
+    const auto* mouseEvent = static_cast<MouseEvent*>(event);
     setVolPosFromScreenPos(vec2(mouseEvent->posNormalized()));
     event->markAsUsed();
 }
@@ -763,7 +745,7 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
     // if position indicator is active, update volume sample from indicator position instead of
     // mouse position (this is done in process())
     if (!posPicking_.get()) {
-        auto mouseEvent = static_cast<MouseEvent*>(event);
+        auto* mouseEvent = static_cast<MouseEvent*>(event);
 
         const auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
         // convert normalized volume position to voxel coords
@@ -780,7 +762,7 @@ void VolumeSliceGL::eventUpdateMousePos(Event* event) {
             volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
         } else {
             // sample input volume at given index position
-            const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+            const auto* volumeRAM = volume->getRepresentation<VolumeRAM>();
             normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
             volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
         }
