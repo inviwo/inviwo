@@ -379,7 +379,8 @@ public:
 
     TypedMesh(TypedMesh&& rhs) : TypedMesh(static_cast<const TypedMesh&>(rhs)) {}
     TypedMesh& operator=(TypedMesh&& that) {
-        return operator=(static_cast<const TypedMesh&>(that));
+        operator=(static_cast<const TypedMesh&>(that));
+        return *this;
     }
     virtual ~TypedMesh() = default;
 

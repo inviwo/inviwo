@@ -42,6 +42,7 @@ namespace inviwo {
 PickingEvent::PickingEvent(const PickingAction* pickingAction, InteractionEvent* event,
                            PickingState state, PickingPressState pressState,
                            PickingPressItem pressItem, PickingHoverState hoverState,
+                           // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                            PickingPressItems pressedState, size_t pickedGlobalId,
                            size_t currentGlobalId, size_t pressedGlobalId, size_t previousGlobalId,
                            dvec3 pressedNDC, dvec3 previousNDC)
@@ -160,6 +161,7 @@ dvec2 PickingEvent::getPosition() const {
                 return static_cast<GestureEvent*>(event_)->screenPosNormalized();
             case TouchEvent::chash():
                 return static_cast<TouchEvent*>(event_)->centerPointNormalized();
+            default: break;
         }
     }
     return dvec2(0.0f);
@@ -172,6 +174,7 @@ double PickingEvent::getDepth() const {
             case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->depth();
             case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->depth();
             case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->averageDepth();
+            default:                    break;
         }
     }
     return 1.0f;
@@ -184,6 +187,7 @@ uvec2 PickingEvent::getCanvasSize() const {
             case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->canvasSize();
             case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->canvasSize();
             case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->canvasSize();
+            default:                    break;
         }
     }
     return uvec2(0);
@@ -216,6 +220,7 @@ dvec3 PickingEvent::getNDC() const {
             case WheelEvent::chash():   return static_cast<WheelEvent*>(event_)->ndc();
             case GestureEvent::chash(): return static_cast<GestureEvent*>(event_)->ndc();
             case TouchEvent::chash():   return static_cast<TouchEvent*>(event_)->centerNDC();
+            default:                    break;
         }
     }
     return dvec3(0.0f);

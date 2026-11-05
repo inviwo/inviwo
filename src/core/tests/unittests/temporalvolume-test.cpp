@@ -81,6 +81,7 @@ TEST(TemporalVolumeTest, Metadata) {
     EXPECT_FALSE(tv.empty());
     EXPECT_EQ(tv.numCached(), 0u);
     EXPECT_TRUE(tv.prototype().dimensions.has_value());
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access) checked above
     EXPECT_EQ(tv.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 

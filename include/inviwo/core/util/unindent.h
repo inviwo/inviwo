@@ -59,7 +59,8 @@ namespace indent {
  * lines have less indentation a runtime_error will thrown.
  */
 template <bool ThrowOnError, typename It, typename Func>
-// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the action is called repeatedly
+// The action is called repeatedly
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward,readability-function-cognitive-complexity)
 constexpr void withoutIndent(It begin, It end, Func&& action) {
     if (begin == end) return;
 

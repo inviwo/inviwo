@@ -175,7 +175,8 @@ public:
     LayerRAMPrecision(LayerRAMPrecision<T>&& rhs)
         : LayerRAMPrecision(static_cast<const LayerRAMPrecision<T>&>(rhs)) {}
     LayerRAMPrecision<T>& operator=(LayerRAMPrecision<T>&& that) {
-        return operator=(static_cast<const LayerRAMPrecision<T>&>(that));
+        operator=(static_cast<const LayerRAMPrecision<T>&>(that));
+        return *this;
     }
     virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision();
@@ -332,7 +333,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
 
         const auto dim = that.dimensions_;
-        auto data = std::make_unique<T[]>(glm::compMul(dimensions_));
+        auto data = std::make_unique<T[]>(glm::compMul(dim));
         std::copy(that.getView().begin(), that.getView().end(), data.get());
         data_.swap(data);
 
@@ -533,6 +534,7 @@ size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+// NOLINTBEGIN(cppcoreguidelines-rvalue-reference-param-not-moved)
 auto LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
     return dispatching::singleDispatch<Result, Predicate>(
         getDataFormatId(),
@@ -550,6 +552,7 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
         },
         std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
+// NOLINTEND(cppcoreguidelines-rvalue-reference-param-not-moved)
 
 class IVW_CORE_API LayerRamResizer {
 public:

@@ -43,6 +43,7 @@ LogStream::LogStream(std::ostream& stream, std::string source, LogLevel level, L
     , orgBuffer_{stream_.rdbuf(this)} {}
 
 LogStream::~LogStream() {
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     sync();
     stream_.rdbuf(orgBuffer_);
 }

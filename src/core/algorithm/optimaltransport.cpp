@@ -392,6 +392,7 @@ void appendZeroAlphaBoundary(std::vector<TFPrimitiveData>& result,
 // Public API
 // ===========================================================================
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPrimitiveData> tfA,
                                                            std::span<const TFPrimitiveData> tfB,
                                                            double t,

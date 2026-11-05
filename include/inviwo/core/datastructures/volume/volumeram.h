@@ -193,7 +193,8 @@ public:
     VolumeRAMPrecision(VolumeRAMPrecision<T>&& rhs)
         : VolumeRAMPrecision(static_cast<const VolumeRAMPrecision<T>&>(rhs)) {}
     VolumeRAMPrecision<T>& operator=(VolumeRAMPrecision<T>&& that) {
-        return operator=(static_cast<const VolumeRAMPrecision<T>&>(that));
+        operator=(static_cast<const VolumeRAMPrecision<T>&>(that));
+        return *this;
     }
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
@@ -614,6 +615,7 @@ void VolumeRAMPrecision<T>::setFromNormalizedDVec4(const size3_t& pos, dvec4 val
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+// NOLINTBEGIN(cppcoreguidelines-rvalue-reference-param-not-moved)
 auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
     return dispatching::singleDispatch<Result, Predicate>(
         getDataFormatId(),
@@ -633,5 +635,6 @@ auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
         },
         std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
+// NOLINTEND(cppcoreguidelines-rvalue-reference-param-not-moved)
 
 }  // namespace inviwo

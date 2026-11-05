@@ -68,6 +68,7 @@ public:
         , sharedImage_(nullptr) {}
 
     explicit ImageSampler(std::shared_ptr<const Layer> layer) : ImageSampler(layer.get()) {
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
         sharedLayer_ = std::move(layer);
     }
 
@@ -85,6 +86,7 @@ public:
      */
     explicit ImageSampler(std::shared_ptr<const Image> sharedImage)
         : ImageSampler(sharedImage->getColorLayer()) {
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
         sharedImage_ = std::move(sharedImage);
     }
 
@@ -225,6 +227,7 @@ template <typename ReturnType, typename DataType>
 TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(
     std::shared_ptr<const Image> sharedImage)
     : TemplateImageSampler(sharedImage->getColorLayer()) {
+    // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
     sharedImage_ = std::move(sharedImage);
 }
 

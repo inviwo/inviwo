@@ -221,6 +221,8 @@ template <typename T>
 const T& filter(const T& val)
     requires fmt::is_formattable<T>::value
 {
+    // Only used for immediate formatting
+    // NOLINTNEXTLINE(bugprone-return-const-ref-from-parameter)
     return val;
 }
 

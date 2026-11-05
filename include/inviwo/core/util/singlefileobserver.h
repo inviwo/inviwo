@@ -76,7 +76,6 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
-public:
     virtual void fileChanged(const std::filesystem::path& filename);
 
 private:

@@ -314,9 +314,9 @@ void test() {
     // NOLINTNEXTLINE(misc-const-correctness)
     auto v = m[0];
 
-    EXPECT_TRUE((std::is_same<Vector<ROWS, int>, decltype(v)>::value));
-    EXPECT_TRUE((std::is_same<Vector<ROWS, int>, typename M::col_type>::value));
-    EXPECT_TRUE((std::is_same<Vector<COLS, int>, typename M::row_type>::value));
+    EXPECT_TRUE((std::is_same_v<Vector<ROWS, int>, decltype(v)>));
+    EXPECT_TRUE((std::is_same_v<Vector<ROWS, int>, typename M::col_type>));
+    EXPECT_TRUE((std::is_same_v<Vector<COLS, int>, typename M::row_type>));
 }
 
 }  // namespace

@@ -423,6 +423,7 @@ TEST(NetworkEvaluator, PropertyLink) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(NetworkEvaluator, UpwardsPropertyLink) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     const ProcessorNetworkEvaluator evaluator{&network};

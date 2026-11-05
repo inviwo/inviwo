@@ -210,7 +210,7 @@ std::string stripIdentifier(std::string_view identifier) {
             break;
         }
         if (std::isdigit(c)) {  // prepend an underscore if first char is a digit
-            stripped = "_" + stripped;
+            stripped.insert(0, "_");
             break;
         }
         stripped = stripped.substr(1);

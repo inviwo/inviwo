@@ -47,7 +47,10 @@ public:
     ImageRAM(const ImageRAM& rhs);
     ImageRAM& operator=(const ImageRAM& that);
     ImageRAM(ImageRAM&& rhs) : ImageRAM(static_cast<const ImageRAM&>(rhs)) {}
-    ImageRAM& operator=(ImageRAM&& that) { return operator=(static_cast<const ImageRAM&>(that)); }
+    ImageRAM& operator=(ImageRAM&& that) {
+        operator=(static_cast<const ImageRAM&>(that));
+        return *this;
+    }
     virtual ImageRAM* clone() const override;
     virtual ~ImageRAM();
 

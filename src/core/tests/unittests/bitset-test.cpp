@@ -48,7 +48,10 @@ namespace inviwo {
 namespace {
 
 std::vector<std::uint32_t> getIndices(const std::size_t count) {
+    // Deterministic on purpose
+    // NOLINTNEXTLINE(bugprone-random-generator-seed)
     std::mt19937 gen;
+    // NOLINTNEXTLINE(bugprone-random-generator-seed)
     gen.seed(1);
     std::uniform_int_distribution<std::uint32_t> distrib(0, 4096);
 
@@ -57,13 +60,16 @@ std::vector<std::uint32_t> getIndices(const std::size_t count) {
         indices.insert(distrib(gen));
     }
     std::vector<std::uint32_t> v(indices.begin(), indices.end());
-    std::shuffle(v.begin(), v.end(), std::default_random_engine());
+    std::shuffle(v.begin(), v.end(),
+                 std::default_random_engine());  // NOLINT(bugprone-random-generator-seed)
     return v;
 }
 
 }  // namespace
 
 TEST(bitset, constructors) {
+    // Only testing that construction compiles and does not throw
+    // NOLINTBEGIN(bugprone-unused-raii)
     BitSet();
     BitSet(5);
     BitSet(1, 2);
@@ -73,6 +79,7 @@ TEST(bitset, constructors) {
     BitSet{indices};
     BitSet(std::span<std::uint32_t>(indices));
     BitSet(indices.begin(), indices.end());
+    // NOLINTEND(bugprone-unused-raii)
 
     EXPECT_TRUE(true);
 }

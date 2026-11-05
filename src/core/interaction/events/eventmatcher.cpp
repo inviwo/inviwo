@@ -136,6 +136,7 @@ MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states,
 
 MouseEventMatcher* MouseEventMatcher::clone() const { return new MouseEventMatcher(*this); }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 bool MouseEventMatcher::operator()(Event* e) {
     if (const auto* me = e->getAs<MouseEvent>()) {
         if (me->state() == MouseState::Move) {

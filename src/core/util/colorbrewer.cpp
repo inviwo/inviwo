@@ -133,6 +133,7 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category& category,
     return v;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TransferFunction getTransferFunction(const Category& category, const Family& family,
                                      const size_t nColors, const bool discrete,
                                      const double midPoint, const double start, const double stop) {
@@ -183,6 +184,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
             if (midPoint < stop) {
                 const auto dt = (stop - midPoint) / (0.5 * static_cast<double>(nColors - 1));
                 for (size_t i = nColors / 2 + 1; i < nColors; i++) {
+                    // NOLINTNEXTLINE(bugprone-integer-division) the integer midpoint is intended
                     addPoint(midPoint + static_cast<double>(i - nColors / 2) * dt, i);
                 }
             }

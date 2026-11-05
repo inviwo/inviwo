@@ -85,14 +85,14 @@ auto exit = [](std::string state) {
 };
 */
 
-auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
-auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
+const auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
+const auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
 
 struct fsmState {
     int count = 0;
 };
 
-auto moveAction = [](move e, fsmState& s) {
+const auto moveAction = [](move e, fsmState& s) {
     s.count += e.dir;
     // std::cout << "Move   " << e.dir << std::endl;
 };
@@ -218,8 +218,11 @@ MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos
     return MouseEvent{mb, ms, mbs, KeyModifiers(flags::empty), dvec2{pos} / dvec2{cdim}, cdim, 0.5};
 }
 
+// The event stores a pointer to the device, so the default must outlive the call
+const TouchDevice defaultTouchDevice{TouchDevice::DeviceType::TouchPad};
+
 TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
-                      TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
+                      const TouchDevice& touchDevice = defaultTouchDevice) {
     const auto prevPosNorm = dvec2{pos} / dvec2{cdim};
     const auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
     const double pressure = 0.5;
@@ -228,6 +231,7 @@ TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
                       &touchDevice, KeyModifiers(flags::empty));
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
                       PickingPressState pressState, PickingPressItem pressItem,
                       PickingPressItems pressedState, size_t pickedGlobalId, size_t currentGlobalId,

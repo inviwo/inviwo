@@ -65,8 +65,11 @@ THE SOFTWARE.
 #include <stdexcept>
 #include <cmath>
 
+#include <fmt/format.h>
+
 namespace inviwo::shuntingyard {
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TokenQueue Calculator::toRPN(const std::string& expression,
                              std::map<std::string, int> opPrecedence) {
     TokenQueue rpnQueue;
@@ -82,7 +85,7 @@ TokenQueue Calculator::toRPN(const std::string& expression,
     while (!expr.eof()) {
         if (isdigit(expr.peek())) {
             // If the token is a number, add it to the output queue.
-            double digit;
+            double digit = 0.0;
             expr >> digit;
             rpnQueue.push(std::make_unique<Token<double>>(digit));
             lastTokenWasOp = false;
@@ -239,15 +242,15 @@ std::string Calculator::shaderCode(const std::string& expression,
                 const std::string left = evaluation.top();
                 evaluation.pop();
                 if (str == "+") {
-                    evaluation.push("(" + left + " + " + right + ")");
+                    evaluation.push(fmt::format("({} + {})", left, right));
                 } else if (str == "*") {
-                    evaluation.push("(" + left + " * " + right + ")");
+                    evaluation.push(fmt::format("({} * {})", left, right));
                 } else if (str == "-") {
-                    evaluation.push("(" + left + " - " + right + ")");
+                    evaluation.push(fmt::format("({} - {})", left, right));
                 } else if (str == "/") {
-                    evaluation.push("(" + left + " / " + right + ")");
+                    evaluation.push(fmt::format("({} / {})", left, right));
                 } else if (str == "^") {
-                    evaluation.push("pow(" + left + ", " + right + ")");
+                    evaluation.push(fmt::format("pow({}, {})", left, right));
                 } else {
                     throw Exception(SourceContext{}, "Unknown operator: '{}'", str);
                 }

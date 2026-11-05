@@ -290,7 +290,6 @@ public:
     void beginBulkUpdate();
     void endBulkUpdate();
 
-public:
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 
 protected:

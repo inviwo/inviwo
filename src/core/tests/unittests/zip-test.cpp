@@ -90,14 +90,11 @@ struct S {
     S& operator=(S&&) = delete;
     ~S() = default;
 
-    friend constexpr bool operator==(const S& a, const S& b) noexcept { return a.a_ == b.a_; }
-
     constexpr int get() const noexcept { return a_; }
 
     constexpr explicit S(int a) noexcept : a_{a} {}
     int a_ = 0;
 };
-::std::ostream& operator<<(::std::ostream& os, const S& s) { return os << "S(" << s.a_ << ")"; }
 
 // default type
 struct D {
@@ -127,6 +124,7 @@ namespace inviwo {
 namespace {
 
 template <typename Zipped>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void forwadTest(Zipped& iter) {
     using Iter = std::decay_t<decltype(iter)>::iterator;
     using util::detailzip::proxy;
@@ -186,6 +184,7 @@ void forwadTest(Zipped& iter) {
 }
 
 template <typename Zipped>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void bidirectionalTest(Zipped& iter) {
     using util::detailzip::proxy;
     {
@@ -240,6 +239,7 @@ void bidirectionalTest(Zipped& iter) {
 }
 
 template <typename Zipped>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void randomAccessTest(Zipped& iter) {
     using util::detailzip::proxy;
     using Iter = std::decay_t<decltype(iter)>::iterator;

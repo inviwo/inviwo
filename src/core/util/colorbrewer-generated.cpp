@@ -37,6 +37,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 
 namespace inviwo::colorbrewer {
 
+// NOLINTNEXTLINE(google-readability-function-size,readability-function-size) generated table
 const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
             // clang-format off

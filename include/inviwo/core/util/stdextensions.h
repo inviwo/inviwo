@@ -71,6 +71,7 @@ std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>
 
 template <typename Derived, typename Base>
 std::unique_ptr<Derived> dynamic_unique_ptr_cast(
+    // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
     std::unique_ptr<Base, std::default_delete<Base>>&& p) {
     if (auto* result = dynamic_cast<Derived*>(p.get())) {
         p.release();
@@ -474,6 +475,8 @@ struct HashValueImpl<Tuple, 0> {
 
 namespace std {
 
+// NOLINTBEGIN(bugprone-std-namespace-modification)
+
 template <typename T, typename U>
 struct hash<std::pair<T, U>> {
     size_t operator()(const std::pair<T, U>& p) const {
@@ -503,5 +506,7 @@ ForwardIt rotateRetval(ForwardIt first, ForwardIt n_first, ForwardIt last) {
     return std::rotate(first, n_first, last);
 #endif
 }
+
+// NOLINTEND(bugprone-std-namespace-modification)
 
 }  // namespace std

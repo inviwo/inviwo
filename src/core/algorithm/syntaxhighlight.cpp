@@ -159,6 +159,7 @@ struct Token {
     TokenKind kind;
 };
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 std::vector<Token> tokenize(std::string_view code, Language lang) {
     std::vector<Token> tokens;
     const size_t n = code.size();

@@ -201,6 +201,7 @@ void FilePatternProperty::setSelectedExtension(const FileExtension& ext) {
     pattern_.setSelectedExtension(ext);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void FilePatternProperty::updateFileList() {
     files_.clear();
     outOfRangeMatches_ = false;
@@ -218,7 +219,7 @@ void FilePatternProperty::updateFileList() {
             auto fileList = filesystem::getDirectoryContents(filePath);
 
             // apply pattern
-            const bool hasDigits = (strPattern.contains('#'));
+            const bool hasDigits = strPattern.contains('#');
             const bool hasWildcard =
                 hasDigits || (strPattern.find_first_of("*?", 0) != std::string::npos);
 
@@ -264,7 +265,7 @@ void FilePatternProperty::updateFileList() {
                         // remove file names at the begin
                         fileList.erase(
                             fileList.begin(),
-                            fileList.begin() + static_cast<std::ptrdiff_t>(indexRange.y + 1));
+                            fileList.begin() + static_cast<std::ptrdiff_t>(indexRange.y) + 1);
                     }
                 }
                 for (const auto& file : fileList) {

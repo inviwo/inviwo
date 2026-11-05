@@ -241,6 +241,7 @@ void PropertyPresetManager::saveWorkspacePresets(Serializer& s) {
 
 PropertyPresetManager::Preset::Preset() = default;
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 PropertyPresetManager::Preset::Preset(std::string_view id, std::string_view n, std::string_view d)
     : classIdentifier(id), name(n), data(d) {}
 

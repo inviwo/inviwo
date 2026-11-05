@@ -83,6 +83,8 @@ namespace inviwo::util {
  * @endcode
  */
 template <typename Iter>
+// im_ is only used when constructed with dims
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 class BrickIterator {
 public:
     using base_category = std::iterator_traits<Iter>::iterator_category;
@@ -103,6 +105,7 @@ public:
      * @param offset    starting position of the brick
      * @param extent    extent of the brick, i.e. the region the iterator should iterate over
      */
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     BrickIterator(Iter iterator, size3_t dims, size3_t offset, size3_t extent)
         : current_{0, 0, 0}, start_{offset}, extent_{extent}, im_{dims}, iterator_{iterator} {
 

@@ -305,6 +305,7 @@ Document MultiFileProperty::getDescription() const {
             tb(H("Directories"), buff.view());
             break;
         }
+        default: break;
     }
 
     tb(H("Selected Extension"), selectedExtension_.value);

@@ -57,8 +57,10 @@ bool isHistogramUniform(const Histogram1D& histogram) {
 
 class Histogram1DTest : public ::testing::Test {
 public:
+    // NOLINTNEXTLINE(bugprone-random-generator-seed) deterministic on purpose
     Histogram1DTest() : rand_{} {}
 
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     std::vector<Histogram1D> createHistogram(double minValue, double maxValue, size_t numValues,
                                              size_t binCount) {
         std::vector<double> data(numValues);

@@ -353,6 +353,7 @@ Document help::toDocument(const HelpProperty& property, std::string_view path) {
     return doc;
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 Document help::toDocument(const HelpProcessor& processor) {
     const auto spaced = [](auto str) { return fmt::format(" {}", str); };
 

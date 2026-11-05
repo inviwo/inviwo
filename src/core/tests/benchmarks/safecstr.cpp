@@ -39,7 +39,9 @@
 
 namespace {
 
-std::string_view view =
+// NOLINTBEGIN(clang-analyzer-deadcode.DeadStores,bugprone-suspicious-stringview-data-usage,cppcoreguidelines-pro-type-member-init)
+
+constexpr std::string_view view =
     "01234567890123456789012345678901234567890123456789"
     "01234567890123456789012345678901234567890123456789"
     "01234567890123456789012345678901234567890123456789"
@@ -141,6 +143,8 @@ void SafeCStr2_56(benchmark::State& state) {
         benchmark::DoNotOptimize(ptr);
     }
 }
+
+// NOLINTEND(clang-analyzer-deadcode.DeadStores,bugprone-suspicious-stringview-data-usage,cppcoreguidelines-pro-type-member-init)
 
 }  // namespace
 

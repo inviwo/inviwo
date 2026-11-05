@@ -191,10 +191,12 @@ inline void report(LogLevel level, std::string_view message,
 
 namespace detail {
 inline void report(LogLevel level, SourceContext context, fmt::string_view format,
+                   // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
                    fmt::format_args&& args) {
     ::inviwo::log::report(level, context, fmt::vformat(format, args));
 }
 inline void report(Logger& logger, LogLevel level, SourceContext context, fmt::string_view format,
+                   // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
                    fmt::format_args&& args) {
     ::inviwo::log::report(logger, level, context, fmt::vformat(format, args));
 }

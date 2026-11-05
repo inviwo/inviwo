@@ -69,6 +69,7 @@ using VolumeDoubleSampler = VolumeSampler<util::glmtype_t<double, N>>;
 template <typename ReturnType>
 VolumeSampler<ReturnType>::VolumeSampler(std::shared_ptr<const Volume> vol, CoordinateSpace space)
     : VolumeSampler(*vol, space) {
+    // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
     volume_ = std::move(vol);
 }
 

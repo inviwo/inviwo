@@ -651,10 +651,12 @@ void ProcessorNetworkConverter::updatePropertyEditorMetadata(TxElement* parent) 
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
 
     std::unordered_map<std::string, std::string> refrencemap;
 
+    // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     const auto fixcamera = [&](TxElement* node) {
         const auto& key = node->Value();
 
@@ -746,6 +748,7 @@ void ProcessorNetworkConverter::updateCameraPropertyToRefs(TxElement* root) {
     visit(root, fixrefs);
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void ProcessorNetworkConverter::updateLinkAndConnections(TxElement* root) {
     const auto visit = [](TxElement* node, std::string_view name, auto&& func) {
         auto impl = [](TxElement* node, std::string_view name, auto&& func, auto& impl) -> void {

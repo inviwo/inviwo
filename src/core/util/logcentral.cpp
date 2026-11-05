@@ -213,12 +213,12 @@ void log::detail::logDirectly(LogLevel level, SourceContext context, std::string
 }
 
 log::SuppressLoggingLocal::SuppressLoggingLocal(LogVerbosity verbosity, LogCentral* lc)
-    : lc_{lc}, old_{lc ? lc->getLocalVerbosity() : LogVerbosity::Info} {
-    if (lc_) lc_->setLocalVerbosity(verbosity);
+    : lc_{lc}, old_{lc ? LogCentral::getLocalVerbosity() : LogVerbosity::Info} {
+    if (lc_) LogCentral::setLocalVerbosity(verbosity);
 }
 
 log::SuppressLoggingLocal::~SuppressLoggingLocal() {
-    if (lc_) lc_->setLocalVerbosity(old_);
+    if (lc_) LogCentral::setLocalVerbosity(old_);
 }
 
 }  // namespace inviwo

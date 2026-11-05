@@ -30,11 +30,13 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/chronoutils.h>
 
 #include <algorithm>
+#include <limits>
 #include <random>
 #include <iomanip>
 #include <clocale>
@@ -70,20 +72,18 @@ std::wstring toWstring(std::string_view str) {
     auto state = std::mbstate_t();
     const SafeCStr safestr{str};
     const auto* sptr = safestr.c_str();
-    const char* loc = nullptr;
-    size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
-    if (len == static_cast<std::size_t>(-1)) {
-        loc = std::setlocale(LC_CTYPE, nullptr);
-        std::setlocale(LC_CTYPE, "en_US.UTF-8");
-        len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
-        if (len == static_cast<std::size_t>(-1)) {
-            if (loc) std::setlocale(LC_CTYPE, loc);
-            throw Exception("Invalid unicode sequence");
-        }
+    std::string loc;
+    if (const char* cur = std::setlocale(LC_CTYPE, nullptr)) loc = cur;
+    std::setlocale(LC_CTYPE, "en_US.UTF-8");
+    const util::OnScopeExit restoreLocale{[&loc]() {
+        if (!loc.empty()) std::setlocale(LC_CTYPE, loc.c_str());
+    }};
+    const size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
+    if (len == std::numeric_limits<std::size_t>::max()) {
+        throw Exception("Invalid unicode sequence");
     }
     std::wstring result(len, 0);
     std::mbsrtowcs(result.data(), &sptr, result.size(), &state);
-    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
@@ -111,20 +111,18 @@ std::string fromWstring(std::wstring_view str) {
     auto state = std::mbstate_t();
     std::wstring safestr(str);
     const wchar_t* sptr = safestr.data();
-    const char* loc = nullptr;
-    size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
-    if (len == static_cast<std::size_t>(-1)) {
-        loc = std::setlocale(LC_CTYPE, nullptr);
-        std::setlocale(LC_CTYPE, "en_US.UTF-8");
-        len = std::wcsrtombs(nullptr, &sptr, 0, &state);
-        if (len == static_cast<std::size_t>(-1)) {
-            if (loc) std::setlocale(LC_CTYPE, loc);
-            throw Exception("Invalid unicode sequence");
-        }
+    std::string loc;
+    if (const char* cur = std::setlocale(LC_CTYPE, nullptr)) loc = cur;
+    std::setlocale(LC_CTYPE, "en_US.UTF-8");
+    const util::OnScopeExit restoreLocale{[&loc]() {
+        if (!loc.empty()) std::setlocale(LC_CTYPE, loc.c_str());
+    }};
+    const size_t len = std::wcsrtombs(nullptr, &sptr, 0, &state);
+    if (len == std::numeric_limits<std::size_t>::max()) {
+        throw Exception("Invalid unicode sequence");
     }
     std::string result(len, 0);
     std::wcsrtombs(result.data(), &sptr, result.size(), &state);
-    if (loc) std::setlocale(LC_CTYPE, loc);
     return result;
 #endif
 }
@@ -244,7 +242,7 @@ void util::urlEncodeTo(std::string_view text, StrBuffer& strBuffer) {
                                           '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     for (const auto c : text) {
-        if (urlEscapeMap[static_cast<unsigned>(c)]) {
+        if (urlEscapeMap[static_cast<unsigned char>(c)]) {
             strBuffer.buff.push_back('%');
             strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 4U) & 0xfU]);
             strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 0U) & 0xfU]);

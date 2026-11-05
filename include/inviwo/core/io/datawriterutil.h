@@ -87,6 +87,7 @@ std::optional<std::filesystem::path> saveData(const T& data, const std::filesyst
             writer->setOverwrite(overwrite);
             const auto file = path / fmt::format("{}.{}", name, extension.extension);
             writer->writeData(&data, file);
+            // NOLINTNEXTLINE(performance-no-automatic-move)
             return file;
         }
     }

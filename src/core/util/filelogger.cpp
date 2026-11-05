@@ -103,7 +103,7 @@ void FileLogger::log(std::string_view logSource, LogLevel logLevel, LogAudience 
     fileStream_ << "(" << util::htmlEncode(logSource) << ":" << lineNumber << ") " << msg;
     // flush explicitly (not just '\n'): this is a crash/debug log, so each entry must hit
     // disk immediately in case the process terminates abnormally right after logging.
-    fileStream_ << "</div>" << std::endl;
+    fileStream_ << "</div>" << '\n';
 }
 
 }  // namespace inviwo

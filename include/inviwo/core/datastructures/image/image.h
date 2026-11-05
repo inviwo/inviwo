@@ -94,7 +94,10 @@ public:
     Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat = nullptr);
     Image& operator=(const Image& that);
     Image(Image&& rhs) : Image(static_cast<const Image&>(rhs)) {}
-    Image& operator=(Image&& that) { return operator=(static_cast<const Image&>(that)); }
+    Image& operator=(Image&& that) {
+        operator=(static_cast<const Image&>(that));
+        return *this;
+    }
     virtual Image* clone() const;
     virtual ~Image() = default;
     virtual Document getInfo() const;

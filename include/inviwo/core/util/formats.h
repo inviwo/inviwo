@@ -113,10 +113,13 @@ namespace util {
 
 template <typename T>
 constexpr NumericType getNumericType() {
-    return (
-        util::is_floating_point<T>::value
-            ? NumericType::Float
-            : (std::is_signed_v<T> ? NumericType::SignedInteger : NumericType::UnsignedInteger));
+    if constexpr (util::is_floating_point<T>::value) {
+        return NumericType::Float;
+    } else if constexpr (std::is_signed_v<T>) {
+        return NumericType::SignedInteger;
+    } else {
+        return NumericType::UnsignedInteger;
+    }
 }
 
 /**

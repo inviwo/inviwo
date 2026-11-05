@@ -191,6 +191,7 @@ std::function<bool(std::string_view)> ModuleManager::getEnabledFilter() {
     return [enabledModules](std::string_view name) { return util::contains(enabledModules, name); };
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void ModuleManager::reloadModules() {
     if (!isRuntimeModuleReloadingEnabled()) return;
 
@@ -345,8 +346,8 @@ void ModuleManager::registerModules(RuntimeModuleLoading,
     // Find unique files and directories in specified search paths
     auto librarySearchPaths = util::getLibrarySearchPaths();
 
-    auto modules = findRuntimeModules(librarySearchPaths, std::move(isEnabled),
-                                      isRuntimeModuleReloadingEnabled());
+    auto modules =
+        findRuntimeModules(librarySearchPaths, isEnabled, isRuntimeModuleReloadingEnabled());
 
     registerModules(std::move(modules), progressCallback);
 }
@@ -446,6 +447,7 @@ std::vector<std::string> ModuleManager::findDependentModules(
     for (const auto& item : modules) {
         if (item.dependsOn(moduleId)) {
             auto deps = findDependentModules(modules, item.identifier());
+            // NOLINTNEXTLINE(readability-suspicious-call-argument)
             util::append(dependencies, deps);
             dependencies.push_back(item.identifier());
         }

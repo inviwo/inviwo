@@ -36,6 +36,7 @@
 
 namespace inviwo {
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 TouchPoint::TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
                        dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     : id_(id)
