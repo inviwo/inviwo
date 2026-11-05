@@ -37,6 +37,16 @@
 
 namespace inviwo {
 
+struct IVW_CORE_API Line {
+    dvec3 point{0.0f};
+    dvec3 direction{1.0f, 0.0f, 0.0f};
+
+    /**
+     * Project point @p p onto the line
+     */
+    dvec3 projectPoint(const dvec3& p) const;
+};
+
 class IVW_CORE_API Plane {
 public:
     constexpr Plane() = default;
@@ -67,6 +77,8 @@ public:
      * start and stop. The point would be start + retval * (stop -start)
      */
     std::optional<double> getIntersectionWeight(const dvec3& start, const dvec3& stop) const;
+
+    std::optional<dvec3> getIntersection(const Line& line) const;
 
     /**
      * Return signed distance from plane to point, i.e. dot(x - p, normal).
