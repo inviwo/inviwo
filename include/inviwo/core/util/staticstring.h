@@ -94,6 +94,7 @@ struct StaticString {
         str[N] = 0;
     }
     template <typename... Ts>
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the strings are only read
     constexpr StaticString(Ts&&... strs) {
         size_t offset = 0;
         (

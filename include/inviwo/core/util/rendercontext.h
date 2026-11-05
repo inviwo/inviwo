@@ -44,6 +44,11 @@ namespace inviwo {
  */
 class IVW_CORE_API ContextHolder {
 public:
+    ContextHolder() = default;
+    ContextHolder(const ContextHolder&) = default;
+    ContextHolder(ContextHolder&&) = default;
+    ContextHolder& operator=(const ContextHolder&) = default;
+    ContextHolder& operator=(ContextHolder&&) = default;
     virtual ~ContextHolder() = default;
     virtual void activate() = 0;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
@@ -68,6 +73,10 @@ public:
 class IVW_CORE_API RenderContext : public Singleton<RenderContext> {
 public:
     RenderContext() = default;
+    RenderContext(const RenderContext&) = delete;
+    RenderContext(RenderContext&&) = delete;
+    RenderContext& operator=(const RenderContext&) = delete;
+    RenderContext& operator=(RenderContext&&) = delete;
     virtual ~RenderContext() = default;
 
     ContextHolder* getDefaultRenderContext();

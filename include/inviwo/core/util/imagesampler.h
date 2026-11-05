@@ -88,6 +88,10 @@ public:
         sharedImage_ = std::move(sharedImage);
     }
 
+    ImageSampler(const ImageSampler&) = default;
+    ImageSampler(ImageSampler&&) = default;
+    ImageSampler& operator=(const ImageSampler&) = default;
+    ImageSampler& operator=(ImageSampler&&) = default;
     virtual ~ImageSampler() = default;
 
     using SpatialSampler<ReturnType>::sample;
@@ -164,6 +168,10 @@ public:
     explicit TemplateImageSampler(const Layer* layer);
     explicit TemplateImageSampler(const Image* img);
     explicit TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
+    TemplateImageSampler(const TemplateImageSampler&) = default;
+    TemplateImageSampler(TemplateImageSampler&&) = default;
+    TemplateImageSampler& operator=(const TemplateImageSampler&) = default;
+    TemplateImageSampler& operator=(TemplateImageSampler&&) = default;
     virtual ~TemplateImageSampler() = default;
 
     /**

@@ -42,6 +42,10 @@ namespace inviwo {
 class IVW_CORE_API StringLogger : public Logger {
 public:
     StringLogger() = default;
+    StringLogger(const StringLogger&) = default;
+    StringLogger(StringLogger&&) = default;
+    StringLogger& operator=(const StringLogger&) = default;
+    StringLogger& operator=(StringLogger&&) = default;
     virtual ~StringLogger() = default;
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

@@ -17,12 +17,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
     ivwpath = args.ivwpath
 
-    enum = "enum class Colormap {"
+    enum = "enum class Colormap : std::uint16_t {"
 
     cat = []
-    categories = "enum class Category { "
+    categories = "enum class Category : std::uint8_t { "
 
-    families = "enum class Family {"
+    families = "enum class Family : std::uint8_t {"
 
     familiesInCategory = dict()
     getFamiliesForCategoryImpl = ""
