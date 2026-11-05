@@ -82,6 +82,7 @@ std::unique_ptr<Derived> dynamic_unique_ptr_cast(
 namespace detail {
 
 template <typename Index, typename Functor, Index... Is>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the functor is called once per index
 constexpr auto make_array(Functor&& func, std::integer_sequence<Index, Is...>) noexcept
     -> std::array<decltype(func(std::declval<Index>())), sizeof...(Is)> {
     return {{func(Is)...}};

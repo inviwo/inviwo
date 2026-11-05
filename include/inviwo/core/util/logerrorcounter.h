@@ -42,6 +42,10 @@ namespace inviwo {
 class IVW_CORE_API LogErrorCounter : public Logger {
 public:
     LogErrorCounter();
+    LogErrorCounter(const LogErrorCounter&) = delete;
+    LogErrorCounter(LogErrorCounter&&) = delete;
+    LogErrorCounter& operator=(const LogErrorCounter&) = delete;
+    LogErrorCounter& operator=(LogErrorCounter&&) = delete;
     virtual ~LogErrorCounter();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

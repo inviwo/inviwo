@@ -125,7 +125,7 @@ class concat_view : public std::ranges::view_interface<concat_view<Rs...>> {
         void satisfyForward() {
             if constexpr (I < N) {
                 if (current_.index() == I) {
-                    auto& r = std::get<I>(parent_->ranges_);
+                    auto& r = std::get<I>(parent_->ranges_);  // NOLINT(misc-const-correctness)
                     if (std::get<I>(current_) == std::ranges::end(r)) {
                         if constexpr (I + 1 < N) {
                             current_.template emplace<I + 1>(

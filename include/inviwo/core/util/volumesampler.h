@@ -47,6 +47,9 @@ public:
                            CoordinateSpace space = CoordinateSpace::Data);
     explicit VolumeSampler(const Volume& vol, CoordinateSpace space = CoordinateSpace::Data);
     VolumeSampler& operator=(const VolumeSampler&) = default;
+    VolumeSampler(const VolumeSampler&) = default;
+    VolumeSampler(VolumeSampler&&) = default;
+    VolumeSampler& operator=(VolumeSampler&&) = default;
 
     virtual ~VolumeSampler() = default;
 

@@ -51,6 +51,10 @@ class GestureEvent;
 class IVW_CORE_API Canvas {
 public:
     Canvas();
+    Canvas(const Canvas&) = default;
+    Canvas(Canvas&&) = default;
+    Canvas& operator=(const Canvas&) = default;
+    Canvas& operator=(Canvas&&) = default;
     virtual ~Canvas() = default;
 
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,

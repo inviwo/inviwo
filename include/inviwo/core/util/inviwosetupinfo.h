@@ -57,6 +57,7 @@ struct IVW_CORE_API InviwoSetupInfo {
 
         ModuleSetupInfo& operator=(const ModuleSetupInfo&) = default;
         ModuleSetupInfo& operator=(ModuleSetupInfo&&) = default;
+        ~ModuleSetupInfo() = default;
 
         void serialize(Serializer& s) const;
         void deserialize(Deserializer& d);

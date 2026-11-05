@@ -31,12 +31,13 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <cstdint>
 #include <iosfwd>
 
 namespace inviwo {
 
-enum class AcceptMode { Open, Save };
-enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles };
+enum class AcceptMode : std::uint8_t { Open, Save };
+enum class FileMode : std::uint8_t { AnyFile, ExistingFile, Directory, ExistingFiles };
 
 IVW_CORE_API std::string_view enumToStr(AcceptMode mode);
 IVW_CORE_API std::string_view enumToStr(FileMode mode);
