@@ -34,7 +34,7 @@ namespace inviwo {
 
 VolumeReprConfig VolumeRepresentation::config() const {
     return {.dimensions = getDimensions(),
-            .format = getDataFormat(),
+            .formatId = getDataFormatId(),
             .swizzleMask = getSwizzleMask(),
             .interpolation = getInterpolation(),
             .wrapping = getWrapping()};

@@ -69,7 +69,7 @@ const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
 const ProcessorInfo& VolumeGradientMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
-    : VolumeGLProcessor{"volumegradientmagnitude.frag", VolumeConfig{.format = DataFloat32::get()}}
+    : VolumeGLProcessor{"volumegradientmagnitude.frag", VolumeConfig{.formatId = DataFormatId::Float32}}
     , channel_{"channel", "Channel",
                OptionPropertyState<int>{
                    .options = util::enumeratedOptions("Channel", 4),

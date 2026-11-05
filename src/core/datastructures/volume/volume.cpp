@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volume.h>
+
+#include <inviwo/core/algorithm/tuplealgorithms.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/algorithm/histogram1d.h>
 #include <inviwo/core/util/document.h>
@@ -67,7 +69,8 @@ Volume::Volume(const VolumeConfig& config)
            config.yAxis.value_or(VolumeConfig::defaultYAxis),
            config.zAxis.value_or(VolumeConfig::defaultZAxis)}
     , defaultDimensions_{config.dimensions.value_or(VolumeConfig::defaultDimensions)}
-    , defaultDataFormat_{config.format ? config.format : VolumeConfig::defaultFormat}
+    , defaultDataFormat_{DataFormatBase::get(
+          config.formatId.value_or(VolumeConfig::defaultFormatId))}
     , defaultSwizzleMask_{config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask)}
     , defaultInterpolation_{config.interpolation.value_or(VolumeConfig::defaultInterpolation)}
     , defaultWrapping_{config.wrapping.value_or(VolumeConfig::defaultWrapping)}
@@ -103,7 +106,7 @@ Volume::Volume(const Volume& rhs, NoData, const VolumeConfig& config)
     , axes{config.xAxis.value_or(rhs.axes[0]), config.yAxis.value_or(rhs.axes[1]),
            config.zAxis.value_or(rhs.axes[2])}
     , defaultDimensions_{config.dimensions.value_or(rhs.getDimensions())}
-    , defaultDataFormat_{config.format ? config.format : rhs.getDataFormat()}
+    , defaultDataFormat_{DataFormatBase::get(config.formatId.value_or(rhs.getDataFormatId()))}
     , defaultSwizzleMask_{config.swizzleMask.value_or(rhs.getSwizzleMask())}
     , defaultInterpolation_{config.interpolation.value_or(rhs.getInterpolation())}
     , defaultWrapping_{config.wrapping.value_or(rhs.getWrapping())}
@@ -132,6 +135,12 @@ void Volume::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = 
 const DataFormatBase* Volume::getDataFormat() const {
     return getLastOr(&VolumeRepresentation::getDataFormat, defaultDataFormat_);
 }
+
+void Volume::setDataFormatId(DataFormatId formatId) {
+    setDataFormat(DataFormatBase::get(formatId));
+}
+
+DataFormatId Volume::getDataFormatId() const { return getDataFormat()->getId(); }
 
 void Volume::setSwizzleMask(const SwizzleMask& mask) {
     defaultSwizzleMask_ = mask;
@@ -167,23 +176,12 @@ Document Volume::getInfo() const {
     doc.append("b", "Volume", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
 
-    tb(H("Format"), getDataFormat()->getString());
-    tb(H("Dimension"), getDimensions());
-    tb(H("SwizzleMask"), getSwizzleMask());
-    tb(H("Interpolation"), getInterpolation());
-    tb(H("Wrapping"), getWrapping());
-    tb(H("Data Range"), dataMap.dataRange);
-    tb(H("Value Range"), dataMap.valueRange);
-    tb(H("Value"), fmt::format("{}{: [}", dataMap.valueAxis.name, dataMap.valueAxis.unit));
-    tb(H("Axis 1"), fmt::format("{}{: [}", axes[0].name, axes[0].unit));
-    tb(H("Axis 2"), fmt::format("{}{: [}", axes[1].name, axes[1].unit));
-    tb(H("Axis 3"), fmt::format("{}{: [}", axes[2].name, axes[2].unit));
+    util::tuple_zip_for_each(
+        [&](auto&& v, auto&& d, auto&& n) { tb(H(camelCaseToHeader(n)), v.value_or(d)); },
+        config().values(), VolumeConfig::defaults(), VolumeConfig::names());
 
-    tb(H("Basis"), getBasis());
-    tb(H("Offset"), getOffset());
-
-    histograms_.forEach([&](const Histogram1D& histogram, size_t channel) {
-        tb(H("Stats"), fmt::format("Channel {} Min: {}, Mean: {}, Max: {}, Std: {}", channel,
+    histograms_.forEach([&](const Histogram1D& histogram, size_t) {
+        tb(H("Stats"), fmt::format("{} Min: {}, Mean: {}, Max: {}, Std: {}", histogram.name,
                                    histogram.dataStats.min, histogram.dataStats.mean,
                                    histogram.dataStats.max, histogram.dataStats.standardDeviation));
         tb(H("Percentiles"),
@@ -240,7 +238,7 @@ const Axis* Volume::getAxis(size_t index) const {
 
 VolumeConfig Volume::config() const {
     return {.dimensions = getDimensions(),
-            .format = getDataFormat(),
+            .formatId = getDataFormatId(),
             .swizzleMask = getSwizzleMask(),
             .interpolation = getInterpolation(),
             .wrapping = getWrapping(),
@@ -255,9 +253,7 @@ VolumeConfig Volume::config() const {
 }
 
 void Volume::setConfig(const VolumeConfig& config) {
-    if (config.format) setDataFormat(config.format);
-
-    const auto setMaybe = [&](const auto& opt, auto&& func) {
+    auto setMaybe = [&](const auto& opt, auto&& func) {
         if constexpr (std::is_invocable_v<decltype(func), decltype(*this), decltype(*opt)>) {
             if (opt) std::invoke(std::forward<decltype(func)>(func), *this, *opt);
         } else if constexpr (std::is_invocable_v<decltype(func), decltype(*opt)>) {
@@ -267,6 +263,7 @@ void Volume::setConfig(const VolumeConfig& config) {
         }
     };
     setMaybe(config.dimensions, &Volume::setDimensions);
+    setMaybe(config.formatId, &Volume::setDataFormatId);
     setMaybe(config.swizzleMask, &Volume::setSwizzleMask);
     setMaybe(config.interpolation, &Volume::setInterpolation);
     setMaybe(config.wrapping, &Volume::setWrapping);

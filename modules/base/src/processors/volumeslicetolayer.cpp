@@ -158,7 +158,7 @@ std::shared_ptr<Layer> extractSlice(const VolumeRAMPrecision<T>* vrprecision,
 
     const auto layerram = std::make_shared<LayerRAMPrecision<T>>(
         LayerReprConfig{.dimensions = layerdim,
-                        .format = vrprecision->getDataFormat(),
+                        .formatId = vrprecision->getDataFormatId(),
                         .swizzleMask = vrprecision->getSwizzleMask(),
                         .interpolation = vrprecision->getInterpolation(),
                         .wrapping = getWrapping(vrprecision, axis)});

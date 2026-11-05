@@ -115,7 +115,7 @@ TEST(FileSequenceLoaderTest, LoadsPrototypeOnce) {
     const FileSequenceLoader loader{inviwo::Fixture::paths(5), {}, &fix.factory};
     EXPECT_EQ(loader.size(), 5u);
     EXPECT_EQ(*fix.readCount, 1);
-    EXPECT_NE(loader.prototype().format, nullptr);
+    EXPECT_NE(loader.prototype().formatId, DataFormatId::NotSpecialized);
     EXPECT_EQ(loader.prototype().dimensions.value(), (size3_t{2, 2, 2}));
 }
 

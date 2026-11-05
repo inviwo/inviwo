@@ -114,7 +114,7 @@ template <typename T>
     using ValueType = T::primitive;
     const auto volumeRam = std::make_shared<VolumeRAMPrecision<Type>>(VolumeReprConfig{
         .dimensions = dims,
-        .format = T::get(),
+        .formatId = T::id(),
     });
     const auto data = volumeRam->getView();
     const util::IndexMapper3D im{dims};
@@ -131,7 +131,7 @@ template <typename T>
     using ValueType = T::primitive;
     const auto layerRam = std::make_shared<LayerRAMPrecision<Type>>(LayerReprConfig{
         .dimensions = dims,
-        .format = T::get(),
+        .formatId = T::id(),
     });
     const auto data = layerRam->getView();
     const util::IndexMapper2D im{dims};

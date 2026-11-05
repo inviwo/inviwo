@@ -113,7 +113,7 @@ void GridPlanes::process() {
         const int end = static_cast<int>(extent.y / spacing);
 
         for (; start <= end; start++) {
-            vals[i].emplace_back(start * spacing);
+            vals[i].emplace_back(static_cast<float>(start) * spacing);
         }
     }
 

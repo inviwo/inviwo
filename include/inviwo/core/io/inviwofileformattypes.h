@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <string_view>
+#include <optional>
 #include <cstdint>
 
 namespace inviwo {
@@ -40,6 +41,9 @@ enum class Compression : std::uint8_t { Disabled, Enabled };
 
 IVW_CORE_API std::string_view enumToStr(ByteOrder byteOrder);
 IVW_CORE_API std::string_view enumToStr(Compression compression);
+
+IVW_CORE_API std::optional<ByteOrder> strToByteOrder(std::string_view str);
+IVW_CORE_API std::optional<Compression> strToCompression(std::string_view str);
 
 inline std::string_view format_as(ByteOrder byteOrder) { return enumToStr(byteOrder); }
 inline std::string_view format_as(Compression compression) { return enumToStr(compression); }

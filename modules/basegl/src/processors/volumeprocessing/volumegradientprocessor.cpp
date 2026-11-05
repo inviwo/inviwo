@@ -90,9 +90,9 @@ void VolumeGradientProcessor::preProcess([[maybe_unused]] TextureUnitContainer& 
                                          Shader& shader, VolumeConfig& config) {
 
     if (dataInChannel4_.get()) {
-        config.format = DataVec4Float32::get();
+        config.formatId = DataFormatId::Vec4Float32;
     } else {
-        config.format = DataVec3Float32::get();
+        config.formatId = DataFormatId::Vec3Float32;
     }
 
     IVW_ASSERT(inport_.has_value(), "Inport should be constructed");

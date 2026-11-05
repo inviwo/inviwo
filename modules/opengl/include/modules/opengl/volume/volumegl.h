@@ -58,7 +58,7 @@ class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
     explicit VolumeGL(size3_t dimensions = VolumeConfig::defaultDimensions,
-                      const DataFormatBase* format = VolumeConfig::defaultFormat,
+                      const DataFormatBase* format = DataFormatBase::get(VolumeConfig::defaultFormatId),
                       const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
                       InterpolationType interpolation = VolumeConfig::defaultInterpolation,
                       const Wrapping3D& wrapping = VolumeConfig::defaultWrapping,

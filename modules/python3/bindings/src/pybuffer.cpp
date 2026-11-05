@@ -136,6 +136,9 @@ void exposeBuffer(pybind11::module& m) {
         .def(py::init([](py::array data) { return pyutil::createBuffer(data).release(); }))
         .def("clone", [](BufferBase& self) { return self.clone(); })
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
+        .def_property_readonly("format", &BufferBase::getDataFormat)
+        .def_property_readonly("usage", &BufferBase::getBufferUsage)
+        .def_property_readonly("target", &BufferBase::getBufferTarget)
         .def_property(
             "data",
             [&](BufferBase* buffer) -> py::array {

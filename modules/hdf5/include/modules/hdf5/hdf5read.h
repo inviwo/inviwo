@@ -78,7 +78,8 @@ IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(
  * Read the dataset at @p handle into a Buffer. @see getVolumeAtPathAsType.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<BufferBase> getBufferAtPathAsType(
-    const Handle& handle, const std::vector<Selection>& selection, const DataFormatBase* type);
+    const Handle& handle, const std::vector<Selection>& selection,
+    std::optional<DataFormatId> formatId);
 
 IVW_MODULE_HDF5_API glm::dmat4 getBasis(const Handle& handle);
 

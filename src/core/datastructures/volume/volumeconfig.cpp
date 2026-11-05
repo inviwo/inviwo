@@ -34,15 +34,8 @@
 
 namespace inviwo {
 
-dvec2 VolumeConfig::defaultDataRange(const DataFormatBase* format) {
-    return DataMapper::defaultDataRangeFor(format);
-}
-dvec2 VolumeConfig::defaultValueRange(const DataFormatBase* format) {
-    return defaultDataRange(format);
-}
-
 DataMapper VolumeConfig::dataMap() const {
-    auto dataFormat = format ? format : VolumeConfig::defaultFormat;
+    const auto dataFormat = formatId.value_or(VolumeConfig::defaultFormatId);
     return DataMapper{dataRange.value_or(defaultDataRange(dataFormat)),
                       valueRange.value_or(defaultValueRange(dataFormat)),
                       valueAxis.value_or(defaultValueAxis)};
@@ -60,7 +53,7 @@ VolumeConfig& VolumeConfig::updateFrom(const VolumeConfig& config) {
         }
     };
     update(dimensions, config.dimensions);
-    if (config.format) format = config.format;
+    update(formatId, config.formatId);
     update(swizzleMask, config.swizzleMask);
     update(interpolation, config.interpolation);
     update(wrapping, config.wrapping);
@@ -78,7 +71,7 @@ VolumeConfig& VolumeConfig::updateFrom(const VolumeConfig& config) {
 
 VolumeConfig VolumeConfig::orDefault() const {
     return {.dimensions = dimensions.value_or(VolumeConfig::defaultDimensions),
-            .format = format ? format : VolumeConfig::defaultFormat,
+            .formatId = formatId.value_or(VolumeConfig::defaultFormatId),
             .swizzleMask = swizzleMask.value_or(VolumeConfig::defaultSwizzleMask),
             .interpolation = interpolation.value_or(VolumeConfig::defaultInterpolation),
             .wrapping = wrapping.value_or(VolumeConfig::defaultWrapping),
@@ -87,16 +80,16 @@ VolumeConfig VolumeConfig::orDefault() const {
             .zAxis = zAxis.value_or(VolumeConfig::defaultZAxis),
             .valueAxis = valueAxis.value_or(VolumeConfig::defaultValueAxis),
             .dataRange =
-                dataRange.value_or(VolumeConfig::defaultDataRange(VolumeConfig::defaultFormat)),
+                dataRange.value_or(VolumeConfig::defaultDataRange(VolumeConfig::defaultFormatId)),
             .valueRange =
-                valueRange.value_or(VolumeConfig::defaultValueRange(VolumeConfig::defaultFormat)),
+                valueRange.value_or(VolumeConfig::defaultValueRange(VolumeConfig::defaultFormatId)),
             .model = model.value_or(VolumeConfig::defaultModel),
             .world = world.value_or(VolumeConfig::defaultWorld)};
 }
 
 VolumeReprConfig VolumeConfig::reprConfig() const {
     return {.dimensions = dimensions,
-            .format = format,
+            .formatId = formatId,
             .swizzleMask = swizzleMask,
             .interpolation = interpolation,
             .wrapping = wrapping};
@@ -104,7 +97,7 @@ VolumeReprConfig VolumeConfig::reprConfig() const {
 
 bool VolumeReprConfig::operator==(const Volume& vol) const {
     return vol.getDimensions() == dimensions.value_or(VolumeConfig::defaultDimensions) &&
-           vol.getDataFormat() == (format ? format : VolumeConfig::defaultFormat) &&
+           vol.getDataFormatId() == formatId.value_or(VolumeConfig::defaultFormatId) &&
            vol.getSwizzleMask() == swizzleMask.value_or(VolumeConfig::defaultSwizzleMask) &&
            vol.getInterpolation() == interpolation.value_or(VolumeConfig::defaultInterpolation) &&
            vol.getWrapping() == wrapping.value_or(VolumeConfig::defaultWrapping);
@@ -112,7 +105,7 @@ bool VolumeReprConfig::operator==(const Volume& vol) const {
 
 bool VolumeReprConfig::operator==(const VolumeRepresentation& rep) const {
     return rep.getDimensions() == dimensions.value_or(VolumeConfig::defaultDimensions) &&
-           rep.getDataFormat() == (format ? format : VolumeConfig::defaultFormat) &&
+           rep.getDataFormatId() == formatId.value_or(VolumeConfig::defaultFormatId) &&
            rep.getSwizzleMask() == swizzleMask.value_or(VolumeConfig::defaultSwizzleMask) &&
            rep.getInterpolation() == interpolation.value_or(VolumeConfig::defaultInterpolation) &&
            rep.getWrapping() == wrapping.value_or(VolumeConfig::defaultWrapping);

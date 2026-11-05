@@ -86,8 +86,10 @@ void VolumeMerger::preProcess(TextureUnitContainer& cont, Shader& shader, Volume
         shader.build();
     }
 
-    config.format = DataFormatBase::get(config.format->getNumericType(), numVolumes,
-                                        config.format->getPrecision());
+    const auto* format =
+        DataFormatBase::get(config.formatId.value_or(VolumeConfig::defaultFormatId));
+    config.formatId =
+        DataFormatBase::find(format->getNumericType(), numVolumes, format->getPrecision());
 
     for (auto&& [i, vol] : std::views::zip(std::views::iota(2), vols_)) {
         if (vol.isReady()) {

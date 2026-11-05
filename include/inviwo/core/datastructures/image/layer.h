@@ -61,12 +61,13 @@ public:
     using Bases = TypeList<StructuredGridEntity<2>, MetaDataOwner>;
     using Config = LayerConfig;
 
-    explicit Layer(size2_t defaultDimensions = LayerConfig::defaultDimensions,
-                   const DataFormatBase* defaultFormat = LayerConfig::defaultFormat,
-                   LayerType type = LayerConfig::defaultType,
-                   const SwizzleMask& defaultSwizzleMask = LayerConfig::defaultSwizzleMask,
-                   InterpolationType interpolation = LayerConfig::defaultInterpolation,
-                   const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
+    explicit Layer(
+        size2_t defaultDimensions = LayerConfig::defaultDimensions,
+        const DataFormatBase* defaultFormat = DataFormatBase::get(LayerConfig::defaultFormatId),
+        LayerType type = LayerConfig::defaultType,
+        const SwizzleMask& defaultSwizzleMask = LayerConfig::defaultSwizzleMask,
+        InterpolationType interpolation = LayerConfig::defaultInterpolation,
+        const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
     explicit Layer(const LayerConfig& config);
     explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
@@ -99,15 +100,22 @@ public:
     virtual size2_t getDimensions() const override;
 
     /**
-     * Set the format of the data.
+     * Set the default data format. Existing representations will not be affected.
+     * @note Only useful before any representations have been created.
      * @see DataFormatBase
      * @param format The format of the data.
      */
-    // clang-format off
-    [[ deprecated("use LayerRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
-    // clang-format on
+
+    /**
+     * Set the default data format. Existing representations will not be affected.
+     * @note Only useful before any representations have been created.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
+    void setDataFormatId(DataFormatId formatId);
+    DataFormatId getDataFormatId() const;
 
     /**
      * @brief update the swizzle mask of the channels for sampling color layers
@@ -172,6 +180,7 @@ public:
     virtual const Axis* getAxis(size_t index) const override;
 
     LayerConfig config() const;
+    void setConfig(const LayerConfig& config);
 
     DataMapper dataMap;
     std::array<Axis, 2> axes;

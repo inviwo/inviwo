@@ -29,6 +29,7 @@
 
 #include <inviwo/core/io/inviwofileformattypes.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -48,6 +49,23 @@ std::string_view enumToStr(Compression compression) {
     }
     throw Exception{SourceContext{}, "Found invalid Compression enum value '{}'",
                     static_cast<int>(compression)};
+}
+
+std::optional<ByteOrder> strToByteOrder(std::string_view str) {
+    for (auto e : {ByteOrder::LittleEndian, ByteOrder::BigEndian}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
+    }
+    return std::nullopt;
+}
+std::optional<Compression> strToCompression(std::string_view str) {
+    for (auto e : {Compression::Disabled, Compression::Enabled}) {
+        if (iCaseCmp(str, enumToStr(e))) {
+            return e;
+        }
+    }
+    return std::nullopt;
 }
 
 }  // namespace inviwo

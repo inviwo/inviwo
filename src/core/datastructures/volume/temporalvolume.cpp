@@ -29,16 +29,22 @@
 
 #include <inviwo/core/datastructures/volume/temporalvolume.h>
 
+#include <inviwo/core/algorithm/tuplealgorithms.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdfuture.h>
-
-#include <algorithm>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fmt/format.h>
 #include <fmt/chrono.h>
+
+#include <algorithm>
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace inviwo {
 
@@ -331,14 +337,26 @@ Document DataTraits<TemporalVolume>::info(const TemporalVolume& data) {
     utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Frames"), data.size());
     if (!data.empty()) {
+
         const auto [first, last] = data.timeRange();
         tb(H("Time Range"), fmt::format("[{}, {}]", first, last));
 
-        const VolumeConfig& prototype = data.prototype();
-        tb(H("Dimensions"), prototype.dimensions.value_or(VolumeConfig::defaultDimensions));
-        tb(H("Format"),
-           (prototype.format ? prototype.format : VolumeConfig::defaultFormat)->getString());
+        util::tuple_zip_for_each(
+            [&](auto&& v, auto&& d, auto&& n) { tb(H(camelCaseToHeader(n)), v.value_or(d)); },
+            data.prototype().values(), VolumeConfig::defaults(), VolumeConfig::names());
     }
+
+    data.histograms_.forEach([&](const Histogram1D& histogram, size_t) {
+        tb(H("Stats"), fmt::format("{} Min: {}, Mean: {}, Max: {}, Std: {}", histogram.name,
+                                   histogram.dataStats.min, histogram.dataStats.mean,
+                                   histogram.dataStats.max, histogram.dataStats.standardDeviation));
+        tb(H("Percentiles"),
+           fmt::format("(1: {}, 25: {}, 50: {}, 75: {}, 99: {})",
+                       histogram.dataStats.percentiles[1], histogram.dataStats.percentiles[25],
+                       histogram.dataStats.percentiles[50], histogram.dataStats.percentiles[75],
+                       histogram.dataStats.percentiles[99]));
+    });
+
     return doc;
 }
 

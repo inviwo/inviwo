@@ -30,11 +30,12 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
-#include <inviwo/core/util/glmutils.h>
 
 #include <inviwo/core/datastructures/unitsystem.h>
 #include <inviwo/core/algorithm/linearmap.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glmutils.h>
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
@@ -71,12 +72,16 @@ public:
 
     enum class Space : std::uint8_t { Data, Normalized, SignNormalized, Value };
 
-    DataMapper();
-    explicit DataMapper(const DataFormatBase* format,
-                        SignedNormalization normalization = SignedNormalization::Asymmetric,
-                        Axis valueAxis = {});
-    explicit DataMapper(dvec2 dataRange, Axis valueAxis = {});
-    DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis = {});
+    constexpr DataMapper();
+    constexpr explicit DataMapper(dvec2 dataRange);
+    constexpr DataMapper(dvec2 dataRange, dvec2 valueRange);
+    constexpr explicit DataMapper(
+        const DataFormatBase* format,
+        SignedNormalization normalization = SignedNormalization::Asymmetric);
+    DataMapper(const DataFormatBase* format, SignedNormalization normalization, Axis valueAxis);
+    DataMapper(dvec2 dataRange, Axis valueAxis);
+    DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis);
+
     DataMapper(const DataMapper& rhs);
     DataMapper(DataMapper&& rhs) noexcept;
     DataMapper& operator=(const DataMapper& that);
@@ -109,11 +114,12 @@ public:
      */
     Axis valueAxis;  ///< Name and Unit, i.e. "absorption", "Hounsfield".
 
-    static dvec2 defaultDataRangeFor(
+    static constexpr dvec2 defaultDataRangeFor(
         const DataFormatBase* format,
         SignedNormalization normalization = SignedNormalization::Asymmetric);
-    void initWithFormat(const DataFormatBase* format,
-                        SignedNormalization normalization = SignedNormalization::Asymmetric);
+    constexpr void initWithFormat(
+        const DataFormatBase* format,
+        SignedNormalization normalization = SignedNormalization::Asymmetric);
 
     /**
      * Map from `dataRange` to the `valueRange`
@@ -209,5 +215,39 @@ public:
 };
 
 IVW_CORE_API std::string format_as(const DataMapper& dataMapper);
+
+constexpr DataMapper::DataMapper()
+    : DataMapper(DataUInt8::get(), SignedNormalization::Asymmetric) {}
+
+constexpr DataMapper::DataMapper(const DataFormatBase* format, SignedNormalization normalization)
+    : DataMapper{defaultDataRangeFor(format, normalization)} {}
+
+constexpr DataMapper::DataMapper(dvec2 dataRange) : DataMapper{dataRange, dataRange} {}
+
+constexpr DataMapper::DataMapper(dvec2 dataRange, dvec2 valueRange)
+    : dataRange{dataRange}, valueRange{valueRange}, valueAxis{} {}
+
+constexpr dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
+                                                SignedNormalization normalization) {
+    switch (format->getNumericType()) {
+        case NumericType::Float:           return {0.0, 1.0};
+        case NumericType::UnsignedInteger: return {0.0, format->getMax()};
+        case NumericType::SignedInteger:
+            if (normalization == SignedNormalization::Symmetric) {
+                return {-format->getMax(), format->getMax()};
+            } else {
+                return {format->getMin(), format->getMax()};
+            }
+        case NumericType::NotSpecialized: return {format->getMin(), format->getMax()};
+    }
+    return {format->getMin(), format->getMax()};
+}
+
+constexpr void DataMapper::initWithFormat(const DataFormatBase* format,
+                                          SignedNormalization normalization) {
+    dataRange = defaultDataRangeFor(format, normalization);
+    valueRange = dataRange;
+    valueAxis = {"", Unit{}};
+}
 
 }  // namespace inviwo

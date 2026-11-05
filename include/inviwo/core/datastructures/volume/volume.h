@@ -69,11 +69,12 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
 public:
     using Bases = TypeList<StructuredGridEntity<3>, MetaDataOwner>;
     using Config = VolumeConfig;
-    explicit Volume(size3_t defaultDimensions = VolumeConfig::defaultDimensions,
-                    const DataFormatBase* defaultFormat = VolumeConfig::defaultFormat,
-                    const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,
-                    InterpolationType interpolation = VolumeConfig::defaultInterpolation,
-                    const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
+    explicit Volume(
+        size3_t defaultDimensions = VolumeConfig::defaultDimensions,
+        const DataFormatBase* defaultFormat = DataFormatBase::get(VolumeConfig::defaultFormatId),
+        const SwizzleMask& defaultSwizzleMask = VolumeConfig::defaultSwizzleMask,
+        InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+        const Wrapping3D& wrapping = VolumeConfig::defaultWrapping);
     explicit Volume(const VolumeConfig& config);
     explicit Volume(std::shared_ptr<VolumeRepresentation>);
 
@@ -114,6 +115,15 @@ public:
      */
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
+
+    /**
+     * Set the default data format. Existing representations will not be affected.
+     * @note Only useful before any representations have been created.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
+    void setDataFormatId(DataFormatId formatId);
+    DataFormatId getDataFormatId() const;
 
     /**
      * @brief update the swizzle mask of the color channels when sampling the volume

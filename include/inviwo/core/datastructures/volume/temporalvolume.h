@@ -239,8 +239,8 @@ public:
     void clearCache();
 
 private:
-    template <typename T>
-    friend struct TFDataTraits;
+    friend struct TFDataTraits<TemporalVolume>;
+    friend struct DataTraits<TemporalVolume>;
 
     /// An in-flight background load together with the source used to cancel it. The future is
     /// shared so that waiters can copy it and drop @c mutex_ while blocking.

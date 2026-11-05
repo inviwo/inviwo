@@ -28,12 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/datamapper.h>
-#include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmfmt.h>
 
 namespace inviwo {
 
-DataMapper::DataMapper() : DataMapper(DataUInt8::get(), SignedNormalization::Asymmetric) {}
 DataMapper::DataMapper(const DataFormatBase* format, SignedNormalization normalization,
                        Axis aValueAxis)
     : dataRange{defaultDataRangeFor(format, normalization)}
@@ -51,32 +49,6 @@ DataMapper::DataMapper(DataMapper&&) noexcept = default;
 DataMapper& DataMapper::operator=(const DataMapper& that) = default;
 
 DataMapper& DataMapper::operator=(DataMapper&&) noexcept = default;
-
-dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
-                                      SignedNormalization normalization) {
-    switch (format->getNumericType()) {
-        case NumericType::Float:
-            return {0.0, 1.0};
-        case NumericType::UnsignedInteger:
-            return {0.0, format->getMax()};
-        case NumericType::SignedInteger:
-            if (normalization == SignedNormalization::Symmetric) {
-                return {-format->getMax(), format->getMax()};
-            } else {
-                return {format->getMin(), format->getMax()};
-            }
-        case NumericType::NotSpecialized:
-            return {format->getMin(), format->getMax()};
-    }
-    return {format->getMin(), format->getMax()};
-}
-
-void DataMapper::initWithFormat(const DataFormatBase* format, SignedNormalization normalization) {
-
-    dataRange = defaultDataRangeFor(format, normalization);
-    valueRange = dataRange;
-    valueAxis = {.name = "", .unit = Unit{}};
-}
 
 std::string format_as(const DataMapper& dataMapper) {
     return fmt::format("data: {::.3g}, value: {::.3g}, axis: {}{: [}", dataMapper.dataRange,

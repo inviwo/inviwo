@@ -117,13 +117,13 @@ std::vector<OptionPropertyIntOption> conversionOptions() {
             {"ushort", "Unsigned Short", 4}};
 }
 
-const DataFormatBase* conversionFormat(size_t index) {
+std::optional<DataFormatId> conversionFormat(size_t index) {
     switch (index) {
-        case 1:  return DataFloat32::get();
-        case 2:  return DataFloat64::get();
-        case 3:  return DataUInt8::get();
-        case 4:  return DataUInt16::get();
-        default: return nullptr;
+        case 1:  return DataFormatId::Float32;
+        case 2:  return DataFormatId::Float64;
+        case 3:  return DataFormatId::UInt8;
+        case 4:  return DataFormatId::UInt16;
+        default: return std::nullopt;
     }
 }
 

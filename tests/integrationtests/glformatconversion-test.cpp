@@ -139,15 +139,11 @@ template <typename T>
 [[nodiscard]] std::shared_ptr<Layer> createLayer(LayerConfig config, const std::vector<T>& values) {
     config.updateFrom(LayerConfig{
         .dimensions = size2_t{values.size(), 1},
-        .format = DataFormat<T>::get(),
+        .formatId = DataFormat<T>::id(),
         .interpolation = InterpolationType::Nearest,
     });
 
-    const auto layerRam = std::make_shared<LayerRAMPrecision<T>>(LayerReprConfig{
-        .dimensions = config.dimensions,
-        .format = config.format,
-        .interpolation = config.interpolation,
-    });
+    auto layerRam = std::make_shared<LayerRAMPrecision<T>>(config.reprConfig());
     std::ranges::copy(values, layerRam->getView().begin());
 
     auto layer = std::make_shared<Layer>(config);

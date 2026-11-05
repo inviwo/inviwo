@@ -92,7 +92,7 @@ void VectorFieldGenerator2D::initializeResources() {
 
 void VectorFieldGenerator2D::process() {
     const LayerConfig config{.dimensions = size_.get(),
-                             .format = DataVec2Float32::get(),
+                             .formatId = DataFormatId::Vec2Float32,
                              .swizzleMask = swizzlemasks::defaultData(2)};
     const auto layer = std::make_shared<Layer>(config);
 
