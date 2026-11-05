@@ -52,8 +52,8 @@ struct DataTraits<std::filesystem::path> {
     static constexpr uvec3 colorCode() { return {129, 149, 33}; }
     static Document info(const std::filesystem::path& data) {
         Document doc;
-        doc.append("p", dataName());
-        doc.append("p", data.string());
+        doc.append("span", dataName());
+        doc.append("div", data.string());
         return doc;
     }
 };
