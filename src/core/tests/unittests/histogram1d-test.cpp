@@ -43,7 +43,9 @@
 
 namespace inviwo {
 
-static bool isHistogramUniform(const Histogram1D& histogram) {
+namespace {
+
+bool isHistogramUniform(const Histogram1D& histogram) {
     if (histogram.counts.size() <= 1) {
         return true;
     }
@@ -81,6 +83,8 @@ private:
     std::mt19937 rand_;
     std::uniform_real_distribution<double> dis_;
 };
+
+}  // namespace
 
 TEST_F(Histogram1DTest, intRangeBelowBinCount) {
     const size_t binCount = 64;

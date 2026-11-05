@@ -54,6 +54,8 @@ namespace sml = boost::sml;
 
 namespace inviwo {
 
+namespace {
+
 namespace test {
 
 // States
@@ -83,14 +85,14 @@ auto exit = [](std::string state) {
 };
 */
 
-static auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
-static auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
+auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
+auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };
 
 struct fsmState {
     int count = 0;
 };
 
-static auto moveAction = [](move e, fsmState& s) {
+auto moveAction = [](move e, fsmState& s) {
     s.count += e.dir;
     // std::cout << "Move   " << e.dir << std::endl;
 };
@@ -135,6 +137,8 @@ struct TestSM {
 
 }  // namespace test
 
+}  // namespace
+
 TEST(PickingControllerTest, TestSystem) {
     using namespace test;
     fsmState s;
@@ -164,6 +168,8 @@ TEST(PickingControllerTest, TestSystem) {
     ASSERT_TRUE(sm.is(sml::state<none>));
 }
 
+namespace {
+
 struct TestPropagator : EventPropagator {
     virtual void propagateEvent(Event* event, Outport*) { events.emplace_back(event->clone()); }
     std::vector<std::unique_ptr<Event>> events;
@@ -191,7 +197,7 @@ struct TestPropagator : EventPropagator {
  * Global index 5 will map to Pick Action 2, id 2;
  */
 
-static constexpr auto makeCanvas() {
+constexpr auto makeCanvas() {
     // clang-format off
     std::array<std::array<size_t, 10>, 10> canvas =
     {{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -208,14 +214,12 @@ static constexpr auto makeCanvas() {
     return canvas;
 }
 
-static MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos,
-                             uvec2 cdim) {
+MouseEvent mouseEvent(MouseButton mb, MouseState ms, MouseButtons mbs, uvec2 pos, uvec2 cdim) {
     return MouseEvent{mb, ms, mbs, KeyModifiers(flags::empty), dvec2{pos} / dvec2{cdim}, cdim, 0.5};
 }
 
-static TouchEvent touchEvent(
-    TouchState ts, uvec2 pos, uvec2 cdim,
-    TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
+TouchEvent touchEvent(TouchState ts, uvec2 pos, uvec2 cdim,
+                      TouchDevice touchDevice = TouchDevice(TouchDevice::DeviceType::TouchPad)) {
     const auto prevPosNorm = dvec2{pos} / dvec2{cdim};
     const auto pressedPosNormalized = dvec2{pos} / dvec2{cdim};
     const double pressure = 0.5;
@@ -224,15 +228,14 @@ static TouchEvent touchEvent(
                       &touchDevice, KeyModifiers(flags::empty));
 }
 
-static void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
-                             PickingPressState pressState, PickingPressItem pressItem,
-                             PickingPressItems pressedState, size_t pickedGlobalId,
-                             size_t currentGlobalId, size_t previousGlobalId,
-                             size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
-                             size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
-                             dvec3 previousNDC, dvec3 pressedNDC) {
+void testPickingEvent(Event* event, PickingState state, PickingHoverState hoverState,
+                      PickingPressState pressState, PickingPressItem pressItem,
+                      PickingPressItems pressedState, size_t pickedGlobalId, size_t currentGlobalId,
+                      size_t previousGlobalId, size_t pressedGlobalId, size_t pickedLocalId,
+                      size_t currentLocalId, size_t previousLocalId, size_t pressedLocalId,
+                      dvec3 currentNDC, dvec3 previousNDC, dvec3 pressedNDC) {
     ASSERT_TRUE(event);
-    auto pe = event->getAs<PickingEvent>();
+    auto* pe = event->getAs<PickingEvent>();
     ASSERT_TRUE(pe);
     EXPECT_EQ(pe->getState(), state);
     EXPECT_EQ(pe->getPressState(), pressState);
@@ -278,14 +281,13 @@ const uvec2 dim{canvas.size(), canvas.size()};
 const auto ndc = [](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{10.0} - dvec2{1.0}, 0.5}; };
 
 template <typename PickingController>
-static void testPickingEvent(PickingController& controller, uvec2 pos, Event* event,
-                             PickingState state, PickingHoverState hoverState,
-                             PickingPressState pressState, PickingPressItem pressItem,
-                             PickingPressItems pressedState, size_t pickedGlobalId,
-                             size_t currentGlobalId, size_t previousGlobalId,
-                             size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
-                             size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
-                             dvec3 previousNDC, dvec3 pressedNDC) {
+void testPickingEvent(PickingController& controller, uvec2 pos, Event* event, PickingState state,
+                      PickingHoverState hoverState, PickingPressState pressState,
+                      PickingPressItem pressItem, PickingPressItems pressedState,
+                      size_t pickedGlobalId, size_t currentGlobalId, size_t previousGlobalId,
+                      size_t pressedGlobalId, size_t pickedLocalId, size_t currentLocalId,
+                      size_t previousLocalId, size_t pressedLocalId, dvec3 currentNDC,
+                      dvec3 previousNDC, dvec3 pressedNDC) {
     TestPropagator tp;
     controller.propagateEvent(event, &tp, canvas[dim.y - pos.y][pos.x]);
     ASSERT_EQ(tp.events.size(), 1);
@@ -295,11 +297,13 @@ static void testPickingEvent(PickingController& controller, uvec2 pos, Event* ev
                      previousNDC, pressedNDC);
 }
 
+}  // namespace
+
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         const uvec2 pos{1, 2};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
@@ -321,7 +325,7 @@ TEST(PickingControllerTest, IdleMoveTouch) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     {
         const uvec2 pos{1, 2};  // id = 0
         auto event = touchEvent(TouchState::Updated, pos, dim);
@@ -343,7 +347,7 @@ TEST(PickingControllerTest, MoveTouchAround) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim);
@@ -422,7 +426,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
@@ -497,7 +501,9 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
 }
 
-static void doTouchPress(PickingControllerTouchState& ms) {
+namespace {
+
+void doTouchPress(const PickingControllerTouchState& ms) {
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = touchEvent(TouchState::Started, pos, dim);
@@ -517,7 +523,7 @@ static void doTouchPress(PickingControllerTouchState& ms) {
         testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
                          PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
     }
-    {                     // Press
+    {                           // Press
         const uvec2 pre{3, 3};  // id = 1
         const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Stationary, pos, dim);
@@ -530,9 +536,9 @@ static void doTouchPress(PickingControllerTouchState& ms) {
     }
 }
 
-static void doTouchScreenPress(PickingControllerTouchState& ms) {
+void doTouchScreenPress(const PickingControllerTouchState& ms) {
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
-    {                     // Press
+    {                           // Press
         const uvec2 pos{3, 3};  // id = 1
         auto event = touchEvent(TouchState::Started, pos, dim, device);
         TestPropagator tp;
@@ -545,11 +551,13 @@ static void doTouchScreenPress(PickingControllerTouchState& ms) {
     }
 }
 
+}  // namespace
+
 TEST(PickingControllerTest, TouchPressRelease) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     {
         SCOPED_TRACE("Press-Release");
         doTouchPress(ms);
@@ -596,7 +604,7 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Press-Release");
@@ -631,7 +639,9 @@ TEST(PickingControllerTest, TouchScreenPressRelease) {
     }
 }
 
-static void doMousePress(PickingControllerMouseState& ms) {
+namespace {
+
+void doMousePress(const PickingControllerMouseState& ms) {
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
@@ -651,7 +661,7 @@ static void doMousePress(PickingControllerMouseState& ms) {
         testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::None,
                          PPI::None, 2, 2, 0, 0, 1, 1, 0, 0, ndc(pos), dvec3{0.0}, dvec3{0.0});
     }
-    {                     // Press
+    {                           // Press
         const uvec2 pre{3, 3};  // id = 1
         const uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::Left, S::Press, Bs{B::Left}, pos, dim);
@@ -664,11 +674,13 @@ static void doMousePress(PickingControllerMouseState& ms) {
     }
 }
 
+}  // namespace
+
 TEST(PickingControllerTest, MousePressRelease) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Press-Release");
         doMousePress(ms);
@@ -715,7 +727,7 @@ TEST(PickingControllerTest, TouchDrag1to2) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     {
         SCOPED_TRACE("Drag");
         doTouchPress(ms);
@@ -737,7 +749,7 @@ TEST(PickingControllerTest, TouchScreenDrag1to2) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Drag");
@@ -760,7 +772,7 @@ TEST(PickingControllerTest, MouseDrag1to2) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
         doMousePress(ms);
@@ -783,7 +795,7 @@ TEST(PickingControllerTest, MouseDrag1to0) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         SCOPED_TRACE("Drag");
         doMousePress(ms);
@@ -820,7 +832,7 @@ TEST(PickingControllerTest, TouchDrag1to0) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
         SCOPED_TRACE("Drag");
@@ -858,7 +870,7 @@ TEST(PickingControllerTest, TouchScreenDrag1to0) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         SCOPED_TRACE("Drag");
@@ -896,7 +908,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerMouseState ms(&pm);
+    const PickingControllerMouseState ms(&pm);
     {
         const uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
@@ -945,7 +957,7 @@ TEST(PickingControllerTest, TouchDrag0to1) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchPad};
     {
         const uvec2 pos{1, 1};  // id = 0
@@ -996,7 +1008,7 @@ TEST(PickingControllerTest, TouchScreenDrag0to1) {
     PickingManager pm;
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
     pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
-    PickingControllerTouchState ms(&pm);
+    const PickingControllerTouchState ms(&pm);
     const TouchDevice device{TouchDevice::DeviceType::TouchScreen};
     {
         const uvec2 pos{1, 1};  // id = 0
