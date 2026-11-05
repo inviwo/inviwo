@@ -75,7 +75,7 @@ void SkewedPerspectiveCamera::setFovy(double val) {
         fovy_ = val;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraFovProperty(*camprop_)) {
+            if (auto* p = util::getCameraFovProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
@@ -88,7 +88,7 @@ void SkewedPerspectiveCamera::setOffset(dvec2 offset) {
         invalidateViewMatrix();
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraEyeOffsetProperty(*camprop_)) {
+            if (auto* p = util::getCameraEyeOffsetProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
@@ -99,12 +99,12 @@ void SkewedPerspectiveCamera::zoom(const ZoomOptions& opts) { util::perspectiveZ
 
 void SkewedPerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
+    if (const auto* sc = dynamic_cast<const SkewedPerspectiveCamera*>(&source)) {
         setFovy(sc->getFovy());
         setOffset(sc->getOffset());
-    } else if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+    } else if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    } else if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
         setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
@@ -137,10 +137,10 @@ void SkewedPerspectiveCamera::configureProperties(CameraProperty& cp, bool attac
             });
 
     } else {
-        if (auto fov = util::getCameraFovProperty(cp)) {
+        if (auto* fov = util::getCameraFovProperty(cp)) {
             fov->disconnectSetAndGet();
         }
-        if (auto offset = util::getCameraEyeOffsetProperty(cp)) {
+        if (auto* offset = util::getCameraEyeOffsetProperty(cp)) {
             offset->disconnectSetAndGet();
         }
     }
@@ -153,7 +153,7 @@ dmat4 SkewedPerspectiveCamera::calculateViewMatrix() const {
 }
 
 bool SkewedPerspectiveCamera::equal(const Camera& other) const {
-    if (auto rhs = dynamic_cast<const SkewedPerspectiveCamera*>(&other)) {
+    if (const auto* rhs = dynamic_cast<const SkewedPerspectiveCamera*>(&other)) {
         return equalTo(other) && fovy_ == rhs->fovy_ && glm::all(glm::equal(offset_, rhs->offset_));
     } else {
         return false;

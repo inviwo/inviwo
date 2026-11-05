@@ -42,6 +42,10 @@ public:
     using BaseReprId = std::type_index;
 
     BaseRepresentationFactory() = default;
+    BaseRepresentationFactory(const BaseRepresentationFactory&) = delete;
+    BaseRepresentationFactory(BaseRepresentationFactory&&) = delete;
+    BaseRepresentationFactory& operator=(const BaseRepresentationFactory&) = delete;
+    BaseRepresentationFactory& operator=(BaseRepresentationFactory&&) = delete;
     virtual ~BaseRepresentationFactory() = default;
     virtual BaseReprId getBaseReprId() const = 0;
 };
@@ -71,6 +75,10 @@ public:
      */
     explicit RepresentationFactory(BaseReprId defaultRepresentation)
         : BaseRepresentationFactory{}, defaultRepresentation_{defaultRepresentation} {}
+    RepresentationFactory(const RepresentationFactory&) = delete;
+    RepresentationFactory(RepresentationFactory&&) = delete;
+    RepresentationFactory& operator=(const RepresentationFactory&) = delete;
+    RepresentationFactory& operator=(RepresentationFactory&&) = delete;
     virtual ~RepresentationFactory() = default;
 
     virtual BaseReprId getBaseReprId() const override { return BaseReprId{typeid(Representation)}; }

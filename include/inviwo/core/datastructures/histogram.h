@@ -38,9 +38,10 @@
 #include <vector>
 #include <bitset>
 #include <array>
+#include <cstdint>
 
 namespace inviwo {
-enum class HistogramMode : int { Off = 0, All, P99, P95, P90, Log };
+enum class HistogramMode : std::uint8_t { Off = 0, All, P99, P95, P90, Log };
 constexpr size_t numberOfHistogramModes = 6;
 
 using HistogramSelection = std::bitset<32>;
@@ -99,6 +100,5 @@ struct DataTraits<Histogram2D> {
 IVW_CORE_API std::string format_as(const Statistics& stats);
 IVW_CORE_API std::string format_as(const Histogram1D& stats);
 IVW_CORE_API std::string format_as(const Histogram2D& stats);
-
 
 }  // namespace inviwo

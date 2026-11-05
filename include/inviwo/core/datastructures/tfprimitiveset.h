@@ -290,9 +290,10 @@ public:
     void beginBulkUpdate();
     void endBulkUpdate();
 
-protected:
+public:
     virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 
+protected:
     void verifyPoint(double pos) const;
     void verifyPoint(const TFPrimitiveData& primitive) const;
     void verifyPoint(const TFPrimitive& primitive) const;

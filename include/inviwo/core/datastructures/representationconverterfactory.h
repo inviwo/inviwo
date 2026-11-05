@@ -52,6 +52,11 @@ class IVW_CORE_API BaseRepresentationConverterFactory {
 public:
     using BaseReprId = std::type_index;
     BaseRepresentationConverterFactory() = default;
+    BaseRepresentationConverterFactory(const BaseRepresentationConverterFactory&) = delete;
+    BaseRepresentationConverterFactory(BaseRepresentationConverterFactory&&) = delete;
+    BaseRepresentationConverterFactory& operator=(const BaseRepresentationConverterFactory&) =
+        delete;
+    BaseRepresentationConverterFactory& operator=(BaseRepresentationConverterFactory&&) = delete;
     virtual ~BaseRepresentationConverterFactory() = default;
     virtual BaseReprId getBaseReprId() = 0;
 };
@@ -73,6 +78,10 @@ public:
         std::unordered_multimap<ConverterID,
                                 std::unique_ptr<RepresentationConverterPackage<BaseRepr>>>;
     RepresentationConverterFactory() = default;
+    RepresentationConverterFactory(const RepresentationConverterFactory&) = delete;
+    RepresentationConverterFactory(RepresentationConverterFactory&&) = delete;
+    RepresentationConverterFactory& operator=(const RepresentationConverterFactory&) = delete;
+    RepresentationConverterFactory& operator=(RepresentationConverterFactory&&) = delete;
     virtual ~RepresentationConverterFactory() = default;
 
     virtual BaseReprId getBaseReprId() override final;
