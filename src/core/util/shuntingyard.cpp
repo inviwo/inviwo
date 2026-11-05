@@ -67,7 +67,8 @@ THE SOFTWARE.
 
 namespace inviwo::shuntingyard {
 
-TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> opPrecedence) {
+TokenQueue Calculator::toRPN(const std::string& expression,
+                             std::map<std::string, int> opPrecedence) {
     TokenQueue rpnQueue;
     std::stack<std::string> operatorStack;
     bool lastTokenWasOp = true;
@@ -96,7 +97,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
             switch (c) {
                 case '(': operatorStack.emplace("("); break;
                 case ')':
-                    while (operatorStack.top().compare("(")) {
+                    while (operatorStack.top() != "(") {
                         rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
                         operatorStack.pop();
                     }
@@ -126,7 +127,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
 
                     if (lastTokenWasOp) {
                         // Convert unary operators to binary in the RPN.
-                        if (!str.compare("-") || !str.compare("+")) {
+                        if (str == "-" || str == "+") {
                             rpnQueue.push(std::make_unique<Token<double>>(0));
                         } else {
                             throw Exception(SourceContext{}, "Unrecognized unary operator: '{}'",
@@ -153,7 +154,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
     return rpnQueue;
 }
 
-double Calculator::calculate(std::string expression, std::map<std::string, double>& vars) {
+double Calculator::calculate(const std::string& expression, std::map<std::string, double>& vars) {
     // 1. Create the operator precedence map.
     const auto opPrecedence = getOpeatorPrecedence();
 
@@ -180,15 +181,15 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
                 evaluation.pop();
                 const double left = evaluation.top();
                 evaluation.pop();
-                if (!str.compare("+")) {
+                if (str == "+") {
                     evaluation.push(left + right);
-                } else if (!str.compare("*")) {
+                } else if (str == "*") {
                     evaluation.push(left * right);
-                } else if (!str.compare("-")) {
+                } else if (str == "-") {
                     evaluation.push(left - right);
-                } else if (!str.compare("/")) {
+                } else if (str == "/") {
                     evaluation.push(left / right);
-                } else if (!str.compare("^")) {
+                } else if (str == "^") {
                     evaluation.push(pow(left, right));
 
                 } else {
@@ -205,7 +206,8 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
     return evaluation.top();
 }
 
-std::string Calculator::shaderCode(std::string expression, std::map<std::string, double>& vars,
+std::string Calculator::shaderCode(const std::string& expression,
+                                   std::map<std::string, double>& vars,
                                    std::map<std::string, std::string>& symbols) {
     // 1. Create the operator precedence map.
     const auto opPrecedence = getOpeatorPrecedence();
@@ -236,15 +238,15 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
                 evaluation.pop();
                 const std::string left = evaluation.top();
                 evaluation.pop();
-                if (!str.compare("+")) {
+                if (str == "+") {
                     evaluation.push("(" + left + " + " + right + ")");
-                } else if (!str.compare("*")) {
+                } else if (str == "*") {
                     evaluation.push("(" + left + " * " + right + ")");
-                } else if (!str.compare("-")) {
+                } else if (str == "-") {
                     evaluation.push("(" + left + " - " + right + ")");
-                } else if (!str.compare("/")) {
+                } else if (str == "/") {
                     evaluation.push("(" + left + " / " + right + ")");
-                } else if (!str.compare("^")) {
+                } else if (str == "^") {
                     evaluation.push("pow(" + left + ", " + right + ")");
                 } else {
                     throw Exception(SourceContext{}, "Unknown operator: '{}'", str);

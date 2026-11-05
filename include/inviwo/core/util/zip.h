@@ -49,6 +49,7 @@ struct proxy {
     proxy(proxy&&) = default;
     proxy& operator=(const proxy&) = default;
     proxy& operator=(proxy&&) = default;
+    ~proxy() = default;
 
     template <typename... Us>
     proxy(Us&&... args) : data{std::forward<Us>(args)...} {}

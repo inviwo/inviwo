@@ -92,14 +92,16 @@ public:
 
     struct Span_t {};
 
-    TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
+    TableBuilder(Document::DocumentHandle handle, const Document::PathComponent& pos,
                  const UnorderedStringMap<std::string>& attributes = {});
 
     explicit TableBuilder(Document::DocumentHandle table);
 
     template <typename... Args>
+    // By value (not const&) so that this overload wins over the variadic one for rvalues
+    // NOLINTNEXTLINE(performance-unnecessary-value-param)
     Document::DocumentHandle operator()(Document::PathComponent pos, Args&&... args) {
-        auto row = table_.insert(std::move(pos), "tr");
+        auto row = table_.insert(pos, "tr");
         tablerow(row, std::forward<Args>(args)...);
         return row;
     }

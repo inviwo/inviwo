@@ -165,6 +165,7 @@ IVW_CORE_API std::string fromWstring(std::wstring_view str);
  * @param func Function callback, should take a std::string_view as argument
  */
 template <typename Func>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the functor is called repeatedly
 constexpr void forEachStringPart(std::string_view str, std::string_view sep, Func&& func) {
     if (str.empty()) return;
     for (size_t first = 0; first < str.size();) {
@@ -182,6 +183,7 @@ constexpr void forEachStringPart(std::string_view str, std::string_view sep, Fun
  * @param func Function callback taking a std::string_view as argument
  */
 template <typename Func>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the functor is called repeatedly
 void forEachLine(std::string_view str, Func&& func) {
     for (size_t first = 0; first < str.size();) {
         const size_t second = str.find_first_of("\r\n", first);

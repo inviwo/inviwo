@@ -71,7 +71,7 @@ void saveAllCanvases(const ProcessorNetwork* network, const std::filesystem::pat
 
     // Save them
     int i = 0;
-    for (auto* cp : allConsideredCanvases) {
+    for (const auto* cp : allConsideredCanvases) {
         if (!cp->isValid() || !cp->isReady()) {
             const std::ostringstream msg;
             log::error(
@@ -135,7 +135,7 @@ void validateIdentifier(std::string_view identifier, std::string_view type, Sour
 }
 
 std::string findUniqueIdentifier(std::string_view identifier,
-                                 std::function<bool(std::string_view)> isUnique,
+                                 const std::function<bool(std::string_view)>& isUnique,
                                  std::string_view sep) {
 
     int i = 2;

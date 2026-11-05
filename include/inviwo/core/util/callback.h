@@ -61,6 +61,7 @@ public:
         return *this;
     }
     CallBackList& operator=(CallBackList&) = default;
+    CallBackList& operator=(CallBackList&&) = default;
     ~CallBackList() = default;
 
     void startBlockingCallbacks() { ++callbacksBlocked_; }

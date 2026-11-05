@@ -43,7 +43,10 @@ class IVW_CORE_API LinkSettings : public Settings, public FactoryObserver<Proper
 public:
     LinkSettings(const std::string& id, PropertyFactory* factory);
     LinkSettings(const LinkSettings&) = delete;
+    LinkSettings(LinkSettings&&) = delete;
     LinkSettings& operator=(const LinkSettings&) = delete;
+    LinkSettings& operator=(LinkSettings&&) = delete;
+    virtual ~LinkSettings() = default;
     virtual bool isLinkable(const Property* property) const;
 
     virtual void onRegister(PropertyFactoryObject* p) override;

@@ -122,7 +122,9 @@ void ImageCache::setInvalid() const { valid_ = false; }
 
 bool ImageCache::hasImage(const size2_t dimensions) { return cache_.contains(dimensions); }
 
-void ImageCache::addImage(std::shared_ptr<Image> image) { cache_[image->getDimensions()] = image; }
+void ImageCache::addImage(const std::shared_ptr<Image>& image) {
+    cache_[image->getDimensions()] = image;
+}
 
 std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
     const auto it = cache_.find(dimensions);

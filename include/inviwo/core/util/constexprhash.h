@@ -133,7 +133,7 @@ constexpr std::uint64_t crc_table[] = {
 [[nodiscard]] constexpr std::uint64_t constexpr_hash(std::string_view str) noexcept {
     std::uint64_t crc = 0xffffffff;
     for (const auto c : str) {
-        crc = (crc >> 8) ^ detail::crc_table[(crc ^ c) & 0xff];
+        crc = (crc >> 8U) ^ detail::crc_table[(crc ^ static_cast<unsigned char>(c)) & 0xffU];
     }
     return crc ^ 0xffffffff;
 }

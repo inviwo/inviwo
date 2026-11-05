@@ -37,6 +37,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <cstdint>
 #include <vector>
 #include <ostream>
 #include <fmt/base.h>
@@ -45,7 +46,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 namespace inviwo::colorbrewer {
 
 // clang-format off
-enum class Colormap {
+enum class Colormap : std::uint16_t {
     Accent_1, Accent_2, Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
     Blues_3, Blues_4, Blues_5, Blues_6, Blues_7, Blues_8, Blues_9, 
     BrBG_3, BrBG_4, BrBG_5, BrBG_6, BrBG_7, BrBG_8, BrBG_9, BrBG_10, BrBG_11, 
@@ -84,9 +85,9 @@ enum class Colormap {
     FirstMap=Accent_1, LastMap=YlOrRd_8
 };
 
-enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
+enum class Category : std::uint8_t { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
 
-enum class Family {
+enum class Family : std::uint8_t {
     Accent, Blues, BrBG, BuGn, BuPu, Dark2, GnBu, 
     Greens, Greys, OrRd, Oranges, PRGn, Paired, Pastel1, 
     Pastel2, PiYG, PuBu, PuBuGn, PuOr, PuRd, Purples, 

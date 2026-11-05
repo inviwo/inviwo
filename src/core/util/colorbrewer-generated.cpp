@@ -40,6 +40,7 @@ namespace inviwo::colorbrewer {
 const std::vector<dvec4>& getColormap(Colormap colormap) {
     switch (colormap) {
             // clang-format off
+            // NOLINTBEGIN(modernize-use-std-numbers) quantized color channel values
         case Colormap::Accent_1: {
             static const std::vector<dvec4> accent_1(
                 {dvec4(0.4980392156862745, 0.788235294117647, 0.4980392156862745, 1.0)});
@@ -2821,6 +2822,7 @@ const std::vector<dvec4>& getColormap(Colormap colormap) {
             return ylorrd_8;
         }
 
+            // NOLINTEND(modernize-use-std-numbers)
             // clang-format on
     }
     IVW_ASSERT(false, "Unhandled enum value");

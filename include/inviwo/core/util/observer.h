@@ -98,6 +98,11 @@ class IVW_CORE_API ObservableInterface {
     friend class Observer;
 
 public:
+    ObservableInterface() = default;
+    ObservableInterface(const ObservableInterface&) = default;
+    ObservableInterface(ObservableInterface&&) = default;
+    ObservableInterface& operator=(const ObservableInterface&) = default;
+    ObservableInterface& operator=(ObservableInterface&&) = default;
     virtual ~ObservableInterface() = default;
 
     virtual void startBlockingNotifications() = 0;
@@ -225,9 +230,12 @@ private:
 
     size_t notificationsBlocked_ = 0;
 
+protected:
     virtual void addObserver(Observer* observer) override;
     virtual void removeObserver(Observer* observer) override;
     virtual void removeObservers() final;
+
+private:
     virtual bool addObserverInternal(Observer* observer) final;
     virtual bool removeObserverInternal(Observer* observer) final;
 };
@@ -376,7 +384,8 @@ public:
     NotificationBlocker() = delete;
     NotificationBlocker(const NotificationBlocker&) = delete;
     NotificationBlocker(NotificationBlocker&&) = delete;
-    NotificationBlocker& operator=(NotificationBlocker) = delete;
+    NotificationBlocker& operator=(const NotificationBlocker&) = delete;
+    NotificationBlocker& operator=(NotificationBlocker&&) = delete;
     ~NotificationBlocker();
 
 private:

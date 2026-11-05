@@ -49,7 +49,7 @@ std::vector<std::string> stackTrace() {
         if (InviwoApplication::getPtr()->getSystemSettings().stackTraceInException_) {
             auto stack = getStackTrace();
             const auto offset = std::min(static_cast<size_t>(4), stack.size());
-            stack.erase(stack.begin(), stack.begin() + offset);
+            stack.erase(stack.begin(), stack.begin() + static_cast<std::ptrdiff_t>(offset));
             return stack;
         }
     }
@@ -91,9 +91,11 @@ std::string Exception::getFullMessage(size_t maxFrames) const {
     if (stack_.empty()) {
         return what();
     } else {
-        return fmt::format(
-            "{}\nStack Trace:\n{}", what(),
-            fmt::join(stack_.begin(), stack_.begin() + std::min(maxFrames, stack_.size()), "\n"));
+        return fmt::format("{}\nStack Trace:\n{}", what(),
+                           fmt::join(stack_.begin(),
+                                     stack_.begin() + static_cast<std::ptrdiff_t>(
+                                                          std::min(maxFrames, stack_.size())),
+                                     "\n"));
     }
 }
 

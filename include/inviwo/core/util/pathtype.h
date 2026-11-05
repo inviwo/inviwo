@@ -30,10 +30,11 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace inviwo {
 
-enum class PathType {
+enum class PathType : std::uint8_t {
     Data,               // /data
     Volumes,            // /data/volumes
     Workspaces,         // /data/workspaces

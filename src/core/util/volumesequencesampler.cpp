@@ -30,10 +30,12 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/volumesequencesampler.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
-VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequence> volumeSequence,
-                                             bool allowLooping)
+VolumeSequenceSampler::VolumeSequenceSampler(
+    const std::shared_ptr<const VolumeSequence>& volumeSequence, bool allowLooping)
     : Spatial4DSampler<dvec3>(volumeSequence->front())
     , wrappers_()
     , allowLooping_(allowLooping)
@@ -58,7 +60,7 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     auto size = static_cast<decltype(infsTime)>(wrappers_.size());
 
     if (infsTime == 0) {  // all volumes has timestamps, make sure the volumes are in sorted order,
-        std::sort(wrappers_.begin(), wrappers_.end(), [](auto a, auto b) { return *a < *b; });
+        std::ranges::sort(wrappers_, [](const auto& a, const auto& b) { return *a < *b; });
     }
 
     if (infsTime != 0 && infsTime != size) {
@@ -76,9 +78,9 @@ VolumeSequenceSampler::VolumeSequenceSampler(std::shared_ptr<const VolumeSequenc
     if (volumeSequence->size() >= 2) {
         const auto firstVol = volumeSequence->front();
         const auto lastVol = volumeSequence->back();
-        auto firstVolRam = firstVol->getRepresentation<VolumeRAM>();
-        auto firstData = static_cast<const char*>(firstVolRam->getData());
-        auto lastData =
+        const auto* firstVolRam = firstVol->getRepresentation<VolumeRAM>();
+        const auto* firstData = static_cast<const char*>(firstVolRam->getData());
+        const auto* lastData =
             static_cast<const char*>(lastVol->getRepresentation<VolumeRAM>()->getData());
         const auto dataSize1 = firstVolRam->getNumberOfBytes();
 
@@ -149,9 +151,8 @@ dvec3 VolumeSequenceSampler::sampleDataSpace(const dvec4& pos) const {
         }
     }
 
-    auto it = std::upper_bound(
-        wrappers_.begin(), wrappers_.end(), t,
-        [](double t2, const std::shared_ptr<Wrapper> a) { return t2 < a->timestamp_; });
+    auto it = std::ranges::upper_bound(
+        wrappers_, t, {}, [](const std::shared_ptr<Wrapper>& w) { return w->timestamp_; });
     --it;
     const auto wrapper = *it;
 

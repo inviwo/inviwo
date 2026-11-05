@@ -69,7 +69,7 @@ std::wstring toWstring(std::string_view str) {
 #else
     auto state = std::mbstate_t();
     const SafeCStr safestr{str};
-    auto sptr = safestr.c_str();
+    const auto* sptr = safestr.c_str();
     const char* loc = nullptr;
     size_t len = std::mbsrtowcs(nullptr, &sptr, 0, &state);
     if (len == static_cast<std::size_t>(-1)) {
@@ -246,8 +246,8 @@ void util::urlEncodeTo(std::string_view text, StrBuffer& strBuffer) {
     for (const auto c : text) {
         if (urlEscapeMap[static_cast<unsigned>(c)]) {
             strBuffer.buff.push_back('%');
-            strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 4) & 0xf]);
-            strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 0) & 0xf]);
+            strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 4U) & 0xfU]);
+            strBuffer.buff.push_back(hex[(static_cast<unsigned>(c) >> 0U) & 0xfU]);
         } else {
             strBuffer.buff.push_back(c);
         }
@@ -261,7 +261,7 @@ std::string util::urlEncode(std::string_view text) {
 }
 
 void util::htmlEncodeTo(std::string_view data, StrBuffer& strBuffer) {
-    for (char pos : data) {
+    for (const char pos : data) {
         switch (pos) {
             case '&':  strBuffer.append("&amp;"); break;
             case '\"': strBuffer.append("&quot;"); break;

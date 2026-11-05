@@ -50,6 +50,10 @@ public:
             (*variable_) = true;
         }
     }
+    KeepTrueWhileInScope(const KeepTrueWhileInScope&) = delete;
+    KeepTrueWhileInScope(KeepTrueWhileInScope&&) = delete;
+    KeepTrueWhileInScope& operator=(const KeepTrueWhileInScope&) = delete;
+    KeepTrueWhileInScope& operator=(KeepTrueWhileInScope&&) = delete;
     ~KeepTrueWhileInScope() {
         if (variable_) (*variable_) = prevValue_;
     }
@@ -83,7 +87,7 @@ struct IVW_CORE_API OnScopeExit {
         return *this;
     }
 
-    explicit OnScopeExit(ExitAction action) try : action_(action) {
+    explicit OnScopeExit(const ExitAction& action) try : action_(action) {
     } catch (...) {
         action();
     }
@@ -91,7 +95,7 @@ struct IVW_CORE_API OnScopeExit {
         if (action_) action_();
     }
 
-    void setAction(ExitAction action = nullptr) { action_ = action; }
+    void setAction(ExitAction action = nullptr) { action_ = std::move(action); }
     void release() { setAction(); }
     void call() {
         if (action_) action_();

@@ -156,7 +156,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
             double midPointOffset = 0.0;
             if (midPoint > start) {
                 const auto dt = (midPoint - start) / (0.5 * static_cast<double>(nColors));
-                midPointOffset = 0.5 * dt * (nColors % 2);
+                midPointOffset = 0.5 * dt * static_cast<double>(nColors % 2);
                 for (size_t i = 0; i < nColors / 2; i++) {
                     addPoint(start + static_cast<double>(i) * dt, i);
                     addPointAlmost(start + static_cast<double>(i + 1) * dt, i);
@@ -165,7 +165,7 @@ TransferFunction getTransferFunction(const Category& category, const Family& fam
             addPoint(midPoint - midPointOffset, nColors / 2);
             if (midPoint < stop) {
                 const auto dt = (stop - midPoint) / (0.5 * static_cast<double>(nColors));
-                midPointOffset = 0.5 * dt * (nColors % 2);
+                midPointOffset = 0.5 * dt * static_cast<double>(nColors % 2);
                 addPointAlmost(midPoint + dt - midPointOffset, nColors / 2);
                 for (auto i = nColors - 1; i > nColors / 2; i--) {
                     addPointAlmost(stop - static_cast<double>(nColors - 1 - i) * dt, i);

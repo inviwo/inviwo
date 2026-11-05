@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/pathtype.h>
 
+#include <cstdint>
 #include <vector>
 #include <fstream>
 #include <cstdio>
@@ -253,7 +254,7 @@ IVW_CORE_API auto getFileInFolder(const std::filesystem::path& folder,
                                   std::optional<std::string_view> exclude)
     -> std::expected<std::filesystem::path, std::string_view>;
 
-enum class ListMode {
+enum class ListMode : std::uint8_t {
     Files,
     Directories,
     FilesAndDirectories,

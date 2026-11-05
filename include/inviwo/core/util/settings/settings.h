@@ -42,6 +42,10 @@ class IVW_CORE_API Settings : public PropertyOwner {
 public:
     Settings(std::string id, InviwoApplication* app);
     explicit Settings(const std::string& id = "");
+    Settings(const Settings&) = delete;
+    Settings(Settings&&) = delete;
+    Settings& operator=(const Settings&) = delete;
+    Settings& operator=(Settings&&) = delete;
     virtual ~Settings();
 
     void insertProperty(size_t index, Property* property, bool owner) override;

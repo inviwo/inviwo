@@ -174,6 +174,7 @@ struct IndirectIterator {
         std::is_nothrow_move_constructible_v<Iter>) = default;
     constexpr IndirectIterator& operator=(IndirectIterator&&) noexcept(
         std::is_nothrow_move_assignable_v<Iter>) = default;
+    ~IndirectIterator() = default;
 
     constexpr IndirectIterator& operator++() {
         ++iterator_;

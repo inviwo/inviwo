@@ -41,7 +41,9 @@ namespace colorbrewer {
 const std::vector<dvec4> &getColormap(Colormap colormap) {
     switch (colormap) {
         // clang-format off
+        // NOLINTBEGIN(modernize-use-std-numbers) quantized color channel values
 ##PLACEHOLDER##
+        // NOLINTEND(modernize-use-std-numbers)
         // clang-format on
     }
     IVW_ASSERT(false, "Unhandled enum value");

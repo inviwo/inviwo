@@ -43,6 +43,10 @@ namespace inviwo {
 class IVW_CORE_API FileLogger : public Logger {
 public:
     explicit FileLogger(const std::filesystem::path& logPath);
+    FileLogger(const FileLogger&) = delete;
+    FileLogger(FileLogger&&) = delete;
+    FileLogger& operator=(const FileLogger&) = delete;
+    FileLogger& operator=(FileLogger&&) = delete;
     virtual ~FileLogger();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

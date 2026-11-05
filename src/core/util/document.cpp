@@ -127,7 +127,7 @@ Document::PathComponent::PathComponent(int index)
     , matcher_{[index](const ElemVec& elements) -> ElemVec::const_iterator {
         const size_t i = index < 0 ? elements.size() + index : static_cast<size_t>(index);
         if (i < elements.size()) {
-            return elements.begin() + i;
+            return elements.begin() + static_cast<std::ptrdiff_t>(i);
         } else {
             return elements.end();
         }
@@ -212,7 +212,7 @@ Document::DocumentHandle Document::DocumentHandle::get(const std::vector<PathCom
 }
 
 Document::DocumentHandle Document::DocumentHandle::insert(
-    PathComponent pos, std::string_view name, std::string_view content,
+    const PathComponent& pos, std::string_view name, std::string_view content,
     const UnorderedStringMap<std::string>& attributes) {
     const auto iter = pos(elem_->children_);
 
@@ -228,7 +228,7 @@ Document::DocumentHandle Document::DocumentHandle::append(
     return insert(PathComponent::end(), name, content, attributes);
 }
 
-Document::DocumentHandle Document::DocumentHandle::insertText(PathComponent pos,
+Document::DocumentHandle Document::DocumentHandle::insertText(const PathComponent& pos,
                                                               std::string_view text) {
     const auto iter = pos(elem_->children_);
     const auto it =
@@ -239,7 +239,7 @@ Document::DocumentHandle Document::DocumentHandle::appendText(std::string_view t
     return insertText(PathComponent::end(), text);
 }
 
-Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Document doc) {
+Document::DocumentHandle Document::DocumentHandle::insert(const PathComponent& pos, Document doc) {
     const auto iter = pos(elem_->children_);
 
     if (doc.empty()) {
@@ -291,11 +291,13 @@ Document& Document::operator=(const Document& that) {
 
 Document::DocumentHandle Document::handle() const { return {this, root_.get()}; }
 
+// The handle gives mutable access to the document, so these can't be const.
+// NOLINTBEGIN(readability-make-member-function-const)
 Document::DocumentHandle Document::get(const std::vector<PathComponent>& path) {
     return handle().get(path);
 }
 
-Document::DocumentHandle Document::insert(PathComponent pos, std::string_view name,
+Document::DocumentHandle Document::insert(const PathComponent& pos, std::string_view name,
                                           std::string_view content,
                                           const UnorderedStringMap<std::string>& attributes) {
     return handle().insert(pos, name, content, attributes);
@@ -306,11 +308,11 @@ Document::DocumentHandle Document::append(std::string_view name, std::string_vie
     return handle().append(name, content, attributes);
 }
 
-Document::DocumentHandle Document::insert(PathComponent pos, Document doc) {
+Document::DocumentHandle Document::insert(const PathComponent& pos, Document doc) {
     return handle().insert(pos, std::move(doc));
 }
 
-Document::DocumentHandle Document::insertText(PathComponent pos, std::string_view text) {
+Document::DocumentHandle Document::insertText(const PathComponent& pos, std::string_view text) {
     return handle().insertText(pos, text);
 }
 Document::DocumentHandle Document::appendText(std::string_view text) {
@@ -318,6 +320,7 @@ Document::DocumentHandle Document::appendText(std::string_view text) {
 }
 
 Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
+// NOLINTEND(readability-make-member-function-const)
 
 std::string Document::str() const {
     std::string buff;

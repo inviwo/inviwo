@@ -40,6 +40,10 @@ namespace inviwo {
 class IVW_CORE_API ConsoleLogger : public Logger {
 public:
     ConsoleLogger();
+    ConsoleLogger(const ConsoleLogger&) = delete;
+    ConsoleLogger(ConsoleLogger&&) = delete;
+    ConsoleLogger& operator=(const ConsoleLogger&) = delete;
+    ConsoleLogger& operator=(ConsoleLogger&&) = delete;
     virtual ~ConsoleLogger();
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,

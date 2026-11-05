@@ -36,6 +36,10 @@ namespace inviwo {
 class IVW_CORE_API Capabilities {
 public:
     Capabilities();
+    Capabilities(const Capabilities&) = default;
+    Capabilities(Capabilities&&) = default;
+    Capabilities& operator=(const Capabilities&) = default;
+    Capabilities& operator=(Capabilities&&) = default;
     virtual ~Capabilities();
 
     virtual void printInfo() = 0;

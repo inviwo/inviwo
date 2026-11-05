@@ -79,7 +79,7 @@ std::streamsize LogStream::xsputn(const char* s, std::streamsize count) {
         }
 
         LogCentral::getPtr()->log(source_, level_, audience_, "", "", 0, line);
-        buffer_.erase(buffer_.begin(), buffer_.begin() + found + 1);
+        buffer_.erase(buffer_.begin(), buffer_.begin() + static_cast<std::ptrdiff_t>(found + 1));
     }
 
     return count;

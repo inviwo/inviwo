@@ -42,6 +42,7 @@ namespace inviwo::util {
 
 struct identifier {
     template <typename T>
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the item is only read
     constexpr decltype(auto) operator()(T&& item) const noexcept {
         return item.getIdentifier();
     }
