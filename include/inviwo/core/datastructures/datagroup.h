@@ -85,6 +85,10 @@ protected:
     DataGroup() = default;
     DataGroup(const DataGroup<Self, Repr>& rhs);
     DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& that);
+    DataGroup(DataGroup&& rhs) : DataGroup(static_cast<const DataGroup&>(rhs)) {}
+    DataGroup& operator=(DataGroup&& that) {
+        return operator=(static_cast<const DataGroup&>(that));
+    }
 
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;

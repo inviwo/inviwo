@@ -91,31 +91,31 @@ void ImageRAM::update(bool editable) {
     pickingLayerRAM_ = nullptr;
 
     if (editable) {
-        auto owner = static_cast<Image*>(this->getOwner());
+        auto* owner = static_cast<Image*>(this->getOwner());
         for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
             colorLayersRAM_.push_back(
                 owner->getColorLayer(i)->getEditableRepresentation<LayerRAM>());
         }
 
-        if (auto depthLayer = owner->getDepthLayer()) {
+        if (auto* depthLayer = owner->getDepthLayer()) {
             depthLayerRAM_ = depthLayer->getEditableRepresentation<LayerRAM>();
         }
 
-        if (auto pickingLayer = owner->getPickingLayer()) {
+        if (auto* pickingLayer = owner->getPickingLayer()) {
             pickingLayerRAM_ = pickingLayer->getEditableRepresentation<LayerRAM>();
         }
     } else {
-        auto owner = static_cast<const Image*>(this->getOwner());
+        const auto* owner = static_cast<const Image*>(this->getOwner());
         for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
             colorLayersRAM_.push_back(
                 const_cast<LayerRAM*>(owner->getColorLayer(i)->getRepresentation<LayerRAM>()));
         }
 
-        if (auto depthLayer = owner->getDepthLayer()) {
+        if (const auto* depthLayer = owner->getDepthLayer()) {
             depthLayerRAM_ = const_cast<LayerRAM*>(depthLayer->getRepresentation<LayerRAM>());
         }
 
-        if (auto pickingLayer = owner->getPickingLayer()) {
+        if (const auto* pickingLayer = owner->getPickingLayer()) {
             pickingLayerRAM_ = const_cast<LayerRAM*>(pickingLayer->getRepresentation<LayerRAM>());
         }
     }

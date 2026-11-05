@@ -32,11 +32,12 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <iosfwd>
 
 namespace inviwo {
 
-enum class ShadingMode : int {
+enum class ShadingMode : std::uint8_t {
     None,
     Ambient,
     Diffuse,

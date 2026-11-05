@@ -65,7 +65,7 @@ public:
      *
      * @see OpenGL 4.6 specification, Section 2.3.5 Fixed-Point Data Conversion
      */
-    enum class SignedNormalization {
+    enum class SignedNormalization : std::uint8_t {
         Asymmetric,  //!< uses an asymmetric range, i.e. [-2^(b-1), 2^(b-1) - 1]
         Symmetric,   //!< uses a symmetric range, i.e. [-2^(b-1) + 1, 2^(b-1) - 1]
     };
@@ -86,6 +86,7 @@ public:
     DataMapper(DataMapper&& rhs) noexcept;
     DataMapper& operator=(const DataMapper& that);
     DataMapper& operator=(DataMapper&& that) noexcept;
+    ~DataMapper() = default;
 
     /**
      * The `dataRange` is used to normalize the "raw" values to [0,1]

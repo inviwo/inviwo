@@ -63,6 +63,8 @@ protected:
     DataGroupRepresentation() = default;
     DataGroupRepresentation(const DataGroupRepresentation& rhs) = default;
     DataGroupRepresentation& operator=(const DataGroupRepresentation& that) = default;
+    DataGroupRepresentation(DataGroupRepresentation&& rhs) = default;
+    DataGroupRepresentation& operator=(DataGroupRepresentation&& that) = default;
 };
 
 }  // namespace inviwo

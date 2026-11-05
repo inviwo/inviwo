@@ -59,6 +59,8 @@ public:
 
     VolumeDisk(const VolumeDisk& rhs) = default;
     VolumeDisk& operator=(const VolumeDisk& that) = default;
+    VolumeDisk(VolumeDisk&& rhs) = default;
+    VolumeDisk& operator=(VolumeDisk&& that) = default;
     virtual VolumeDisk* clone() const override;
     virtual ~VolumeDisk() = default;
 

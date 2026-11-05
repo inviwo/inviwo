@@ -56,9 +56,9 @@ std::string_view PerspectiveCamera::getClassIdentifier() const { return classIde
 
 void PerspectiveCamera::updateFrom(const Camera& source) {
     Camera::updateFrom(source);
-    if (auto pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
+    if (const auto* pc = dynamic_cast<const PerspectiveCamera*>(&source)) {
         setFovy(pc->getFovy());
-    } else if (auto oc = dynamic_cast<const OrthographicCamera*>(&source)) {
+    } else if (const auto* oc = dynamic_cast<const OrthographicCamera*>(&source)) {
         const auto dist = util::widthToViewDist(oc->getWidth(), getFovy(), getAspectRatio());
         setLookFrom(getLookTo() + dist * glm::normalize(getLookFrom() - getLookTo()));
     } else if (const auto* plc = dynamic_cast<const PlotCamera*>(&source)) {
@@ -74,7 +74,7 @@ void PerspectiveCamera::setFovy(double val) {
         fovy_ = val;
         invalidateProjectionMatrix();
         if (camprop_) {
-            if (auto p = util::getCameraFovProperty(*camprop_)) {
+            if (auto* p = util::getCameraFovProperty(*camprop_)) {
                 p->propertyModified();
             }
         }
@@ -95,13 +95,13 @@ void PerspectiveCamera::configureProperties(CameraProperty& cp, bool attach) {
                 }
             });
 
-    } else if (auto fov = util::getCameraFovProperty(cp)) {
+    } else if (auto* fov = util::getCameraFovProperty(cp)) {
         fov->disconnectSetAndGet();
     }
 }
 
 bool PerspectiveCamera::equal(const Camera& other) const {
-    if (auto rhs = dynamic_cast<const PerspectiveCamera*>(&other)) {
+    if (const auto* rhs = dynamic_cast<const PerspectiveCamera*>(&other)) {
         return equalTo(other) && fovy_ == rhs->fovy_;
     } else {
         return false;

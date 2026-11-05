@@ -55,6 +55,11 @@ public:
     virtual ~SkewedPerspectiveCamera() = default;
     SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);
+    SkewedPerspectiveCamera(SkewedPerspectiveCamera&& other)
+        : SkewedPerspectiveCamera(static_cast<const SkewedPerspectiveCamera&>(other)) {}
+    SkewedPerspectiveCamera& operator=(SkewedPerspectiveCamera&& other) {
+        return operator=(static_cast<const SkewedPerspectiveCamera&>(other));
+    }
     virtual SkewedPerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"SkewedPerspectiveCamera"};

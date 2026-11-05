@@ -54,6 +54,8 @@ public:
     explicit LayerDisk(const LayerReprConfig& config, const std::filesystem::path& path = {});
     LayerDisk(const LayerDisk& rhs) = default;
     LayerDisk& operator=(const LayerDisk& that) = default;
+    LayerDisk(LayerDisk&& rhs) = default;
+    LayerDisk& operator=(LayerDisk&& that) = default;
     virtual LayerDisk* clone() const override;
     virtual ~LayerDisk();
 
@@ -93,7 +95,7 @@ public:
 private:
     // clang-format off
     [[deprecated("does not work for DiskRepresentation (deprecated since 2019-06-27)")]]
-    virtual void setDimensions(size2_t dimensions) override;
+    virtual void setDimensions(size2_t dimensions) override; // NOLINT(misc-override-with-different-visibility) intentionally hidden
     // clang-format on
 
     const DataFormatBase* dataFormatBase_;

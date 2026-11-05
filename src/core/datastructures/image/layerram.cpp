@@ -39,7 +39,7 @@ bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const 
     // We use a LayerRamResizer to copy/resize one representation into another.
     // The CImg module implements a LayerRamResizer and registers it with the app
 
-    if (auto resizer = InviwoApplication::getPtr()->getLayerRamResizer()) {
+    if (const auto* resizer = InviwoApplication::getPtr()->getLayerRamResizer()) {
         return resizer->resize(*this, *static_cast<LayerRAM*>(targetLayerRam));
     }
     return false;

@@ -98,6 +98,8 @@ protected:
     explicit LayerRepresentation(LayerType type = LayerType::Color);
     LayerRepresentation(const LayerRepresentation& rhs) = default;
     LayerRepresentation& operator=(const LayerRepresentation& that) = default;
+    LayerRepresentation(LayerRepresentation&& rhs) = default;
+    LayerRepresentation& operator=(LayerRepresentation&& that) = default;
 
     LayerType layerType_;
 };

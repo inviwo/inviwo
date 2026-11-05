@@ -40,6 +40,8 @@ public:
                         ConnectivityType ct = ConnectivityType::None);
     SimpleMesh(const SimpleMesh& rhs) = default;
     SimpleMesh& operator=(const SimpleMesh& that) = default;
+    SimpleMesh(SimpleMesh&& rhs) = default;
+    SimpleMesh& operator=(SimpleMesh&& that) = default;
     virtual SimpleMesh* clone() const override;
     virtual ~SimpleMesh() = default;
 
@@ -71,7 +73,7 @@ void addIndices(SimpleMesh* mesh, T index, Args... args) {
 
 template <typename... Args>
 void SimpleMesh::addIndices(Args&&... args) {
-    detail::addIndices<Args...>(this, args...);
+    detail::addIndices<Args...>(this, std::forward<Args>(args)...);
 }
 
 }  // namespace inviwo

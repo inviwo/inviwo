@@ -51,6 +51,7 @@
 #include <iterator>
 #include <vector>
 #include <utility>
+#include <cstdint>
 #include <span>
 
 namespace inviwo {
@@ -78,11 +79,11 @@ std::array<Axis, N> defaultAxes() {
 
 }  // namespace util
 
-enum class UnitFlag {
+enum class UnitFlag : std::uint8_t {
     None = 0,
-    UsesPrefix = 1 << 0,
-    OnlyPositivePowers = 1 << 1,
-    OnlyByItSelf = 1 << 2
+    UsesPrefix = 1U << 0U,
+    OnlyPositivePowers = 1U << 1U,
+    OnlyByItSelf = 1U << 2U
 };
 ALLOW_FLAGS_FOR_ENUM(UnitFlag)
 using UnitFlags = flags::flags<UnitFlag>;
@@ -216,7 +217,7 @@ constexpr EnabledGroups extGroups = {true, true, true, false, false, false, fals
 
 namespace util {
 
-enum class UseUnitPrefixes { Yes, No };
+enum class UseUnitPrefixes : std::uint8_t { Yes, No };
 
 IVW_CORE_API unitgroups::EnabledGroups getSystemUnitGroups();
 
@@ -274,8 +275,8 @@ template <>
 struct fmt::formatter<::inviwo::Unit> {
     formatter<std::string_view> formatter_;
 
-    enum class UnitSystem { SI, Ext, Sys, All };
-    enum class Braces { None = 0, Paren, Square };
+    enum class UnitSystem : std::uint8_t { SI, Ext, Sys, All };
+    enum class Braces : std::uint8_t { None = 0, Paren, Square };
 
     ::inviwo::util::UseUnitPrefixes usePrefix = ::inviwo::util::UseUnitPrefixes::Yes;
     UnitSystem unitsystem = UnitSystem::Sys;
@@ -283,12 +284,12 @@ struct fmt::formatter<::inviwo::Unit> {
     bool leadingSpace = false;
 
     constexpr auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
-        const auto it = ctx.begin();
-        const auto end = ctx.end();
+        const auto* const it = ctx.begin();
+        const auto* const end = ctx.end();
 
         const auto range = std::string_view(it, end - it);
         const auto endPos = range.find_first_of(":}");
-        const auto endIt =
+        const auto* const endIt =
             endPos != std::string_view::npos ? it + endPos + (range[endPos] == ':' ? 1 : 0) : end;
         auto unitFormat = range.substr(0, endPos);
 

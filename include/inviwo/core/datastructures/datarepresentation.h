@@ -69,6 +69,8 @@ protected:
     DataRepresentation() = default;
     DataRepresentation(const DataRepresentation& rhs) = default;
     DataRepresentation& operator=(const DataRepresentation& that) = default;
+    DataRepresentation(DataRepresentation&& rhs) = default;
+    DataRepresentation& operator=(DataRepresentation&& that) = default;
 
     bool isValid_ = true;
     const Owner* owner_ = nullptr;

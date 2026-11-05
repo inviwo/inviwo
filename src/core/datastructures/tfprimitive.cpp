@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/tfprimitive.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive&) {}
@@ -153,9 +155,7 @@ vec4 util::interpolateColor(std::span<const TFPrimitiveData> line, double x) {
     if (x <= line.front().pos) return line.front().color;
     if (x >= line.back().pos) return line.back().color;
 
-    const auto it =
-        std::upper_bound(line.begin(), line.end(), x,
-                         [](double x, const TFPrimitiveData& pt) { return x < pt.pos; });
+    const auto it = std::ranges::upper_bound(line, x, {}, &TFPrimitiveData::pos);
 
     const auto& p2 = *it;
     const auto& p1 = *(it - 1);

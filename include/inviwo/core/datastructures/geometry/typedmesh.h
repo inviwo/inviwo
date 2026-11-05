@@ -73,6 +73,10 @@ public:
     static Mesh::BufferInfo bi() { return {static_cast<BufferType>(attrib), location}; }
 
     TypedMeshBufferBase() = default;
+    TypedMeshBufferBase(const TypedMeshBufferBase&) = default;
+    TypedMeshBufferBase(TypedMeshBufferBase&&) = default;
+    TypedMeshBufferBase& operator=(const TypedMeshBufferBase&) = default;
+    TypedMeshBufferBase& operator=(TypedMeshBufferBase&&) = default;
     virtual ~TypedMeshBufferBase() = default;
 
     explicit TypedMeshBufferBase(Mesh& mesh) { mesh.addBuffer(bi(), buffer_); }
@@ -373,6 +377,10 @@ public:
 
     virtual TypedMesh* clone() const override { return new TypedMesh(*this); }
 
+    TypedMesh(TypedMesh&& rhs) : TypedMesh(static_cast<const TypedMesh&>(rhs)) {}
+    TypedMesh& operator=(TypedMesh&& that) {
+        return operator=(static_cast<const TypedMesh&>(that));
+    }
     virtual ~TypedMesh() = default;
 
     /**
@@ -580,7 +588,7 @@ template <typename... BufferTraits>
 template <typename... Args>
 uint32_t TypedMesh<BufferTraits...>::addVertex(Args&&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
-        *this, typename TypedMesh<BufferTraits...>::Vertex{args...});
+        *this, typename TypedMesh<BufferTraits...>::Vertex{std::forward<Args>(args)...});
 
     using BT = std::tuple_element_t<0, Traits>;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
@@ -590,7 +598,7 @@ template <typename... BufferTraits>
 template <typename... Args>
 void TypedMesh<BufferTraits...>::setVertex(size_t index, Args&&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
-        *this, index, typename TypedMesh<BufferTraits...>::Vertex{args...});
+        *this, index, typename TypedMesh<BufferTraits...>::Vertex{std::forward<Args>(args)...});
 }
 
 /**

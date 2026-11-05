@@ -46,6 +46,8 @@ public:
     ImageRepresentation() = default;
     ImageRepresentation(const ImageRepresentation& rhs) = default;
     ImageRepresentation& operator=(const ImageRepresentation& that) = default;
+    ImageRepresentation(ImageRepresentation&& rhs) = default;
+    ImageRepresentation& operator=(ImageRepresentation&& that) = default;
     virtual ImageRepresentation* clone() const override = 0;
     virtual ~ImageRepresentation() = default;
 

@@ -149,7 +149,7 @@ unitgroups::EnabledGroups util::getSystemUnitGroups() {
     unitgroups::EnabledGroups enabledGroups = unitgroups::allGroups;
 
     if (InviwoApplication::isInitialized()) {
-        if (auto us = InviwoApplication::getPtr()->getSettingsByType<UnitSettings>()) {
+        if (auto* us = InviwoApplication::getPtr()->getSettingsByType<UnitSettings>()) {
             for (auto&& [enabled, prop] : util::zip(enabledGroups, us->unitGroups)) {
                 enabled = prop.get();
             }
@@ -274,8 +274,8 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     }
 
     // Order units alphabetically to make it deterministic (sort by abbr)
-    std::sort(winner.begin(), winner.end(),
-              [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
+    std::ranges::sort(winner,
+                      [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
 
     if (closestMultiplier == std::numeric_limits<double>::max()) {
         closestMultiplier = 1.0;
@@ -306,8 +306,8 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
 
     for (auto&& [prefix, abbr, pow] : niceUnits) {
         if (pow > 0) {
-            it = std::copy(prefix.begin(), prefix.end(), it);
-            it = std::copy(abbr.begin(), abbr.end(), it);
+            it = std::ranges::copy(prefix, it).out;
+            it = std::ranges::copy(abbr, it).out;
             it = std::copy(powers[pow].begin(), powers[pow].end(), it);
             ++pos;
         } else if (pow < 0) {
@@ -322,8 +322,8 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
         if (neg > 1) *it++ = '(';
         for (auto&& [prefix, abbr, pow] : niceUnits) {
             if (pow < 0) {
-                it = std::copy(prefix.begin(), prefix.end(), it);
-                it = std::copy(abbr.begin(), abbr.end(), it);
+                it = std::ranges::copy(prefix, it).out;
+                it = std::ranges::copy(abbr, it).out;
                 it = std::copy(powers[-pow].begin(), powers[-pow].end(), it);
             }
         }
