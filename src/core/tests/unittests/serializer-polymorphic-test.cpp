@@ -63,9 +63,9 @@ TEST(SerializerPolymorphicTest, NullUniquePtr) {
     EXPECT_EQ(prop1->getClassIdentifier(), prop2->getClassIdentifier());
     EXPECT_EQ(prop1->getIdentifier(), prop2->getIdentifier());
 
-    auto fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
+    auto* fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
     EXPECT_TRUE(fprop1);
-    auto fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
+    auto* fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
     EXPECT_TRUE(fprop2);
 
     EXPECT_EQ(fprop1->get(), fprop2->get());
@@ -91,9 +91,9 @@ TEST(SerializerPolymorphicTest, NonNullUniquePtr) {
     EXPECT_EQ(prop1->getClassIdentifier(), prop2->getClassIdentifier());
     EXPECT_EQ(prop1->getIdentifier(), prop2->getIdentifier());
 
-    auto fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
+    auto* fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
     EXPECT_TRUE(fprop1);
-    auto fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
+    auto* fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
     EXPECT_TRUE(fprop2);
 
     EXPECT_EQ(fprop1->get(), fprop2->get());
@@ -120,9 +120,9 @@ TEST(SerializerPolymorphicTest, DifferentTypeUniquePtr) {
     EXPECT_EQ(prop1->getClassIdentifier(), prop2->getClassIdentifier());
     EXPECT_EQ(prop1->getIdentifier(), prop2->getIdentifier());
 
-    auto fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
+    auto* fprop1 = dynamic_cast<FloatProperty*>(prop1.get());
     ASSERT_TRUE(fprop1);
-    auto fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
+    auto* fprop2 = dynamic_cast<FloatProperty*>(prop2.get());
     ASSERT_TRUE(fprop2);
 
     EXPECT_EQ(fprop1->get(), fprop2->get());
@@ -157,11 +157,11 @@ TEST(SerializerPolymorphicTest, NullVectorUniquePtr) {
     EXPECT_EQ(props2[0]->getIdentifier(), "float1");
     EXPECT_EQ(props2[1]->getIdentifier(), "double2");
 
-    auto fprop = dynamic_cast<FloatProperty*>(props2[0].get());
+    auto* fprop = dynamic_cast<FloatProperty*>(props2[0].get());
     EXPECT_TRUE(fprop);
     EXPECT_EQ(fprop->get(), 0.123f);
 
-    auto dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
+    auto* dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
     EXPECT_TRUE(dprop);
     EXPECT_EQ(dprop->get(), 0.234);
 }
@@ -195,11 +195,11 @@ TEST(SerializerPolymorphicTest, NonNullVectorUniquePtr) {
     EXPECT_EQ(props2[0]->getIdentifier(), "float1");
     EXPECT_EQ(props2[1]->getIdentifier(), "double2");
 
-    auto fprop = dynamic_cast<FloatProperty*>(props2[0].get());
+    auto* fprop = dynamic_cast<FloatProperty*>(props2[0].get());
     EXPECT_TRUE(fprop);
     EXPECT_EQ(fprop->get(), 0.123f);
 
-    auto dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
+    auto* dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
     EXPECT_TRUE(dprop);
     EXPECT_EQ(dprop->get(), 0.234);
 }
@@ -233,11 +233,11 @@ TEST(SerializerPolymorphicTest, DifferentTypeVectorUniquePtr) {
     EXPECT_EQ(props2[0]->getIdentifier(), "float1");
     EXPECT_EQ(props2[1]->getIdentifier(), "double2");
 
-    auto fprop = dynamic_cast<FloatProperty*>(props2[0].get());
+    auto* fprop = dynamic_cast<FloatProperty*>(props2[0].get());
     ASSERT_TRUE(fprop);
     EXPECT_EQ(fprop->get(), 0.123f);
 
-    auto dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
+    auto* dprop = dynamic_cast<DoubleProperty*>(props2[1].get());
     ASSERT_TRUE(dprop);
     EXPECT_EQ(dprop->get(), 0.234);
 }

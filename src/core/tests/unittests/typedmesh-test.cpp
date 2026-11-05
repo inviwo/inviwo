@@ -43,8 +43,10 @@
 
 namespace inviwo {
 
+namespace {
+
 template <typename... BufferTraits>
-static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     if (a.getDefaultMeshInfo() != b.getDefaultMeshInfo()) {
         return false;
     }
@@ -79,9 +81,11 @@ static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<Buff
 }
 
 template <typename... BufferTraits>
-static bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     return !(a == b);
 }
+
+}  // namespace
 
 TEST(buffertraits, positionsbuffer) {
     EXPECT_EQ(BufferType::PositionAttrib, buffertraits::PositionsBuffer::bi().type);

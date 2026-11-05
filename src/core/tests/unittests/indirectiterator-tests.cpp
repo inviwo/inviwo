@@ -137,7 +137,9 @@ TEST(IndirectIteratorTest, Pair) {
 
 using iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::iterator>;
 using const_iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::const_iterator>;
-static int constFun(const_iterator iter) { return *iter; }
+namespace {
+int constFun(const_iterator iter) { return *iter; }
+}  // namespace
 
 TEST(IndirectIteratorTest, Conversion) {
     std::vector<std::unique_ptr<int>> vec;
