@@ -77,7 +77,7 @@ LogVerbosity& LogCentral::localVerbosity() {
 
 void LogCentral::registerLogger(std::weak_ptr<Logger> logger) {
     const std::scoped_lock lock{mutex_};
-    loggers_.push_back(logger);
+    loggers_.push_back(std::move(logger));
 }
 
 void LogCentral::unregisterLogger(std::shared_ptr<Logger> log) {
@@ -172,7 +172,7 @@ void util::log(SourceContext context, std::string_view message, LogLevel level,
 void util::log(Logger* logger, SourceContext context, std::string_view message, LogLevel level,
                LogAudience audience) {
     logger->log(context.source(), level, audience, context.file(), context.function(),
-                context.line(), message);
+                static_cast<int>(context.line()), message);
 }
 
 std::string_view enumToStr(LogLevel ll) {

@@ -46,6 +46,10 @@ public:
      * Creates a file observer for filename and start observing that file
      */
     explicit SingleFileObserver(std::filesystem::path filename = "");
+    SingleFileObserver(const SingleFileObserver&) = delete;
+    SingleFileObserver(SingleFileObserver&&) = delete;
+    SingleFileObserver& operator=(const SingleFileObserver&) = delete;
+    SingleFileObserver& operator=(SingleFileObserver&&) = delete;
     virtual ~SingleFileObserver();
 
     void setFilename(const std::filesystem::path& filename);
@@ -72,9 +76,10 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
-private:
+public:
     virtual void fileChanged(const std::filesystem::path& filename);
 
+private:
     std::filesystem::path filename_;
     CallBackList onChangeCallbacks_;
 };

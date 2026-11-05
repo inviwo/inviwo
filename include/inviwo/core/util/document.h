@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/transparentmaps.h>
 
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <memory>
@@ -50,7 +51,7 @@ class IVW_CORE_API Document {
 public:
     class DocumentHandle;
 
-    enum class ElementType { Node, Text };
+    enum class ElementType : std::uint8_t { Node, Text };
 
     class IVW_CORE_API Element {
     public:
@@ -66,6 +67,7 @@ public:
         Element& operator=(const Element&);
         Element(Element&&) noexcept = default;
         Element& operator=(Element&&) = default;
+        ~Element() = default;
 
         const std::string& name() const;
         std::string& name();
@@ -142,17 +144,18 @@ public:
         DocumentHandle& operator=(const DocumentHandle&) = default;
         DocumentHandle(DocumentHandle&&) = default;
         DocumentHandle& operator=(DocumentHandle&&) = default;
+        ~DocumentHandle() = default;
 
         DocumentHandle get(const std::vector<PathComponent>& path);
-        DocumentHandle insert(PathComponent pos, std::string_view name,
+        DocumentHandle insert(const PathComponent& pos, std::string_view name,
                               std::string_view content = "",
                               const UnorderedStringMap<std::string>& attributes = {});
 
         DocumentHandle append(std::string_view name, std::string_view content = "",
                               const UnorderedStringMap<std::string>& attributes = {});
-        DocumentHandle insert(PathComponent pos, Document doc);
+        DocumentHandle insert(const PathComponent& pos, Document doc);
 
-        DocumentHandle insertText(PathComponent pos, std::string_view text);
+        DocumentHandle insertText(const PathComponent& pos, std::string_view text);
         DocumentHandle appendText(std::string_view text);
 
         DocumentHandle append(Document doc);
@@ -183,16 +186,17 @@ public:
     DocumentHandle handle() const;
 
     DocumentHandle get(const std::vector<PathComponent>& path);
-    DocumentHandle insert(PathComponent pos, std::string_view name, std::string_view content = "",
+    DocumentHandle insert(const PathComponent& pos, std::string_view name,
+                          std::string_view content = "",
                           const UnorderedStringMap<std::string>& attributes = {});
 
     DocumentHandle append(std::string_view name, std::string_view content = "",
                           const UnorderedStringMap<std::string>& attributes = {});
 
-    DocumentHandle insertText(PathComponent pos, std::string_view text);
+    DocumentHandle insertText(const PathComponent& pos, std::string_view text);
     DocumentHandle appendText(std::string_view text);
 
-    DocumentHandle insert(PathComponent pos, Document doc);
+    DocumentHandle insert(const PathComponent& pos, Document doc);
     DocumentHandle append(Document doc);
 
     template <typename BeforVisitor, typename AfterVisitor>

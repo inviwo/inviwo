@@ -71,6 +71,7 @@ struct TransformIterator {
     }
     TransformIterator(const TransformIterator& rhs) = default;
     TransformIterator(TransformIterator&& rhs) = default;
+    ~TransformIterator() = default;
     TransformIterator& operator=(const TransformIterator& that) {
         if (this != &that) {
             iterator_ = that.iterator_;
@@ -191,6 +192,7 @@ auto makeTransformIterator(Transform&& transform, Iter iter) {
 }
 
 template <typename Range, typename Transform>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the transform is copied into both iterators
 auto transformRange(Range& range, Transform&& transform) {
     using std::begin;
     using std::end;

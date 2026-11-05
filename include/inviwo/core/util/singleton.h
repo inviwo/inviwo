@@ -50,7 +50,9 @@ class Singleton {
 public:
     Singleton() = default;
     Singleton(const Singleton&) = delete;
-    void operator=(const Singleton&) = delete;
+    Singleton(Singleton&&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    Singleton& operator=(Singleton&&) = delete;
 
     static void init() {
         if (T::instance_) {

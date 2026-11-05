@@ -88,14 +88,15 @@ void exposeDocument(pybind11::module& m) {
         .def("get", &Document::DocumentHandle::get)
         .def("insert",
              static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
-                 Document::PathComponent, std::string_view, std::string_view,
+                 const Document::PathComponent&, std::string_view, std::string_view,
                  const UnorderedStringMap<std::string>&)>(&Document::DocumentHandle::insert))
         .def("append",
              static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
                  std::string_view, std::string_view, const UnorderedStringMap<std::string>&)>(
                  &Document::DocumentHandle::append))
-        .def("insert", static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
-                           Document::PathComponent, Document)>(&Document::DocumentHandle::insert))
+        .def("insert",
+             static_cast<Document::DocumentHandle (Document::DocumentHandle::*)(
+                 const Document::PathComponent&, Document)>(&Document::DocumentHandle::insert))
         .def("insertText", &Document::DocumentHandle::insertText)
         .def("appendText", &Document::DocumentHandle::appendText)
         .def("append",
@@ -112,15 +113,14 @@ void exposeDocument(pybind11::module& m) {
         .def("handle", &Document::handle)
         .def("get", &Document::get)
         .def("insert", static_cast<Document::DocumentHandle (Document::*)(
-                           Document::PathComponent, std::string_view, std::string_view,
+                           const Document::PathComponent&, std::string_view, std::string_view,
                            const UnorderedStringMap<std::string>&)>(&Document::insert))
         .def("append",
              static_cast<Document::DocumentHandle (Document::*)(
                  std::string_view, std::string_view, const UnorderedStringMap<std::string>&)>(
                  &Document::append))
-        .def("insert",
-             static_cast<Document::DocumentHandle (Document::*)(Document::PathComponent, Document)>(
-                 &Document::insert))
+        .def("insert", static_cast<Document::DocumentHandle (Document::*)(
+                           const Document::PathComponent&, Document)>(&Document::insert))
         .def("insertText", &Document::insertText)
         .def("appendText", &Document::appendText)
         .def("append",

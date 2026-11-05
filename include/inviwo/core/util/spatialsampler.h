@@ -41,6 +41,10 @@ public:
     using type = ReturnType;
     explicit SpatialSampler(const SpatialEntity& spatialEntity,
                             CoordinateSpace space = CoordinateSpace::Data);
+    SpatialSampler(const SpatialSampler&) = default;
+    SpatialSampler(SpatialSampler&&) = default;
+    SpatialSampler& operator=(const SpatialSampler&) = default;
+    SpatialSampler& operator=(SpatialSampler&&) = default;
     virtual ~SpatialSampler() = default;
 
     auto sample(const dvec3& pos) const -> ReturnType;

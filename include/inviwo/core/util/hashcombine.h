@@ -39,7 +39,7 @@ namespace inviwo::util {
 template <class T>
 constexpr void hash_combine(std::size_t& seed, const T& v) noexcept {
     const std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    seed ^= hasher(v) + 0x9e3779b9U + (seed << 6U) + (seed >> 2U);
 }
 
 }  // namespace inviwo::util

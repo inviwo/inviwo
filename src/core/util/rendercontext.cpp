@@ -88,7 +88,7 @@ void RenderContext::clearContext() {
     } else {
         const auto it = contextMap_.find(id);
         if (it != contextMap_.end()) {
-            auto canvas = it->second.release();
+            auto* canvas = it->second.release();
             contextMap_.erase(it);
             lock.unlock();
 

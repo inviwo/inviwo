@@ -260,7 +260,7 @@ vec3 rgb2ycbcr(const vec3& rgb) {
     const double b = rgb.z;
 
     const double y = 0.299 * r + 0.587 * g + 0.114 * b;
-    const double cb = (b - y) * 0.565;
+    const double cb = (b - y) * 0.565;  // NOLINT(modernize-use-std-numbers) YCbCr coefficient
     const double cr = (r - y) * 0.713;
 
     return {static_cast<float>(y), static_cast<float>(cb), static_cast<float>(cr)};
