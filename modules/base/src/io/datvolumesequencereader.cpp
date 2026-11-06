@@ -456,7 +456,7 @@ std::shared_ptr<VolumeDisk> createDiskRepWithLoader(const State& state,
     return diskRepr;
 }
 
-dvec2 updateDataRange(const Volume& volume, const VolumeConfig& config) {
+dvec2 updateDataRange(const Volume& volume, const VolumeConfig&) {
     auto minmax = util::volumeMinMax(&volume, IgnoreSpecialValues::No);
     // minmax always have four components, unused components are set to zero.
     // Hence, only consider components used by the data format
