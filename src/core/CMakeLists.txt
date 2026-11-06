@@ -184,7 +184,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfreader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionlayerreader.h
@@ -616,7 +615,6 @@ set(SOURCE_FILES
     io/serialization/serializer.cpp
     io/serialization/versionconverter.cpp
     io/tempfilehandle.cpp
-    io/textfilereader.cpp
     io/transferfunctionitfreader.cpp
     io/transferfunctionitfwriter.cpp
     io/transferfunctionlayerreader.cpp
