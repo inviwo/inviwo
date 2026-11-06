@@ -30,13 +30,16 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 
-#include <modules/basegl/shadercomponents/shadercomponent.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+
+#include <modules/basegl/algorithm/masking.h>
+#include <modules/basegl/shadercomponents/shadercomponent.h>
+
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
 class StringShaderResource;
@@ -64,9 +67,7 @@ private:
     BoolProperty maskNaN_;
     BoolProperty maskInf_;
 
-    std::shared_ptr<StringShaderResource> frag_;
-    Shader shader_;
-    FrameBufferObject fbo_;
+    mask::MaskTool maskTool_;
 
     std::shared_ptr<Volume> mask_;
 };

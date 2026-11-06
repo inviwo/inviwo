@@ -6,6 +6,7 @@ set(HEADER_FILES
     include/modules/basegl/algorithm/dataminmaxgl.h
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/algorithm/masking.h
     include/modules/basegl/algorithm/volumenormalization.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
@@ -127,9 +128,10 @@ set(HEADER_FILES
     include/modules/basegl/shadercomponents/shadercomponent.h
     include/modules/basegl/shadercomponents/shadercomponentutil.h
     include/modules/basegl/shadercomponents/sphericalcomponent.h
+    include/modules/basegl/shadercomponents/sphericalentryexitpoints.h
+    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/tfcomponent.h
     include/modules/basegl/shadercomponents/timecomponent.h
-    include/modules/basegl/shadercomponents/temporalvolumecomponent.h
     include/modules/basegl/shadercomponents/volumecomponent.h
     include/modules/basegl/util/glyphclipping.h
     include/modules/basegl/util/meshbnlgl.h
@@ -147,6 +149,7 @@ set(SOURCE_FILES
     src/algorithm/dataminmaxgl.cpp
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
+    src/algorithm/masking.cpp
     src/algorithm/volumenormalization.cpp
     src/baseglmodule.cpp
     src/datastructures/linedata.cpp
@@ -265,9 +268,10 @@ set(SOURCE_FILES
     src/shadercomponents/shadercomponent.cpp
     src/shadercomponents/shadercomponentutil.cpp
     src/shadercomponents/sphericalcomponent.cpp
+    src/shadercomponents/sphericalentryexitpoints.cpp
+    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/tfcomponent.cpp
     src/shadercomponents/timecomponent.cpp
-    src/shadercomponents/temporalvolumecomponent.cpp
     src/shadercomponents/volumecomponent.cpp
     src/util/glyphclipping.cpp
     src/util/meshbnlgl.cpp

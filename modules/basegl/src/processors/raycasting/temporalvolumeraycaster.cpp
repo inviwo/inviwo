@@ -85,6 +85,9 @@ TemporalVolumeRaycaster::TemporalVolumeRaycaster(std::string_view identifier,
 
     registerComponents(volume_, entryExit_, background_, isoTF_, raycasting_, camera_, light_,
                        positionIndicator_, sampleTransform_);
+
+    isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
+    isoTF_.isoTFs[0].setCurrentStateAsDefault();
 }
 
 void TemporalVolumeRaycaster::process() {
