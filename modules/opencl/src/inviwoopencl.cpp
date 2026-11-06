@@ -34,7 +34,6 @@
 #include <modules/opencl/openclexception.h>
 #include <modules/opencl/openclformatexception.h>
 #include <modules/opencl/syncclgl.h>
-#include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
 #include <iostream>
@@ -269,11 +268,15 @@ cl::Program OpenCL::buildProgram(const std::filesystem::path& fileName, const st
     cl::Device device = queue.getInfo<CL_QUEUE_DEVICE>();
     // build the program from the source in the file
 
-    TextFileReader fileReader(fileName);
     std::string prog;
-
     try {
-        prog = fileReader.read();
+        using iter = std::istreambuf_iterator<char>;
+        auto file = std::ifstream(fileName);
+        if (!file.is_open()) {
+            throw FileException(SourceContext{}, "Could not open file: {}", filePath_);
+        }
+        filesystem::skipByteOrderMark(file);
+        prog = std::string{iter{file}, iter{}};
     } catch (std::ifstream::failure&) {
     }
     if (prog.size() > 3 && !header.empty()) {
