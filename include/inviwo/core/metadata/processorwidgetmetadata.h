@@ -31,7 +31,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/metadata/positionmetadata.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
