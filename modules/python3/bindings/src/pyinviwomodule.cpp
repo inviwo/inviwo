@@ -106,8 +106,8 @@ void exposeInviwoModule(const pybind11::module& m) {
         .def("semanticVersionEqual", &Version::semanticVersionEqual);
 
     py::classh<LicenseInfo>(m, "LicenseInfo")
-        .def(py::init<std::string_view, std::string_view, std::string_view, std::string_view,
-                      std::string_view, std::string_view, const std::vector<std::string>&>(),
+        .def(py::init<std::string, std::string, std::string, std::string, std::string, std::string,
+                      const std::vector<std::string>&>(),
              py::arg("id"), py::arg("name"), py::arg("version"), py::arg("url"), py::arg("module"),
              py::arg("type"), py::arg("files"))
         .def_readonly("id", &LicenseInfo::id)
