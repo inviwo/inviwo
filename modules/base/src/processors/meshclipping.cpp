@@ -50,7 +50,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/formats.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/base/algorithm/mesh/meshclipping.h>
@@ -59,9 +59,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <string_view>
-#include <type_traits>
-#include <unordered_set>
 #include <utility>
 
 #include <fmt/base.h>
@@ -106,19 +103,19 @@ MeshClipping::MeshClipping()
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
     , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move",
-                      util::ordinalSymmetricVector(0.0f, 10.0f).setInc(0.001f))
+                      util::ordinalSymmetricVector(0.0, 10.0).setInc(0.001))
     , capClippedHoles_("capClippedHoles", "Cap clipped holes", true)
     , planePoint_(
           "planePoint", "Plane Point",
-          util::ordinalSymmetricVector(vec3(0.0f)).set("World space space position of plane"_help))
+          util::ordinalSymmetricVector(dvec3{0.0}).set("World space space position of plane"_help))
     , planeNormal_("planeNormal", "Plane Normal",
-                   util::ordinalSymmetricVector(vec3(0.0f, 0.0f, -1.0f), vec3(1.0f))
+                   util::ordinalSymmetricVector(dvec3{0.0, 0.0, -1.0}, dvec3{1.0})
                        .set("World space space normal of plane"_help))
     , alignPlaneNormalToCameraNormal_(
           "alignPlaneNormalToCameraNormal", "Align Normal with Camera",
           "Align plane normal with the view direction of the camera"_help, InvalidationLevel::Valid)
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid) {
+    , camera_("camera", "Camera", dvec3{0.0, 0.0, -2.0}, dvec3{0.0}, dvec3{0.0, 1.0, 0.0}, nullptr,
+              InvalidationLevel::Valid) {
     addPort(inport_);
     addPort(outport_);
     addPort(clippingPlane_);
@@ -133,8 +130,8 @@ MeshClipping::MeshClipping()
 
     const auto onMovePointAlongNormalToggled = [this]() {
         planePoint_.setReadOnly(movePointAlongNormal_.get());
-        pointPlaneMove_.set(0.f);
-        previousPointPlaneMove_ = 0.f;
+        pointPlaneMove_.set(0.0);
+        previousPointPlaneMove_ = 0.0;
         pointPlaneMove_.setVisible(movePointAlongNormal_.get());
     };
 
@@ -164,7 +161,7 @@ void MeshClipping::process() {
 
         if (movePointAlongNormal_) {
             // Set new plane position based on offset
-            const vec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
+            const dvec3 offsetPlaneDiff = plane->getNormal() * pointPlaneMove_.get();
             plane->setPoint(plane->getPoint() + offsetPlaneDiff);
             // Move camera along the offset as well
             if (moveCameraAlongNormal_) {
@@ -173,7 +170,7 @@ void MeshClipping::process() {
                 // Move camera half of the plane movement distance.
                 // Ensures that lookAt position is centered in the mesh,
                 // assuming that initial lookAt position is in the center of the mesh.
-                const dvec3 lookOffset = dvec3{plane->getNormal()} * planeMoveDiff * 0.5;
+                const dvec3 lookOffset = plane->getNormal() * planeMoveDiff * 0.5;
                 camera_.setLook(camera_.getLookFrom() + lookOffset,
                                 camera_.getLookTo() + lookOffset, camera_.getLookUp());
             }
@@ -212,15 +209,14 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
     const auto nearPos = camera.getLookFrom() + camera.getNearPlaneDist() * direction;
     // Transform coordinates to data space
     const auto worldToData = geom->getCoordinateTransformer().getWorldToDataMatrix();
-    const auto worldToDataNormal = glm::transpose(glm::inverse(worldToData));
-    const auto dataSpacePos = vec3(worldToData * dvec4(nearPos, 1.0));
-    const auto dataSpaceNormal = glm::normalize(vec3(worldToDataNormal * dvec4(direction, 0.0)));
+    const auto dataSpacePos = util::transformPos(worldToData, nearPos);
+    const auto dataSpaceNormal = glm::normalize(util::transformNormal(worldToData, direction));
     // Plane start/end position based on distance to camera near plane
     Plane nearPlane(dataSpacePos, dataSpaceNormal);
 
     // Align clipping plane to camera and make sure it starts and ends on the mesh boundaries.
     // Start point will be on the camera near plane if it is inside the mesh.
-    const auto ram = it->second->getRepresentation<BufferRAM>();
+    const auto* ram = it->second->getRepresentation<BufferRAM>();
     if (ram && ram->getDataFormat()->getComponents() == 3) {
         ram->dispatch<void, dispatching::filter::Float3s>([&](auto pb) -> void {
             const auto& vertexList = pb->getDataContainer();
@@ -230,24 +226,22 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed() {
                                     [&nearPlane](const auto& a, const auto& b) {
                                         // Use max(0, dist) to make sure we do not consider vertices
                                         // behind plane
-                                        return std::max(0.f, nearPlane.distance(a)) <
-                                               std::max(0.f, nearPlane.distance(b));
+                                        return std::max(0.0, nearPlane.distance(a)) <
+                                               std::max(0.0, nearPlane.distance(b));
                                     });
             const auto minDist = nearPlane.distance(*minMaxVertices.first);
             const auto maxDist = nearPlane.distance(*minMaxVertices.second);
 
             const auto closestVertex = minDist * nearPlane.getNormal() + nearPlane.getPoint();
             const auto farVertex = maxDist * nearPlane.getNormal() + nearPlane.getPoint();
-            const auto closestWorldSpacePos =
-                vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
-                     dvec4(dvec3(closestVertex), 1.0));
-            const auto farWorldSpacePos =
-                vec3(geom->getCoordinateTransformer().getDataToWorldMatrix() *
-                     dvec4(dvec3(farVertex), 1.0));
+            const auto closestWorldSpacePos = util::transformPos(
+                geom->getCoordinateTransformer().getDataToWorldMatrix(), closestVertex);
+            const auto farWorldSpacePos = util::transformPos(
+                geom->getCoordinateTransformer().getDataToWorldMatrix(), farVertex);
             const auto range = glm::abs((farWorldSpacePos - closestWorldSpacePos));
             const auto minVal = glm::min(closestWorldSpacePos, farWorldSpacePos);
             const auto maxVal = glm::max(closestWorldSpacePos, farWorldSpacePos);
-            planePoint_.set(closestWorldSpacePos, minVal, maxVal, range * 0.1f);
+            planePoint_.set(closestWorldSpacePos, minVal, maxVal, range * 0.1);
             pointPlaneMove_.setMaxValue(glm::distance(farWorldSpacePos, closestWorldSpacePos));
         });
 

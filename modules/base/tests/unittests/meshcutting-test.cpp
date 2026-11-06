@@ -81,7 +81,7 @@ TEST(MeshCutting, BarycentricInsidePolygon) {
 TEST(MeshCutting, SutherlandHodgman) {
 
     const glm::u32vec3 triangle{0, 1, 2};
-    const Plane plane{vec3{0, 0, 0}, vec3{0, 1, 0}};
+    const Plane plane{dvec3{0, 0, 0}, dvec3{0, 1, 0}};
     std::vector<vec3> positions{vec3{-1, -1, 0}, vec3{1, -1, 0}, vec3{0, 1, 0}};
     std::vector<std::uint32_t> indicesVec{};
     const meshutil::detail::InterpolateFunctor addInterpolatedVertex =
@@ -155,33 +155,33 @@ TEST(MeshCutting, PolygonCentroid) {
 }
 
 TEST(MeshCutting, PlaneBasis) {
-    const Plane p{vec3{1, 1, 1}, vec3{0, 0, 1}};
+    const Plane p{dvec3{1, 1, 1}, dvec3{0, 0, 1}};
     const auto trans = glm::inverse(p.inPlaneBasis());
 
     {
-        const auto r = vec3{1, 1, 1};
-        const auto t = vec3{trans * vec4{r, 1.0f}};
-        const auto expected = vec3{0.0f, 0.0f, 0.0f};
+        const auto r = dvec3{1, 1, 1};
+        const auto t = dvec3{trans * dvec4{r, 1.0}};
+        const auto expected = dvec3{0.0, 0.0, 0.0};
 
-        EXPECT_FLOAT_EQ(t.x, expected.x);
-        EXPECT_FLOAT_EQ(t.y, expected.y);
-        EXPECT_FLOAT_EQ(t.z, expected.z);
+        EXPECT_DOUBLE_EQ(t.x, expected.x);
+        EXPECT_DOUBLE_EQ(t.y, expected.y);
+        EXPECT_DOUBLE_EQ(t.z, expected.z);
     }
 
     {
-        const auto r = vec3{1, 1, 2};
-        const auto t = vec3{trans * vec4{r, 1.0f}};
-        const auto expected = vec3{0.0f, 0.0f, 1.0f};
+        const auto r = dvec3{1, 1, 2};
+        const auto t = dvec3{trans * dvec4{r, 1.0}};
+        const auto expected = dvec3{0.0, 0.0, 1.0};
 
-        EXPECT_FLOAT_EQ(t.x, expected.x);
-        EXPECT_FLOAT_EQ(t.y, expected.y);
-        EXPECT_FLOAT_EQ(t.z, expected.z);
+        EXPECT_DOUBLE_EQ(t.x, expected.x);
+        EXPECT_DOUBLE_EQ(t.y, expected.y);
+        EXPECT_DOUBLE_EQ(t.z, expected.z);
     }
 
     {
-        const auto r = vec3{4, 2, 1};
-        const auto t = vec3{trans * vec4{r, 1.0f}};
-        EXPECT_FLOAT_EQ(t.z, 0.0f);
+        const auto r = dvec3{4, 2, 1};
+        const auto t = dvec3{trans * dvec4{r, 1.0}};
+        EXPECT_DOUBLE_EQ(t.z, 0.0);
     }
 }
 

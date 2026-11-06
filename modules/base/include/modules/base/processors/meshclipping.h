@@ -72,15 +72,15 @@ private:
     OptionProperty<ClipSide> clipSide_;
     BoolProperty movePointAlongNormal_;
     BoolProperty moveCameraAlongNormal_;
-    FloatProperty pointPlaneMove_;
+    DoubleProperty pointPlaneMove_;
 
     BoolProperty capClippedHoles_;
 
-    FloatVec3Property planePoint_;   ///< World space plane position
-    FloatVec3Property planeNormal_;  ///< World space plane normal
+    DoubleVec3Property planePoint_;   ///< World space plane position
+    DoubleVec3Property planeNormal_;  ///< World space plane normal
     ButtonProperty alignPlaneNormalToCameraNormal_;
     CameraProperty camera_;
 
-    float previousPointPlaneMove_;
+    double previousPointPlaneMove_ = 0.0;
 };
 }  // namespace inviwo

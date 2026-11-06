@@ -67,8 +67,8 @@ private:
     ImageOutport outport_;
     Shader shader_;
 
-    FloatVec3Property planeNormal_;
-    FloatVec3Property planePosition_;
+    DoubleVec3Property planeNormal_;
+    DoubleVec3Property planePosition_;
 
     TransferFunctionProperty transferFunction_;
 

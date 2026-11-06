@@ -35,8 +35,6 @@
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/formats.h>
@@ -48,17 +46,13 @@
 #include <cstddef>
 #include <iterator>
 #include <numeric>
-#include <string>
-#include <string_view>
 #include <tuple>
 #include <type_traits>
-#include <unordered_set>
 #include <utility>
 
 #include <glm/common.hpp>
 #include <glm/ext/scalar_relational.hpp>
 #include <glm/ext/vector_relational.hpp>
-#include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/component_wise.hpp>
@@ -105,14 +99,14 @@ std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane
             if (plane.isInside(v2)) {  // Case 1
                 newIndices.push_back(i2);
             } else {  // Case 2
-                const auto weight = *plane.getIntersectionWeight(v1, v2);
+                const auto weight = static_cast<float>(*plane.getIntersectionWeight(v1, v2));
                 const auto newIndex =
                     addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt);
                 newIndices.push_back(newIndex);
                 newEdge.push_back(newIndex);
             }
         } else if (plane.isInside(v2)) {  // Case 3
-            const auto weight = *plane.getIntersectionWeight(v1, v2);
+            const auto weight = static_cast<float>(*plane.getIntersectionWeight(v1, v2));
             const auto newIndex =
                 addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt);
             newIndices.push_back(newIndex);
@@ -310,31 +304,29 @@ static void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
                                [&](uint32_t p) { return positions[p]; });
 
         std::vector<vec4> uv4;
-        std::ranges::transform(loop, std::back_inserter(uv4), [&](uint32_t p) {
-            return trans * vec4{positions[p], 1.0f};
-        });
+        std::ranges::transform(loop, std::back_inserter(uv4),
+                               [&](uint32_t p) { return trans * vec4{positions[p], 1.0f}; });
 
         std::vector<vec2> uv;
-        std::ranges::transform(loop, std::back_inserter(uv), [&](uint32_t p) {
-            return vec2{trans * vec4{positions[p], 1.0f}};
-        });
+        std::ranges::transform(loop, std::back_inserter(uv),
+                               [&](uint32_t p) { return vec2{trans * vec4{positions[p], 1.0f}}; });
 
         const auto uvCenter = polygonCentroid(uv);
-        const auto center = vec3{glm::inverse(trans) * vec4{uvCenter, 0.0f, 1.0f}};
+        const auto center = util::transformPos(glm::inverse(trans), dvec3{uvCenter, 0.0});
         const auto weights = barycentricInsidePolygon(uvCenter, uv);
 
         const auto orientation =
-            glm::cross(positions[loop[0]] - center, positions[loop[1]] - center);
+            glm::cross(dvec3{positions[loop[0]]} - center, dvec3{positions[loop[1]]} - center);
         const auto dir = glm::dot(plane.getNormal(), orientation);
 
-        const auto centerIndex = addInterpolatedVertex(loop, weights, -plane.getNormal());
+        const auto centerIndex = addInterpolatedVertex(loop, weights, vec3{-plane.getNormal()});
         for (size_t i = 0; i < loop.size(); ++i) {
             const auto j = (i + 1) % loop.size();
             indices.push_back(centerIndex);
             indices.push_back(
-                addInterpolatedVertex({loop[dir < 0 ? i : j]}, {1.0f}, -plane.getNormal()));
+                addInterpolatedVertex({loop[dir < 0 ? i : j]}, {1.0f}, vec3{-plane.getNormal()}));
             indices.push_back(
-                addInterpolatedVertex({loop[dir < 0 ? j : i]}, {1.0f}, -plane.getNormal()));
+                addInterpolatedVertex({loop[dir < 0 ? j : i]}, {1.0f}, vec3{-plane.getNormal()}));
         }
     }
 }
@@ -371,12 +363,14 @@ static std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
                     outIndices->add(i1);
                     outIndices->add(i2);
                 } else if (in1) {
-                    const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
+                    const auto weight = static_cast<float>(
+                        *plane.getIntersectionWeight(positions[i1], positions[i2]));
                     outIndices->add(i1);
                     outIndices->add(
                         addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt));
                 } else if (in2) {
-                    const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
+                    const auto weight = static_cast<float>(
+                        *plane.getIntersectionWeight(positions[i1], positions[i2]));
                     outIndices->add(
                         addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt));
                     outIndices->add(i2);
@@ -402,14 +396,16 @@ static std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
                     outIndices->add(i3);
                     outIndices->add(i4);
                 } else if (in2) {
-                    const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
+                    const auto weight = static_cast<float>(
+                        *plane.getIntersectionWeight(positions[i2], positions[i3]));
                     outIndices->add(i1);
                     outIndices->add(i2);
                     outIndices->add(
                         addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}, std::nullopt));
                     outIndices->add(i3);
                 } else if (in2) {
-                    const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
+                    const auto weight = static_cast<float>(
+                        *plane.getIntersectionWeight(positions[i2], positions[i3]));
                     outIndices->add(i2);
                     outIndices->add(
                         addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}, std::nullopt));
