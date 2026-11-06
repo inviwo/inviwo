@@ -38,6 +38,10 @@ class IVW_CORE_API EventListener {
 
 public:
     EventListener() = default;
+    EventListener(const EventListener&) = default;
+    EventListener(EventListener&&) = default;
+    EventListener& operator=(const EventListener&) = default;
+    EventListener& operator=(EventListener&&) = default;
     virtual ~EventListener() = default;
 
     virtual void invokeEvent(Event* event);

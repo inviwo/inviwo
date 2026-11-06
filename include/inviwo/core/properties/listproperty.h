@@ -38,12 +38,13 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
 namespace inviwo {
 
-enum class ListPropertyUIFlag {
+enum class ListPropertyUIFlag : std::uint8_t {
     Static = 0x0,   //!< no list modification via UI
     Add = 0x01,     //!< items can be added to property widget
     Remove = 0x02,  //!< items can be removed from the property widget
@@ -128,6 +129,9 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     ListProperty(const ListProperty& rhs);
+    ListProperty(ListProperty&& rhs) : ListProperty(static_cast<const ListProperty&>(rhs)) {}
+    ListProperty& operator=(const ListProperty&) = delete;
+    ListProperty& operator=(ListProperty&&) = delete;
 
     virtual ListProperty* clone() const override;
     virtual ~ListProperty() = default;
@@ -227,6 +231,7 @@ private:
             }
             return *this;
         }
+        ~Prefabs() = default;
 
         size_t size() const { return properties.size(); }
         std::unique_ptr<Property>& operator[](size_t i) { return properties[i]; }

@@ -41,7 +41,7 @@ bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedP
 
 void Event::markAsVisited(const Event& e) {
     visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());
-    for (auto p : e.visitedProcessors_) {
+    for (auto* p : e.visitedProcessors_) {
         util::push_back_unique(visitedProcessors_, p);
     }
 }

@@ -34,10 +34,11 @@
 #include <inviwo/core/io/serialization/deserializer.h>
 
 #include <concepts>
+#include <cstdint>
 
 namespace inviwo {
 
-enum class PropertySerializationMode { Default = 0, All, None };
+enum class PropertySerializationMode : std::uint8_t { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {

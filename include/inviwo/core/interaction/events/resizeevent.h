@@ -59,6 +59,8 @@ public:
     explicit ResizeEvent(size2_t canvasSize);
     ResizeEvent(const ResizeEvent& rhs) = default;
     ResizeEvent& operator=(const ResizeEvent& that) = default;
+    ResizeEvent(ResizeEvent&& rhs) = default;
+    ResizeEvent& operator=(ResizeEvent&& that) = default;
 
     virtual ResizeEvent* clone() const override;
     virtual ~ResizeEvent() = default;

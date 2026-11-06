@@ -144,9 +144,9 @@ CameraProperty::CameraProperty(std::string_view identifier, std::string_view dis
     : CameraProperty(
           identifier, displayName,
           [&]() -> std::function<std::optional<dmat4>()> {
-              if (auto* vp = dynamic_cast<VolumeInport*>(inport)) {
+              if (const auto* vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
-              } else if (auto* mp = dynamic_cast<MeshInport*>(inport)) {
+              } else if (const auto* mp = dynamic_cast<MeshInport*>(inport)) {
                   return util::boundingBox(*mp);
               } else {
                   return nullptr;
@@ -337,7 +337,7 @@ dvec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 }
 
 void CameraProperty::invokeEvent(Event* event) {
-    if (auto* resizeEvent = event->getAs<ResizeEvent>()) {
+    if (const auto* resizeEvent = event->getAs<ResizeEvent>()) {
         aspectSupplier_ = true;
         const auto canvasSize = resizeEvent->size();
         // Do not set aspect ratio if canvas size is 0 in any dimension.

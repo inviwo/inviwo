@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <cstdint>
 #include <iosfwd>
 
 namespace inviwo {
@@ -39,7 +40,7 @@ namespace inviwo {
  * invalidation level must be sorted based on their complexity, whereby higher numbers (later entry
  * in the list) involve more expensive update operations
  */
-enum class InvalidationLevel {
+enum class InvalidationLevel : std::uint8_t {
     Valid,            // Do nothing.
     InvalidOutput,    // Trigger a process call.
     InvalidResources  // Trigger a call to initializeResources and then process.

@@ -77,7 +77,7 @@ public:
 template <class charT, class traits, class DelimT>
 ostream_joiner<std::decay_t<DelimT>, charT, traits> make_ostream_joiner(
     std::basic_ostream<charT, traits>& os, DelimT&& delimiter) {
-    return ostream_joiner<std::decay_t<DelimT>, charT, traits>(os, delimiter);
+    return ostream_joiner<std::decay_t<DelimT>, charT, traits>(os, std::forward<DelimT>(delimiter));
 }
 
 }  // namespace inviwo::util

@@ -45,6 +45,10 @@ public:
                                    std::string_view, std::string_view>;
 
     PropertyFactory() = default;
+    PropertyFactory(const PropertyFactory&) = delete;
+    PropertyFactory(PropertyFactory&&) = delete;
+    PropertyFactory& operator=(const PropertyFactory&) = delete;
+    PropertyFactory& operator=(PropertyFactory&&) = delete;
     virtual ~PropertyFactory() = default;
 
     using Parent::create;

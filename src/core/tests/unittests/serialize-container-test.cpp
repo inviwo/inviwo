@@ -99,31 +99,31 @@ TEST(SerialitionContainerTest, IdentifierFunctions) {
     vector.insert(vector.begin(), new Item("d", 1));
 
     Deserializer deserializer{ss};
-    deserializer.deserialize("Vector", vector, "Item",
-                             deserializer::IdentifierFunctions{
-                                 .getID = [](Item* const& i) -> std::string_view { return i->id_; },
-                                 .makeNew = []() { return new Item(); },
-                                 .onNew = [&](Item*& i, size_t) { vector.push_back(i); },
-                                 .onRemove =
-                                     [&](std::string_view id) {
-                                         std::erase_if(vector, [&](Item* i) {
-                                             if (id == i->id_) {
-                                                 delete i;
-                                                 return true;
-                                             } else {
-                                                 return false;
-                                             }
-                                         });
-                                     },
-                                 .onMove =
-                                     [&](Item*& i, size_t newIndex) {
-                                         if (const auto it = std::ranges::find(vector, i);
-                                             it != vector.end()) {
-                                             Item* item = i;
-                                             vector.erase(it);
-                                             vector.insert(vector.begin() + newIndex, item);
-                                         }
-                                     }});
+    deserializer.deserialize(
+        "Vector", vector, "Item",
+        deserializer::IdentifierFunctions{
+            .getID = [](Item* const& i) -> std::string_view { return i->id_; },
+            .makeNew = []() { return new Item(); },
+            .onNew = [&](Item*& i, size_t) { vector.push_back(i); },
+            .onRemove =
+                [&](std::string_view id) {
+                    std::erase_if(vector, [&](Item* i) {
+                        if (id == i->id_) {
+                            delete i;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                },
+            .onMove =
+                [&](Item*& i, size_t newIndex) {
+                    if (const auto it = std::ranges::find(vector, i); it != vector.end()) {
+                        Item* item = i;
+                        vector.erase(it);
+                        vector.insert(vector.begin() + static_cast<std::ptrdiff_t>(newIndex), item);
+                    }
+                }});
 
     ASSERT_EQ(3, vector.size());
 

@@ -112,7 +112,7 @@ auto ButtonGroupProperty::getButton(size_t i) const -> const Button& { return bu
 size_t ButtonGroupProperty::size() const { return buttons_.size(); }
 
 void ButtonGroupProperty::set(const Property* src) {
-    if (auto prop = dynamic_cast<const ButtonGroupProperty*>(src)) {
+    if (const auto* prop = dynamic_cast<const ButtonGroupProperty*>(src)) {
         pressButton(prop->buttonPressed_);
     }
 }

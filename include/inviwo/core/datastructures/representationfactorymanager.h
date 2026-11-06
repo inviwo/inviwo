@@ -57,6 +57,10 @@ namespace inviwo {
 class IVW_CORE_API RepresentationFactoryManager {
 public:
     RepresentationFactoryManager();
+    RepresentationFactoryManager(const RepresentationFactoryManager&) = delete;
+    RepresentationFactoryManager(RepresentationFactoryManager&&) = delete;
+    RepresentationFactoryManager& operator=(const RepresentationFactoryManager&) = delete;
+    RepresentationFactoryManager& operator=(RepresentationFactoryManager&&) = delete;
     ~RepresentationFactoryManager();
 
     /**

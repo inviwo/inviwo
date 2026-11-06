@@ -40,6 +40,10 @@ class Property;
 class IVW_CORE_API PropertyEditorWidget {
 public:
     PropertyEditorWidget();
+    PropertyEditorWidget(const PropertyEditorWidget&) = delete;
+    PropertyEditorWidget(PropertyEditorWidget&&) = delete;
+    PropertyEditorWidget& operator=(const PropertyEditorWidget&) = delete;
+    PropertyEditorWidget& operator=(PropertyEditorWidget&&) = delete;
     virtual ~PropertyEditorWidget();
 
     // get functions

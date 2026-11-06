@@ -45,6 +45,8 @@ public:
 
     GestureEvent(const GestureEvent& rhs) = default;
     GestureEvent& operator=(const GestureEvent& that) = default;
+    GestureEvent(GestureEvent&& rhs) = default;
+    GestureEvent& operator=(GestureEvent&& that) = default;
     virtual GestureEvent* clone() const override;
     virtual ~GestureEvent() = default;
 

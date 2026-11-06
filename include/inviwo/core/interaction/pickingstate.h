@@ -32,38 +32,49 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <flags/flags.h>
 
 namespace inviwo {
 
-enum class PickingState {
+enum class PickingState : std::uint8_t {
     None = 0,
-    Started = 1 << 0,   // Hover enter / press
-    Updated = 1 << 1,   // Moved
-    Finished = 1 << 2,  // Hover leave / release
+    Started = 1U << 0U,   // Hover enter / press
+    Updated = 1U << 1U,   // Moved
+    Finished = 1U << 2U,  // Hover leave / release
 };
 
 ALLOW_FLAGS_FOR_ENUM(PickingState)
 using PickingStates = flags::flags<PickingState>;
 
 // a button / touch / gesture
-enum class PickingPressItem { None = 0, Primary = 1 << 0, Secondary = 1 << 1, Tertiary = 1 << 2 };
+enum class PickingPressItem : std::uint8_t {
+    None = 0,
+    Primary = 1U << 0U,
+    Secondary = 1U << 1U,
+    Tertiary = 1U << 2U
+};
 
 ALLOW_FLAGS_FOR_ENUM(PickingPressItem)
 using PickingPressItems = flags::flags<PickingPressItem>;
 
-enum class PickingPressState {
+enum class PickingPressState : std::uint8_t {
     None = 0,
-    Press = 1 << 0,    // button / touch / gesture started
-    Move = 1 << 1,     // button / touch / gesture updated
-    Release = 1 << 2,  // button / touch / gesture ended
-    DoubleClick = 1 << 3
+    Press = 1U << 0U,    // button / touch / gesture started
+    Move = 1U << 1U,     // button / touch / gesture updated
+    Release = 1U << 2U,  // button / touch / gesture ended
+    DoubleClick = 1U << 3U
 };
 
 ALLOW_FLAGS_FOR_ENUM(PickingPressState)
 using PickingPressStates = flags::flags<PickingPressState>;
 
-enum class PickingHoverState { None = 0, Enter = 1 << 0, Move = 1 << 1, Exit = 1 << 2 };
+enum class PickingHoverState : std::uint8_t {
+    None = 0,
+    Enter = 1U << 0U,
+    Move = 1U << 1U,
+    Exit = 1U << 2U
+};
 
 ALLOW_FLAGS_FOR_ENUM(PickingHoverState)
 using PickingHoverStates = flags::flags<PickingHoverState>;

@@ -93,6 +93,8 @@ protected:
     Event() = default;
     Event(const Event& rhs) = default;
     Event& operator=(const Event& that) = default;
+    Event(Event&& rhs) = default;
+    Event& operator=(Event&& that) = default;
 
 private:
     bool used_ = false;

@@ -49,6 +49,8 @@ public:
     explicit ViewEvent(Action action = camerautil::Side::XNegative);
     ViewEvent(const ViewEvent&) = default;
     ViewEvent& operator=(const ViewEvent&) = default;
+    ViewEvent(ViewEvent&&) = default;
+    ViewEvent& operator=(ViewEvent&&) = default;
 
     virtual ~ViewEvent() = default;
 

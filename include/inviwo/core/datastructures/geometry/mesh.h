@@ -89,6 +89,8 @@ public:
     Mesh(const Mesh& rhs, NoData);
 
     Mesh& operator=(const Mesh& that);
+    Mesh(Mesh&& rhs) : Mesh(static_cast<const Mesh&>(rhs)) {}
+    Mesh& operator=(Mesh&& that) { return operator=(static_cast<const Mesh&>(that)); }
     virtual Mesh* clone() const override;
 
     virtual ~Mesh() = default;
@@ -188,7 +190,9 @@ public:
 
     // clang-format off
     [[deprecated("Mesh::addIndicies is deprecated, use addIndices (deprecated since 2019-12-04)")]]
-    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) { addIndices(info, ind); }
+    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
+        addIndices(info, std::move(ind));
+    }
     // clang-format on
 
     /**

@@ -46,7 +46,7 @@ std::string_view MarginProperty::getClassIdentifier() const { return classIdenti
 MarginProperty::MarginProperty(
     std::string_view identifier, std::string_view displayName, float top, float right, float bottom,
     float left, InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
-    PropertySemantics semantics /*= PropertySemantics::Default*/)
+    const PropertySemantics& semantics /*= PropertySemantics::Default*/)
     : CompositeProperty(identifier, displayName)
     , top_("top", "Top", top, {0.0f, ConstraintBehavior::Ignore},
            {200.0f, ConstraintBehavior::Ignore}, 1.0f, invalidationLevel, semantics)

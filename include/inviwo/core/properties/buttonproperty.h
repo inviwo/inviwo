@@ -71,6 +71,10 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonProperty(const ButtonProperty& rhs);
+    ButtonProperty(ButtonProperty&& rhs)
+        : ButtonProperty(static_cast<const ButtonProperty&>(rhs)) {}
+    ButtonProperty& operator=(const ButtonProperty&) = delete;
+    ButtonProperty& operator=(ButtonProperty&&) = delete;
     ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();

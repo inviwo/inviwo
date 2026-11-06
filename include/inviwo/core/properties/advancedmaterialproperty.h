@@ -36,9 +36,11 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
+#include <cstdint>
+
 namespace inviwo {
 
-enum class ShadingFunctionKind {
+enum class ShadingFunctionKind : std::uint8_t {
     HenyeyGreenstein = 0,
     Schlick,
     BlinnPhong,
@@ -66,6 +68,10 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
+    AdvancedMaterialProperty(AdvancedMaterialProperty&& rhs)
+        : AdvancedMaterialProperty(static_cast<const AdvancedMaterialProperty&>(rhs)) {}
+    AdvancedMaterialProperty& operator=(const AdvancedMaterialProperty&) = delete;
+    AdvancedMaterialProperty& operator=(AdvancedMaterialProperty&&) = delete;
 
     virtual AdvancedMaterialProperty* clone() const override;
     virtual ~AdvancedMaterialProperty();

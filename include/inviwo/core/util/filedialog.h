@@ -41,6 +41,10 @@ namespace inviwo {
 class IVW_CORE_API FileDialog : public Dialog {
 public:
     FileDialog();
+    FileDialog(const FileDialog&) = default;
+    FileDialog(FileDialog&&) = default;
+    FileDialog& operator=(const FileDialog&) = default;
+    FileDialog& operator=(FileDialog&&) = default;
     virtual ~FileDialog();
 
     virtual bool show() = 0;

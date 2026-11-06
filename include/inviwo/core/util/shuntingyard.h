@@ -72,6 +72,11 @@ THE SOFTWARE.
 namespace inviwo::shuntingyard {
 
 struct IVW_CORE_API TokenBase {
+    TokenBase() = default;
+    TokenBase(const TokenBase&) = default;
+    TokenBase(TokenBase&&) = default;
+    TokenBase& operator=(const TokenBase&) = default;
+    TokenBase& operator=(TokenBase&&) = default;
     virtual ~TokenBase() = default;
 };
 
@@ -86,8 +91,9 @@ using TokenQueue = std::queue<std::unique_ptr<TokenBase>>;
 
 class IVW_CORE_API Calculator {
 public:
-    static double calculate(std::string expression, std::map<std::string, double>& vars);
-    static std::string shaderCode(std::string expression, std::map<std::string, double>& vars,
+    static double calculate(const std::string& expression, std::map<std::string, double>& vars);
+    static std::string shaderCode(const std::string& expression,
+                                  std::map<std::string, double>& vars,
                                   std::map<std::string, std::string>& symbols);
 
 private:
@@ -106,7 +112,7 @@ private:
         return key;
     }
 
-    static TokenQueue toRPN(std::string expression, std::map<std::string, int> opPrecedence);
+    static TokenQueue toRPN(const std::string& expression, std::map<std::string, int> opPrecedence);
 
     static std::map<std::string, int> getOpeatorPrecedence() {
         std::map<std::string, int> opPrecedence;

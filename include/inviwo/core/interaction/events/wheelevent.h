@@ -45,6 +45,8 @@ public:
 
     WheelEvent(const WheelEvent& rhs) = default;
     WheelEvent& operator=(const WheelEvent& that) = default;
+    WheelEvent(WheelEvent&& rhs) = default;
+    WheelEvent& operator=(WheelEvent&& that) = default;
     virtual WheelEvent* clone() const override;
 
     virtual ~WheelEvent() = default;

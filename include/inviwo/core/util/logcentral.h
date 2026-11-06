@@ -35,6 +35,7 @@
 #include <inviwo/core/util/demangle.h>
 #include <inviwo/core/util/invoke.h>
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -46,10 +47,10 @@ namespace inviwo {
 
 class Processor;
 
-enum class LogLevel : int { Info, Warn, Error };
-enum class LogVerbosity : int { Info, Warn, Error, None };
-enum class LogAudience : int { User, Developer };
-enum class MessageBreakLevel : int { Off, Error, Warn, Info };
+enum class LogLevel : std::uint8_t { Info, Warn, Error };
+enum class LogVerbosity : std::uint8_t { Info, Warn, Error, None };
+enum class LogAudience : std::uint8_t { User, Developer };
+enum class MessageBreakLevel : std::uint8_t { Off, Error, Warn, Info };
 
 constexpr bool operator==(const LogLevel& lhs, const LogVerbosity& rhs) {
     return static_cast<LogVerbosity>(lhs) == rhs;
@@ -69,6 +70,10 @@ inline std::string_view format_as(MessageBreakLevel ll) { return enumToStr(ll); 
 class IVW_CORE_API Logger {
 public:
     Logger() = default;
+    Logger(const Logger&) = default;
+    Logger(Logger&&) = default;
+    Logger& operator=(const Logger&) = default;
+    Logger& operator=(Logger&&) = default;
     virtual ~Logger() = default;
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
@@ -79,6 +84,10 @@ public:
 class IVW_CORE_API LogCentral : public Singleton<LogCentral>, public Logger {
 public:
     LogCentral();
+    LogCentral(const LogCentral&) = delete;
+    LogCentral(LogCentral&&) = delete;
+    LogCentral& operator=(const LogCentral&) = delete;
+    LogCentral& operator=(LogCentral&&) = delete;
     virtual ~LogCentral() = default;
 
     void setVerbosity(LogVerbosity verbosity);
@@ -160,7 +169,7 @@ IVW_CORE_API void logDirectly(LogLevel level, SourceContext context, std::string
 inline void report(Logger& logger, LogLevel level, SourceContext context,
                    std::string_view message) {
     logger.log(context.source(), level, LogAudience::User, context.file(), context.function(),
-               context.line(), message);
+               static_cast<int>(context.line()), message);
 }
 inline void report(LogLevel level, SourceContext context, std::string_view message) {
     if (LogCentral::isInitialized()) {
@@ -191,6 +200,7 @@ inline void report(Logger& logger, LogLevel level, SourceContext context, fmt::s
 }
 }  // namespace detail
 
+// NOLINTBEGIN(cppcoreguidelines-missing-std-forward) fmt needs lvalues
 template <typename... Args>
 inline void report(Logger& logger, LogLevel level, SourceContext context,
                    fmt::format_string<Args...> format, Args&&... args) {
@@ -202,11 +212,13 @@ inline void report(LogLevel level, SourceContext context, fmt::format_string<Arg
                    Args&&... args) {
     ::inviwo::log::detail::report(level, context, format.get(), fmt::make_format_args(args...));
 }
+// NOLINTEND(cppcoreguidelines-missing-std-forward)
 
 inline void exception(const Exception& e) {
     ::inviwo::log::report(LogLevel::Error, e.getContext(), e.getFullMessage());
 }
 template <typename... Args>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) fmt needs lvalues
 inline void exception(const Exception& e, fmt::format_string<Args...> format, Args&&... args) {
     ::inviwo::log::detail::report(LogLevel::Error, e.getContext(), format.get(),
                                   fmt::make_format_args(args...));
@@ -351,6 +363,7 @@ auto exceptionGuard(F&& fun) noexcept {
 
 template <typename F>
 auto exceptionGuarded(F&& fun) noexcept {
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) args are forwarded in the body
     return [f = std::forward<F>(fun)]<typename... Args>(Args&&... args) mutable {
         try {
             return util::invoke(f, std::forward<Args>(args)...);

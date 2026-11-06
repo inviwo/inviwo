@@ -33,16 +33,17 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <flags/flags.h>
+#include <cstdint>
 #include <string_view>
 
 namespace inviwo {
 
-enum class TouchState {
+enum class TouchState : std::uint8_t {
     None = 0,
-    Started = 1 << 0,     //!< Touches the surface of the TouchDevice
-    Updated = 1 << 1,     //!< Moved
-    Stationary = 1 << 2,  //!< No movement on TouchScreen, Pressed on TouchPad
-    Finished = 1 << 3,    //!< Released
+    Started = 1U << 0U,     //!< Touches the surface of the TouchDevice
+    Updated = 1U << 1U,     //!< Moved
+    Stationary = 1U << 2U,  //!< No movement on TouchScreen, Pressed on TouchPad
+    Finished = 1U << 3U,    //!< Released
 };
 
 ALLOW_FLAGS_FOR_ENUM(TouchState)

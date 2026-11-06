@@ -32,6 +32,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 
+#include <utility>
+
 namespace inviwo {
 
 /**
@@ -54,6 +56,10 @@ public:
                      PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateProperty<T>& operator=(const T& value);
+
+    TemplateProperty& operator=(const TemplateProperty&) = delete;
+    TemplateProperty& operator=(TemplateProperty&&) = delete;
+    TemplateProperty(TemplateProperty&&) = delete;
 
     virtual TemplateProperty<T>* clone() const override = 0;
     virtual ~TemplateProperty() = default;
@@ -85,14 +91,15 @@ TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_v
                                       Document help, const T& value,
                                       InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , value_("value", value) {}
 
 template <typename T>
 TemplateProperty<T>::TemplateProperty(std::string_view identifier, std::string_view displayName,
                                       const T& value, InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics), value_("value", value) {}
+    : Property(identifier, displayName, invalidationLevel, std::move(semantics))
+    , value_("value", value) {}
 
 template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {

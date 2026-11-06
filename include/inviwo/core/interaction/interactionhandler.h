@@ -38,6 +38,10 @@ class IVW_CORE_API InteractionHandler : public EventListener {
 
 public:
     InteractionHandler() = default;
+    InteractionHandler(const InteractionHandler&) = default;
+    InteractionHandler(InteractionHandler&&) = default;
+    InteractionHandler& operator=(const InteractionHandler&) = default;
+    InteractionHandler& operator=(InteractionHandler&&) = default;
     virtual ~InteractionHandler() = default;
 };
 
