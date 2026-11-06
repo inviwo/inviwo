@@ -30,9 +30,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <cstdint>
+
 namespace inviwo {
 
-enum class ModulePath {
+enum class ModulePath : std::uint8_t {
     Data,               // /data
     Images,             // /data/images
     PortInspectors,     // /data/portinspectors

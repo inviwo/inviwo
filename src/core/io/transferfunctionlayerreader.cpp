@@ -100,7 +100,7 @@ TransferFunctionLayerReaderWrapper::TransferFunctionLayerReaderWrapper(DataReade
 }
 
 void TransferFunctionLayerReaderWrapper::onRegister(DataReader* reader) {
-    if (auto layerReader = dynamic_cast<DataReaderType<Layer>*>(reader)) {
+    if (auto* layerReader = dynamic_cast<DataReaderType<Layer>*>(reader)) {
         if (auto [it, inserted] = layerToTFMap_.try_emplace(
                 layerReader, std::make_unique<TransferFunctionLayerReader>(
                                  std::unique_ptr<DataReaderType<Layer>>(layerReader->clone())));
@@ -110,7 +110,7 @@ void TransferFunctionLayerReaderWrapper::onRegister(DataReader* reader) {
     }
 }
 void TransferFunctionLayerReaderWrapper::onUnRegister(DataReader* reader) {
-    if (auto layerReader = dynamic_cast<DataReaderType<Layer>*>(reader)) {
+    if (auto* layerReader = dynamic_cast<DataReaderType<Layer>*>(reader)) {
         if (const auto it = layerToTFMap_.find(layerReader); it != layerToTFMap_.end()) {
             factory_->unRegisterObject(it->second.get());
             layerToTFMap_.erase(it);

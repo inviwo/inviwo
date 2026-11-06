@@ -39,14 +39,16 @@
 #include <inviwo/core/util/fmtutils.h>
 #include <inviwo/core/util/staticstring.h>
 
+#include <cstdint>
 #include <unordered_map>
+#include <utility>
 
 namespace inviwo {
 
 class ImageOutport;
 
-enum class OutportDeterminesSize { Yes, No };
-enum class HandleResizeEvents { Yes, No };
+enum class OutportDeterminesSize : std::uint8_t { Yes, No };
+enum class HandleResizeEvents : std::uint8_t { Yes, No };
 
 IVW_CORE_API std::string_view enumToStr(OutportDeterminesSize ods);
 IVW_CORE_API std::string_view enumToStr(HandleResizeEvents hre);
@@ -214,12 +216,16 @@ public:
                  bool handleResizeEvents = true);
     ImageOutport(std::string_view identifier, bool handleResizeEvents);
 
+    ImageOutport(const ImageOutport&) = delete;
+    ImageOutport(ImageOutport&&) = delete;
+    ImageOutport& operator=(const ImageOutport&) = delete;
+    ImageOutport& operator=(ImageOutport&&) = delete;
     virtual ~ImageOutport() = default;
     virtual std::string_view getClassIdentifier() const override;
 
     virtual void setData(std::shared_ptr<const Image>) override;
     virtual void setData(const Image* data) override;  // will assume ownership of data.
-    void setData(std::shared_ptr<Image>);
+    void setData(const std::shared_ptr<Image>&);
     void setData(Image* data);  // will assume ownership of data.
 
     /**
@@ -261,10 +267,11 @@ public:
 
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
+    virtual Document getInfo() const override;
+
+protected:
     virtual void disconnectFrom(Inport* port) override;
     virtual void connectTo(Inport* port) override;
-
-    virtual Document getInfo() const override;
 
 private:
     size2_t getLargestReqDim() const;
@@ -292,7 +299,7 @@ struct PortTraits<ImageOutport> {
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string_view identifier, Document help,
                                     OutportDeterminesSize value)
-    : DataInport<Image, N>(identifier, help), outportDeterminesSize_(value) {}
+    : DataInport<Image, N>(identifier, std::move(help)), outportDeterminesSize_(value) {}
 
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string_view identifier, bool outportDeterminesSize)

@@ -183,6 +183,10 @@ public:
      * identifier and displayName with the ProcessorInfo displayName.
      */
     explicit Processor(std::string_view identifier = "", std::string_view displayName = "");
+    Processor(const Processor&) = delete;
+    Processor(Processor&&) = delete;
+    Processor& operator=(const Processor&) = delete;
+    Processor& operator=(Processor&&) = delete;
     virtual ~Processor();
 
     // Should be implemented by all inheriting classes;

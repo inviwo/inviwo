@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <cstdint>
 #include <string_view>
 #include <functional>
 #include <filesystem>
@@ -42,19 +43,20 @@ class InviwoApplication;
 namespace util {
 
 IVW_CORE_API void forEachWorkspaceInDirRecursive(
-    const std::filesystem::path& path, std::function<void(const std::filesystem::path&)> callback);
+    const std::filesystem::path& path,
+    const std::function<void(const std::filesystem::path&)>& callback);
 
-enum class DryRun { Yes, No };
+enum class DryRun : std::uint8_t { Yes, No };
 
 IVW_CORE_API size_t updateWorkspaces(
     InviwoApplication* app, const std::filesystem::path& path, DryRun dryRun,
     std::function<void()> updateGui = []() {}, size_t current = 0, size_t total = 0);
 
 IVW_CORE_API void updateExampleWorkspaces(
-    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
+    InviwoApplication* app, DryRun dryRun, const std::function<void()>& updateGui = []() {});
 
 IVW_CORE_API void updateRegressionWorkspaces(
-    InviwoApplication* app, DryRun dryRun, std::function<void()> updateGui = []() {});
+    InviwoApplication* app, DryRun dryRun, const std::function<void()>& updateGui = []() {});
 
 }  // namespace util
 

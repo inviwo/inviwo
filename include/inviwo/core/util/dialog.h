@@ -36,6 +36,10 @@ namespace inviwo {
 class IVW_CORE_API Dialog {
 public:
     Dialog() = default;
+    Dialog(const Dialog&) = delete;
+    Dialog(Dialog&&) = delete;
+    Dialog& operator=(const Dialog&) = delete;
+    Dialog& operator=(Dialog&&) = delete;
     virtual ~Dialog() = default;
 };
 

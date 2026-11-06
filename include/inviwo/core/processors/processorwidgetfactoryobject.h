@@ -43,6 +43,10 @@ class ProcessorWidget;
 class IVW_CORE_API ProcessorWidgetFactoryObject {
 public:
     explicit ProcessorWidgetFactoryObject(std::string_view processorClassIdentifier);
+    ProcessorWidgetFactoryObject(const ProcessorWidgetFactoryObject&) = delete;
+    ProcessorWidgetFactoryObject(ProcessorWidgetFactoryObject&&) = delete;
+    ProcessorWidgetFactoryObject& operator=(const ProcessorWidgetFactoryObject&) = delete;
+    ProcessorWidgetFactoryObject& operator=(ProcessorWidgetFactoryObject&&) = delete;
     virtual ~ProcessorWidgetFactoryObject();
 
     virtual std::unique_ptr<ProcessorWidget> create(Processor* p) = 0;
@@ -58,6 +62,12 @@ public:
     ProcessorWidgetFactoryObjectTemplate()
         : ProcessorWidgetFactoryObject(
               ProcessorTraits<ProcessorType>::getProcessorInfo().classIdentifier) {}
+    ProcessorWidgetFactoryObjectTemplate(const ProcessorWidgetFactoryObjectTemplate&) = delete;
+    ProcessorWidgetFactoryObjectTemplate(ProcessorWidgetFactoryObjectTemplate&&) = delete;
+    ProcessorWidgetFactoryObjectTemplate& operator=(const ProcessorWidgetFactoryObjectTemplate&) =
+        delete;
+    ProcessorWidgetFactoryObjectTemplate& operator=(ProcessorWidgetFactoryObjectTemplate&&) =
+        delete;
     virtual ~ProcessorWidgetFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<ProcessorWidget> create(Processor* p) override {

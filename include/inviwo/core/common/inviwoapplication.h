@@ -44,6 +44,7 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/network/networkannotations.h>
 
+#include <cstdint>
 #include <queue>
 #include <memory>
 #include <mutex>
@@ -118,7 +119,9 @@ public:
     explicit InviwoApplication(std::string_view displayName);
     InviwoApplication(int argc, char** argv, std::string_view displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
+    InviwoApplication(InviwoApplication&& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
+    InviwoApplication& operator=(InviwoApplication&& that) = delete;
 
     virtual ~InviwoApplication();
 
@@ -141,7 +144,8 @@ public:
      */
     void registerModules(RuntimeModuleLoading);
 
-    void registerModules(RuntimeModuleLoading, std::function<bool(std::string_view)> isEnabled);
+    void registerModules(RuntimeModuleLoading,
+                         const std::function<bool(std::string_view)>& isEnabled);
 
     ModuleManager& getModuleManager();
     const ModuleManager& getModuleManager() const;
@@ -235,7 +239,7 @@ public:
      */
     size_t getPoolSize() const;
 
-    enum class LongWait { Start, Update, End };
+    enum class LongWait : std::uint8_t { Start, Update, End };
     /**
      * Set the number of worker threads in the thread pool. This will block for working threads to
      * finish
@@ -550,8 +554,7 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     using return_type = std::invoke_result_t<F, Args...>;
 
     const auto task = std::make_shared<std::packaged_task<return_type()>>(
-        [f = std::forward<F>(f),
-         ... args = std::forward<Args>(args)]() mutable -> return_type {
+        [f = std::forward<F>(f), ... args = std::forward<Args>(args)]() mutable -> return_type {
             return std::invoke(f, args...);
         });
 

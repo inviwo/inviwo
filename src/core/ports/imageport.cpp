@@ -99,7 +99,7 @@ void ImageOutport::setData(const Image* data) {
     cache_.setMaster(data_);
 }
 
-void ImageOutport::setData(std::shared_ptr<Image> data) {
+void ImageOutport::setData(const std::shared_ptr<Image>& data) {
     DataOutport<Image>::setData(data);
     image_ = data;
     cache_.setMaster(data);
@@ -151,9 +151,9 @@ void ImageOutport::disconnectFrom(Inport* inport) {
         setDimensions(newDimensions);  // resize data.
 
         // Make sure that all ImageOutports in the same group that has the same size.
-        for (auto port : getProcessor()->getPortsInSameGroup(this)) {
+        for (auto* port : getProcessor()->getPortsInSameGroup(this)) {
             if (port != this) {
-                if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
+                if (auto* imageOutport = dynamic_cast<ImageOutport*>(port)) {
                     imageOutport->setDimensions(newDimensions);
                 }
             }
@@ -172,7 +172,7 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
         DataOutport<Image>::propagateEvent(event, source);
         return;
     }
-    auto resizeEvent = static_cast<ResizeEvent*>(event);
+    const auto* resizeEvent = static_cast<ResizeEvent*>(event);
     requestedDimensions_[source] = resizeEvent->size();
     pruneCache();
 
@@ -182,9 +182,9 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
         setDimensions(newDimensions);  // resize data.
 
         // Make sure that all ImageOutports in the same group that has the same size.
-        for (auto port : getProcessor()->getPortsInSameGroup(this)) {
+        for (auto* port : getProcessor()->getPortsInSameGroup(this)) {
             if (port != this) {
-                if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
+                if (auto* imageOutport = dynamic_cast<ImageOutport*>(port)) {
                     imageOutport->setDimensions(newDimensions);
                 }
             }

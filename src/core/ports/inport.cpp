@@ -160,7 +160,7 @@ void Inport::setIsReadyUpdater(std::function<bool()> updater) {
 
 bool Inport::circularConnection(const Port* port) const {
     // Check for circular depends.
-    auto pd = util::getPredecessors(port->getProcessor());
+    const auto pd = util::getPredecessors(port->getProcessor());
     return pd.contains(getProcessor());
 }
 

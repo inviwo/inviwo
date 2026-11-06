@@ -182,6 +182,7 @@ private:
     void registerProperty(Property* subProperty);
     void unregisterProperty(Property* subProperty);
 
+public:
     // PropertyObserver overrides
     virtual void onSetIdentifier(Property* subProperty, const std::string& identifier) override;
     virtual void onSetDisplayName(Property* subProperty, const std::string& displayName) override;
@@ -199,6 +200,7 @@ private:
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
+private:
     InviwoApplication* app_;
 
     bool isProcessing_ = false;

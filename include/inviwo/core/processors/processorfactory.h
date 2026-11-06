@@ -47,6 +47,10 @@ class IVW_CORE_API ProcessorFactory
 
 public:
     explicit ProcessorFactory(InviwoApplication* app);
+    ProcessorFactory(const ProcessorFactory&) = delete;
+    ProcessorFactory(ProcessorFactory&&) = delete;
+    ProcessorFactory& operator=(const ProcessorFactory&) = delete;
+    ProcessorFactory& operator=(ProcessorFactory&&) = delete;
     virtual ~ProcessorFactory() = default;
     bool registerObject(ProcessorFactoryObject* processor) override;
 

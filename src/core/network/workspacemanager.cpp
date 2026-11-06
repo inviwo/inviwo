@@ -53,7 +53,6 @@ class NetworkModified final : public ProcessorNetworkObserver {
 public:
     explicit NetworkModified(WorkspaceManager* manager) : manager_{manager} {}
 
-protected:
     // Overrides for ProcessorNetworkObserver
     virtual void onProcessorNetworkChange() override { manager_->setModified(); }
     virtual void onProcessorNetworkDidAddProcessor(Processor*) override { manager_->setModified(); }
@@ -77,6 +76,8 @@ private:
     WorkspaceManager* manager_;
 };
 
+namespace {
+
 class WorkspaceConverter : public VersionConverter {
 public:
     explicit WorkspaceConverter(int from) : VersionConverter(), from_(from) {}
@@ -85,7 +86,7 @@ public:
 
         switch (from_) {
             case 0:
-            case 1: return bundleProcessorNetwork(root);
+            case 1:  return bundleProcessorNetwork(root);
 
             default: return false;  // No changes
         }
@@ -127,6 +128,11 @@ private:
 struct ErrorHandle {
     ErrorHandle(const InviwoSetupInfo& info, std::filesystem::path filename, SourceContext context)
         : info_(&info), filename_(std::move(filename)), context_{context} {}
+
+    ErrorHandle(const ErrorHandle&) = delete;
+    ErrorHandle(ErrorHandle&&) = delete;
+    ErrorHandle& operator=(const ErrorHandle&) = delete;
+    ErrorHandle& operator=(ErrorHandle&&) = delete;
 
     ~ErrorHandle() {
         if (!messages.empty()) {
@@ -178,6 +184,8 @@ struct ErrorHandle {
     std::filesystem::path filename_;
     SourceContext context_;
 };
+
+}  // namespace
 
 WorkspaceManager::WorkspaceManager(InviwoApplication* app)
     : app_(app), modified_{false}, networkModified_{std::make_unique<NetworkModified>(this)} {

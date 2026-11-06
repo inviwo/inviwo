@@ -41,6 +41,10 @@ namespace inviwo {
 class IVW_CORE_API VolumeDataReaderDialog : public Dialog {
 public:
     VolumeDataReaderDialog() = default;
+    VolumeDataReaderDialog(const VolumeDataReaderDialog&) = delete;
+    VolumeDataReaderDialog(VolumeDataReaderDialog&&) = delete;
+    VolumeDataReaderDialog& operator=(const VolumeDataReaderDialog&) = delete;
+    VolumeDataReaderDialog& operator=(VolumeDataReaderDialog&&) = delete;
     virtual ~VolumeDataReaderDialog() = default;
 
     virtual bool show() = 0;

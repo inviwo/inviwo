@@ -54,8 +54,8 @@ namespace inviwo::util {
 
 std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor) {
     std::unordered_set<Processor*> predecessors;
-    for (auto* port : processor->getInports()) {
-        for (auto* connectedPort : port->getConnectedOutports()) {
+    for (const auto* port : processor->getInports()) {
+        for (const auto* connectedPort : port->getConnectedOutports()) {
             predecessors.insert(connectedPort->getProcessor());
         }
     }
@@ -64,8 +64,8 @@ std::unordered_set<Processor*> getDirectPredecessors(const Processor* processor)
 
 std::unordered_set<Processor*> getDirectSuccessors(const Processor* processor) {
     std::unordered_set<Processor*> successors;
-    for (auto* port : processor->getOutports()) {
-        for (auto* connectedPort : port->getConnectedInports()) {
+    for (const auto* port : processor->getOutports()) {
+        for (const auto* connectedPort : port->getConnectedInports()) {
             successors.insert(connectedPort->getProcessor());
         }
     }
@@ -139,7 +139,7 @@ ivec2 getCenterPosition(const std::vector<Processor*>& processors) {
     ivec2 center{0};
     if (processors.empty()) return center;
 
-    for (auto* p : processors) {
+    for (const auto* p : processors) {
         center += getPosition(p);
     }
     return center / static_cast<int>(processors.size());
@@ -164,7 +164,7 @@ std::pair<ivec2, ivec2> getBoundingBox(const std::vector<Processor*>& processors
     ivec2 minPos{std::numeric_limits<int>::max()};
     ivec2 maxPos{std::numeric_limits<int>::lowest()};
 
-    for (auto* p : processors) {
+    for (const auto* p : processors) {
         const auto pos = getPosition(p);
         minPos = glm::min(minPos, pos);
         maxPos = glm::max(maxPos, pos);
@@ -274,25 +274,6 @@ detail::PartialProcessorNetwork::PartialProcessorNetwork(ProcessorNetwork* netwo
 std::vector<Processor*> detail::PartialProcessorNetwork::getAddedProcessors() const {
     return addedProcessors_;
 }
-
-namespace {
-struct PathPair : Serializable {
-    PathPair() = default;
-    PathPair(std::string asrc, std::string adst) : src{std::move(asrc)}, dst{std::move(adst)} {}
-    virtual ~PathPair() = default;
-    std::string src;
-    std::string dst;
-
-    virtual void serialize(Serializer& s) const override {
-        s.serialize("src", src, SerializationTarget::Attribute);
-        s.serialize("dst", dst, SerializationTarget::Attribute);
-    }
-    virtual void deserialize(Deserializer& d) override {
-        d.deserialize("src", src, SerializationTarget::Attribute);
-        d.deserialize("dst", dst, SerializationTarget::Attribute);
-    }
-};
-}  // namespace
 
 void detail::PartialProcessorNetwork::serialize(Serializer& s) const {
     std::vector<NetworkEdge> internalConnections;
@@ -493,7 +474,7 @@ bool addProcessorOnConnection(ProcessorNetwork* network, std::shared_ptr<Process
 }
 
 std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
-                                            std::shared_ptr<Processor> newProcessor,
+                                            const std::shared_ptr<Processor>& newProcessor,
                                             Processor* oldProcessor) {
 
     util::setPosition(newProcessor.get(), util::getPosition(oldProcessor));
@@ -511,13 +492,12 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
     {
         std::vector<Inport*> oldInports = oldProcessor->getInports();
         for (auto* newInport : newProcessor.getInports()) {
-            const auto it =
-                std::ranges::find_if(oldInports, [&](Inport* oldInport) {
-                    return std::all_of(
-                        oldInport->getConnectedOutports().begin(),
-                        oldInport->getConnectedOutports().end(),
-                        [&](Outport* outport) { return newInport->canConnectTo(outport); });
-                });
+            const auto it = std::ranges::find_if(oldInports, [&](Inport* oldInport) {
+                return std::all_of(oldInport->getConnectedOutports().begin(),
+                                   oldInport->getConnectedOutports().end(), [&](Outport* outport) {
+                                       return newInport->canConnectTo(outport);
+                                   });
+            });
 
             if (it != oldInports.end()) {
                 for (auto* outport : (*it)->getConnectedOutports()) {
@@ -531,13 +511,12 @@ std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network, Processor
     {
         std::vector<Outport*> oldOutports = oldProcessor->getOutports();
         for (auto* newOutport : newProcessor.getOutports()) {
-            const auto it =
-                std::ranges::find_if(oldOutports, [&](Outport* oldOutport) {
-                    return std::all_of(
-                        oldOutport->getConnectedInports().begin(),
-                        oldOutport->getConnectedInports().end(),
-                        [&](Inport* inport) { return inport->canConnectTo(newOutport); });
-                });
+            const auto it = std::ranges::find_if(oldOutports, [&](Outport* oldOutport) {
+                return std::all_of(oldOutport->getConnectedInports().begin(),
+                                   oldOutport->getConnectedInports().end(), [&](Inport* inport) {
+                                       return inport->canConnectTo(newOutport);
+                                   });
+            });
 
             if (it != oldOutports.end()) {
                 for (auto* inport : (*it)->getConnectedInports()) {

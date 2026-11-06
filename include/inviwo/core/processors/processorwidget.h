@@ -41,6 +41,10 @@ class Processor;
 class IVW_CORE_API ProcessorWidget : public ProcessorWidgetMetaDataObserver {
 public:
     explicit ProcessorWidget(Processor* p);
+    ProcessorWidget(const ProcessorWidget&) = delete;
+    ProcessorWidget(ProcessorWidget&&) = delete;
+    ProcessorWidget& operator=(const ProcessorWidget&) = delete;
+    ProcessorWidget& operator=(ProcessorWidget&&) = delete;
     virtual ~ProcessorWidget() = default;
 
     virtual Processor* getProcessor() const;
@@ -68,13 +72,13 @@ protected:
     virtual void updateFullScreen(bool) = 0;
     virtual void updateOnTop(bool) = 0;
 
-private:
     virtual void onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetFullScreenChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetOnTopChange(ProcessorWidgetMetaData*) override;
 
+private:
     Processor* processor_;               //< non owning reference.
     ProcessorWidgetMetaData* metaData_;  //< non owning reference.
 };

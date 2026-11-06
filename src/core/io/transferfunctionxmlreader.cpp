@@ -151,7 +151,7 @@ std::shared_ptr<TransferFunction> TransferFunctionXMLReader::readData(
         TxDocument doc;
         doc.Parse(str.c_str());
 
-        auto root = doc.FirstChildElement();
+        auto* root = doc.FirstChildElement();
         if (!root) {
             throw DataReaderException(SourceContext{}, "No XML root node found in '{}'", filePath);
         }

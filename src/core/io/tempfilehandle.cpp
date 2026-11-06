@@ -83,7 +83,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
     static constexpr std::string_view unqiue = "XXXXXX";
 
     std::string tempPath{"/tmp/"};
-    for (auto envVar : {"TMPDIR", "TMP", "TEMP", "TEMPDIR"}) {
+    for (const auto* envVar : {"TMPDIR", "TMP", "TEMP", "TEMPDIR"}) {
         if (const char* path = std::getenv(envVar)) {
             tempPath = std::string(path);
         }

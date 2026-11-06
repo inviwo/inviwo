@@ -43,6 +43,7 @@
 #include <glm/fwd.hpp>
 
 #include <memory>
+#include <utility>
 
 namespace inviwo {
 
@@ -146,7 +147,7 @@ using updateResourceType =
 
 template <typename T>
 void DataOutport<T>::setData(std::shared_ptr<const T> data) {
-    data_ = data;
+    data_ = std::move(data);
     isReady_.update();
 
     if constexpr (util::is_detected_v<detail::updateResourceType, T>) {

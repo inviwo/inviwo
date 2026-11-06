@@ -34,6 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
 
+#include <cstdint>
 #include <functional>
 
 namespace inviwo::util {
@@ -69,8 +70,8 @@ IVW_CORE_API std::unordered_set<Processor*> getDirectSuccessors(const Processor*
 IVW_CORE_API std::unordered_set<Processor*> getPredecessors(Processor* processor);
 IVW_CORE_API std::unordered_set<Processor*> getSuccessors(Processor* processor);
 
-enum class TraversalDirection { Up, Down };
-enum class VisitPattern { Pre, Post };
+enum class TraversalDirection : std::uint8_t { Up, Down };
+enum class VisitPattern : std::uint8_t { Pre, Post };
 
 struct DefaultTraversalFilter {
     bool operator()(Processor*, Inport*, Outport*) { return true; }
@@ -213,9 +214,9 @@ IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* netwo
                                                          Processor& newProcessor,
                                                          Processor* oldProcessor);
 
-IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(ProcessorNetwork* network,
-                                                         std::shared_ptr<Processor> newProcessor,
-                                                         Processor* oldProcessor);
+IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(
+    ProcessorNetwork* network, const std::shared_ptr<Processor>& newProcessor,
+    Processor* oldProcessor);
 
 IVW_CORE_API bool canSplitConnection(const Processor& p, const PortConnection& connection);
 

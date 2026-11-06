@@ -42,6 +42,12 @@ public:
     VersionConverter();
     virtual ~VersionConverter() = default;
     virtual bool convert(TxElement* root) = 0;
+
+protected:
+    VersionConverter(const VersionConverter&) = default;
+    VersionConverter(VersionConverter&&) = default;
+    VersionConverter& operator=(const VersionConverter&) = default;
+    VersionConverter& operator=(VersionConverter&&) = default;
 };
 
 /**
@@ -53,6 +59,10 @@ public:
     NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     explicit NodeVersionConverter(std::function<bool(TxElement*)> fun);
 
+    NodeVersionConverter(const NodeVersionConverter&) = default;
+    NodeVersionConverter(NodeVersionConverter&&) = default;
+    NodeVersionConverter& operator=(const NodeVersionConverter&) = default;
+    NodeVersionConverter& operator=(NodeVersionConverter&&) = default;
     virtual ~NodeVersionConverter() = default;
     virtual bool convert(TxElement* root);
 
@@ -73,6 +83,10 @@ public:
     template <typename T>
     TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     explicit TraversingVersionConverter(std::function<bool(TxElement*)> fun);
+    TraversingVersionConverter(const TraversingVersionConverter&) = default;
+    TraversingVersionConverter(TraversingVersionConverter&&) = default;
+    TraversingVersionConverter& operator=(const TraversingVersionConverter&) = default;
+    TraversingVersionConverter& operator=(TraversingVersionConverter&&) = default;
     virtual ~TraversingVersionConverter() = default;
 
     /**
@@ -215,7 +229,7 @@ void visitMatchingNodesRecursive(TxElement* root, const std::vector<ElementMatch
 
         if (stack.size() >= selectors.size() &&
             std::equal(selectors.rbegin(), selectors.rend(), stack.rbegin(),
-                       stack.rbegin() + selectors.size(), match)) {
+                       stack.rbegin() + static_cast<std::ptrdiff_t>(selectors.size()), match)) {
             std::invoke(visitor, node);
         }
 
@@ -245,6 +259,7 @@ public:
 
     Kind(Kind&&) = default;
     Kind& operator=(Kind&&) = default;
+    ~Kind() = default;
 
     static Kind processor(const std::string& type);
     static Kind inport(const std::string& type);
@@ -314,6 +329,7 @@ struct IVW_CORE_API IdentifierReplacement {
 
     IdentifierReplacement(IdentifierReplacement&&) noexcept;
     IdentifierReplacement& operator=(IdentifierReplacement&&) noexcept;
+    ~IdentifierReplacement() = default;
 
     std::vector<Kind> path;
     std::string oldId;

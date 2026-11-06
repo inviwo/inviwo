@@ -49,8 +49,10 @@ class MetaDataOwner;
 class IVW_CORE_API RawVolumeReader : public DataReaderType<Volume> {
 public:
     RawVolumeReader();
-    RawVolumeReader(const RawVolumeReader& rhs);
-    RawVolumeReader& operator=(const RawVolumeReader& that);
+    RawVolumeReader(const RawVolumeReader& rhs) = default;
+    RawVolumeReader(RawVolumeReader&& rhs) = default;
+    RawVolumeReader& operator=(const RawVolumeReader& that) = default;
+    RawVolumeReader& operator=(RawVolumeReader&& that) = default;
     virtual RawVolumeReader* clone() const override;
     virtual ~RawVolumeReader() = default;
 

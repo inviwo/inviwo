@@ -41,7 +41,7 @@ Outport::Outport(std::string_view identifier, Document help)
     : Port(identifier, std::move(help))
     , isReady_{false,
                [this](const bool&) {
-                   for (auto inport : connectedInports_) {
+                   for (auto* inport : connectedInports_) {
                        inport->readyUpdate();
                    }
                },
@@ -66,7 +66,7 @@ const std::vector<Inport*>& Outport::getConnectedInports() const { return connec
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
-    for (auto inport : connectedInports_) inport->invalidate(invalidationLevel);
+    for (auto* inport : connectedInports_) inport->invalidate(invalidationLevel);
     isReady_.update();
 }
 

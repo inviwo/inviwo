@@ -112,14 +112,13 @@ CanvasProcessor::CanvasProcessor(InviwoApplication* app)
                         OptionPropertyState<FileExtension> opts{};
                         const auto exts =
                             app->getDataWriterFactory()->getExtensionsForType<Layer>();
-                        std::transform(exts.begin(), exts.end(), std::back_inserter(opts.options),
-                                       [](auto& ext) {
-                                           return OptionPropertyOption<FileExtension>{
-                                               ext.toString(), ext.toString(), ext};
-                                       });
-                        if (const auto it =
-                                std::find_if(exts.begin(), exts.end(),
-                                             [](auto& ext) { return ext.extension == "png"; });
+                        std::ranges::transform(exts, std::back_inserter(opts.options),
+                                               [](auto& ext) {
+                                                   return OptionPropertyOption<FileExtension>{
+                                                       ext.toString(), ext.toString(), ext};
+                                               });
+                        if (const auto it = std::ranges::find_if(
+                                exts, [](auto& ext) { return ext.extension == "png"; });
                             it != exts.end()) {
                             opts.selectedIndex = std::distance(exts.begin(), it);
                         }
@@ -322,7 +321,7 @@ void CanvasProcessor::saveImageLayer() {
 
 void CanvasProcessor::saveImageLayer(const std::filesystem::path& snapshotPath,
                                      const FileExtension& extension) const {
-    if (auto layer = getVisibleLayer()) {
+    if (const auto* layer = getVisibleLayer()) {
         util::saveLayer(*layer, snapshotPath, extension);
     } else {
         log::error("Could not find visible layer");
@@ -332,7 +331,7 @@ void CanvasProcessor::saveImageLayer(const std::filesystem::path& snapshotPath,
 std::optional<std::filesystem::path> CanvasProcessor::exportFile(
     const std::filesystem::path& path, std::string_view name,
     const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const {
-    if (auto layer = getVisibleLayer()) {
+    if (const auto* layer = getVisibleLayer()) {
         return util::saveData(*layer, path, name, candidateExtensions, overwrite);
     } else {
         throw Exception("Could not find visible layer");
@@ -350,7 +349,7 @@ const Layer* CanvasProcessor::getVisibleLayer() const {
 std::shared_ptr<const Image> CanvasProcessor::getImage() const { return inport_.getData(); }
 
 Canvas* CanvasProcessor::getCanvas() const {
-    if (auto canvasWidget = static_cast<CanvasProcessorWidget*>(processorWidget_.get())) {
+    if (const auto* canvasWidget = static_cast<CanvasProcessorWidget*>(processorWidget_.get())) {
         return canvasWidget->getCanvas();
     } else {
         return nullptr;
@@ -365,7 +364,7 @@ void CanvasProcessor::process() {
     }
 
     if (processorWidget_ && processorWidget_->isVisible()) {
-        if (auto c = getCanvas()) {
+        if (auto* c = getCanvas()) {
             c->render(inport_.getData(), visibleLayer_, colorLayer_);
         }
     }
@@ -373,7 +372,7 @@ void CanvasProcessor::process() {
 
 void CanvasProcessor::doIfNotReady() {
     if (processorWidget_ && processorWidget_->isVisible()) {
-        if (auto c = getCanvas()) {
+        if (auto* c = getCanvas()) {
             c->render(nullptr, visibleLayer_, colorLayer_);
         }
     }

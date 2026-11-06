@@ -44,6 +44,11 @@ class CompositeProperty;
  */
 class IVW_CORE_API NetworkVisitor {
 public:
+    NetworkVisitor() = default;
+    NetworkVisitor(const NetworkVisitor&) = delete;
+    NetworkVisitor(NetworkVisitor&&) = delete;
+    NetworkVisitor& operator=(const NetworkVisitor&) = delete;
+    NetworkVisitor& operator=(NetworkVisitor&&) = delete;
     virtual ~NetworkVisitor() = default;
 
     /**

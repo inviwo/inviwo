@@ -40,7 +40,7 @@
 namespace inviwo {
 
 const std::vector<FileExtension>& DataReader::getExtensions() const { return extensions_; }
-void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
+void DataReader::addExtension(const FileExtension& ext) { extensions_.push_back(ext); }
 
 void DataReader::checkExists(const std::filesystem::path& path) {
     if (!std::filesystem::is_regular_file(path)) {

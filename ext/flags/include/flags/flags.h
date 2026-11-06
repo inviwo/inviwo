@@ -60,7 +60,7 @@ public:
     flags &operator=(flags &&fl) noexcept = default;
 
     explicit constexpr flags(empty_t) noexcept : val_{0} {}
-    explicit constexpr flags(any_t) noexcept : val_{~impl_type{0}} {}
+    explicit constexpr flags(any_t) noexcept : val_{static_cast<impl_type>(~impl_type{0})} {}
 
 #ifdef ENUM_CLASS_FLAGS_FORBID_IMPLICT_CONVERSION
     explicit
@@ -132,15 +132,15 @@ public:
     }
 
     friend constexpr flags operator|(flags f1, flags f2) noexcept {
-        return flags{f1.val_ | f2.val_};
+        return flags{static_cast<impl_type>(f1.val_ | f2.val_)};
     }
 
     friend constexpr flags operator&(flags f1, flags f2) noexcept {
-        return flags{f1.val_ & f2.val_};
+        return flags{static_cast<impl_type>(f1.val_ & f2.val_)};
     }
 
     friend constexpr flags operator^(flags f1, flags f2) noexcept {
-        return flags{f1.val_ ^ f2.val_};
+        return flags{static_cast<impl_type>(f1.val_ ^ f2.val_)};
     }
 
     void swap(flags &fl) noexcept { std::swap(val_, fl.val_); }

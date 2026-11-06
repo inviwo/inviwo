@@ -51,6 +51,10 @@ class InviwoApplication;
 class IVW_CORE_API InviwoModuleLibraryObserver {
 public:
     explicit InviwoModuleLibraryObserver(InviwoApplication* app);
+    InviwoModuleLibraryObserver(const InviwoModuleLibraryObserver&) = delete;
+    InviwoModuleLibraryObserver(InviwoModuleLibraryObserver&&) = delete;
+    InviwoModuleLibraryObserver& operator=(const InviwoModuleLibraryObserver&) = delete;
+    InviwoModuleLibraryObserver& operator=(InviwoModuleLibraryObserver&&) = delete;
     virtual ~InviwoModuleLibraryObserver() = default;
 
     void observe(const std::filesystem::path& file);

@@ -53,32 +53,6 @@ RawVolumeReader::RawVolumeReader()
     addExtension(FileExtension("raw", "Raw binary file"));
 }
 
-RawVolumeReader::RawVolumeReader(const RawVolumeReader& rhs)
-    : DataReaderType<Volume>(rhs)
-    , rawFile_(rhs.rawFile_)
-    , byteOrder_(rhs.byteOrder_)
-    , dimensions_(rhs.dimensions_)
-    , spacing_(rhs.spacing_)
-    , format_(rhs.format_)
-    , byteOffset_(rhs.byteOffset_)
-    , compression_{rhs.compression_} {}
-
-RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
-    if (this != &that) {
-        rawFile_ = that.rawFile_;
-        byteOrder_ = that.byteOrder_;
-        dimensions_ = that.dimensions_;
-        spacing_ = that.spacing_;
-        format_ = that.format_;
-        dataMapper_ = that.dataMapper_;
-        byteOffset_ = that.byteOffset_;
-        compression_ = that.compression_;
-        DataReaderType<Volume>::operator=(that);
-    }
-
-    return *this;
-}
-
 RawVolumeReader* RawVolumeReader::clone() const { return new RawVolumeReader(*this); }
 
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::filesystem::path& filePath) {

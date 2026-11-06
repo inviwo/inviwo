@@ -41,6 +41,7 @@ class IVW_CORE_API SerializationException : public Exception {
 public:
     using Exception::Exception;
 
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) fmt needs lvalues
     template <typename... Args>
     SerializationException(SourceContext context, std::vector<serialization::Node> stack,
                            fmt::format_string<Args...> format, Args&&... args)

@@ -35,6 +35,7 @@
 
 #include <glm/fwd.hpp>
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include <utility>
@@ -46,9 +47,9 @@ class CameraProperty;
 
 namespace camerautil {
 
-enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositive };
-enum class UpdateNearFar { Yes, No };
-enum class UpdateLookRanges { Yes, No };
+enum class Side : std::uint8_t { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositive };
+enum class UpdateNearFar : std::uint8_t { Yes, No };
+enum class UpdateLookRanges : std::uint8_t { Yes, No };
 
 constexpr std::string_view format_as(Side s) {
     switch (s) {

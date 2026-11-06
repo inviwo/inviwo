@@ -53,6 +53,10 @@ class IVW_CORE_API Outport : public Port {
     friend class Processor;
 
 public:
+    Outport(const Outport&) = delete;
+    Outport(Outport&&) = delete;
+    Outport& operator=(const Outport&) = delete;
+    Outport& operator=(Outport&&) = delete;
     virtual ~Outport();
     virtual bool isConnected() const override;
 

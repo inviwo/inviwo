@@ -81,7 +81,8 @@ public:
 
     static void updateGraph(std::vector<ModuleContainer>& moduleContainers);
 
-    void setReloadCallback(InviwoApplication* app, std::function<void(ModuleContainer&)> callback);
+    void setReloadCallback(InviwoApplication* app,
+                           const std::function<void(ModuleContainer&)>& callback);
 
 private:
     static bool isLoaded(const std::filesystem::path& path);

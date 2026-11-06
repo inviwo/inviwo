@@ -76,8 +76,8 @@ double alphaOf(const TFPrimitiveData& p) { return std::max(0.0, static_cast<doub
 // represent vertical discontinuities, so duplicate positions are collapsed (last wins).
 std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
     std::vector<TFPrimitiveData> points(tf.begin(), tf.end());
-    std::sort(points.begin(), points.end(),
-              [](const TFPrimitiveData& a, const TFPrimitiveData& b) { return a.pos < b.pos; });
+    std::ranges::sort(
+        points, [](const TFPrimitiveData& a, const TFPrimitiveData& b) { return a.pos < b.pos; });
 
     std::vector<TFPrimitiveData> result;
     result.reserve(points.size());
@@ -97,8 +97,7 @@ vec4 evaluate(std::span<const TFPrimitiveData> tf, double x) {
     if (x <= tf.front().pos) return tf.front().color;
     if (x >= tf.back().pos) return tf.back().color;
 
-    const auto it = std::upper_bound(tf.begin(), tf.end(), x,
-                                     [](double v, const TFPrimitiveData& p) { return v < p.pos; });
+    const auto it = std::ranges::upper_bound(tf, x, {}, &TFPrimitiveData::pos);
     const auto& p0 = *(it - 1);
     const auto& p1 = *it;
 
@@ -121,10 +120,11 @@ std::vector<double> mergedPositions(std::span<const TFPrimitiveData> a,
     for (const auto& p : a) positions.push_back(p.pos);
     for (const auto& p : b) positions.push_back(p.pos);
 
-    std::sort(positions.begin(), positions.end());
-    positions.erase(std::unique(positions.begin(), positions.end(),
-                                [](double x, double y) { return std::abs(x - y) < eps; }),
-                    positions.end());
+    std::ranges::sort(positions);
+    positions.erase(
+        std::ranges::unique(positions, [](double x, double y) { return std::abs(x - y) < eps; })
+            .begin(),
+        positions.end());
     return positions;
 }
 
@@ -248,8 +248,7 @@ double invertCdf(const Cdf& cdf, double q) {
 
     const double targetMass = q * cdf.totalMass;
 
-    const auto it = std::lower_bound(cdf.points.begin(), cdf.points.end(), targetMass,
-                                     [](const CdfPoint& p, double mass) { return p.mass < mass; });
+    const auto it = std::ranges::lower_bound(cdf.points, targetMass, {}, &CdfPoint::mass);
 
     if (it == cdf.points.begin()) return cdf.points.front().pos;
     if (it == cdf.points.end()) return supportMax(cdf);
@@ -309,10 +308,11 @@ std::vector<double> mergedQuantileLevels(const Cdf& a, const Cdf& b,
     addQuantileLevels(a, samplesPerSegment, levels);
     addQuantileLevels(b, samplesPerSegment, levels);
 
-    std::sort(levels.begin(), levels.end());
-    levels.erase(std::unique(levels.begin(), levels.end(),
-                             [](double x, double y) { return std::abs(x - y) < eps; }),
-                 levels.end());
+    std::ranges::sort(levels);
+    levels.erase(
+        std::ranges::unique(levels, [](double x, double y) { return std::abs(x - y) < eps; })
+            .begin(),
+        levels.end());
 
     if (levels.empty() || levels.front() > 0.0) levels.insert(levels.begin(), 0.0);
     if (levels.back() < 1.0) levels.push_back(1.0);
@@ -449,8 +449,9 @@ std::vector<TFPrimitiveData> optimalTransportInterpolation(std::span<const TFPri
     addStructuralVertices(aspan, bspan, cdfA, cdfB, t, interpolatedCdf);
 
     // Sort by quantile (monotonically related to position for valid transport maps).
-    std::sort(interpolatedCdf.begin(), interpolatedCdf.end(),
-              [](const QuantilePoint& lhs, const QuantilePoint& rhs) { return lhs.q < rhs.q; });
+    std::ranges::sort(interpolatedCdf, [](const QuantilePoint& lhs, const QuantilePoint& rhs) {
+        return lhs.q < rhs.q;
+    });
 
     // --- Step 4: Deduplicate ---
     // Remove vertices that collapse to the same position (zero-width intervals).

@@ -57,7 +57,7 @@ PortInspector* PortInspectorManager::borrow(Outport* outport) {
     if (it != unusedInspectors_.end()) {
         return it->get();
     } else {
-        auto* factory = app_->getPortInspectorFactory();
+        const auto* factory = app_->getPortInspectorFactory();
         if (auto portInspector = factory->create(outport->getClassIdentifier())) {
             unusedInspectors_.push_back(std::move(portInspector));
             return unusedInspectors_.back().get();
@@ -75,13 +75,13 @@ std::unique_ptr<PortInspector> PortInspectorManager::getPortInspector(Outport* o
         unusedInspectors_.erase(it);
         return pi;
     } else {
-        auto* factory = app_->getPortInspectorFactory();
+        const auto* factory = app_->getPortInspectorFactory();
         return factory->create(outport->getClassIdentifier());
     }
 }
 
 bool PortInspectorManager::isPortInspectorSupported(const Outport* outport) {
-    auto* factory = app_->getPortInspectorFactory();
+    const auto* factory = app_->getPortInspectorFactory();
     return factory->hasKey(outport->getClassIdentifier());
 }
 

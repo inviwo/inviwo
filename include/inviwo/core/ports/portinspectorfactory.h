@@ -40,6 +40,10 @@ class IVW_CORE_API PortInspectorFactory
     : public StandardFactory<PortInspector, PortInspectorFactoryObject> {
 public:
     PortInspectorFactory() = default;
+    PortInspectorFactory(const PortInspectorFactory&) = delete;
+    PortInspectorFactory(PortInspectorFactory&&) = delete;
+    PortInspectorFactory& operator=(const PortInspectorFactory&) = delete;
+    PortInspectorFactory& operator=(PortInspectorFactory&&) = delete;
     virtual ~PortInspectorFactory() = default;
 };
 

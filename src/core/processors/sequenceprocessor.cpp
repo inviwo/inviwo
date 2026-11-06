@@ -237,6 +237,7 @@ void SequenceProcessor::saveSubNetwork(const std::filesystem::path& file) {
     s.writeFile(ofs, true);
 }
 
+// NOLINTNEXTLINE(readability-make-member-function-const) hands out the mutable sub network
 ProcessorNetwork& SequenceProcessor::getSubNetwork() { return *sub_.net; }
 
 void SequenceProcessor::loadSubNetwork(const std::filesystem::path& file) {

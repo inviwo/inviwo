@@ -127,7 +127,7 @@ std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, b
 
     const size_t len_encoded = (in_len + 2) / 3 * 4;
 
-    const unsigned char trailing_char = url ? '.' : '=';
+    const char trailing_char = url ? '.' : '=';
 
     // Choose set of base64 characters. They differ
     // for the last two positions, depending on the url
@@ -142,25 +142,26 @@ std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, b
     ret.reserve(len_encoded);
 
     unsigned int pos = 0;
+    const auto byte = [&](size_t offset) {
+        return static_cast<unsigned int>(bytes_to_encode[pos + offset]);
+    };
 
     while (pos < in_len) {
-        ret.push_back(base64_chars_[(bytes_to_encode[pos + 0] & 0xfc) >> 2]);
+        ret.push_back(base64_chars_[(byte(0) & 0xfcU) >> 2U]);
 
         if (pos + 1 < in_len) {
-            ret.push_back(base64_chars_[((bytes_to_encode[pos + 0] & 0x03) << 4) +
-                                        ((bytes_to_encode[pos + 1] & 0xf0) >> 4)]);
+            ret.push_back(base64_chars_[((byte(0) & 0x03U) << 4U) + ((byte(1) & 0xf0U) >> 4U)]);
 
             if (pos + 2 < in_len) {
-                ret.push_back(base64_chars_[((bytes_to_encode[pos + 1] & 0x0f) << 2) +
-                                            ((bytes_to_encode[pos + 2] & 0xc0) >> 6)]);
-                ret.push_back(base64_chars_[bytes_to_encode[pos + 2] & 0x3f]);
+                ret.push_back(base64_chars_[((byte(1) & 0x0fU) << 2U) + ((byte(2) & 0xc0U) >> 6U)]);
+                ret.push_back(base64_chars_[byte(2) & 0x3fU]);
             } else {
-                ret.push_back(base64_chars_[(bytes_to_encode[pos + 1] & 0x0f) << 2]);
+                ret.push_back(base64_chars_[(byte(1) & 0x0fU) << 2U]);
                 ret.push_back(trailing_char);
             }
         } else {
 
-            ret.push_back(base64_chars_[(bytes_to_encode[pos + 0] & 0x03) << 4]);
+            ret.push_back(base64_chars_[(byte(0) & 0x03U) << 4U]);
             ret.push_back(trailing_char);
             ret.push_back(trailing_char);
         }
@@ -171,22 +172,20 @@ std::string base64_encode(const unsigned char* bytes_to_encode, size_t in_len, b
     return ret;
 }
 
-}  // namespace
-
-static std::string encode(std::span<char> s, bool url);
+std::string encode(std::span<char> s, bool url);
 
 template <typename String, unsigned int line_length>
-static std::string encode_with_line_breaks(String s) {
+std::string encode_with_line_breaks(String s) {
     return insert_linebreaks(encode(s, false), line_length);
 }
 
 template <typename String>
-static std::string encode_pem(String s) {
+std::string encode_pem(String s) {
     return encode_with_line_breaks<String, 64>(s);
 }
 
 template <typename String>
-static std::string encode_mime(String s) {
+std::string encode_mime(String s) {
     return encode_with_line_breaks<String, 76>(s);
 }
 
@@ -195,7 +194,7 @@ std::string encode(std::span<char> s, bool url) {
 }
 
 template <typename String>
-static std::string decode(String encoded_string, bool remove_linebreaks) {
+std::string decode(String encoded_string, bool remove_linebreaks) {
     // decode(…) is templated so that it can be used with String = const std::string&
     // or std::string_view (requires at least C++17)
 
@@ -239,7 +238,7 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
         // Emit the first output byte that is produced in each chunk:
         //
         ret.push_back(static_cast<std::string::value_type>(
-            (pos_of_char(encoded_string[pos + 0]) << 2) + ((pos_of_char_1 & 0x30) >> 4)));
+            (pos_of_char(encoded_string[pos + 0]) << 2U) + ((pos_of_char_1 & 0x30U) >> 4U)));
 
         if ((pos + 2 < length_of_string) &&  // Check for data that is not padded with equal signs
                                              // (which is allowed by RFC 2045)
@@ -249,15 +248,15 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
 
             // Emit a chunk's second byte (which might not be produced in the last chunk).
             const unsigned int pos_of_char_2 = pos_of_char(encoded_string[pos + 2]);
-            ret.push_back(static_cast<std::string::value_type>(((pos_of_char_1 & 0x0f) << 4) +
-                                                               ((pos_of_char_2 & 0x3c) >> 2)));
+            ret.push_back(static_cast<std::string::value_type>(((pos_of_char_1 & 0x0fU) << 4U) +
+                                                               ((pos_of_char_2 & 0x3cU) >> 2U)));
 
             if ((pos + 3 < length_of_string) && encoded_string[pos + 3] != '=' &&
                 encoded_string[pos + 3] != '.') {
 
                 // Emit a chunk's third byte (which might not be produced in the last chunk).
                 ret.push_back(static_cast<std::string::value_type>(
-                    ((pos_of_char_2 & 0x03) << 6) + pos_of_char(encoded_string[pos + 3])));
+                    ((pos_of_char_2 & 0x03U) << 6U) + pos_of_char(encoded_string[pos + 3])));
             }
         }
 
@@ -266,6 +265,8 @@ static std::string decode(String encoded_string, bool remove_linebreaks) {
 
     return ret;
 }
+
+}  // namespace
 
 std::string base64_encode(std::span<char> s, bool url) { return encode(s, url); }
 

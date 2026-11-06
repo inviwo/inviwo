@@ -48,6 +48,7 @@ class Image;
  */
 class IVW_CORE_API Exporter {
 public:
+    Exporter() = default;
     virtual ~Exporter() = default;
 
     /**
@@ -59,13 +60,26 @@ public:
     virtual std::optional<std::filesystem::path> exportFile(
         const std::filesystem::path& path, std::string_view name,
         const std::vector<FileExtension>& candidateExtensions, Overwrite overwrite) const = 0;
+
+protected:
+    Exporter(const Exporter&) = default;
+    Exporter(Exporter&&) = default;
+    Exporter& operator=(const Exporter&) = default;
+    Exporter& operator=(Exporter&&) = default;
 };
 
 class IVW_CORE_API ImageExporter {
 public:
+    ImageExporter() = default;
     virtual ~ImageExporter() = default;
 
     virtual std::shared_ptr<const Image> getImage() const = 0;
+
+protected:
+    ImageExporter(const ImageExporter&) = default;
+    ImageExporter(ImageExporter&&) = default;
+    ImageExporter& operator=(const ImageExporter&) = default;
+    ImageExporter& operator=(ImageExporter&&) = default;
 };
 
 namespace util {

@@ -213,7 +213,7 @@ std::optional<std::string_view> Deserializer::attribute(std::string_view key) co
 
 std::optional<std::string_view> Deserializer::attribute(std::string_view child,
                                                         std::string_view key) const {
-    if (auto childNode = retrieveChild(child)) {
+    if (const auto* childNode = retrieveChild(child)) {
         return serialization::attribute(childNode, key);
     } else {
         return std::nullopt;

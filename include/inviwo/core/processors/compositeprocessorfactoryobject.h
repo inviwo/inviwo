@@ -43,6 +43,10 @@ class InviwoApplication;
 class IVW_CORE_API CompositeProcessorFactoryObject : public ProcessorFactoryObject {
 public:
     explicit CompositeProcessorFactoryObject(const std::filesystem::path& filen);
+    CompositeProcessorFactoryObject(const CompositeProcessorFactoryObject&) = delete;
+    CompositeProcessorFactoryObject(CompositeProcessorFactoryObject&&) = delete;
+    CompositeProcessorFactoryObject& operator=(const CompositeProcessorFactoryObject&) = delete;
+    CompositeProcessorFactoryObject& operator=(CompositeProcessorFactoryObject&&) = delete;
     virtual ~CompositeProcessorFactoryObject() = default;
 
     virtual std::shared_ptr<Processor> create(InviwoApplication* app) const override;
