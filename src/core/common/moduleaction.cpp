@@ -33,20 +33,5 @@
 
 namespace inviwo {
 
-ModuleCallbackAction::ModuleCallbackAction(std::string actionName, InviwoModule* module,
-                                           ModuleCallBackActionState state)
-    : module_(module), actionName_(std::move(actionName)), actionState_(state) {}
-
-const std::string& ModuleCallbackAction::getActionName() const { return actionName_; }
-
-InviwoModule* ModuleCallbackAction::getModule() const { return module_; }
-
-ModuleCallback& ModuleCallbackAction::getCallBack() { return callBack_; }
-
-const ModuleCallback& ModuleCallbackAction::getCallBack() const { return callBack_; }
-
-ModuleCallBackActionState ModuleCallbackAction::getActionState() const { return actionState_; }
-
-void ModuleCallbackAction::setActionState(ModuleCallBackActionState state) { actionState_ = state; }
 
 }  // namespace inviwo

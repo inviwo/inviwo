@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplicationutil.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/network/networklock.h>
@@ -281,26 +280,25 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
 int PropertyWidgetQt::getSpacing() const { return utilqt::emToPx(this, spacingEm); }
 
 void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app) {
-    std::map<std::string, std::vector<const ModuleCallbackAction*>> callbackMapPerModule;
-    for (auto& moduleAction : app->getCallbackActions()) {
-        const auto moduleName = moduleAction->getModule()->getIdentifier();
-        callbackMapPerModule[moduleName].push_back(moduleAction.get());
+    std::map<std::string, std::vector<std::reference_wrapper<const ModuleAction>>>
+        groupedModuleActions;
+    for (auto& moduleAction : app->getModuleActions()) {
+        if (moduleAction.type() == ModuleAction::Type::Property && !moduleAction.expired()) {
+            groupedModuleActions[moduleAction.group].push_back(std::ref(moduleAction));
+        }
     }
 
-    for (const auto& [moduleName, actions] : callbackMapPerModule) {
-        if (actions.empty()) continue;
-        auto* submenu = menu->addMenu(QString::fromStdString(moduleName));
-        for (const auto& mAction : actions) {
-            const auto& actionName = mAction->getActionName();
-            auto* action = submenu->addAction(QString::fromStdString(actionName));
+    for (const auto& [group, actions] : groupedModuleActions) {
+        auto* submenu = menu->addMenu(QString::fromStdString(group));
+        for (const auto& moduleAction : actions) {
+            auto* action = submenu->addAction(utilqt::toQString(moduleAction.get().name));
+            action->setDisabled(moduleAction.get().state == ModuleAction::State::Disabled);
             connect(action, &QAction::triggered, this,
-                    [app, actionName, property = property_](bool /*checked*/) {
-                        const auto& mActions = app->getCallbackActions();
-                        const auto it = std::ranges::find_if(mActions, [&](auto& item) {
-                            return item->getActionName() == actionName;
-                        });
-                        if (it != mActions.end()) {
-                            (*it)->getCallBack().invoke(property);
+                    [this, ma = moduleAction.get()](bool /*checked*/) {
+                        if (property_) {
+                            if (auto fun = ma.get<ModuleAction::Type::Property>()) {
+                                (*fun)(*property_);
+                            }
                         }
                     });
         }

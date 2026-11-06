@@ -30,43 +30,51 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/modulecallback.h>
+
+#include <inviwo/core/properties/property.h>
+#include <inviwo/core/ports/port.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
 
 #include <cstdint>
 #include <string>
+#include <functional>
+#include <memory>
+#include <cstdint>
+#include <variant>
 
 namespace inviwo {
 
-class InviwoModule;
-
-enum class ModuleCallBackActionState : std::uint8_t {
-    Default = 0,
-    Enabled = 1,
-    Disabled = 2,
-    Custom = 3
-};
-
 /**
- * A Module can register ModuleCallbackActions with the InviwoApplication. These action will the
+ * A Module can register ModuleAction with the InviwoApplication. These action will the
  * Be added a some places, for example as property widget context menu options.
  */
-class IVW_CORE_API ModuleCallbackAction {
-public:
-    ModuleCallbackAction(std::string actionName, InviwoModule* module,
-                         ModuleCallBackActionState state = ModuleCallBackActionState::Disabled);
-    const std::string& getActionName() const;
-    InviwoModule* getModule() const;
-    ModuleCallback& getCallBack();
-    const ModuleCallback& getCallBack() const;
-    void setActionState(ModuleCallBackActionState state);
-    ModuleCallBackActionState getActionState() const;
+struct IVW_CORE_API ModuleAction {
+    enum class Type : std::uint8_t { Property, Port, Processor, ProcessorWidget };
+    enum class State : std::uint8_t { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
 
-private:
-    InviwoModule* module_;
-    std::string actionName_;
+    std::string name;
+    std::string group;
+    State state = State::Disabled;
+    std::variant<std::weak_ptr<std::function<void(Property&)>>,
+                 std::weak_ptr<std::function<void(Port&)>>,
+                 std::weak_ptr<std::function<void(Processor&)>>,
+                 std::weak_ptr<std::function<void(ProcessorWidget&)>>>
+        callback;
 
-    ModuleCallback callBack_;
-    ModuleCallBackActionState actionState_;
+    constexpr Type type() const { return static_cast<Type>(callback.index()); }
+    bool expired() const {
+        return std::visit([&](const auto& item) { return item.expired(); }, callback);
+    }
+    template <Type t>
+    auto get() const -> decltype(std::get<static_cast<size_t>(t)>(callback).lock()) {
+        if (auto* wPtr = std::get_if<static_cast<size_t>(t)>(&callback)) {
+            if (auto funPtr = wPtr->lock()) {
+                return funPtr;
+            }
+        }
+        return nullptr;
+    }
 };
 
 }  // namespace inviwo

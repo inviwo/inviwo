@@ -32,7 +32,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulepath.h

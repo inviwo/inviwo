@@ -163,7 +163,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string_view dis
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , settingsRegistry_{}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
-    , moduleCallbackActions_{}
+    , moduleActions_{}
     , moduleManager_{std::make_unique<ModuleManager>(this)}
     , processorNetwork_{std::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{std::make_unique<ProcessorNetworkEvaluator>(
@@ -312,12 +312,15 @@ void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
 
 const std::string& InviwoApplication::getDisplayName() const { return displayName_; }
 
-void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
-    moduleCallbackActions_.emplace_back(callbackAction);
+void InviwoApplication::addModuleAction(ModuleAction moduleAction) {
+    std::erase_if(moduleActions_, [](const auto& action) {
+        return std::visit([](const auto& item) { return item.expired(); }, action.callback);
+    });
+    moduleActions_.emplace_back(std::move(moduleAction));
 }
 
-std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallbackActions() {
-    return moduleCallbackActions_;
+const std::vector<ModuleAction>& InviwoApplication::getModuleActions() const {
+    return moduleActions_;
 }
 
 void InviwoApplication::registerSettings(Settings* settings) {
