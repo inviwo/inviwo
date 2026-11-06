@@ -157,13 +157,14 @@ function(ivw_private_generate_license_header)
         # LicenseInfo(const std::string& id, const std::string& name, const Version& version,
         #             const std::string& module, const std::vector<std::string>& files);
         list_to_stringvector(files ${files})
-        set(license "{\"${id}\", // License id"
-                     "\"${name}\", // Name"
-                     "\"${version}\", // Version"
-                     "\"${url}\", // URL"
-                     "\"${module}\", // Module"
-                     "\"${type}\", // Type"
-                     "${files}}")
+        set(license "{.id = \"${id}\","
+                     ".name = \"${name}\","
+                     ".version = \"${version}\","
+                     ".url = \"${url}\","
+                     ".module = \"${module}\","
+                     ".type = \"${type}\","
+                     ".files = ${files},"
+                     "}")
         ivw_join(";" "\n          " license ${license})
         list(APPEND licenses "${license}")
     endforeach(id)
