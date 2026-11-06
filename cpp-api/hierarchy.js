@@ -1757,6 +1757,7 @@ var hierarchy =
     [ "inviwo::LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
     [ "inviwo::LightingConfig", "structinviwo_1_1LightingConfig.html", null ],
     [ "inviwo::LightingState", "structinviwo_1_1LightingState.html", null ],
+    [ "inviwo::LinearMap", "structinviwo_1_1LinearMap.html", null ],
     [ "inviwo::plot::LinearRange", "structinviwo_1_1plot_1_1LinearRange.html", null ],
     [ "inviwo::LineData", "structinviwo_1_1LineData.html", null ],
     [ "inviwo::LineNumberResolver", "structinviwo_1_1LineNumberResolver.html", null ],

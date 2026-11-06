@@ -219,9 +219,9 @@ DataBuffer&#160;</td><td class="memItemRight" valign="bottom"><b>getPickingLayer
 <tr class="separator:a64837cce3f4cf1d7cd2fdb973925c025"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a572976d9987ae02fdc1bbf1bb621d7" id="r_a1a572976d9987ae02fdc1bbf1bb621d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a572976d9987ae02fdc1bbf1bb621d7">Image</a> (const <a class="el" href="classinviwo_1_1Image.html">Image</a> &amp;rhs, <a class="el" href="structinviwo_1_1NoData.html">NoData</a>, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *colorLayerFormat=nullptr)</td></tr>
 <tr class="separator:a1a572976d9987ae02fdc1bbf1bb621d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64ff0726e5ecac957e1d9ff55b7cd6a2" id="r_a64ff0726e5ecac957e1d9ff55b7cd6a2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">Image</a> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=LayerConfig::defaultFormat)</td></tr>
-<tr class="memdesc:a64ff0726e5ecac957e1d9ff55b7cd6a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image with <code>dimensions</code> and <code>format</code>. The image will hold one color layer, one depth layer and one picking layer. The layers will not have any representations.  <br /></td></tr>
-<tr class="separator:a64ff0726e5ecac957e1d9ff55b7cd6a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5928b27d7a64870e0dabe36bfd85e007" id="r_a5928b27d7a64870e0dabe36bfd85e007"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5928b27d7a64870e0dabe36bfd85e007">Image</a> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=DataFormatBase::get(LayerConfig::defaultFormatId))</td></tr>
+<tr class="memdesc:a5928b27d7a64870e0dabe36bfd85e007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image with <code>dimensions</code> and <code>format</code>. The image will hold one color layer, one depth layer and one picking layer. The layers will not have any representations.  <br /></td></tr>
+<tr class="separator:a5928b27d7a64870e0dabe36bfd85e007"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e3b071aea2cdd7d3a2a82955ca2cd42" id="r_a5e3b071aea2cdd7d3a2a82955ca2cd42"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e3b071aea2cdd7d3a2a82955ca2cd42">Image</a> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; layer)</td></tr>
 <tr class="memdesc:a5e3b071aea2cdd7d3a2a82955ca2cd42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new image from the given layer. Default layers will be added for the other two LayerTypes.  <br /></td></tr>
 <tr class="separator:a5e3b071aea2cdd7d3a2a82955ca2cd42"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -301,15 +301,15 @@ requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.htm
 <tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a4f12e6cd72de9cd307f35224b2554744"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7aada3794e05c567f84a254adb294786"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
-<tr class="separator:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b548aaf5a0219d41dbaf9d7a0319ec6 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a3b548aaf5a0219d41dbaf9d7a0319ec6"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&amp;rhs)=default</td></tr>
+<tr class="separator:a3b548aaf5a0219d41dbaf9d7a0319ec6 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7cbb6806abd7ed53ae01a93738c02270"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1c5eb2d764f8389461840736d209be82"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;)=default</td></tr>
-<tr class="separator:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0053869949a379879630c257c75fbb1 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_aa0053869949a379879630c257c75fbb1"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&amp;rhs)=default</td></tr>
+<tr class="separator:aa0053869949a379879630c257c75fbb1 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a48334a3ef25f428f388e675cc9cdca2d"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
 <tr class="separator:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -338,9 +338,9 @@ static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bot
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:afeba9bd685919e7cca017962fcb8f128" id="r_afeba9bd685919e7cca017962fcb8f128"><td class="memItemLeft" align="right" valign="top"><a id="afeba9bd685919e7cca017962fcb8f128" name="afeba9bd685919e7cca017962fcb8f128"></a>
-static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createColorLayer</b> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=LayerConfig::defaultFormat)</td></tr>
-<tr class="separator:afeba9bd685919e7cca017962fcb8f128"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05644e4c3c962b1f52cc71415a22514b" id="r_a05644e4c3c962b1f52cc71415a22514b"><td class="memItemLeft" align="right" valign="top"><a id="a05644e4c3c962b1f52cc71415a22514b" name="a05644e4c3c962b1f52cc71415a22514b"></a>
+static std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createColorLayer</b> (size2_t dimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=DataFormatBase::get(LayerConfig::defaultFormatId))</td></tr>
+<tr class="separator:a05644e4c3c962b1f52cc71415a22514b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cec4dddf98a618c5e4eb9e91da330aa" id="r_a0cec4dddf98a618c5e4eb9e91da330aa"><td class="memItemLeft" align="right" valign="top"><a id="a0cec4dddf98a618c5e4eb9e91da330aa" name="a0cec4dddf98a618c5e4eb9e91da330aa"></a>
 static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Layer.html">Layer</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>createColorLayers</b> (const <a class="el" href="classinviwo_1_1Image.html">Image</a> &amp;srcImage, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format=nullptr)</td></tr>
 <tr class="separator:a0cec4dddf98a618c5e4eb9e91da330aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -418,8 +418,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a64ff0726e5ecac957e1d9ff55b7cd6a2" name="a64ff0726e5ecac957e1d9ff55b7cd6a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64ff0726e5ecac957e1d9ff55b7cd6a2">&#9670;&#160;</a></span>Image() <span class="overload">[1/4]</span></h2>
+<a id="a5928b27d7a64870e0dabe36bfd85e007" name="a5928b27d7a64870e0dabe36bfd85e007"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5928b27d7a64870e0dabe36bfd85e007">&#9670;&#160;</a></span>Image() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -435,7 +435,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>format</em><span class="paramdefsep"> = </span><span class="paramdefval">LayerConfig::defaultFormat</span></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *</td>          <td class="paramname"><span class="paramname"><em>format</em><span class="paramdefsep"> = </span><span class="paramdefval">DataFormatBase::get(LayerConfig::defaultFormatId)</span></span>&#160;)</td>
         </tr>
       </table>
   </td>

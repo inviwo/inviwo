@@ -5,6 +5,7 @@ var classinviwo_1_1Layer =
     [ "getAxis", "classinviwo_1_1Layer.html#a3342bd3b3d89657d1aa4d0bd26d6976c", null ],
     [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Layer.html#aaac8cab26dbcac8ad599dc7b07fb906d", null ],
     [ "setDataFormat", "classinviwo_1_1Layer.html#a22cec9c5eda608715ab9f3247e33ecdc", null ],
+    [ "setDataFormatId", "classinviwo_1_1Layer.html#a50adca0ba126d922a7b14fd194b6526b", null ],
     [ "setDimensions", "classinviwo_1_1Layer.html#a5a391bf0198feabcfc3303d7a6ec6ce9", null ],
     [ "setSwizzleMask", "classinviwo_1_1Layer.html#a2af0ae316f42a135a2ff85f51fe561cf", null ]
 ];

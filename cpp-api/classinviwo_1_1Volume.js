@@ -4,6 +4,7 @@ var classinviwo_1_1Volume =
     [ "getAxis", "classinviwo_1_1Volume.html#ae35f92051c747d90698af086b553db0d", null ],
     [ "getWorldSpaceGradientSpacing", "classinviwo_1_1Volume.html#a145d6382043e432103e3ef509f9bed2a", null ],
     [ "setDataFormat", "classinviwo_1_1Volume.html#a971717c1d60d35828f36214ee028132f", null ],
+    [ "setDataFormatId", "classinviwo_1_1Volume.html#abb5c7efe63041d6344fba424e302b6ec", null ],
     [ "setDimensions", "classinviwo_1_1Volume.html#af24450063e3e7369126ef7552cd480af", null ],
     [ "setSwizzleMask", "classinviwo_1_1Volume.html#a4e386d26f4fad54c9a0df34f6eaa9800", null ]
 ];

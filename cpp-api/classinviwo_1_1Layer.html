@@ -161,6 +161,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clearHistograms</b> (
 <tr class="memitem:ab75e2fa6890cdc04566f21682c9d7713" id="r_ab75e2fa6890cdc04566f21682c9d7713"><td class="memItemLeft" align="right" valign="top"><a id="ab75e2fa6890cdc04566f21682c9d7713" name="ab75e2fa6890cdc04566f21682c9d7713"></a>
 const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormat</b> () const</td></tr>
 <tr class="separator:ab75e2fa6890cdc04566f21682c9d7713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c5b9853c810b9ccb15a8d8e60528ae" id="r_a45c5b9853c810b9ccb15a8d8e60528ae"><td class="memItemLeft" align="right" valign="top"><a id="a45c5b9853c810b9ccb15a8d8e60528ae" name="a45c5b9853c810b9ccb15a8d8e60528ae"></a>
+DataFormatId&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormatId</b> () const</td></tr>
+<tr class="separator:a45c5b9853c810b9ccb15a8d8e60528ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a1adabe8cff49f9a6c44e87d1b1dff6" id="r_a7a1adabe8cff49f9a6c44e87d1b1dff6"><td class="memItemLeft" align="right" valign="top">virtual size2_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a1adabe8cff49f9a6c44e87d1b1dff6">getDimensions</a> () const override</td></tr>
 <tr class="separator:a7a1adabe8cff49f9a6c44e87d1b1dff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72b4f6e33cab933b96afc37528dc67e4" id="r_a72b4f6e33cab933b96afc37528dc67e4"><td class="memItemLeft" align="right" valign="top"><a id="a72b4f6e33cab933b96afc37528dc67e4" name="a72b4f6e33cab933b96afc37528dc67e4"></a>
@@ -192,9 +195,9 @@ Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b>
 <tr class="memitem:a412c0b706b61d4425038d1541f479640" id="r_a412c0b706b61d4425038d1541f479640"><td class="memItemLeft" align="right" valign="top"><a id="a412c0b706b61d4425038d1541f479640" name="a412c0b706b61d4425038d1541f479640"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Layer</b> (<a class="el" href="classinviwo_1_1Layer.html">Layer</a> &amp;&amp;)=default</td></tr>
 <tr class="separator:a412c0b706b61d4425038d1541f479640"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bf0af5995af8a5a7790fbe05e12c17a" id="r_a4bf0af5995af8a5a7790fbe05e12c17a"><td class="memItemLeft" align="right" valign="top"><a id="a4bf0af5995af8a5a7790fbe05e12c17a" name="a4bf0af5995af8a5a7790fbe05e12c17a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Layer</b> (size2_t defaultDimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *defaultFormat=LayerConfig::defaultFormat, LayerType type=LayerConfig::defaultType, const SwizzleMask &amp;defaultSwizzleMask=LayerConfig::defaultSwizzleMask, InterpolationType interpolation=LayerConfig::defaultInterpolation, const Wrapping2D &amp;wrapping=LayerConfig::defaultWrapping)</td></tr>
-<tr class="separator:a4bf0af5995af8a5a7790fbe05e12c17a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2324a9b80c7124779be59861e4e079c9" id="r_a2324a9b80c7124779be59861e4e079c9"><td class="memItemLeft" align="right" valign="top"><a id="a2324a9b80c7124779be59861e4e079c9" name="a2324a9b80c7124779be59861e4e079c9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Layer</b> (size2_t defaultDimensions=LayerConfig::defaultDimensions, const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *defaultFormat=DataFormatBase::get(LayerConfig::defaultFormatId), LayerType type=LayerConfig::defaultType, const SwizzleMask &amp;defaultSwizzleMask=LayerConfig::defaultSwizzleMask, InterpolationType interpolation=LayerConfig::defaultInterpolation, const Wrapping2D &amp;wrapping=LayerConfig::defaultWrapping)</td></tr>
+<tr class="separator:a2324a9b80c7124779be59861e4e079c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a69034c88baa4ab0b252bf58f04f46c" id="r_a1a69034c88baa4ab0b252bf58f04f46c"><td class="memItemLeft" align="right" valign="top"><a id="a1a69034c88baa4ab0b252bf58f04f46c" name="a1a69034c88baa4ab0b252bf58f04f46c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Layer</b> (std::shared_ptr&lt; <a class="el" href="classinviwo_1_1LayerRepresentation.html">LayerRepresentation</a> &gt;)</td></tr>
 <tr class="separator:a1a69034c88baa4ab0b252bf58f04f46c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -207,8 +210,13 @@ Wrapping2D&#160;</td><td class="memItemRight" valign="bottom"><b>getWrapping</b>
 <tr class="memitem:ac9a19b97642819081511e94f31a3cfda" id="r_ac9a19b97642819081511e94f31a3cfda"><td class="memItemLeft" align="right" valign="top"><a id="ac9a19b97642819081511e94f31a3cfda" name="ac9a19b97642819081511e94f31a3cfda"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>recalculateHistograms</b> ()</td></tr>
 <tr class="separator:ac9a19b97642819081511e94f31a3cfda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af05c8dfbfb59f934f6217a43cb866434" id="r_af05c8dfbfb59f934f6217a43cb866434"><td class="memItemLeft" align="right" valign="top"><a id="af05c8dfbfb59f934f6217a43cb866434" name="af05c8dfbfb59f934f6217a43cb866434"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setConfig</b> (const <a class="el" href="structinviwo_1_1LayerConfig.html">LayerConfig</a> &amp;config)</td></tr>
+<tr class="separator:af05c8dfbfb59f934f6217a43cb866434"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22cec9c5eda608715ab9f3247e33ecdc" id="r_a22cec9c5eda608715ab9f3247e33ecdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22cec9c5eda608715ab9f3247e33ecdc">setDataFormat</a> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *format)</td></tr>
 <tr class="separator:a22cec9c5eda608715ab9f3247e33ecdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50adca0ba126d922a7b14fd194b6526b" id="r_a50adca0ba126d922a7b14fd194b6526b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50adca0ba126d922a7b14fd194b6526b">setDataFormatId</a> (DataFormatId formatId)</td></tr>
+<tr class="separator:a50adca0ba126d922a7b14fd194b6526b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a391bf0198feabcfc3303d7a6ec6ce9" id="r_a5a391bf0198feabcfc3303d7a6ec6ce9"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a391bf0198feabcfc3303d7a6ec6ce9">setDimensions</a> (const size2_t &amp;dim)</td></tr>
 <tr class="separator:a5a391bf0198feabcfc3303d7a6ec6ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad32bee09021985f45af2f06fed461956" id="r_ad32bee09021985f45af2f06fed461956"><td class="memItemLeft" align="right" valign="top"><a id="ad32bee09021985f45af2f06fed461956" name="ad32bee09021985f45af2f06fed461956"></a>
@@ -351,15 +359,15 @@ requires std::derived_from&lt;T, <a class="el" href="classinviwo_1_1MetaData.htm
 <tr class="memitem:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a4f12e6cd72de9cd307f35224b2554744"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a4f12e6cd72de9cd307f35224b2554744 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7aada3794e05c567f84a254adb294786"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
-<tr class="separator:a7aada3794e05c567f84a254adb294786 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b548aaf5a0219d41dbaf9d7a0319ec6 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a3b548aaf5a0219d41dbaf9d7a0319ec6"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataOwner</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&amp;rhs)=default</td></tr>
+<tr class="separator:a3b548aaf5a0219d41dbaf9d7a0319ec6 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a7cbb6806abd7ed53ae01a93738c02270"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;rhs)=default</td></tr>
 <tr class="separator:a7cbb6806abd7ed53ae01a93738c02270 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a1c5eb2d764f8389461840736d209be82"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;)=default</td></tr>
-<tr class="separator:a1c5eb2d764f8389461840736d209be82 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0053869949a379879630c257c75fbb1 inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_aa0053869949a379879630c257c75fbb1"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1MetaDataOwner.html">MetaDataOwner</a> &amp;&amp;rhs)=default</td></tr>
+<tr class="separator:aa0053869949a379879630c257c75fbb1 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner" id="r_a48334a3ef25f428f388e675cc9cdca2d"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a class="el" href="classinviwo_1_1Serializer.html">Serializer</a> &amp;s) const</td></tr>
 <tr class="separator:a48334a3ef25f428f388e675cc9cdca2d inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -627,7 +635,33 @@ glm::dmat4&#160;</td><td class="memItemRight" valign="bottom"><b>worldMatrix_</b
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the format of the data. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataFormatBase.html" title="Defines general useful formats and new data types Non-virtual, meaning no dynamic_cast as string comp...">DataFormatBase</a> </dd></dl>
+<p>Set the default data format. Existing representations will not be affected. </p><dl class="section note"><dt>Note</dt><dd>Only useful before any representations have been created. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataFormatBase.html" title="Defines general useful formats and new data types Non-virtual, meaning no dynamic_cast as string comp...">DataFormatBase</a> </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">format</td><td>The format of the data. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a50adca0ba126d922a7b14fd194b6526b" name="a50adca0ba126d922a7b14fd194b6526b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50adca0ba126d922a7b14fd194b6526b">&#9670;&#160;</a></span>setDataFormatId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::Layer::setDataFormatId </td>
+          <td>(</td>
+          <td class="paramtype">DataFormatId</td>          <td class="paramname"><span class="paramname"><em>formatId</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the default data format. Existing representations will not be affected. </p><dl class="section note"><dt>Note</dt><dd>Only useful before any representations have been created. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1DataFormatBase.html" title="Defines general useful formats and new data types Non-virtual, meaning no dynamic_cast as string comp...">DataFormatBase</a> </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">format</td><td>The format of the data. </td></tr>

@@ -1205,6 +1205,7 @@ var annotated_dup =
       [ "LightVolumeComponent", "classinviwo_1_1LightVolumeComponent.html", "classinviwo_1_1LightVolumeComponent" ],
       [ "LightVolumeGL", "classinviwo_1_1LightVolumeGL.html", "classinviwo_1_1LightVolumeGL" ],
       [ "LightVolumeRaycaster", "classinviwo_1_1LightVolumeRaycaster.html", "classinviwo_1_1LightVolumeRaycaster" ],
+      [ "LinearMap", "structinviwo_1_1LinearMap.html", null ],
       [ "LineData", "structinviwo_1_1LineData.html", null ],
       [ "LineEditEventFilter", "classinviwo_1_1LineEditEventFilter.html", null ],
       [ "LineEditQt", "classinviwo_1_1LineEditQt.html", null ],

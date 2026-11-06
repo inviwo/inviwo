@@ -1482,6 +1482,8 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1LightVolumeRaycaster.html">LightVolumeRaycaster</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LinearMap.html">LinearMap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1LineData.html">LineData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classinviwo_1_1Settings.html">Settings</a> for line rendering.  <a href="structinviwo_1_1LineData.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5118,6 +5120,9 @@ IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>c
 <tr class="memitem:a7a47582dfc49b5f00f9ae202c26e3677" id="r_a7a47582dfc49b5f00f9ae202c26e3677"><td class="memItemLeft" align="right" valign="top"><a id="a7a47582dfc49b5f00f9ae202c26e3677" name="a7a47582dfc49b5f00f9ae202c26e3677"></a>
 IVW_CORE_API void&#160;</td><td class="memItemRight" valign="bottom"><b>camelCaseToHeader</b> (std::string_view s, std::string &amp;dest)</td></tr>
 <tr class="separator:a7a47582dfc49b5f00f9ae202c26e3677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98be491ec9300fe4fdc20e4ce6bbc169" id="r_a98be491ec9300fe4fdc20e4ce6bbc169"><td class="memItemLeft" align="right" valign="top"><a id="a98be491ec9300fe4fdc20e4ce6bbc169" name="a98be491ec9300fe4fdc20e4ce6bbc169"></a>
+IVW_CORE_API std::optional&lt; ImageChannel &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>charToImageChannel</b> (char c)</td></tr>
+<tr class="separator:a98be491ec9300fe4fdc20e4ce6bbc169"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc9b8eac0000ddc247e6f62c09a80f7c" id="r_abc9b8eac0000ddc247e6f62c09a80f7c"><td class="memTemplParams" colspan="2"><a id="abc9b8eac0000ddc247e6f62c09a80f7c" name="abc9b8eac0000ddc247e6f62c09a80f7c"></a>
 template&lt;typename... Rs&gt; </td></tr>
 <tr class="memitem:abc9b8eac0000ddc247e6f62c09a80f7c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>concat_view</b> (Rs &amp;&amp;...) -&gt; concat_view&lt; std::views::all_t&lt; Rs &gt;... &gt;</td></tr>
@@ -5340,9 +5345,9 @@ auto&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (const 
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a92037fd3f4464b4ae9102f042ed4396a"><td class="memTemplItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memTemplItemRight" valign="bottom"><b>format_as</b> (const <a class="el" href="classinviwo_1_1DataFormat.html">DataFormat</a>&lt; T &gt; &amp;)</td></tr>
 <tr class="separator:a92037fd3f4464b4ae9102f042ed4396a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e96537cf80cdf454cc539f744d4e74e" id="r_a9e96537cf80cdf454cc539f744d4e74e"><td class="memItemLeft" align="right" valign="top"><a id="a9e96537cf80cdf454cc539f744d4e74e" name="a9e96537cf80cdf454cc539f744d4e74e"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> &amp;format)</td></tr>
-<tr class="separator:a9e96537cf80cdf454cc539f744d4e74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92fe6c581c79688027907bbb53687ebd" id="r_a92fe6c581c79688027907bbb53687ebd"><td class="memItemLeft" align="right" valign="top"><a id="a92fe6c581c79688027907bbb53687ebd" name="a92fe6c581c79688027907bbb53687ebd"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> &amp;format)</td></tr>
+<tr class="separator:a92fe6c581c79688027907bbb53687ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a761efbee92fb16ab047131ec2110ecb6" id="r_a761efbee92fb16ab047131ec2110ecb6"><td class="memItemLeft" align="right" valign="top"><a id="a761efbee92fb16ab047131ec2110ecb6" name="a761efbee92fb16ab047131ec2110ecb6"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (const <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a> &amp;dataMapper)</td></tr>
 <tr class="separator:a761efbee92fb16ab047131ec2110ecb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5370,9 +5375,9 @@ IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>f
 <tr class="memitem:a2c0e250f338364e3aebcd63b8ec9c081" id="r_a2c0e250f338364e3aebcd63b8ec9c081"><td class="memItemLeft" align="right" valign="top"><a id="a2c0e250f338364e3aebcd63b8ec9c081" name="a2c0e250f338364e3aebcd63b8ec9c081"></a>
 std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (<a class="el" href="#a8ba4246a92ec0b0fab2ff967ae66309e">ContextMenuCategory</a> a)</td></tr>
 <tr class="separator:a2c0e250f338364e3aebcd63b8ec9c081"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a109afcb3df8e9d7158880c87ffe5da8b" id="r_a109afcb3df8e9d7158880c87ffe5da8b"><td class="memItemLeft" align="right" valign="top"><a id="a109afcb3df8e9d7158880c87ffe5da8b" name="a109afcb3df8e9d7158880c87ffe5da8b"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (DataFormatId id)</td></tr>
-<tr class="separator:a109afcb3df8e9d7158880c87ffe5da8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab956d3aeb8053b7ab764b3055a9d2832" id="r_ab956d3aeb8053b7ab764b3055a9d2832"><td class="memItemLeft" align="right" valign="top"><a id="ab956d3aeb8053b7ab764b3055a9d2832" name="ab956d3aeb8053b7ab764b3055a9d2832"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (DataFormatId id)</td></tr>
+<tr class="separator:ab956d3aeb8053b7ab764b3055a9d2832"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a838a4c47c2b6f3639ee7dce0f109e4c3" id="r_a838a4c47c2b6f3639ee7dce0f109e4c3"><td class="memItemLeft" align="right" valign="top"><a id="a838a4c47c2b6f3639ee7dce0f109e4c3" name="a838a4c47c2b6f3639ee7dce0f109e4c3"></a>
 constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>format_as</b> (<a class="el" href="structinviwo_1_1Easing.html">Easing</a> easing)</td></tr>
 <tr class="separator:a838a4c47c2b6f3639ee7dce0f109e4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5713,27 +5718,6 @@ IVW_MODULE_QTWIDGETS_API bool&#160;</td><td class="memItemRight" valign="bottom"
 <tr class="memitem:adc230b724fb574dc4899f5cb0ce57d0c" id="r_adc230b724fb574dc4899f5cb0ce57d0c"><td class="memItemLeft" align="right" valign="top"><a id="adc230b724fb574dc4899f5cb0ce57d0c" name="adc230b724fb574dc4899f5cb0ce57d0c"></a>
 IVW_MODULE_QTWIDGETS_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;=</b> (const <a class="el" href="classinviwo_1_1TFEditorPrimitive.html">TFEditorPrimitive</a> &amp;lhs, const <a class="el" href="classinviwo_1_1TFEditorPrimitive.html">TFEditorPrimitive</a> &amp;rhs)</td></tr>
 <tr class="separator:adc230b724fb574dc4899f5cb0ce57d0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18615da21827965638d776a38b4f4f7d" id="r_a18615da21827965638d776a38b4f4f7d"><td class="memItemLeft" align="right" valign="top"><a id="a18615da21827965638d776a38b4f4f7d" name="a18615da21827965638d776a38b4f4f7d"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, ImageChannel &amp;channel)</td></tr>
-<tr class="separator:a18615da21827965638d776a38b4f4f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31b242ec1260bd40f18e2c58631ff3fb" id="r_a31b242ec1260bd40f18e2c58631ff3fb"><td class="memItemLeft" align="right" valign="top"><a id="a31b242ec1260bd40f18e2c58631ff3fb" name="a31b242ec1260bd40f18e2c58631ff3fb"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, InterpolationType &amp;interpolation)</td></tr>
-<tr class="separator:a31b242ec1260bd40f18e2c58631ff3fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abea16401a99b9507a987c1d893d67a78" id="r_abea16401a99b9507a987c1d893d67a78"><td class="memItemLeft" align="right" valign="top"><a id="abea16401a99b9507a987c1d893d67a78" name="abea16401a99b9507a987c1d893d67a78"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, SwizzleMask &amp;mask)</td></tr>
-<tr class="separator:abea16401a99b9507a987c1d893d67a78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a7edf83e70e224d868ba6e78e3fe277" id="r_a0a7edf83e70e224d868ba6e78e3fe277"><td class="memItemLeft" align="right" valign="top"><a id="a0a7edf83e70e224d868ba6e78e3fe277" name="a0a7edf83e70e224d868ba6e78e3fe277"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, Wrapping &amp;wrapping)</td></tr>
-<tr class="separator:a0a7edf83e70e224d868ba6e78e3fe277"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f65c6a5ab74309bb0c457357bbdae9a" id="r_a9f65c6a5ab74309bb0c457357bbdae9a"><td class="memItemLeft" align="right" valign="top"><a id="a9f65c6a5ab74309bb0c457357bbdae9a" name="a9f65c6a5ab74309bb0c457357bbdae9a"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, Wrapping1D &amp;wrapping)</td></tr>
-<tr class="separator:a9f65c6a5ab74309bb0c457357bbdae9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20075ba835c55e02262806934badfd52" id="r_a20075ba835c55e02262806934badfd52"><td class="memItemLeft" align="right" valign="top"><a id="a20075ba835c55e02262806934badfd52" name="a20075ba835c55e02262806934badfd52"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, Wrapping2D &amp;wrapping)</td></tr>
-<tr class="separator:a20075ba835c55e02262806934badfd52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19d3952c800e3593d3361787ec70e008" id="r_a19d3952c800e3593d3361787ec70e008"><td class="memItemLeft" align="right" valign="top"><a id="a19d3952c800e3593d3361787ec70e008" name="a19d3952c800e3593d3361787ec70e008"></a>
-IVW_CORE_API std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&gt;&gt;</b> (std::istream &amp;ss, Wrapping3D &amp;wrapping)</td></tr>
-<tr class="separator:a19d3952c800e3593d3361787ec70e008"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe5ea4aef284b1a0c8c0d71569afb9d1" id="r_afe5ea4aef284b1a0c8c0d71569afb9d1"><td class="memItemLeft" align="right" valign="top"><a id="afe5ea4aef284b1a0c8c0d71569afb9d1" name="afe5ea4aef284b1a0c8c0d71569afb9d1"></a>
 IVW_CORE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><b>parseTypeIdName</b> (const char *name)</td></tr>
 <tr class="separator:afe5ea4aef284b1a0c8c0d71569afb9d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5778,6 +5762,36 @@ template&lt;typename... Ts&gt; </td></tr>
 template&lt;class T &gt; </td></tr>
 <tr class="memitem:ada4721a1344ebdf3b54b441e8275b9e6"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>stringTo</b> (std::string_view str)</td></tr>
 <tr class="separator:ada4721a1344ebdf3b54b441e8275b9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a173c12f0baa12a642eafc0ca7cdc05ef" id="r_a173c12f0baa12a642eafc0ca7cdc05ef"><td class="memItemLeft" align="right" valign="top"><a id="a173c12f0baa12a642eafc0ca7cdc05ef" name="a173c12f0baa12a642eafc0ca7cdc05ef"></a>
+IVW_CORE_API std::optional&lt; ByteOrder &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToByteOrder</b> (std::string_view str)</td></tr>
+<tr class="separator:a173c12f0baa12a642eafc0ca7cdc05ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdb8291aa4bb21803fa814319ed36341" id="r_abdb8291aa4bb21803fa814319ed36341"><td class="memItemLeft" align="right" valign="top"><a id="abdb8291aa4bb21803fa814319ed36341" name="abdb8291aa4bb21803fa814319ed36341"></a>
+IVW_CORE_API std::optional&lt; Compression &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToCompression</b> (std::string_view str)</td></tr>
+<tr class="separator:abdb8291aa4bb21803fa814319ed36341"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0369df61385d224b37d3ccc2afcdafda" id="r_a0369df61385d224b37d3ccc2afcdafda"><td class="memItemLeft" align="right" valign="top"><a id="a0369df61385d224b37d3ccc2afcdafda" name="a0369df61385d224b37d3ccc2afcdafda"></a>
+IVW_CORE_API std::optional&lt; ImageType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToImageType</b> (std::string_view str)</td></tr>
+<tr class="separator:a0369df61385d224b37d3ccc2afcdafda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6be483d1fc332e5913632e2fbfa96f0" id="r_ae6be483d1fc332e5913632e2fbfa96f0"><td class="memItemLeft" align="right" valign="top"><a id="ae6be483d1fc332e5913632e2fbfa96f0" name="ae6be483d1fc332e5913632e2fbfa96f0"></a>
+IVW_CORE_API std::optional&lt; InterpolationType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToInterpolationType</b> (std::string_view str)</td></tr>
+<tr class="separator:ae6be483d1fc332e5913632e2fbfa96f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6409c909297e25b3f3a09c1cdf8fe12" id="r_aa6409c909297e25b3f3a09c1cdf8fe12"><td class="memItemLeft" align="right" valign="top"><a id="aa6409c909297e25b3f3a09c1cdf8fe12" name="aa6409c909297e25b3f3a09c1cdf8fe12"></a>
+IVW_CORE_API std::optional&lt; LayerType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToLayerType</b> (std::string_view str)</td></tr>
+<tr class="separator:aa6409c909297e25b3f3a09c1cdf8fe12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa86c4d07287d29e365f4ca8d02c82222" id="r_aa86c4d07287d29e365f4ca8d02c82222"><td class="memItemLeft" align="right" valign="top"><a id="aa86c4d07287d29e365f4ca8d02c82222" name="aa86c4d07287d29e365f4ca8d02c82222"></a>
+IVW_CORE_API std::optional&lt; SwizzleMask &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToSwizzleMask</b> (std::string_view str)</td></tr>
+<tr class="separator:aa86c4d07287d29e365f4ca8d02c82222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae99cc7fa84c9f0eb7b5655957e310983" id="r_ae99cc7fa84c9f0eb7b5655957e310983"><td class="memItemLeft" align="right" valign="top"><a id="ae99cc7fa84c9f0eb7b5655957e310983" name="ae99cc7fa84c9f0eb7b5655957e310983"></a>
+IVW_CORE_API std::optional&lt; Wrapping &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToWrapping</b> (std::string_view str)</td></tr>
+<tr class="separator:ae99cc7fa84c9f0eb7b5655957e310983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af02efc0821767c85dba10bef2fd7914d" id="r_af02efc0821767c85dba10bef2fd7914d"><td class="memItemLeft" align="right" valign="top"><a id="af02efc0821767c85dba10bef2fd7914d" name="af02efc0821767c85dba10bef2fd7914d"></a>
+IVW_CORE_API std::optional&lt; Wrapping1D &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToWrapping1D</b> (std::string_view str)</td></tr>
+<tr class="separator:af02efc0821767c85dba10bef2fd7914d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c4310857787a7eab62c9aeafe76692c" id="r_a8c4310857787a7eab62c9aeafe76692c"><td class="memItemLeft" align="right" valign="top"><a id="a8c4310857787a7eab62c9aeafe76692c" name="a8c4310857787a7eab62c9aeafe76692c"></a>
+IVW_CORE_API std::optional&lt; Wrapping2D &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToWrapping2D</b> (std::string_view str)</td></tr>
+<tr class="separator:a8c4310857787a7eab62c9aeafe76692c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e9dd4907002da2aca3ca7aa6dd6b453" id="r_a2e9dd4907002da2aca3ca7aa6dd6b453"><td class="memItemLeft" align="right" valign="top"><a id="a2e9dd4907002da2aca3ca7aa6dd6b453" name="a2e9dd4907002da2aca3ca7aa6dd6b453"></a>
+IVW_CORE_API std::optional&lt; Wrapping3D &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>strToWrapping3D</b> (std::string_view str)</td></tr>
+<tr class="separator:a2e9dd4907002da2aca3ca7aa6dd6b453"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfc06c506cd4daafe26962553a98984d" id="r_adfc06c506cd4daafe26962553a98984d"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_JSON_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfc06c506cd4daafe26962553a98984d">to_json</a> (json &amp;j, const <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a> &amp;p)</td></tr>
 <tr class="separator:adfc06c506cd4daafe26962553a98984d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7fc94ea52163835965e1f5fba2ea4dfa" id="r_a7fc94ea52163835965e1f5fba2ea4dfa"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_JSON_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fc94ea52163835965e1f5fba2ea4dfa">to_json</a> (json &amp;j, const <a class="el" href="classinviwo_1_1ButtonProperty.html">ButtonProperty</a> &amp;p)</td></tr>
