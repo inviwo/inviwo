@@ -130,10 +130,6 @@ InviwoModule::~InviwoModule() {
     for (auto* elem : settings_) {
         app_->unregisterSettings(elem);
     }
-
-    // Remove any potential ModuleCallbackAction associated with this module
-    auto& callbackActions = app_->getCallbackActions();
-    std::erase_if(callbackActions, [&](const auto& a) { return a->getModule() == this; });
 }
 
 const std::string& InviwoModule::getIdentifier() const { return identifier_; }

@@ -84,7 +84,7 @@ class Capabilities;
 class InviwoModule;
 class ModuleManager;
 class InviwoModuleFactoryObject;
-class ModuleCallbackAction;
+class ModuleAction;
 class FileObserver;
 
 class Property;
@@ -168,23 +168,13 @@ public:
     /**
      * @brief Add an action that can be shown in for example property widget context menu.
      * Will be shown when right clicking on a property in the NetworkEditor.
-     * Added callbacks will be removed in ~InviwoModule when your module is destroyed.
-     * Example if you want to do it earlier:
-     * @code
-     * auto& callbackActions = app_->getCallbackActions();
-     * std::erase_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
-     * @endcode
-     * @see getCallbackActions
      */
-    virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
+    void addModuleAction(ModuleAction moduleAction);
 
     /**
-     * @brief Get list of ModuleCallbackAction shown in for example property widget context menu.
-     * Do not keep references to elements in the list around since you cannot be notified when
-     * they will be removed.
-     * @see addCallbackAction
+     * @brief Get list of ModuleAction shown in for example property widget context menu.
      */
-    virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
+    const std::vector<ModuleAction>& getModuleActions() const;
 
     /**
      * Retrieve all Settings from all modules including the SystemSettings
@@ -489,7 +479,7 @@ protected:
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::vector<Settings*> settingsRegistry_;
     std::unique_ptr<SystemSettings> systemSettings_;
-    std::vector<std::unique_ptr<ModuleCallbackAction>> moduleCallbackActions_;
+    std::vector<ModuleAction> moduleActions_;
     std::unique_ptr<ModuleManager> moduleManager_;
     std::unique_ptr<ProcessorNetwork> processorNetwork_;
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
