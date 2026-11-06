@@ -201,7 +201,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatamap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadataowner.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/metadata/positionmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/autolinker.h
@@ -636,7 +635,6 @@ set(SOURCE_FILES
     metadata/metadata.cpp
     metadata/metadatamap.cpp
     metadata/metadataowner.cpp
-    metadata/positionmetadata.cpp
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
     network/autolinker.cpp
