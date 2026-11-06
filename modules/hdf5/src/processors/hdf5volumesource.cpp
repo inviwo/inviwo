@@ -73,6 +73,12 @@ HDF5ToVolume::HDF5ToVolume()
     , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
     , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
+    , dataRangeGroup_("dataRangeGroup", "Data Range")
+    , dataRangeSelection_("dataRangeSelection", "Source")
+    , dataRange_{"dataRange", "Custom Data Range",
+                 inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(0.00001)}
+    , valueRange_{"valueRange", "Custom Value Range",
+                  inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(0.00001)}
     , information_("Information", "Data information")
     , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
@@ -92,9 +98,16 @@ HDF5ToVolume::HDF5ToVolume()
                                  [](auto& p) { return p.getSelectedIndex() == 1; });
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
+    dataRangeGroup_.addProperties(dataRangeSelection_, dataRange_, valueRange_);
+    dataRange_.readonlyDependsOn(dataRangeSelection_,
+                                 [](auto& p) { return p.getSelectedIndex() != 1; });
+    valueRange_.readonlyDependsOn(dataRangeSelection_,
+                                  [](auto& p) { return p.getSelectedIndex() != 1; });
+    dataRangeSelection_.setSerializationMode(PropertySerializationMode::All);
+
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
 
-    addProperties(volumeSelection_, basisGroup_, information_, outputGroup_);
+    addProperties(volumeSelection_, basisGroup_, dataRangeGroup_, information_, outputGroup_);
 }
 
 HDF5ToVolume::~HDF5ToVolume() = default;
@@ -120,6 +133,11 @@ void HDF5ToVolume::process() try {
                                        return std::ranges::equal(dims, basis) ||
                                               std::ranges::equal(dims, basisAndOffset);
                                    }));
+        dataRangeMatches_.assign_range(metadata | std::views::filter([](const DataSetInfo& info) {
+                                           auto dims = info.getColumnMajorDimensions();
+                                           static constexpr std::array<size_t, 1> range{2};
+                                           return std::ranges::equal(dims, range);
+                                       }));
         // Update Volume Selection
         volumeSelection_.replaceOptions(volumeMatches_ |
                                         std::views::transform(util::dataSetInfoToOption));
@@ -133,6 +151,15 @@ void HDF5ToVolume::process() try {
         basisSelection_.replaceOptions(views::concat(
             basisOptions, basisMatches_ | std::views::transform(util::dataSetInfoToOption)));
         basisSelection_.setCurrentStateAsDefault();
+
+        // Update Data Range Selection
+        const std::array<OptionPropertyStringOption, 2> rangeOptions{
+            {{"data_min_max", "Data min/max", "data_min_max"},
+             {"user_range", "User defined range", "user_range"}}};
+
+        dataRangeSelection_.replaceOptions(views::concat(
+            rangeOptions, dataRangeMatches_ | std::views::transform(util::dataSetInfoToOption)));
+        dataRangeSelection_.setCurrentStateAsDefault();
     }
 
     if (volumeMatches_.empty()) {
@@ -163,10 +190,31 @@ void HDF5ToVolume::process() try {
     const auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
         *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
 
-    const auto [rangeMin, rangeMax] =
-        ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
-    volume->dataMap.dataRange = {glm::compMin(rangeMin), glm::compMax(rangeMax)};
-    volume->dataMap.valueRange = volume->dataMap.dataRange;
+    switch (dataRangeSelection_.getSelectedIndex()) {
+        case 0: {  // data min/max
+            const auto [rangeMin, rangeMax] =
+                ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
+            dataRange_ = {glm::compMin(rangeMin), glm::compMax(rangeMax)};
+            valueRange_.set(dataRange_);
+            break;
+        }
+        case 1:  // user-defined range
+            break;
+        default: {
+            const auto rangeInfo = dataRangeMatches_[dataRangeSelection_.getSelectedIndex() - 2];
+            valueRange_ = getRange(*data + rangeInfo.path);
+            // TODO(martin): what about actual data range of type?
+            if (volume->getDataFormat()->getNumericType() == NumericType::Float) {
+                dataRange_.set(valueRange_);
+            } else {
+                dataRange_.set(
+                    dvec2{volume->getDataFormat()->getMin(), volume->getDataFormat()->getMax()});
+            }
+            break;
+        }
+    }
+    volume->dataMap.dataRange = dataRange_;
+    volume->dataMap.valueRange = valueRange_;
 
     information_.updateForNewVolume(*volume, deserialized_ ? inviwo::util::OverwriteState::Yes
                                                            : inviwo::util::OverwriteState::No);
