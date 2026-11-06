@@ -343,6 +343,10 @@ var annotated_dup =
       [ "marching", null, [
         [ "Config", "structinviwo_1_1marching_1_1Config.html", null ]
       ] ],
+      [ "mask", null, [
+        [ "Config", "structinviwo_1_1mask_1_1Config.html", null ],
+        [ "MaskTool", "structinviwo_1_1mask_1_1MaskTool.html", null ]
+      ] ],
       [ "plot", "namespaceinviwo_1_1plot.html", [
         [ "detail", null, [
           [ "AxisCaption", "structinviwo_1_1plot_1_1detail_1_1AxisCaption.html", null ],
@@ -1734,6 +1738,7 @@ var annotated_dup =
       [ "SphereRasterizer", "classinviwo_1_1SphereRasterizer.html", "classinviwo_1_1SphereRasterizer" ],
       [ "SphereRenderer", "classinviwo_1_1SphereRenderer.html", "classinviwo_1_1SphereRenderer" ],
       [ "SphericalComponent", "classinviwo_1_1SphericalComponent.html", "classinviwo_1_1SphericalComponent" ],
+      [ "SphericalEntryExitPoints", "classinviwo_1_1SphericalEntryExitPoints.html", "classinviwo_1_1SphericalEntryExitPoints" ],
       [ "SphericalVolumeRaycaster", "classinviwo_1_1SphericalVolumeRaycaster.html", "classinviwo_1_1SphericalVolumeRaycaster" ],
       [ "SplitImage", "classinviwo_1_1SplitImage.html", "classinviwo_1_1SplitImage" ],
       [ "SplitterProperty", "classinviwo_1_1SplitterProperty.html", "classinviwo_1_1SplitterProperty" ],

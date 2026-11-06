@@ -1230,6 +1230,7 @@ var namespaceinviwo =
     [ "SphereRasterizer", "classinviwo_1_1SphereRasterizer.html", "classinviwo_1_1SphereRasterizer" ],
     [ "SphereRenderer", "classinviwo_1_1SphereRenderer.html", "classinviwo_1_1SphereRenderer" ],
     [ "SphericalComponent", "classinviwo_1_1SphericalComponent.html", "classinviwo_1_1SphericalComponent" ],
+    [ "SphericalEntryExitPoints", "classinviwo_1_1SphericalEntryExitPoints.html", "classinviwo_1_1SphericalEntryExitPoints" ],
     [ "SphericalVolumeRaycaster", "classinviwo_1_1SphericalVolumeRaycaster.html", "classinviwo_1_1SphericalVolumeRaycaster" ],
     [ "SplitImage", "classinviwo_1_1SplitImage.html", "classinviwo_1_1SplitImage" ],
     [ "SplitterProperty", "classinviwo_1_1SplitterProperty.html", "classinviwo_1_1SplitterProperty" ],

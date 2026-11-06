@@ -163,7 +163,7 @@ var searchData=
   ['concat_5fiter_5fvariant_5fhelper_3c_20ranges_2c_20std_3a_3aindex_5fsequence_3c_20is_2e_2e_2e_20_3e_20_3e_160',['concat_iter_variant_helper&lt; Ranges, std::index_sequence&lt; Is... &gt; &gt;',['../structinviwo_1_1detail_1_1concat__iter__variant__helper_3_01Ranges_00_01std_1_1index__sequence_3_01Is_8_8_8_01_4_01_4.html',1,'inviwo::detail']]],
   ['concat_5fiter_5fvariant_5fhelper_3c_20ranges_5f_2c_20std_3a_3aindex_5fsequence_5ffor_3c_20rs_2e_2e_2e_20_3e_20_3e_161',['concat_iter_variant_helper&lt; Ranges_, std::index_sequence_for&lt; Rs... &gt; &gt;',['../structinviwo_1_1detail_1_1concat__iter__variant__helper.html',1,'inviwo::detail']]],
   ['concat_5fview_162',['concat_view',['../classinviwo_1_1concat__view.html',1,'inviwo']]],
-  ['config_163',['Config',['../structinviwo_1_1marching_1_1Config.html',1,'inviwo::marching::Config'],['../structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html',1,'inviwo::utilgl::BlendModeState::Config']]],
+  ['config_163',['Config',['../structinviwo_1_1marching_1_1Config.html',1,'inviwo::marching::Config'],['../structinviwo_1_1mask_1_1Config.html',1,'inviwo::mask::Config'],['../structinviwo_1_1utilgl_1_1BlendModeState_1_1Config.html',1,'inviwo::utilgl::BlendModeState::Config']]],
   ['configureassertionhandler_164',['configureAssertionHandler',['../namespaceinviwo_1_1utilqt.html#a62c333749398985401196be50189873e',1,'inviwo::utilqt']]],
   ['configurefilesystemobserver_165',['configureFileSystemObserver',['../namespaceinviwo_1_1utilqt.html#a7740e56d786b88aca6119cdbdd71047a',1,'inviwo::utilqt']]],
   ['configureinviwodefaultnames_166',['configureInviwoDefaultNames',['../namespaceinviwo_1_1utilqt.html#a5786ad672da4f0db7045a7e35eb0f21f',1,'inviwo::utilqt']]],
