@@ -151,6 +151,8 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
           [this]() {
               animation_->add(std::make_unique<InvalidationTrack>(app_->getProcessorNetwork()));
           })
+    , settings{"settigs", "Settings"}
+    , parentWidget{"parentWidget", "Parent Widget"}
     , animation_(&animation)
     , manager_{&manager}
     , app_(app)
@@ -202,7 +204,9 @@ AnimationController::AnimationController(Animation& animation, AnimationManager&
     controlOptions.addProperties(insertControlTrack, insertInvalidationTrack);
     controlOptions.setCollapsed(true);
 
-    addProperties(playOptions, renderOptions, controlOptions);
+    settings.addProperties(parentWidget);
+
+    addProperties(playOptions, renderOptions, controlOptions, settings);
 }
 
 AnimationController::~AnimationController() = default;

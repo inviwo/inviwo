@@ -31,7 +31,10 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/filedialogstate.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
@@ -197,10 +200,31 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(WorkspaceAnimations& an
     const auto* factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
     for (auto* property : controller_.getProperties()) {
         auto propWidget = factory->create(property);
-        auto propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
+        auto* propWidgetQt = static_cast<PropertyWidgetQt*>(propWidget.release());
         optionLayout->addWidget(propWidgetQt);
         propWidgetQt->initState();
     }
+
+    parentCallback = controller_.parentWidget.onChangeScoped([this]() {
+        const auto id = controller_.parentWidget.get();
+        if (id.empty()) {
+            if (auto* mw = utilqt::getApplicationMainWindow()) {
+                setParent(mw);
+                mw->addDockWidget(Qt::LeftDockWidgetArea, this);
+                setFloating(true);
+            } else {
+                setParent(nullptr);
+                setFloating(true);
+            }
+        } else if (const auto* p = controller_.getInviwoApplication()
+                                       ->getProcessorNetwork()
+                                       ->getProcessorByIdentifier(id)) {
+            if (auto* parent = dynamic_cast<QMainWindow*>(p->getProcessorWidget())) {
+                setParent(parent);
+                parent->addDockWidget(Qt::BottomDockWidgetArea, this);
+            }
+        }
+    });
 
     // left part List widget of track labels
     auto* animationLabelView = new AnimationLabelViewQt(controller_);
