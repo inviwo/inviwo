@@ -36,6 +36,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/concat.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/formats.h>
 
 #include <modules/hdf5/datastructures/hdf5handle.h>
 #include <modules/hdf5/hdf5read.h>
@@ -70,15 +71,27 @@ HDF5ToVolume::HDF5ToVolume()
 
     , basisGroup_("basisGroup", "Basis")
     , basisSelection_("basisSelection", "Source")
-    , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
+    , customBasis_{"customBasis", "User Basis", dmat4{1.0}, inviwo::util::filled<dmat4>(-1000.0),
+                   inviwo::util::filled<dmat4>(1000.0)}
+    , customSpacing_{"customSpacing", "User Spacing", dvec3{0.01}, dvec3{0.0f}, dvec3{1.0}}
+    , transposeBasis_{"transposeBasis", "Transpose Basis", "Transpose the basis"_help, false}
+    , swapBasisAxes_{"swapBasisAxes_", "Swap X & Z basis vectors",
+                     "Swap the first and third basis vector"_help, false}
+    , basis_("basis", "Resulting Basis", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
-    , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
     , dataRangeGroup_("dataRangeGroup", "Data Range")
-    , dataRangeSelection_("dataRangeSelection", "Source")
-    , dataRange_{"dataRange", "Custom Data Range",
-                 inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(0.00001)}
-    , valueRange_{"valueRange", "Custom Value Range",
-                  inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(0.00001)}
+    , dataRangeSelection_{"dataRangeSelection", "Source Data Range"}
+    , valueRangeSelection_{"valueRangeSelection", "Source Value Range"}
+    , dataRange_{"dataRange", "Data Range",
+                 inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(dvec2{0.00001})}
+    , valueRange_{"valueRange", "Value Range",
+                  inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(dvec2{0.00001})}
+    , customDataRange_{"customDataRange", "Override Data Range",
+                       inviwo::util::ordinalOptSymmetricVector(std::optional<dvec2>{std::nullopt})
+                           .setInc(dvec2{0.00001})}
+    , customValueRange_{"customValueRange", "Override Value Range",
+                        inviwo::util::ordinalOptSymmetricVector(std::optional<dvec2>{std::nullopt})
+                            .setInc(dvec2{0.00001})}
     , information_("Information", "Data information")
     , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
@@ -92,18 +105,17 @@ HDF5ToVolume::HDF5ToVolume()
 
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basis_.readonlyDependsOn(basisSelection_, [](auto& p) { return p.getSelectedIndex() != 0; });
-    spacing_.visibilityDependsOn(basisSelection_,
-                                 [](auto& p) { return p.getSelectedIndex() == 1; });
+    basisGroup_.addProperties(basisSelection_, customBasis_, customSpacing_, transposeBasis_,
+                              swapBasisAxes_, basis_);
+    basis_.setReadOnly(true);
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    dataRangeGroup_.addProperties(dataRangeSelection_, dataRange_, valueRange_);
-    dataRange_.readonlyDependsOn(dataRangeSelection_,
-                                 [](auto& p) { return p.getSelectedIndex() != 1; });
-    valueRange_.readonlyDependsOn(dataRangeSelection_,
-                                  [](auto& p) { return p.getSelectedIndex() != 1; });
+    dataRangeGroup_.addProperties(dataRangeSelection_, valueRangeSelection_, dataRange_,
+                                  valueRange_, customDataRange_, customValueRange_);
+    dataRange_.setReadOnly(true);
+    valueRange_.setReadOnly(true);
     dataRangeSelection_.setSerializationMode(PropertySerializationMode::All);
+    valueRangeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
 
@@ -160,6 +172,9 @@ void HDF5ToVolume::process() try {
         dataRangeSelection_.replaceOptions(views::concat(
             rangeOptions, dataRangeMatches_ | std::views::transform(util::dataSetInfoToOption)));
         dataRangeSelection_.setCurrentStateAsDefault();
+        valueRangeSelection_.replaceOptions(views::concat(
+            rangeOptions, dataRangeMatches_ | std::views::transform(util::dataSetInfoToOption)));
+        valueRangeSelection_.setCurrentStateAsDefault();
     }
 
     if (volumeMatches_.empty()) {
@@ -190,31 +205,33 @@ void HDF5ToVolume::process() try {
     const auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
         *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
 
-    switch (dataRangeSelection_.getSelectedIndex()) {
-        case 0: {  // data min/max
+    const dvec2 dataMinMax = [&]() {
+        if (dataRangeSelection_.getSelectedIndex() == 0 ||
+            valueRangeSelection_.getSelectedIndex() == 0) {
             const auto [rangeMin, rangeMax] =
                 ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
-            dataRange_ = {glm::compMin(rangeMin), glm::compMax(rangeMax)};
-            valueRange_.set(dataRange_);
-            break;
+            return dvec2{glm::compMin(rangeMin), glm::compMax(rangeMax)};
         }
-        case 1:  // user-defined range
-            break;
-        default: {
-            const auto rangeInfo = dataRangeMatches_[dataRangeSelection_.getSelectedIndex() - 2];
-            valueRange_ = getRange(*data + rangeInfo.path);
-            // TODO(martin): what about actual data range of type?
-            if (volume->getDataFormat()->getNumericType() == NumericType::Float) {
-                dataRange_.set(valueRange_);
-            } else {
-                dataRange_.set(
-                    dvec2{volume->getDataFormat()->getMin(), volume->getDataFormat()->getMax()});
+        return dvec2{0.0, 1.0};
+    }();
+
+    auto rangeFromOptionProperty = [&](size_t index) {
+        switch (index) {
+            case 0:  // data min/max
+                return dataMinMax;
+            case 1:  // user-defined range
+                return dvec2{0.0, 1.0};
+            default: {
+                const auto rangeInfo = dataRangeMatches_[index - 2];
+                return getRange(*data + rangeInfo.path);
             }
-            break;
         }
-    }
-    volume->dataMap.dataRange = dataRange_;
-    volume->dataMap.valueRange = valueRange_;
+    };
+    dataRange_.set(rangeFromOptionProperty(dataRangeSelection_.getSelectedIndex()));
+    valueRange_.set(rangeFromOptionProperty(valueRangeSelection_.getSelectedIndex()));
+
+    volume->dataMap.dataRange = customDataRange_.get().value_or(dataRange_.get());
+    volume->dataMap.valueRange = customValueRange_.get().value_or(valueRange_.get());
 
     information_.updateForNewVolume(*volume, deserialized_ ? inviwo::util::OverwriteState::Yes
                                                            : inviwo::util::OverwriteState::No);
@@ -222,22 +239,36 @@ void HDF5ToVolume::process() try {
 
     information_.updateVolume(*volume);
 
-    switch (basisSelection_.getSelectedIndex()) {
-        case 0: {  // User defined basis
-            break;
+    auto basis = [&]() {
+        switch (basisSelection_.getSelectedIndex()) {
+            case 0: {  // User defined basis
+                return customBasis_.get();
+            }
+            case 1: {  // User defined spacing
+                return util::createBasis(volume->getDimensions(), customSpacing_.get());
+            }
+            default: {
+                const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
+                auto basis = getBasis(*data + basisInfo.path);
+                if (swapBasisAxes_) {
+                    std::swap(basis[0], basis[2]);
+                }
+                if (transposeBasis_) {
+                    basis = glm::transpose(basis);
+                }
+                return basis;
+            }
         }
-        case 1: {  // User defined spacing
-            basis_.set(util::createBasis(volume->getDimensions(), spacing_.get()));
-            break;
-        }
-        default: {
-            const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
-            basis_.set(getBasis(*data + basisInfo.path));
-            break;
-        }
+    }();
+    if (swapBasisAxes_) {
+        std::swap(basis[0], basis[2]);
     }
+    if (transposeBasis_) {
+        basis = glm::transpose(basis);
+    }
+    basis_.set(basis);
 
-    volume->setModelMatrix(util::adjustBasis(basis_, selection_.getSelection(),
+    volume->setModelMatrix(util::adjustBasis(basis, selection_.getSelection(),
                                              volumeInfo.getColumnMajorDimensions(),
                                              adjustBasis_.get(), adjustOffset_.get()));
 

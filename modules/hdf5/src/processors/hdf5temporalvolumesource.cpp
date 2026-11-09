@@ -77,29 +77,27 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
     , config_{"config", "Config"}
     , basisGroup_{"basisGroup", "Basis"}
     , basisSelection_{"basisSelection", "Source"}
-    , basis_{"basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
-             inviwo::util::filled<mat4>(1000.f)}
-    , spacing_{"spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f)}
-    , dataRange_{"dataRange",
-                 "Data range",
-                 0.0,
-                 1.0,
-                 -DataFloat64::max(),
-                 DataFloat64::max(),
-                 0.001,
-                 0.0,
-                 InvalidationLevel::InvalidOutput,
-                 PropertySemantics::Text}
-    , valueRange_{"valueRange",
-                  "Value range",
-                  0.0,
-                  1.0,
-                  -DataFloat64::max(),
-                  DataFloat64::max(),
-                  0.001,
-                  0.0,
-                  InvalidationLevel::InvalidOutput,
-                  PropertySemantics::Text}
+    , customBasis_{"customBasis", "User Basis", dmat4{1.0}, inviwo::util::filled<dmat4>(-1000.0),
+                   inviwo::util::filled<dmat4>(1000.0)}
+    , customSpacing_{"customSpacing", "User Spacing", dvec3{0.01}, dvec3{0.0f}, dvec3{1.0}}
+    , transposeBasis_{"transposeBasis", "Transpose Basis", "Transpose the basis"_help, false}
+    , swapBasisAxes_{"swapBasisAxes_", "Swap X & Z basis vectors",
+                     "Swap the first and third basis vector"_help, false}
+    , basis_{"basis", "Resulting Basis", dmat4{1.0}, inviwo::util::filled<dmat4>(-1000.0),
+             inviwo::util::filled<dmat4>(1000.0)}
+    , dataRangeGroup_("dataRangeGroup", "Data Range")
+    , dataRangeSelection_{"dataRangeSelection", "Source Data Range"}
+    , valueRangeSelection_{"valueRangeSelection", "Source Value Range"}
+    , dataRange_{"dataRange", "Data Range",
+                 inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(dvec2{0.00001})}
+    , valueRange_{"valueRange", "Value Range",
+                  inviwo::util::ordinalSymmetricVector(dvec2{0.0, 1.0}).setInc(dvec2{0.00001})}
+    , customDataRange_{"customDataRange", "Override Data Range",
+                       inviwo::util::ordinalOptSymmetricVector(std::optional<dvec2>{std::nullopt})
+                           .setInc(dvec2{0.00001})}
+    , customValueRange_{"customValueRange", "Override Value Range",
+                        inviwo::util::ordinalOptSymmetricVector(std::optional<dvec2>{std::nullopt})
+                            .setInc(dvec2{0.00001})}
     , valueName_{"valueName", "Value name", ""}
     , valueUnit_{"valueUnit", "Value unit", ""}
     , interpolation_{"interpolation",
@@ -141,17 +139,23 @@ HDF5ToTemporalVolume::HDF5ToTemporalVolume()
 
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    basisGroup_.addProperties(basisSelection_, spacing_, basis_);
-    basis_.readonlyDependsOn(basisSelection_, [](auto& p) { return p.getSelectedIndex() != 0; });
-    spacing_.visibilityDependsOn(basisSelection_,
-                                 [](auto& p) { return p.getSelectedIndex() == 1; });
+    basisGroup_.addProperties(basisSelection_, customBasis_, customSpacing_, transposeBasis_,
+                              swapBasisAxes_, basis_);
+    basis_.setReadOnly(true);
     basisSelection_.setSerializationMode(PropertySerializationMode::All);
+
+    dataRangeGroup_.addProperties(dataRangeSelection_, valueRangeSelection_, dataRange_,
+                                  valueRange_, customDataRange_, customValueRange_);
+    dataRange_.setReadOnly(true);
+    valueRange_.setReadOnly(true);
+    dataRangeSelection_.setSerializationMode(PropertySerializationMode::All);
+    valueRangeSelection_.setSerializationMode(PropertySerializationMode::All);
+
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_);
     timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
 
-    config_.addProperties(basisGroup_, dataRange_, valueRange_, valueName_, valueUnit_,
-                          interpolation_, axesNames_, axesUnits_, wrapping_[0], wrapping_[1],
-                          wrapping_[2]);
+    config_.addProperties(basisGroup_, dataRangeGroup_, valueName_, valueUnit_, interpolation_,
+                          axesNames_, axesUnits_, wrapping_[0], wrapping_[1], wrapping_[2]);
 
     addProperties(volumeSelection_, config_, timeGroup_, selection_, outputGroup_);
 }
@@ -178,6 +182,11 @@ void HDF5ToTemporalVolume::process() try {
                                        return std::ranges::equal(dims, basis) ||
                                               std::ranges::equal(dims, basisAndOffset);
                                    }));
+        dataRangeMatches_.assign_range(metadata | std::views::filter([](const DataSetInfo& info) {
+                                           auto dims = info.getColumnMajorDimensions();
+                                           static constexpr std::array<size_t, 1> range{2};
+                                           return std::ranges::equal(dims, range);
+                                       }));
 
         // Update Volume Selection
         volumeSelection_.replaceOptions(volumeMatches_ |
@@ -192,6 +201,17 @@ void HDF5ToTemporalVolume::process() try {
         basisSelection_.replaceOptions(views::concat(
             basisOptions, basisMatches_ | std::views::transform(util::dataSetInfoToOption)));
         basisSelection_.setCurrentStateAsDefault();
+
+        // Update Data Range Selection
+        const std::array<OptionPropertyStringOption, 1> rangeOptions{
+            {{"user_range", "User defined range", "user_range"}}};
+
+        dataRangeSelection_.replaceOptions(views::concat(
+            rangeOptions, dataRangeMatches_ | std::views::transform(util::dataSetInfoToOption)));
+        dataRangeSelection_.setCurrentStateAsDefault();
+        valueRangeSelection_.replaceOptions(views::concat(
+            rangeOptions, dataRangeMatches_ | std::views::transform(util::dataSetInfoToOption)));
+        valueRangeSelection_.setCurrentStateAsDefault();
     }
 
     if (volumeMatches_.empty()) {
@@ -211,7 +231,7 @@ void HDF5ToTemporalVolume::process() try {
     auto basis = [&]() {
         switch (basisSelection_.getSelectedIndex()) {
             case 0: {  // User defined basis
-                return basis_.get();
+                return customBasis_.get();
             }
             case 1: {  // User defined spacing
                 const auto dims =
@@ -221,7 +241,7 @@ void HDF5ToTemporalVolume::process() try {
                     throw Exception{SourceContext{}, "Invalid selection: expected rank 3, got {}",
                                     dims.size()};
                 }
-                return util::createBasis(size3_t{dims[0], dims[1], dims[2]}, spacing_.get());
+                return util::createBasis(size3_t{dims[0], dims[1], dims[2]}, customSpacing_.get());
             }
             default: {
                 const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
@@ -229,8 +249,28 @@ void HDF5ToTemporalVolume::process() try {
             }
         }
     }();
+    if (swapBasisAxes_) {
+        std::swap(basis[0], basis[2]);
+    }
+    if (transposeBasis_) {
+        basis = glm::transpose(basis);
+    }
+    basis_.set(basis);
     basis = util::adjustBasis(basis, selection, volumeInfo.getColumnMajorDimensions(),
                               adjustBasis_.get(), adjustOffset_.get());
+
+    auto rangeFromOptionProperty = [&](size_t index) {
+        switch (index) {
+            case 0:  // user-defined range
+                return dvec2{0.0, 1.0};
+            default: {
+                const auto rangeInfo = dataRangeMatches_[index - 1];
+                return getRange(*data + rangeInfo.path);
+            }
+        }
+    };
+    dataRange_.set(rangeFromOptionProperty(dataRangeSelection_.getSelectedIndex()));
+    valueRange_.set(rangeFromOptionProperty(valueRangeSelection_.getSelectedIndex()));
 
     if (timeDimension_.getSelectedIndex() >= selection_.rank()) {
         throw Exception{SourceContext{}, "Time dimensions {} does not exist",
@@ -250,8 +290,8 @@ void HDF5ToTemporalVolume::process() try {
                       .unit = units::unit_from_string(axesUnits_.strings[2].get())},
         .valueAxis =
             Axis{.name = valueName_.get(), .unit = units::unit_from_string(valueUnit_.get())},
-        .dataRange = dataRange_.get(),
-        .valueRange = valueRange_.get(),
+        .dataRange = customDataRange_.get().value_or(dataRange_.get()),
+        .valueRange = customValueRange_.get().value_or(valueRange_.get()),
         .model = basis,
         .world = dmat4{1.0}};
 
