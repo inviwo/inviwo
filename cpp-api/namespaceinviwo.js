@@ -972,7 +972,7 @@ var namespaceinviwo =
     [ "ProcessorNetworkConverter", "classinviwo_1_1ProcessorNetworkConverter.html", null ],
     [ "ProcessorNetworkEvaluationObservable", "classinviwo_1_1ProcessorNetworkEvaluationObservable.html", null ],
     [ "ProcessorNetworkEvaluationObserver", "classinviwo_1_1ProcessorNetworkEvaluationObserver.html", null ],
-    [ "ProcessorNetworkEvaluator", "classinviwo_1_1ProcessorNetworkEvaluator.html", null ],
+    [ "ProcessorNetworkEvaluator", "classinviwo_1_1ProcessorNetworkEvaluator.html", "classinviwo_1_1ProcessorNetworkEvaluator" ],
     [ "ProcessorNetworkObservable", "classinviwo_1_1ProcessorNetworkObservable.html", null ],
     [ "ProcessorNetworkObserver", "classinviwo_1_1ProcessorNetworkObserver.html", "classinviwo_1_1ProcessorNetworkObserver" ],
     [ "ProcessorObservable", "classinviwo_1_1ProcessorObservable.html", null ],

@@ -111,9 +111,9 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 <tr class="memitem:a21ab838cb102e2fc8e3cca3542d6f5cc" id="r_a21ab838cb102e2fc8e3cca3542d6f5cc"><td class="memItemLeft" align="right" valign="top"><a id="a21ab838cb102e2fc8e3cca3542d6f5cc" name="a21ab838cb102e2fc8e3cca3542d6f5cc"></a>
 std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findRuntimeModules</b> (std::span&lt; const std::filesystem::path &gt; searchPaths)</td></tr>
 <tr class="separator:a21ab838cb102e2fc8e3cca3542d6f5cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2c99704fcfe4de599fa0090ef181eec" id="r_ae2c99704fcfe4de599fa0090ef181eec"><td class="memItemLeft" align="right" valign="top"><a id="ae2c99704fcfe4de599fa0090ef181eec" name="ae2c99704fcfe4de599fa0090ef181eec"></a>
-std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findRuntimeModules</b> (std::span&lt; const std::filesystem::path &gt; searchPaths, std::function&lt; bool(std::string_view)&gt; isEnabled)</td></tr>
-<tr class="separator:ae2c99704fcfe4de599fa0090ef181eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136a5ce177b89aa868ac10170c2ea4a7" id="r_a136a5ce177b89aa868ac10170c2ea4a7"><td class="memItemLeft" align="right" valign="top"><a id="a136a5ce177b89aa868ac10170c2ea4a7" name="a136a5ce177b89aa868ac10170c2ea4a7"></a>
+std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findRuntimeModules</b> (std::span&lt; const std::filesystem::path &gt; searchPaths, const std::function&lt; bool(std::string_view)&gt; &amp;isEnabled)</td></tr>
+<tr class="separator:a136a5ce177b89aa868ac10170c2ea4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8db45cd77d30fb1b74a5db504afdd029" id="r_a8db45cd77d30fb1b74a5db504afdd029"><td class="memItemLeft" align="right" valign="top"><a id="a8db45cd77d30fb1b74a5db504afdd029" name="a8db45cd77d30fb1b74a5db504afdd029"></a>
 <a class="el" href="classinviwo_1_1InviwoModuleFactoryObject.html">InviwoModuleFactoryObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getFactoryObject</b> (std::string_view identifier) const</td></tr>
 <tr class="separator:a8db45cd77d30fb1b74a5db504afdd029"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,20 +151,26 @@ std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><b>loca
 <tr class="memitem:a19697fe460f4d07d75785a2273023047" id="r_a19697fe460f4d07d75785a2273023047"><td class="memItemLeft" align="right" valign="top"><a id="a19697fe460f4d07d75785a2273023047" name="a19697fe460f4d07d75785a2273023047"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ModuleManager</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app)</td></tr>
 <tr class="separator:a19697fe460f4d07d75785a2273023047"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57f651c3334355a8c6af08f0816dd1bb" id="r_a57f651c3334355a8c6af08f0816dd1bb"><td class="memItemLeft" align="right" valign="top"><a id="a57f651c3334355a8c6af08f0816dd1bb" name="a57f651c3334355a8c6af08f0816dd1bb"></a>
-std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onModulesDidRegister</b> (std::function&lt; void()&gt; callback)</td></tr>
-<tr class="memdesc:a57f651c3334355a8c6af08f0816dd1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register callback for monitoring when modules have been registered. Invoked in registerModules. <br /></td></tr>
-<tr class="separator:a57f651c3334355a8c6af08f0816dd1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af20f4a577db38023cd3a7545e6f4a251" id="r_af20f4a577db38023cd3a7545e6f4a251"><td class="memItemLeft" align="right" valign="top"><a id="af20f4a577db38023cd3a7545e6f4a251" name="af20f4a577db38023cd3a7545e6f4a251"></a>
-std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onModulesWillUnregister</b> (std::function&lt; void()&gt; callback)</td></tr>
-<tr class="memdesc:af20f4a577db38023cd3a7545e6f4a251"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register callback for monitoring when modules have been registered. Invoked in unregisterModules. <br /></td></tr>
-<tr class="separator:af20f4a577db38023cd3a7545e6f4a251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5204ed978be04ecbb8e7dfac7cbb44e9" id="r_a5204ed978be04ecbb8e7dfac7cbb44e9"><td class="memItemLeft" align="right" valign="top"><a id="a5204ed978be04ecbb8e7dfac7cbb44e9" name="a5204ed978be04ecbb8e7dfac7cbb44e9"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ModuleManager</b> (<a class="el" href="classinviwo_1_1ModuleManager.html">ModuleManager</a> &amp;&amp;rhs)=delete</td></tr>
+<tr class="separator:a5204ed978be04ecbb8e7dfac7cbb44e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a831cc79ee49a9286f8afa1241b620a1f" id="r_a831cc79ee49a9286f8afa1241b620a1f"><td class="memItemLeft" align="right" valign="top"><a id="a831cc79ee49a9286f8afa1241b620a1f" name="a831cc79ee49a9286f8afa1241b620a1f"></a>
+std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onModulesDidRegister</b> (const std::function&lt; void()&gt; &amp;callback)</td></tr>
+<tr class="memdesc:a831cc79ee49a9286f8afa1241b620a1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register callback for monitoring when modules have been registered. Invoked in registerModules. <br /></td></tr>
+<tr class="separator:a831cc79ee49a9286f8afa1241b620a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b28f9d53360de154f2dac17567322ce" id="r_a3b28f9d53360de154f2dac17567322ce"><td class="memItemLeft" align="right" valign="top"><a id="a3b28f9d53360de154f2dac17567322ce" name="a3b28f9d53360de154f2dac17567322ce"></a>
+std::shared_ptr&lt; std::function&lt; void()&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>onModulesWillUnregister</b> (const std::function&lt; void()&gt; &amp;callback)</td></tr>
+<tr class="memdesc:a3b28f9d53360de154f2dac17567322ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register callback for monitoring when modules have been registered. Invoked in unregisterModules. <br /></td></tr>
+<tr class="separator:a3b28f9d53360de154f2dac17567322ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5edbfb6286654add4eea803a91e54b6b" id="r_a5edbfb6286654add4eea803a91e54b6b"><td class="memItemLeft" align="right" valign="top"><a id="a5edbfb6286654add4eea803a91e54b6b" name="a5edbfb6286654add4eea803a91e54b6b"></a>
 <a class="el" href="classinviwo_1_1ModuleManager.html">ModuleManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1ModuleManager.html">ModuleManager</a> &amp;that)=delete</td></tr>
 <tr class="separator:a5edbfb6286654add4eea803a91e54b6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08166f328acc88a7af14ec63490714fa" id="r_a08166f328acc88a7af14ec63490714fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08166f328acc88a7af14ec63490714fa">registerModules</a> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, std::function&lt; bool(std::string_view)&gt; isEnabled=ModuleManager::getEnabledFilter(), const std::function&lt; void(std::string_view)&gt; &amp;progressCallback=nullptr)</td></tr>
-<tr class="memdesc:a08166f328acc88a7af14ec63490714fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load modules from dynamic library files in the specified search paths.  <br /></td></tr>
-<tr class="separator:a08166f328acc88a7af14ec63490714fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c080d7323619323986bf0caad1ac368" id="r_a7c080d7323619323986bf0caad1ac368"><td class="memItemLeft" align="right" valign="top"><a id="a7c080d7323619323986bf0caad1ac368" name="a7c080d7323619323986bf0caad1ac368"></a>
+<a class="el" href="classinviwo_1_1ModuleManager.html">ModuleManager</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1ModuleManager.html">ModuleManager</a> &amp;&amp;that)=delete</td></tr>
+<tr class="separator:a7c080d7323619323986bf0caad1ac368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0a81e40ac2800c4fee633649ff0017b" id="r_ab0a81e40ac2800c4fee633649ff0017b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0a81e40ac2800c4fee633649ff0017b">registerModules</a> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, const std::function&lt; bool(std::string_view)&gt; &amp;isEnabled=ModuleManager::getEnabledFilter(), const std::function&lt; void(std::string_view)&gt; &amp;progressCallback=nullptr)</td></tr>
+<tr class="memdesc:ab0a81e40ac2800c4fee633649ff0017b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load modules from dynamic library files in the specified search paths.  <br /></td></tr>
+<tr class="separator:ab0a81e40ac2800c4fee633649ff0017b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af37bb8a31483344a59b9e27c44e80aee" id="r_af37bb8a31483344a59b9e27c44e80aee"><td class="memItemLeft" align="right" valign="top"><a id="af37bb8a31483344a59b9e27c44e80aee" name="af37bb8a31483344a59b9e27c44e80aee"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt; inviwoModules, const std::function&lt; void(std::string_view)&gt; &amp;progressCallback)</td></tr>
 <tr class="separator:af37bb8a31483344a59b9e27c44e80aee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,9 +193,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ada0b53af6d692fbda54f69ecbccde5be" id="r_ada0b53af6d692fbda54f69ecbccde5be"><td class="memItemLeft" align="right" valign="top"><a id="ada0b53af6d692fbda54f69ecbccde5be" name="ada0b53af6d692fbda54f69ecbccde5be"></a>
 static std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findDependentModules</b> (const std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt; &amp;modules, std::string_view module)</td></tr>
 <tr class="separator:ada0b53af6d692fbda54f69ecbccde5be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d7aa1956421a3ffb8634193c7800087" id="r_a6d7aa1956421a3ffb8634193c7800087"><td class="memItemLeft" align="right" valign="top"><a id="a6d7aa1956421a3ffb8634193c7800087" name="a6d7aa1956421a3ffb8634193c7800087"></a>
-static std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findRuntimeModules</b> (std::span&lt; const std::filesystem::path &gt; searchPaths, std::function&lt; bool(std::string_view)&gt; isEnabled, bool runtimeReloading)</td></tr>
-<tr class="separator:a6d7aa1956421a3ffb8634193c7800087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdb586bacbb14ee5e39c76c29af9437" id="r_abbdb586bacbb14ee5e39c76c29af9437"><td class="memItemLeft" align="right" valign="top"><a id="abbdb586bacbb14ee5e39c76c29af9437" name="abbdb586bacbb14ee5e39c76c29af9437"></a>
+static std::vector&lt; <a class="el" href="classinviwo_1_1ModuleContainer.html">ModuleContainer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>findRuntimeModules</b> (std::span&lt; const std::filesystem::path &gt; searchPaths, const std::function&lt; bool(std::string_view)&gt; &amp;isEnabled, bool runtimeReloading)</td></tr>
+<tr class="separator:abbdb586bacbb14ee5e39c76c29af9437"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e514ebc2a30fe1cc36475b56962632" id="r_a88e514ebc2a30fe1cc36475b56962632"><td class="memItemLeft" align="right" valign="top"><a id="a88e514ebc2a30fe1cc36475b56962632" name="a88e514ebc2a30fe1cc36475b56962632"></a>
 static std::function&lt; bool(std::string_view)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getEnabledFilter</b> ()</td></tr>
 <tr class="separator:a88e514ebc2a30fe1cc36475b56962632"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,8 +203,8 @@ static std::function&lt; bool(std::string_view)&gt;&#160;</td><td class="memItem
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages finding, loading, unloading, reloading of Inviwo modules </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a08166f328acc88a7af14ec63490714fa" name="a08166f328acc88a7af14ec63490714fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08166f328acc88a7af14ec63490714fa">&#9670;&#160;</a></span>registerModules()</h2>
+<a id="ab0a81e40ac2800c4fee633649ff0017b" name="ab0a81e40ac2800c4fee633649ff0017b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0a81e40ac2800c4fee633649ff0017b">&#9670;&#160;</a></span>registerModules()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,7 +217,7 @@ static std::function&lt; bool(std::string_view)&gt;&#160;</td><td class="memItem
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::function&lt; bool(std::string_view)&gt;</td>          <td class="paramname"><span class="paramname"><em>isEnabled</em><span class="paramdefsep"> = </span><span class="paramdefval">ModuleManager::getEnabledFilter()</span>, </span></td>
+          <td class="paramtype">const std::function&lt; bool(std::string_view)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>isEnabled</em><span class="paramdefsep"> = </span><span class="paramdefval">ModuleManager::getEnabledFilter()</span>, </span></td>
         </tr>
         <tr>
           <td class="paramkey"></td>

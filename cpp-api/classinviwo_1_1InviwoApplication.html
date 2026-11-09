@@ -126,11 +126,11 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a60ac0a0dfcbd0ae1c41186eb2548b825" id="r_a60ac0a0dfcbd0ae1c41186eb2548b825"><td class="memItemLeft" align="right" valign="top"><a id="a60ac0a0dfcbd0ae1c41186eb2548b825" name="a60ac0a0dfcbd0ae1c41186eb2548b825"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LongWait</b> { <b>Start</b>
+<tr class="memitem:a1ddf983f4563245a360bce64665ea07c" id="r_a1ddf983f4563245a360bce64665ea07c"><td class="memItemLeft" align="right" valign="top"><a id="a1ddf983f4563245a360bce64665ea07c" name="a1ddf983f4563245a360bce64665ea07c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LongWait</b> : std::uint8_t { <b>Start</b>
 , <b>Update</b>
 , <b>End</b>
  }</td></tr>
-<tr class="separator:a60ac0a0dfcbd0ae1c41186eb2548b825"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a1ddf983f4563245a360bce64665ea07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -233,12 +233,18 @@ std::locale&#160;</td><td class="memItemRight" valign="bottom"><b>getUILocale</b
 <tr class="memitem:aa2cd05ba22141f3969911430e50a6867" id="r_aa2cd05ba22141f3969911430e50a6867"><td class="memItemLeft" align="right" valign="top"><a id="aa2cd05ba22141f3969911430e50a6867" name="aa2cd05ba22141f3969911430e50a6867"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>InviwoApplication</b> (int argc, char **argv, std::string_view displayName)</td></tr>
 <tr class="separator:aa2cd05ba22141f3969911430e50a6867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d61097ddeb0e57924f37fbe27024783" id="r_a0d61097ddeb0e57924f37fbe27024783"><td class="memItemLeft" align="right" valign="top"><a id="a0d61097ddeb0e57924f37fbe27024783" name="a0d61097ddeb0e57924f37fbe27024783"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>InviwoApplication</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;&amp;rhs)=delete</td></tr>
+<tr class="separator:a0d61097ddeb0e57924f37fbe27024783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5b527b5512cf9bf639abe8b498ac905" id="r_aa5b527b5512cf9bf639abe8b498ac905"><td class="memItemLeft" align="right" valign="top"><a id="aa5b527b5512cf9bf639abe8b498ac905" name="aa5b527b5512cf9bf639abe8b498ac905"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>InviwoApplication</b> (std::string_view displayName)</td></tr>
 <tr class="separator:aa5b527b5512cf9bf639abe8b498ac905"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6d4ef31a869b7ded1e3885e952e95cc" id="r_ac6d4ef31a869b7ded1e3885e952e95cc"><td class="memItemLeft" align="right" valign="top"><a id="ac6d4ef31a869b7ded1e3885e952e95cc" name="ac6d4ef31a869b7ded1e3885e952e95cc"></a>
 <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;that)=delete</td></tr>
 <tr class="separator:ac6d4ef31a869b7ded1e3885e952e95cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a522da11c01eb399cf8ea2b4942986882" id="r_a522da11c01eb399cf8ea2b4942986882"><td class="memItemLeft" align="right" valign="top"><a id="a522da11c01eb399cf8ea2b4942986882" name="a522da11c01eb399cf8ea2b4942986882"></a>
+<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> &amp;&amp;that)=delete</td></tr>
+<tr class="separator:a522da11c01eb399cf8ea2b4942986882"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4633da31403032371a70f784f5506542" id="r_a4633da31403032371a70f784f5506542"><td class="memItemLeft" align="right" valign="top"><a id="a4633da31403032371a70f784f5506542" name="a4633da31403032371a70f784f5506542"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>printApplicationInfo</b> ()</td></tr>
 <tr class="separator:a4633da31403032371a70f784f5506542"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -251,9 +257,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>processFront</b> ()
 <tr class="memitem:a093316c6b5f1880f059aea9339281c20" id="r_a093316c6b5f1880f059aea9339281c20"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a093316c6b5f1880f059aea9339281c20">registerModules</a> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>)</td></tr>
 <tr class="memdesc:a093316c6b5f1880f059aea9339281c20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load modules from dynamic library files in the regular search paths.  <br /></td></tr>
 <tr class="separator:a093316c6b5f1880f059aea9339281c20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6f229c910827c15fb2e7946a456b163" id="r_ad6f229c910827c15fb2e7946a456b163"><td class="memItemLeft" align="right" valign="top"><a id="ad6f229c910827c15fb2e7946a456b163" name="ad6f229c910827c15fb2e7946a456b163"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, std::function&lt; bool(std::string_view)&gt; isEnabled)</td></tr>
-<tr class="separator:ad6f229c910827c15fb2e7946a456b163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a517fce3595d8337e3c7f9f3074ab60d3" id="r_a517fce3595d8337e3c7f9f3074ab60d3"><td class="memItemLeft" align="right" valign="top"><a id="a517fce3595d8337e3c7f9f3074ab60d3" name="a517fce3595d8337e3c7f9f3074ab60d3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (<a class="el" href="structinviwo_1_1RuntimeModuleLoading.html">RuntimeModuleLoading</a>, const std::function&lt; bool(std::string_view)&gt; &amp;isEnabled)</td></tr>
+<tr class="separator:a517fce3595d8337e3c7f9f3074ab60d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a353fc811aa265cf0fb045048327b3178" id="r_a353fc811aa265cf0fb045048327b3178"><td class="memItemLeft" align="right" valign="top"><a id="a353fc811aa265cf0fb045048327b3178" name="a353fc811aa265cf0fb045048327b3178"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>registerModules</b> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1InviwoModuleFactoryObject.html">InviwoModuleFactoryObject</a> &gt; &gt; moduleFactories, const std::function&lt; void(std::string_view)&gt; &amp;progressCallback=nullptr)</td></tr>
 <tr class="memdesc:a353fc811aa265cf0fb045048327b3178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers modules from factories and takes ownership of input module factories. Module is registered if dependencies exist and they have correct version. <br /></td></tr>

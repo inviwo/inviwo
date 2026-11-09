@@ -132,6 +132,12 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a4364c262dfc36ba2ca4b5bc866edaf" id="r_a9a4364c262dfc36ba2ca4b5bc866edaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9a4364c262dfc36ba2ca4b5bc866edaf">addSuperProperty</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp)</td></tr>
 <tr class="separator:a9a4364c262dfc36ba2ca4b5bc866edaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a98829bdd73a4d88ec4fe038fccb8a4" id="r_a9a98829bdd73a4d88ec4fe038fccb8a4"><td class="memItemLeft" align="right" valign="top"><a id="a9a98829bdd73a4d88ec4fe038fccb8a4" name="a9a98829bdd73a4d88ec4fe038fccb8a4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProcessor</b> (<a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a9a98829bdd73a4d88ec4fe038fccb8a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab7e8ada7a5d8a9092201c8a3d52e032" id="r_aab7e8ada7a5d8a9092201c8a3d52e032"><td class="memItemLeft" align="right" valign="top"><a id="aab7e8ada7a5d8a9092201c8a3d52e032" name="aab7e8ada7a5d8a9092201c8a3d52e032"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProcessor</b> (const <a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;)=delete</td></tr>
+<tr class="separator:aab7e8ada7a5d8a9092201c8a3d52e032"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abab43c4d92b21ce135694111a41f009a" id="r_abab43c4d92b21ce135694111a41f009a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abab43c4d92b21ce135694111a41f009a">CompositeProcessor</a> (std::string_view identifier, std::string_view displayName, <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *app, const std::filesystem::path &amp;filename=&quot;&quot;)</td></tr>
 <tr class="separator:abab43c4d92b21ce135694111a41f009a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84931a012d7ae020c57c70414892d16a" id="r_a84931a012d7ae020c57c70414892d16a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84931a012d7ae020c57c70414892d16a">deserialize</a> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d) override</td></tr>
@@ -144,6 +150,34 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1c0f1d5a4b2f5da23ec6fd47df139a43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee5c87aaca0e55386c498236d34b95d0" id="r_aee5c87aaca0e55386c498236d34b95d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee5c87aaca0e55386c498236d34b95d0">getSuperProperty</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp)</td></tr>
 <tr class="separator:aee5c87aaca0e55386c498236d34b95d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae71f1c50b830019bb62c74b67ab55a0f" id="r_ae71f1c50b830019bb62c74b67ab55a0f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae71f1c50b830019bb62c74b67ab55a0f">onDidAddProperty</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, size_t index) override</td></tr>
+<tr class="separator:ae71f1c50b830019bb62c74b67ab55a0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c12493f5ca4f9d363a9f4b07acc6734" id="r_a0c12493f5ca4f9d363a9f4b07acc6734"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c12493f5ca4f9d363a9f4b07acc6734">onProcessorBackgroundJobsChanged</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *, int, int) override</td></tr>
+<tr class="separator:a0c12493f5ca4f9d363a9f4b07acc6734"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae77c666c4f11f417baa10599f0ad6c3" id="r_aae77c666c4f11f417baa10599f0ad6c3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae77c666c4f11f417baa10599f0ad6c3">onProcessorNetworkDidAddProcessor</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *) override</td></tr>
+<tr class="separator:aae77c666c4f11f417baa10599f0ad6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c32c83051be26cd52cdd3b8c5903bc" id="r_a47c32c83051be26cd52cdd3b8c5903bc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47c32c83051be26cd52cdd3b8c5903bc">onProcessorNetworkEvaluateRequest</a> () override</td></tr>
+<tr class="separator:a47c32c83051be26cd52cdd3b8c5903bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04589a081386f4f9414d78b5cdf467df" id="r_a04589a081386f4f9414d78b5cdf467df"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04589a081386f4f9414d78b5cdf467df">onProcessorNetworkWillRemoveProcessor</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *) override</td></tr>
+<tr class="separator:a04589a081386f4f9414d78b5cdf467df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb51ab894045c896d2d77010cbd7959e" id="r_adb51ab894045c896d2d77010cbd7959e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb51ab894045c896d2d77010cbd7959e">onSetDisplayName</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp, const std::string &amp;displayName) override</td></tr>
+<tr class="separator:adb51ab894045c896d2d77010cbd7959e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcdd66533728d2bf0bca2a513f28ce2f" id="r_adcdd66533728d2bf0bca2a513f28ce2f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adcdd66533728d2bf0bca2a513f28ce2f">onSetIdentifier</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp, const std::string &amp;identifier) override</td></tr>
+<tr class="separator:adcdd66533728d2bf0bca2a513f28ce2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b4f985762690475947d5089af0fae6f" id="r_a7b4f985762690475947d5089af0fae6f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b4f985762690475947d5089af0fae6f">onSetReadOnly</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp, bool readonly) override</td></tr>
+<tr class="separator:a7b4f985762690475947d5089af0fae6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa69d6c965334d83fabadb36f3bd239c" id="r_afa69d6c965334d83fabadb36f3bd239c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa69d6c965334d83fabadb36f3bd239c">onSetSemantics</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp, const <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> &amp;semantics) override</td></tr>
+<tr class="separator:afa69d6c965334d83fabadb36f3bd239c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a248b290bc2068281bf71daba9699b929" id="r_a248b290bc2068281bf71daba9699b929"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a248b290bc2068281bf71daba9699b929">onSetVisible</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *orgProp, bool visible) override</td></tr>
+<tr class="separator:a248b290bc2068281bf71daba9699b929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee8268b5142426e94f9c7e34fb8e2ae1" id="r_aee8268b5142426e94f9c7e34fb8e2ae1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee8268b5142426e94f9c7e34fb8e2ae1">onWillRemoveProperty</a> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, size_t index) override</td></tr>
+<tr class="separator:aee8268b5142426e94f9c7e34fb8e2ae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c7824890a8078827685cce5de62320" id="r_a14c7824890a8078827685cce5de62320"><td class="memItemLeft" align="right" valign="top"><a id="a14c7824890a8078827685cce5de62320" name="a14c7824890a8078827685cce5de62320"></a>
+<a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a14c7824890a8078827685cce5de62320"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e4e5a271bd8ef17bb86e28e616cee0" id="r_a57e4e5a271bd8ef17bb86e28e616cee0"><td class="memItemLeft" align="right" valign="top"><a id="a57e4e5a271bd8ef17bb86e28e616cee0" name="a57e4e5a271bd8ef17bb86e28e616cee0"></a>
+<a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CompositeProcessor.html">CompositeProcessor</a> &amp;)=delete</td></tr>
+<tr class="separator:a57e4e5a271bd8ef17bb86e28e616cee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dc50a910d9927b75aff5437e909b131" id="r_a0dc50a910d9927b75aff5437e909b131"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0dc50a910d9927b75aff5437e909b131">process</a> () override</td></tr>
 <tr class="separator:a0dc50a910d9927b75aff5437e909b131"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea2d79255686acb65bcff7a1f2e23419" id="r_aea2d79255686acb65bcff7a1f2e23419"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea2d79255686acb65bcff7a1f2e23419">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, <a class="el" href="classinviwo_1_1Outport.html">Outport</a> *source) override</td></tr>
@@ -269,6 +303,18 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasProcessorWidget</b
 <tr class="separator:a844e4563ca31441fa933c2d031a9e5cc inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae040682770c4afbfcffabfc5dcb871cf inherit pub_methods_classinviwo_1_1Processor" id="r_ae040682770c4afbfcffabfc5dcb871cf"><td class="memItemLeft" align="right" valign="top">NameDispatcherHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#ae040682770c4afbfcffabfc5dcb871cf">onIdentifierChange</a> (std::function&lt; void(std::string_view, std::string_view)&gt; callback)</td></tr>
 <tr class="separator:ae040682770c4afbfcffabfc5dcb871cf inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4029608a8114cf4c25461eaffbe7e3 inherit pub_methods_classinviwo_1_1Processor" id="r_aac4029608a8114cf4c25461eaffbe7e3"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)=delete</td></tr>
+<tr class="separator:aac4029608a8114cf4c25461eaffbe7e3 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3abbbb01764d337f5b0d27c566fbb7b8 inherit pub_methods_classinviwo_1_1Processor" id="r_a3abbbb01764d337f5b0d27c566fbb7b8"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a3abbbb01764d337f5b0d27c566fbb7b8 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a94babccfc51e1caacc5af465aa3fe inherit pub_methods_classinviwo_1_1Processor" id="r_a76a94babccfc51e1caacc5af465aa3fe"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Processor</b> (const <a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;)=delete</td></tr>
+<tr class="separator:a76a94babccfc51e1caacc5af465aa3fe inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a035ac4b1734d84d66b20e304c86028 inherit pub_methods_classinviwo_1_1Processor" id="r_a7a035ac4b1734d84d66b20e304c86028"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Processor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a7a035ac4b1734d84d66b20e304c86028 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d4bc7897d472833b1a7680153f683d6 inherit pub_methods_classinviwo_1_1Processor" id="r_a1d4bc7897d472833b1a7680153f683d6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6">Processor</a> (std::string_view identifier=&quot;&quot;, std::string_view displayName=&quot;&quot;)</td></tr>
 <tr class="separator:a1d4bc7897d472833b1a7680153f683d6 inherit pub_methods_classinviwo_1_1Processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab39cd287ac0afb5a2c2593fbcd9bb141 inherit pub_methods_classinviwo_1_1Processor" id="r_ab39cd287ac0afb5a2c2593fbcd9bb141"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Processor.html#ab39cd287ac0afb5a2c2593fbcd9bb141">removeInteractionHandler</a> (<a class="el" href="classinviwo_1_1InteractionHandler.html">InteractionHandler</a> *interactionHandler)</td></tr>
@@ -669,6 +715,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper<
 <tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface" id="r_ac3efb1aaffc402b45b07c2c599b9785e"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *observer)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1Serializable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1Serializable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Serializable.html">inviwo::Serializable</a></td></tr>
+<tr class="memitem:a26879c7fb479664670e8542fff2050f6 inherit pro_methods_classinviwo_1_1Serializable" id="r_a26879c7fb479664670e8542fff2050f6"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;)=default</td></tr>
+<tr class="separator:a26879c7fb479664670e8542fff2050f6 inherit pro_methods_classinviwo_1_1Serializable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe44ded3fc0e708250299ca96f1e6311 inherit pro_methods_classinviwo_1_1Serializable" id="r_abe44ded3fc0e708250299ca96f1e6311"><td class="memItemLeft" align="right" valign="top">
+<a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:abe44ded3fc0e708250299ca96f1e6311 inherit pro_methods_classinviwo_1_1Serializable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aaf213d5a2bf1b639f862dce710d9fc inherit pro_methods_classinviwo_1_1Serializable" id="r_a0aaf213d5a2bf1b639f862dce710d9fc"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Serializable</b> (const <a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;)=default</td></tr>
+<tr class="separator:a0aaf213d5a2bf1b639f862dce710d9fc inherit pro_methods_classinviwo_1_1Serializable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a569a255fe617497259b3296470eac614 inherit pro_methods_classinviwo_1_1Serializable" id="r_a569a255fe617497259b3296470eac614"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>Serializable</b> (<a class="el" href="classinviwo_1_1Serializable.html">Serializable</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a569a255fe617497259b3296470eac614 inherit pro_methods_classinviwo_1_1Serializable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1ProcessorObservable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1ProcessorObservable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1ProcessorObservable.html">inviwo::ProcessorObservable</a></td></tr>
 <tr class="memitem:a8ab13e5d9768a7e78cc80c3f29f703a5 inherit pro_methods_classinviwo_1_1ProcessorObservable" id="r_a8ab13e5d9768a7e78cc80c3f29f703a5"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversAboutPropertyChange</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *p)</td></tr>
@@ -934,6 +993,340 @@ composite" in the context menu. Use <a class="el" href="classinviwo_1_1InviwoMod
       </table>
 </div><div class="memdoc">
 <p>Get the super property for sub property 'subProperty' given there is one, nullptr otherwise. </p>
+
+</div>
+</div>
+<a id="ae71f1c50b830019bb62c74b67ab55a0f" name="ae71f1c50b830019bb62c74b67ab55a0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae71f1c50b830019bb62c74b67ab55a0f">&#9670;&#160;</a></span>onDidAddProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onDidAddProperty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>index</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">inviwo::PropertyOwnerObserver</a>.</p>
+
+</div>
+</div>
+<a id="a0c12493f5ca4f9d363a9f4b07acc6734" name="a0c12493f5ca4f9d363a9f4b07acc6734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c12493f5ca4f9d363a9f4b07acc6734">&#9670;&#160;</a></span>onProcessorBackgroundJobsChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onProcessorBackgroundJobsChanged </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname">, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname">, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a>.</p>
+
+</div>
+</div>
+<a id="aae77c666c4f11f417baa10599f0ad6c3" name="aae77c666c4f11f417baa10599f0ad6c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae77c666c4f11f417baa10599f0ad6c3">&#9670;&#160;</a></span>onProcessorNetworkDidAddProcessor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onProcessorNetworkDidAddProcessor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a>.</p>
+
+</div>
+</div>
+<a id="a47c32c83051be26cd52cdd3b8c5903bc" name="a47c32c83051be26cd52cdd3b8c5903bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c32c83051be26cd52cdd3b8c5903bc">&#9670;&#160;</a></span>onProcessorNetworkEvaluateRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onProcessorNetworkEvaluateRequest </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a>.</p>
+
+</div>
+</div>
+<a id="a04589a081386f4f9414d78b5cdf467df" name="a04589a081386f4f9414d78b5cdf467df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04589a081386f4f9414d78b5cdf467df">&#9670;&#160;</a></span>onProcessorNetworkWillRemoveProcessor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onProcessorNetworkWillRemoveProcessor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Processor.html">Processor</a> *</td>          <td class="paramname"><span class="paramname"></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a>.</p>
+
+</div>
+</div>
+<a id="adb51ab894045c896d2d77010cbd7959e" name="adb51ab894045c896d2d77010cbd7959e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb51ab894045c896d2d77010cbd7959e">&#9670;&#160;</a></span>onSetDisplayName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onSetDisplayName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>orgProp</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>displayName</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyObserver.html">inviwo::PropertyObserver</a>.</p>
+
+</div>
+</div>
+<a id="adcdd66533728d2bf0bca2a513f28ce2f" name="adcdd66533728d2bf0bca2a513f28ce2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdd66533728d2bf0bca2a513f28ce2f">&#9670;&#160;</a></span>onSetIdentifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onSetIdentifier </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>orgProp</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>identifier</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyObserver.html">inviwo::PropertyObserver</a>.</p>
+
+</div>
+</div>
+<a id="a7b4f985762690475947d5089af0fae6f" name="a7b4f985762690475947d5089af0fae6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4f985762690475947d5089af0fae6f">&#9670;&#160;</a></span>onSetReadOnly()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onSetReadOnly </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>orgProp</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>readonly</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyObserver.html">inviwo::PropertyObserver</a>.</p>
+
+</div>
+</div>
+<a id="afa69d6c965334d83fabadb36f3bd239c" name="afa69d6c965334d83fabadb36f3bd239c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa69d6c965334d83fabadb36f3bd239c">&#9670;&#160;</a></span>onSetSemantics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onSetSemantics </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>orgProp</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>semantics</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyObserver.html">inviwo::PropertyObserver</a>.</p>
+
+</div>
+</div>
+<a id="a248b290bc2068281bf71daba9699b929" name="a248b290bc2068281bf71daba9699b929"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a248b290bc2068281bf71daba9699b929">&#9670;&#160;</a></span>onSetVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onSetVisible </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>orgProp</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>visible</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyObserver.html">inviwo::PropertyObserver</a>.</p>
+
+</div>
+</div>
+<a id="aee8268b5142426e94f9c7e34fb8e2ae1" name="aee8268b5142426e94f9c7e34fb8e2ae1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee8268b5142426e94f9c7e34fb8e2ae1">&#9670;&#160;</a></span>onWillRemoveProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::CompositeProcessor::onWillRemoveProperty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Property.html">Property</a> *</td>          <td class="paramname"><span class="paramname"><em>property</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>index</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">inviwo::PropertyOwnerObserver</a>.</p>
 
 </div>
 </div>

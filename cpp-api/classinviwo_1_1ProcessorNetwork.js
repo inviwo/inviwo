@@ -31,6 +31,8 @@ var classinviwo_1_1ProcessorNetwork =
     [ "isLinkedBidirectional", "classinviwo_1_1ProcessorNetwork.html#aa2f5e5da82b24d5c1a6f39647149b538", null ],
     [ "isPortInNetwork", "classinviwo_1_1ProcessorNetwork.html#a3361b72f1d3ece18bf5dcf8adfae4321", null ],
     [ "linkRange", "classinviwo_1_1ProcessorNetwork.html#a7d425a9238f8e7593d6c14f72a6818f8", null ],
+    [ "onProcessorFinishBackgroundWork", "classinviwo_1_1ProcessorNetwork.html#a03829bb29d7756a56ed8a80f9183c188", null ],
+    [ "onProcessorStartBackgroundWork", "classinviwo_1_1ProcessorNetwork.html#a0f8818f897f8b9548738c61a9e83ccaa", null ],
     [ "processorRange", "classinviwo_1_1ProcessorNetwork.html#a546a4a423635a285ed0b3c6189e24c30", null ],
     [ "removeConnection", "classinviwo_1_1ProcessorNetwork.html#a62ddd19690e22a6765dc44e7491d6364", null ],
     [ "removeConnection", "classinviwo_1_1ProcessorNetwork.html#a6bd815fdc2ed471b763a8461c305b28f", null ],
