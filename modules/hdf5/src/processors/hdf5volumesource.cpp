@@ -92,7 +92,20 @@ HDF5ToVolume::HDF5ToVolume()
     , customValueRange_{"customValueRange", "Override Value Range",
                         inviwo::util::ordinalOptSymmetricVector(std::optional<dvec2>{std::nullopt})
                             .setInc(dvec2{0.00001})}
-    , information_("Information", "Data information")
+    , valueName_{"valueName", "Value name", ""}
+    , valueUnit_{"valueUnit", "Value unit", ""}
+    , interpolation_{"interpolation",
+                     "Interpolation",
+                     {InterpolationType::Linear, InterpolationType::Nearest},
+                     0}
+    , axesNames_{"axesNames", "Axes Names"}
+    , axesUnits_{"axesUnits", "Axes Units"}
+    , wrapping_{{
+          {"xWrapping", "X Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"yWrapping", "Y Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+          {"zWrapping", "Z Wrapping", {Wrapping::Clamp, Wrapping::Repeat, Wrapping::Mirror}, 0},
+      }}
+
     , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
     , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
@@ -119,7 +132,9 @@ HDF5ToVolume::HDF5ToVolume()
 
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
 
-    addProperties(volumeSelection_, basisGroup_, dataRangeGroup_, information_, outputGroup_);
+    addProperties(volumeSelection_, basisGroup_, dataRangeGroup_, valueName_, valueUnit_,
+                  interpolation_, axesNames_, axesUnits_, wrapping_[0], wrapping_[1], wrapping_[2],
+                  outputGroup_);
 }
 
 HDF5ToVolume::~HDF5ToVolume() = default;
@@ -187,20 +202,18 @@ void HDF5ToVolume::process() try {
 
     const VolumeConfig config{
         .formatId = util::conversionFormat(datatype_.getSelectedIndex()),
-        .interpolation = information_.interpolation.getSelectedValue(),
-        .wrapping = Wrapping3D{information_.wrapping[0].getSelectedValue(),
-                               information_.wrapping[1].getSelectedValue(),
-                               information_.wrapping[2].getSelectedValue()},
-        .xAxis = Axis{.name = information_.axesNames.strings[0].get(),
-                      .unit = units::unit_from_string(information_.axesUnits.strings[0].get())},
-        .yAxis = Axis{.name = information_.axesNames.strings[1].get(),
-                      .unit = units::unit_from_string(information_.axesUnits.strings[1].get())},
-        .zAxis = Axis{.name = information_.axesNames.strings[2].get(),
-                      .unit = units::unit_from_string(information_.axesUnits.strings[2].get())},
-        .valueAxis = Axis{.name = information_.valueName.get(),
-                          .unit = units::unit_from_string(information_.valueUnit.get())},
-        .dataRange = information_.dataRange.get(),
-        .valueRange = information_.valueRange.get()};
+        .interpolation = interpolation_.getSelectedValue(),
+        .wrapping = Wrapping3D{wrapping_[0].getSelectedValue(), wrapping_[1].getSelectedValue(),
+                               wrapping_[2].getSelectedValue()},
+        .xAxis = Axis{.name = axesNames_.strings[0].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[0].get())},
+        .yAxis = Axis{.name = axesNames_.strings[1].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[1].get())},
+        .zAxis = Axis{.name = axesNames_.strings[2].get(),
+                      .unit = units::unit_from_string(axesUnits_.strings[2].get())},
+        .valueAxis =
+            Axis{.name = valueName_.get(), .unit = units::unit_from_string(valueUnit_.get())},
+    };
 
     const auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
         *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
@@ -232,12 +245,6 @@ void HDF5ToVolume::process() try {
 
     volume->dataMap.dataRange = customDataRange_.get().value_or(dataRange_.get());
     volume->dataMap.valueRange = customValueRange_.get().value_or(valueRange_.get());
-
-    information_.updateForNewVolume(*volume, deserialized_ ? inviwo::util::OverwriteState::Yes
-                                                           : inviwo::util::OverwriteState::No);
-    deserialized_ = false;
-
-    information_.updateVolume(*volume);
 
     auto basis = [&]() {
         switch (basisSelection_.getSelectedIndex()) {
@@ -276,11 +283,6 @@ void HDF5ToVolume::process() try {
 
 } catch (H5::Exception& e) {
     throw Exception(SourceContext{}, "Error reading HDF5 data: {}", e.getDetailMsg());
-}
-
-void HDF5ToVolume::deserialize(Deserializer& d) {
-    Processor::deserialize(d);
-    deserialized_ = true;
 }
 
 }  // namespace inviwo::hdf5

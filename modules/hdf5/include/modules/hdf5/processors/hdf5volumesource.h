@@ -39,12 +39,14 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
-#include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/datastructures/volumereusecache.h>
 
-#include <memory>
+#include <array>
 #include <vector>
 
 namespace inviwo::hdf5 {
@@ -58,12 +60,10 @@ public:
     HDF5ToVolume& operator=(HDF5ToVolume&&) = delete;
     virtual ~HDF5ToVolume();
 
+    virtual void process() override;
+
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-protected:
-    virtual void process() override;
-    virtual void deserialize(Deserializer& d) override;
 
 private:
     std::vector<DataSetInfo> volumeMatches_;
@@ -91,7 +91,12 @@ private:
     OrdinalOptProperty<dvec2> customDataRange_;
     OrdinalOptProperty<dvec2> customValueRange_;
 
-    VolumeInformationProperty information_;
+    StringProperty valueName_;
+    StringProperty valueUnit_;
+    OptionProperty<InterpolationType> interpolation_;
+    StringsProperty<3> axesNames_;
+    StringsProperty<3> axesUnits_;
+    std::array<OptionProperty<Wrapping>, 3> wrapping_;
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
@@ -100,8 +105,6 @@ private:
     DimSelectionsProperty selection_;
 
     VolumeReuseCache cache_;
-
-    bool deserialized_ = false;
 };
 
 }  // namespace inviwo::hdf5

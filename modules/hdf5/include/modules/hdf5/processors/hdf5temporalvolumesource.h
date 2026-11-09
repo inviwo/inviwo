@@ -39,9 +39,10 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-
-#include <modules/base/properties/volumeinformationproperty.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <vector>
 
