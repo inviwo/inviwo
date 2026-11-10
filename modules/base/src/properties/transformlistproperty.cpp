@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
@@ -317,6 +318,11 @@ void PortTransformProperty::setOwner(PropertyOwner* owner) {
     TransformProperty::setOwner(owner);
 
     if (owner && owner->getProcessor()) {
+        auto* processor = owner->getProcessor();
+        port.setIdentifier(util::findUniqueIdentifier(
+            port.getIdentifier(),
+            [&](std::string_view id) { return processor->getInport(id) == nullptr; }, ""));
+
         owner->getProcessor()->addPort(port);
     }
 }
