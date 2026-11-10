@@ -350,7 +350,9 @@ SpatialEntityTransformProperty::SpatialEntityTransformProperty(std::string_view 
                                                                PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , port{"inport"}
-    , space{"space", "Space", {{"model", "Model", 0}, {"world", "World", 1}}}
+    , space{"space",
+            "Space",
+            {{"world", "World", 0}, {"model", "Model", 1}, {"modelWorld", "World * Model", 2}}}
     , matrix{"matrix",
              "Matrix",
              dmat4{1.0},
@@ -365,11 +367,14 @@ SpatialEntityTransformProperty::SpatialEntityTransformProperty(std::string_view 
     port.onChange([this]() {
         if (const auto data = port.getData()) {
             switch (space) {
-                case 0:  // model
+                case 0:  // world
+                    matrix.set(data->getWorldMatrix());
+                    break;
+                case 1:  // model
                     matrix.set(data->getModelMatrix());
                     break;
-                case 1:  // world
-                    matrix.set(data->getWorldMatrix());
+                case 2:  // world * model
+                    matrix.set(data->getWorldMatrix() * data->getModelMatrix());
                     break;
                 default: matrix.set(dmat4{1.0}); break;
             }
@@ -388,11 +393,14 @@ SpatialEntityTransformProperty::SpatialEntityTransformProperty(
     port.onChange([this]() {
         if (const auto data = port.getData()) {
             switch (space) {
-                case 0:  // model
+                case 0:  // world
+                    matrix.set(data->getWorldMatrix());
+                    break;
+                case 1:  // model
                     matrix.set(data->getModelMatrix());
                     break;
-                case 1:  // world
-                    matrix.set(data->getWorldMatrix());
+                case 2:  // world * model
+                    matrix.set(data->getWorldMatrix() * data->getModelMatrix());
                     break;
                 default: matrix.set(dmat4{1.0}); break;
             }
@@ -426,11 +434,16 @@ void SpatialEntityTransformProperty::setOwner(PropertyOwner* owner) {
 dmat4 SpatialEntityTransformProperty::getMatrix() const {
     if (const auto data = port.getData()) {
         switch (space) {
-            case 0:  // model
-                return data->getModelMatrix();
-            case 1:  // world
+            case 0:  // world
                 return data->getWorldMatrix();
-            default: return dmat4{1.0};
+                break;
+            case 1:  // model
+                return data->getModelMatrix();
+                break;
+            case 2:  // world * model
+                return data->getWorldMatrix() * data->getModelMatrix();
+                break;
+            default: return dmat4{1.0}; break;
         }
     } else {
         return dmat4{1.0};
