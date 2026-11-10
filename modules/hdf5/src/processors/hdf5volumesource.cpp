@@ -256,22 +256,15 @@ void HDF5ToVolume::process() try {
             }
             default: {
                 const auto basisInfo = basisMatches_[basisSelection_.getSelectedIndex() - 2];
-                auto basis = getBasis(*data + basisInfo.path);
-                if (swapBasisAxes_) {
-                    std::swap(basis[0], basis[2]);
-                }
-                if (transposeBasis_) {
-                    basis = glm::transpose(basis);
-                }
-                return basis;
+                return getBasis(*data + basisInfo.path);
             }
         }
     }();
-    if (swapBasisAxes_) {
-        std::swap(basis[0], basis[2]);
-    }
     if (transposeBasis_) {
         basis = glm::transpose(basis);
+    }
+    if (swapBasisAxes_) {
+        std::swap(basis[0], basis[2]);
     }
     basis_.set(basis);
 

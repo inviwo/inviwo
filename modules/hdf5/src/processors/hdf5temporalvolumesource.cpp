@@ -249,11 +249,11 @@ void HDF5ToTemporalVolume::process() try {
             }
         }
     }();
-    if (swapBasisAxes_) {
-        std::swap(basis[0], basis[2]);
-    }
     if (transposeBasis_) {
         basis = glm::transpose(basis);
+    }
+    if (swapBasisAxes_) {
+        std::swap(basis[0], basis[2]);
     }
     basis_.set(basis);
     basis = util::adjustBasis(basis, selection, volumeInfo.getColumnMajorDimensions(),
