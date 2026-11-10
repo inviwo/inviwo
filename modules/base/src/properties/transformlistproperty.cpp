@@ -71,6 +71,8 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
                   std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
               v.emplace_back(
                   std::make_unique<transform::PortTransformProperty>("port", "Inport Matrix"));
+              v.emplace_back(std::make_unique<transform::SpatialEntityTransformProperty>(
+                  "spatial", "Spatial Entity"));
               return v;
           }(),
           0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel,
@@ -334,6 +336,102 @@ void PortTransformProperty::setOwner(PropertyOwner* owner) {
 dmat4 PortTransformProperty::getMatrix() const {
     if (const auto data = port.getData()) {
         return *data;
+    } else {
+        return dmat4{1.0};
+    }
+}
+std::string_view SpatialEntityTransformProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
+
+SpatialEntityTransformProperty::SpatialEntityTransformProperty(std::string_view identifier,
+                                                               std::string_view displayName,
+                                                               InvalidationLevel invalidationLevel,
+                                                               PropertySemantics semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
+    , port{"inport"}
+    , space{"space", "Space", {{"model", "Model", 0}, {"world", "World", 1}}}
+    , matrix{"matrix",
+             "Matrix",
+             dmat4{1.0},
+             {util::filled<dmat4>(-1.e6), ConstraintBehavior::Ignore},
+             {util::filled<dmat4>(1.e6), ConstraintBehavior::Ignore},
+             util::filled<dmat4>(0.001),
+             InvalidationLevel::InvalidResources} {
+
+    matrix.setReadOnly(true);
+    addProperties(space, matrix);
+
+    port.onChange([this]() {
+        if (const auto data = port.getData()) {
+            switch (space) {
+                case 0:  // model
+                    matrix.set(data->getModelMatrix());
+                    break;
+                case 1:  // world
+                    matrix.set(data->getWorldMatrix());
+                    break;
+                default: matrix.set(dmat4{1.0}); break;
+            }
+        } else {
+            matrix.set(dmat4{1.0});
+        }
+    });
+}
+
+SpatialEntityTransformProperty::SpatialEntityTransformProperty(
+    const SpatialEntityTransformProperty& rhs)
+    : TransformProperty{rhs}, port{"inport"}, space{rhs.space}, matrix{rhs.matrix} {
+
+    addProperties(space, matrix);
+
+    port.onChange([this]() {
+        if (const auto data = port.getData()) {
+            switch (space) {
+                case 0:  // model
+                    matrix.set(data->getModelMatrix());
+                    break;
+                case 1:  // world
+                    matrix.set(data->getWorldMatrix());
+                    break;
+                default: matrix.set(dmat4{1.0}); break;
+            }
+        } else {
+            matrix.set(dmat4{1.0});
+        }
+    });
+}
+
+SpatialEntityTransformProperty* SpatialEntityTransformProperty::clone() const {
+    return new SpatialEntityTransformProperty(*this);
+}
+
+void SpatialEntityTransformProperty::setOwner(PropertyOwner* owner) {
+    if (auto* prevOwner = getOwner(); prevOwner && prevOwner->getProcessor()) {
+        prevOwner->getProcessor()->removePort(&port);
+    }
+
+    TransformProperty::setOwner(owner);
+
+    if (owner && owner->getProcessor()) {
+        auto* processor = owner->getProcessor();
+        port.setIdentifier(util::findUniqueIdentifier(
+            port.getIdentifier(),
+            [&](std::string_view id) { return processor->getInport(id) == nullptr; }, ""));
+
+        owner->getProcessor()->addPort(port);
+    }
+}
+
+dmat4 SpatialEntityTransformProperty::getMatrix() const {
+    if (const auto data = port.getData()) {
+        switch (space) {
+            case 0:  // model
+                return data->getModelMatrix();
+            case 1:  // world
+                return data->getWorldMatrix();
+            default: return dmat4{1.0};
+        }
     } else {
         return dmat4{1.0};
     }
