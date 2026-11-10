@@ -37,11 +37,12 @@
 #include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/ordinaloptproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/stringsproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-
-#include <modules/base/properties/volumeinformationproperty.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <vector>
 
@@ -74,6 +75,7 @@ public:
 private:
     std::vector<DataSetInfo> volumeMatches_;
     std::vector<DataSetInfo> basisMatches_;
+    std::vector<DataSetInfo> dataRangeMatches_;
 
     Inport inport_;
     TemporalVolumeOutport outport_;
@@ -84,11 +86,20 @@ private:
 
     CompositeProperty basisGroup_;
     OptionPropertyString basisSelection_;
+    DoubleMat4Property customBasis_;
+    DoubleVec3Property customSpacing_;
+    BoolProperty transposeBasis_;
+    BoolProperty swapBasisAxes_;
     DoubleMat4Property basis_;
-    DoubleVec3Property spacing_;
 
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
+    CompositeProperty dataRangeGroup_;
+    OptionPropertyString dataRangeSelection_;
+    OptionPropertyString valueRangeSelection_;
+    DoubleVec2Property dataRange_;
+    DoubleVec2Property valueRange_;
+    OrdinalOptProperty<dvec2> customDataRange_;
+    OrdinalOptProperty<dvec2> customValueRange_;
+
     StringProperty valueName_;
     StringProperty valueUnit_;
     OptionProperty<InterpolationType> interpolation_;
