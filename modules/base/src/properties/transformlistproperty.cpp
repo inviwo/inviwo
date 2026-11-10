@@ -315,6 +315,10 @@ PortTransformProperty* PortTransformProperty::clone() const {
 }
 
 void PortTransformProperty::setOwner(PropertyOwner* owner) {
+    if (auto* prevOwner = getOwner(); prevOwner && prevOwner->getProcessor()) {
+        prevOwner->getProcessor()->removePort(&port);
+    }
+
     TransformProperty::setOwner(owner);
 
     if (owner && owner->getProcessor()) {
