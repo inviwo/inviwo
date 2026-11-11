@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertysemantics.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>
@@ -70,6 +71,8 @@ TransformationList::TransformationList(std::string_view identifier, std::string_
                   std::make_unique<transform::CustomTransformProperty>("custom", "Custom Matrix"));
               v.emplace_back(
                   std::make_unique<transform::PortTransformProperty>("port", "Inport Matrix"));
+              v.emplace_back(std::make_unique<transform::SpatialEntityTransformProperty>(
+                  "spatial", "Spatial Entity"));
               return v;
           }(),
           0, ListPropertyUIFlag::Add | ListPropertyUIFlag::Remove, invalidationLevel,
@@ -92,17 +95,15 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
                                              std::string_view displayName, Document help,
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
-                        std::move(semantics))
-    , transforms_("internalTransforms", "Transformations")
-    , result_(
-          "result", "Result", dmat4(1.0),
-          {util::filled<dmat4>(std::numeric_limits<double>::lowest()), ConstraintBehavior::Ignore},
-          {util::filled<dmat4>(std::numeric_limits<double>::max()), ConstraintBehavior::Ignore},
-          util::filled<dmat4>(0.001), InvalidationLevel::Valid, PropertySemantics::Text) {
+    : CompositeProperty{identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics)}
+    , transforms_{"internalTransforms", "Transformations"}
+    , result_{"result", "Result",
+              util::ordinalSymmetricVector(dmat4{1.0}, util::filled<dmat4>(100.0))
+                  .setInc(util::filled<dmat4>(0.001))
+                  .set(InvalidationLevel::Valid)
+                  .set(ReadOnly::Yes)} {
 
-    result_.setReadOnly(true);
-    result_.setCurrentStateAsDefault();
     addProperties(transforms_, result_);
 
     transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
@@ -117,8 +118,6 @@ TransformListProperty::TransformListProperty(std::string_view identifier,
 
 TransformListProperty::TransformListProperty(const TransformListProperty& other)
     : CompositeProperty(other), transforms_(other.transforms_), result_(other.result_) {
-    result_.setReadOnly(true);
-    result_.setCurrentStateAsDefault();
     addProperties(transforms_, result_);
 
     transforms_.onChange([this]() { result_.set(transforms_.getMatrix()); });
@@ -149,7 +148,6 @@ TranslateProperty::TranslateProperty(std::string_view identifier, std::string_vi
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , translate("translate_", "Translate", value, {minValue, ConstraintBehavior::Ignore},
                 {maxValue, ConstraintBehavior::Ignore}, increment) {
-    translate.setSemantics(PropertySemantics::SpinBox);
     addProperty(translate);
 }
 
@@ -171,12 +169,12 @@ RotateProperty::RotateProperty(std::string_view identifier, std::string_view dis
                                PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , mode("mode", "Angle Measure",
-           {{"rad", "Radians", AngleMeasure::Radians}, {"deg", "Degrees", AngleMeasure::Degrees}})
+           OptionPropertyState<AngleMeasure>{.options = {{"rad", "Radians", AngleMeasure::Radians},
+                                                         {"deg", "Degrees", AngleMeasure::Degrees}}}
+               .setSelectedValue(angleMeasure))
     , axis("axis", "Axis", glm::normalize(axisValue), dvec3{-1.0}, dvec3{1.0})
     , angle("angle", "Angle", angleValue, {minAngle, ConstraintBehavior::Ignore},
             {maxAngle, ConstraintBehavior::Ignore}, increment) {
-    mode.setSelectedValue(angleMeasure);
-    axis.setSemantics(PropertySemantics::SpinBox);
     addProperties(mode, axis, angle);
 
     mode.onChange([this]() {
@@ -221,7 +219,6 @@ ScaleProperty::ScaleProperty(std::string_view identifier, std::string_view displ
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , scale("scale", "Scale", value, {minValue, ConstraintBehavior::Ignore},
             {maxValue, ConstraintBehavior::Ignore}, increment) {
-    scale.setSemantics(PropertySemantics::SpinBox);
     addProperty(scale);
 }
 
@@ -244,7 +241,6 @@ CustomTransformProperty::CustomTransformProperty(std::string_view identifier,
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , matrix("matrix", "Matrix", value, {minValue, ConstraintBehavior::Ignore},
              {maxValue, ConstraintBehavior::Ignore}, increment) {
-    matrix.setSemantics(PropertySemantics::SpinBox);
     addProperty(matrix);
 }
 
@@ -275,24 +271,14 @@ PortTransformProperty::PortTransformProperty(std::string_view identifier,
                                              PropertySemantics semantics)
     : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
     , port{"inport"}
-    , matrix{"matrix",
-             "Matrix",
-             dmat4{1.0},
-             {util::filled<dmat4>(-1.e6), ConstraintBehavior::Ignore},
-             {util::filled<dmat4>(1.e6), ConstraintBehavior::Ignore},
-             util::filled<dmat4>(0.001),
-             InvalidationLevel::InvalidResources} {
-    matrix.setReadOnly(true);
-
+    , matrix{"matrix", "Matrix",
+             util::ordinalSymmetricVector(dmat4{1.0}, util::filled<dmat4>(100.0))
+                 .setInc(util::filled<dmat4>(0.001))
+                 .set(InvalidationLevel::InvalidResources)
+                 .set(ReadOnly::Yes)} {
     addProperties(matrix);
 
-    port.onChange([this]() {
-        if (const auto data = port.getData()) {
-            matrix.set(*data);
-        } else {
-            matrix.set(dmat4{1.0});
-        }
-    });
+    port.onChange([this]() { matrix.set(getMatrix()); });
 }
 
 PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
@@ -300,13 +286,7 @@ PortTransformProperty::PortTransformProperty(const PortTransformProperty& rhs)
 
     addProperties(matrix);
 
-    port.onChange([this]() {
-        if (const auto data = port.getData()) {
-            matrix.set(*data);
-        } else {
-            matrix.set(dmat4{1.0});
-        }
-    });
+    port.onChange([this]() { matrix.set(getMatrix()); });
 }
 
 PortTransformProperty* PortTransformProperty::clone() const {
@@ -314,9 +294,18 @@ PortTransformProperty* PortTransformProperty::clone() const {
 }
 
 void PortTransformProperty::setOwner(PropertyOwner* owner) {
+    if (auto* prevOwner = getOwner(); prevOwner && prevOwner->getProcessor()) {
+        prevOwner->getProcessor()->removePort(&port);
+    }
+
     TransformProperty::setOwner(owner);
 
     if (owner && owner->getProcessor()) {
+        auto* processor = owner->getProcessor();
+        port.setIdentifier(util::findUniqueIdentifier(
+            port.getIdentifier(),
+            [&](std::string_view id) { return processor->getInport(id) == nullptr; }, ""));
+
         owner->getProcessor()->addPort(port);
     }
 }
@@ -324,6 +313,74 @@ void PortTransformProperty::setOwner(PropertyOwner* owner) {
 dmat4 PortTransformProperty::getMatrix() const {
     if (const auto data = port.getData()) {
         return *data;
+    } else {
+        return dmat4{1.0};
+    }
+}
+std::string_view SpatialEntityTransformProperty::getClassIdentifier() const {
+    return classIdentifier;
+}
+
+SpatialEntityTransformProperty::SpatialEntityTransformProperty(std::string_view identifier,
+                                                               std::string_view displayName,
+                                                               InvalidationLevel invalidationLevel,
+                                                               PropertySemantics semantics)
+    : TransformProperty(identifier, displayName, invalidationLevel, std::move(semantics))
+    , port{"inport"}
+    , space{"space",
+            "Space",
+            {{"world", "World", 0}, {"model", "Model", 1}, {"modelWorld", "World * Model", 2}}}
+    , matrix{"matrix", "Matrix",
+             util::ordinalSymmetricVector(dmat4{1.0}, util::filled<dmat4>(100.0))
+                 .setInc(util::filled<dmat4>(0.001))
+                 .set(InvalidationLevel::InvalidResources)
+                 .set(ReadOnly::Yes)} {
+    addProperties(space, matrix);
+
+    port.onChange([this]() { matrix.set(getMatrix()); });
+}
+
+SpatialEntityTransformProperty::SpatialEntityTransformProperty(
+    const SpatialEntityTransformProperty& rhs)
+    : TransformProperty{rhs}, port{"inport"}, space{rhs.space}, matrix{rhs.matrix} {
+
+    addProperties(space, matrix);
+
+    port.onChange([this]() { matrix.set(getMatrix()); });
+}
+
+SpatialEntityTransformProperty* SpatialEntityTransformProperty::clone() const {
+    return new SpatialEntityTransformProperty(*this);
+}
+
+void SpatialEntityTransformProperty::setOwner(PropertyOwner* owner) {
+    if (auto* prevOwner = getOwner(); prevOwner && prevOwner->getProcessor()) {
+        prevOwner->getProcessor()->removePort(&port);
+    }
+
+    TransformProperty::setOwner(owner);
+
+    if (owner && owner->getProcessor()) {
+        auto* processor = owner->getProcessor();
+        port.setIdentifier(util::findUniqueIdentifier(
+            port.getIdentifier(),
+            [&](std::string_view id) { return processor->getInport(id) == nullptr; }, ""));
+
+        owner->getProcessor()->addPort(port);
+    }
+}
+
+dmat4 SpatialEntityTransformProperty::getMatrix() const {
+    if (const auto data = port.getData()) {
+        switch (space) {
+            case 0:  // world
+                return data->getWorldMatrix();
+            case 1:  // model
+                return data->getModelMatrix();
+            case 2:  // world * model
+                return data->getWorldMatrix() * data->getModelMatrix();
+            default: return dmat4{1.0}; break;
+        }
     } else {
         return dmat4{1.0};
     }

@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertysemantics.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/util/glm.h>
@@ -207,6 +208,29 @@ public:
     virtual void setOwner(PropertyOwner* owner) override;
 
     DataInport<dmat4> port;
+    DoubleMat4Property matrix;
+};
+
+class IVW_MODULE_BASE_API SpatialEntityTransformProperty : public TransformProperty {
+public:
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{
+        "org.inviwo.trafo.SpatialEntityTransformProperty"};
+
+    SpatialEntityTransformProperty(
+        std::string_view identifier, std::string_view displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
+    SpatialEntityTransformProperty(const SpatialEntityTransformProperty& rhs);
+    virtual SpatialEntityTransformProperty* clone() const override;
+    virtual ~SpatialEntityTransformProperty() = default;
+
+    virtual dmat4 getMatrix() const override;
+
+    virtual void setOwner(PropertyOwner* owner) override;
+
+    DataInport<SpatialEntity> port;
+    OptionPropertyInt space;
     DoubleMat4Property matrix;
 };
 

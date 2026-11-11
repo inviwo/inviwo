@@ -343,6 +343,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<transform::ScaleProperty>();
     registerProperty<transform::CustomTransformProperty>();
     registerProperty<transform::PortTransformProperty>();
+    registerProperty<transform::SpatialEntityTransformProperty>();
     registerProperty<TransformationList>();
     registerProperty<TransformListProperty>();
 
