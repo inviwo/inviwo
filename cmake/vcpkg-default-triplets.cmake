@@ -44,11 +44,13 @@ message(STATUS "BUILD_SHARED_LIBS: ${BUILD_SHARED_LIBS}")
 message(STATUS "VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
 message(STATUS "VCPKG_HOST_TRIPLET: ${VCPKG_HOST_TRIPLET}")
 
-if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../vcpkg")
+option(IVW_VCPKG_AUTO_UPDATE "Automatically update the vcpkg repo based on vcpkg.json baseline" OFF)
+
+if(EXISTS "$ENV{VCPKG_ROOT}")
     find_package(Git QUIET)
     if(GIT_FOUND)
         execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../../vcpkg"
+            WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
             RESULT_VARIABLE result
             OUTPUT_VARIABLE vcpkg_current_sha
             ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -60,37 +62,65 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../vcpkg")
 
         message(STATUS "inviwo baseline: ${baseline}, current vcpkg ${vcpkg_current_sha}")
         if(NOT baseline STREQUAL vcpkg_current_sha)
-            execute_process(
-                COMMAND "${GIT_EXECUTABLE}" merge-base --is-ancestor ${vcpkg_current_sha} ${baseline}
-                WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../../vcpkg"
-                RESULT_VARIABLE IS_ANCESTOR_RESULT
-            )
-            if(IS_ANCESTOR_RESULT EQUAL 0)
-                message(FATAL_ERROR "Your vcpkg repo is outdated.
+            if(IVW_VCPKG_AUTO_UPDATE)
+                message(STATUS "Auto updating vcpkg at '$ENV{VCPKG_ROOT}' to the inviwo baseline: ${baseline}")
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" pull
+                    WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                    RESULT_VARIABLE IS_ANCESTOR_RESULT
+                )
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" reset --hard ${baseline}
+                    WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                    RESULT_VARIABLE IS_ANCESTOR_RESULT
+                )
+                if(CMAKE_HOST_WIN32)
+                    execute_process(
+                        COMMAND "bootstrap-vcpkg.bat"
+                        WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                        RESULT_VARIABLE IS_ANCESTOR_RESULT
+                    )
+                else()
+                    execute_process(
+                        COMMAND "bootstrap-vcpkg.bat"
+                        WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                        RESULT_VARIABLE IS_ANCESTOR_RESULT
+                    )
+                endif()
+            else()
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" merge-base --is-ancestor ${vcpkg_current_sha} ${baseline}
+                    WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                    RESULT_VARIABLE IS_ANCESTOR_RESULT
+                )
+                if(IS_ANCESTOR_RESULT EQUAL 0)
+                    message(FATAL_ERROR "Your vcpkg repo is outdated.
 You need to pull the VCPKG repo to commit: ${baseline}
 git pull
 git reset --hard ${baseline}
 ./bootstrap-vcpkg.[bat|sh]
-")
+")            
+                endif()
 
-            endif()
-
-            execute_process(
-                COMMAND "${GIT_EXECUTABLE}" merge-base --is-ancestor ${baseline} ${vcpkg_current_sha}
-                WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/../../vcpkg"
-                RESULT_VARIABLE IS_ANCESTOR_RESULT
-            )
-            if(IS_ANCESTOR_RESULT EQUAL 0)
-                message(WARNING "Your vcpkg repo is newer than the inviwo baseline.
+                execute_process(
+                    COMMAND "${GIT_EXECUTABLE}" merge-base --is-ancestor ${baseline} ${vcpkg_current_sha}
+                    WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
+                    RESULT_VARIABLE IS_ANCESTOR_RESULT
+                )
+                if(IS_ANCESTOR_RESULT EQUAL 0)
+                    message(WARNING "Your vcpkg repo is newer than the inviwo baseline.
 This can result in cache misses if your vcpkg tool has a different version.
 To ensure consistant versions run:
 git pull
 git reset --hard ${baseline}
 ./bootstrap-vcpkg.[bat|sh]
 ")
-            else()
-                message(WARNING "Vcpkg baseline missmatch")
+                else()
+                    message(WARNING "Vcpkg baseline missmatch")
+                endif()
             endif()
         endif()
+    else()
+        message(WARNING "No git executable found. This is not required, but may reduce functionallity in some situations.")
     endif()
 endif()
