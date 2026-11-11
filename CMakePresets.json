@@ -40,10 +40,13 @@
     {
       "name": "vcpkg",
       "hidden": true,
-      "toolchainFile": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "${sourceParentDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_MANIFEST_FEATURES" : ""
+      },
+      "environment": {
+          "VCPKG_ROOT": "${sourceParentDir}/vcpkg"
       }
     },
     {
