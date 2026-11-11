@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ViewEvent : public Event {
+class IVW_CORE_API ViewEvent final : public Event {
 public:
     struct FlipUp {};
     struct FlipView {};
@@ -49,7 +49,8 @@ public:
     explicit ViewEvent(Action action = camerautil::Side::XNegative);
     ViewEvent(const ViewEvent&) = default;
     ViewEvent& operator=(const ViewEvent&) = default;
-
+    ViewEvent(ViewEvent&&) noexcept = default;
+    ViewEvent& operator=(ViewEvent&&) noexcept = default;
     virtual ~ViewEvent() = default;
 
     // Inherited via Event

@@ -42,9 +42,10 @@ class IVW_CORE_API GestureEvent : public InteractionEvent {
 public:
     GestureEvent(dvec2 deltaPos, double deltaDistance, GestureType type, GestureState state,
                  dvec2 screenPosNorm, uvec2 canvasSize, double depth = 1.0);
-
     GestureEvent(const GestureEvent& rhs) = default;
     GestureEvent& operator=(const GestureEvent& that) = default;
+    GestureEvent(GestureEvent&& rhs) noexcept = default;
+    GestureEvent& operator=(GestureEvent&& that) noexcept = default;
     virtual GestureEvent* clone() const override;
     virtual ~GestureEvent() = default;
 

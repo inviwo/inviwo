@@ -53,6 +53,11 @@ public:
     using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
 
     RepresentationConverterMetaFactory() = default;
+    RepresentationConverterMetaFactory(const RepresentationConverterMetaFactory&) = delete;
+    RepresentationConverterMetaFactory(RepresentationConverterMetaFactory&&) = delete;
+    RepresentationConverterMetaFactory& operator=(const RepresentationConverterMetaFactory&) =
+        delete;
+    RepresentationConverterMetaFactory& operator=(RepresentationConverterMetaFactory&&) = delete;
     ~RepresentationConverterMetaFactory() = default;
 
     bool registerObject(BaseRepresentationConverterFactory* factory);

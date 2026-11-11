@@ -37,6 +37,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <cstdint>
 #include <vector>
 #include <ostream>
 #include <fmt/core.h>

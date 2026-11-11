@@ -52,7 +52,7 @@ public:
     PickingControllerTouchState& operator=(PickingControllerTouchState&&);
     virtual ~PickingControllerTouchState();
 
-    void propagateEvent(TouchEvent* e, EventPropagator* propagator, size_t globalId);
+    void propagateEvent(TouchEvent* e, EventPropagator* propagator, size_t globalId) const;
 
     std::unique_ptr<PickingControllerTouchStateSM> tsm;
 };

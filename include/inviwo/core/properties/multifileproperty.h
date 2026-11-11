@@ -87,6 +87,10 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     MultiFileProperty(const MultiFileProperty& rhs) = default;
+    MultiFileProperty(MultiFileProperty&& rhs)
+        : MultiFileProperty(static_cast<const MultiFileProperty&>(rhs)) {}
+    MultiFileProperty& operator=(const MultiFileProperty&) = delete;
+    MultiFileProperty& operator=(MultiFileProperty&&) = delete;
     MultiFileProperty& operator=(const std::vector<std::filesystem::path>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;

@@ -42,6 +42,8 @@ namespace sml = boost::sml;
 
 namespace inviwo {
 
+namespace {
+
 namespace fsm {
 
 // State
@@ -88,7 +90,7 @@ struct Wheel : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-static PickingPressItem mouseButtonToPressItem(MouseButton mb) {
+PickingPressItem mouseButtonToPressItem(MouseButton mb) {
     switch (mb) {
         case MouseButton::None:   return PickingPressItem::None;
         case MouseButton::Left:   return PickingPressItem::Primary;
@@ -97,7 +99,7 @@ static PickingPressItem mouseButtonToPressItem(MouseButton mb) {
         default:                  return PickingPressItem::None;
     }
 }
-static PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
+PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
     PickingPressItems res = PickingPressItem::None;
     if (mb.contains(MouseButton::Left)) res |= PickingPressItem::Primary;
     if (mb.contains(MouseButton::Middle)) res |= PickingPressItem::Tertiary;
@@ -106,12 +108,12 @@ static PickingPressItems mouseButtonsToPressItems(MouseButtons mb) {
 }
 
 template <typename E>
-static auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
-                 bool updatePrev = true, bool markAsUsed = true) {
+auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
+          bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                const PickingManager& pickingManager) {
-        auto action = pickingManager.getPickingActionFromIndex(fsmState.active_globalId);
+        const auto* action = pickingManager.getPickingActionFromIndex(fsmState.active_globalId);
         if (fsmState.active_globalId == PickingManager::VoidId || !action) return;
 
         auto me = fsmEvent.event;
@@ -135,7 +137,7 @@ static auto send(PickingState state, PickingPressState pressState, PickingHoverS
 }
 
 template <typename E>
-static auto uid() {
+auto uid() {
     return [](const E& e, FsmState& fsmstate) { fsmstate.active_globalId = e.globalId; };
 }
 
@@ -184,6 +186,7 @@ struct Fsm {
         };
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
            *idle + event<Move>  [nonZeroId && zeroMB] / (uidm, send<Move>(S::Started, P::None, H::Enter)) = hasId,
             idle + event<Press> [nonZeroId] / (uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
@@ -215,11 +218,14 @@ struct Fsm {
             hasId + event<Wheel> [diffId] / (send<Wheel>(S::Finished, P::None, H::Exit), uidw, send<Wheel>(S::Started, P::None, H::Enter)),
             pressing + event<Wheel>       / (send<Wheel>(S::Updated, P::None, H::None))
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
 
 }  // namespace fsm
+
+}  // namespace
 
 struct PickingControllerMouseStateSM {
     explicit PickingControllerMouseStateSM(PickingManager* pickingManager)
@@ -237,7 +243,7 @@ PickingControllerMouseState::PickingControllerMouseState(PickingManager* picking
 PickingControllerMouseState::~PickingControllerMouseState() = default;
 
 void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     switch (e->state()) {
         case MouseState::Press: {
             msm->sm.process_event(fsm::Press{globalId, e, propagator});
@@ -259,7 +265,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
 }
 
 void PickingControllerMouseState::propagateEvent(WheelEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     msm->sm.process_event(fsm::Wheel{globalId, e, propagator});
 }
 

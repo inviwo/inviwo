@@ -43,6 +43,10 @@ class PropertyWidget;
 class IVW_CORE_API PropertyWidgetFactoryObject {
 public:
     PropertyWidgetFactoryObject(std::string_view className, PropertySemantics semantics);
+    PropertyWidgetFactoryObject(const PropertyWidgetFactoryObject&) = default;
+    PropertyWidgetFactoryObject(PropertyWidgetFactoryObject&&) = default;
+    PropertyWidgetFactoryObject& operator=(const PropertyWidgetFactoryObject&) = default;
+    PropertyWidgetFactoryObject& operator=(PropertyWidgetFactoryObject&&) = default;
     virtual ~PropertyWidgetFactoryObject() = default;
 
     virtual std::unique_ptr<PropertyWidget> create(Property*) = 0;
@@ -61,6 +65,11 @@ public:
     explicit PropertyWidgetFactoryObjectTemplate(const PropertySemantics& semantics)
         : PropertyWidgetFactoryObject(PropertyTraits<P>::classIdentifier(), semantics) {}
 
+    PropertyWidgetFactoryObjectTemplate(const PropertyWidgetFactoryObjectTemplate&) = default;
+    PropertyWidgetFactoryObjectTemplate(PropertyWidgetFactoryObjectTemplate&&) = default;
+    PropertyWidgetFactoryObjectTemplate& operator=(const PropertyWidgetFactoryObjectTemplate&) =
+        default;
+    PropertyWidgetFactoryObjectTemplate& operator=(PropertyWidgetFactoryObjectTemplate&&) = default;
     virtual ~PropertyWidgetFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<PropertyWidget> create(Property* prop) {

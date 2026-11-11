@@ -48,6 +48,10 @@ namespace inviwo {
 class IVW_CORE_API PropertyConverter {
 public:
     PropertyConverter(std::string_view srcClassIdentifier, std::string_view dstClassIdentifier);
+    PropertyConverter(const PropertyConverter&) = default;
+    PropertyConverter(PropertyConverter&&) = default;
+    PropertyConverter& operator=(const PropertyConverter&) = default;
+    PropertyConverter& operator=(PropertyConverter&&) = default;
     virtual ~PropertyConverter();
 
     std::string getSourcePropertyClassIdenetifier() const;
@@ -70,6 +74,10 @@ public:
     TemplatePropertyConverter()
         : PropertyConverter(PropertyTraits<SrcProperty>::classIdentifier(),
                             PropertyTraits<DstProperty>::classIdentifier()) {}
+    TemplatePropertyConverter(const TemplatePropertyConverter&) = default;
+    TemplatePropertyConverter(TemplatePropertyConverter&&) = default;
+    TemplatePropertyConverter& operator=(const TemplatePropertyConverter&) = default;
+    TemplatePropertyConverter& operator=(TemplatePropertyConverter&&) = default;
     virtual ~TemplatePropertyConverter() = default;
 
     virtual void convert(const Property* src, Property* dst) const override {

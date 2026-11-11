@@ -257,13 +257,14 @@ void FilePatternProperty::updateFileList() {
                     if (std::cmp_less(indexRange.y, fileList.size())) {
                         // remove all files after the maximum index
                         fileList.erase(
-                            fileList.begin() + std::max(static_cast<std::size_t>(indexRange.y + 1),
-                                                        fileList.size()),
+                            fileList.begin() +
+                                static_cast<std::ptrdiff_t>(std::max(
+                                    static_cast<std::size_t>(indexRange.y + 1), fileList.size())),
                             fileList.end());
                         // remove file names at the begin
                         fileList.erase(
                             fileList.begin(),
-                            fileList.begin() + static_cast<std::size_t>(indexRange.y + 1));
+                            fileList.begin() + static_cast<std::ptrdiff_t>(indexRange.y + 1));
                     }
                 }
                 for (const auto& file : fileList) {
@@ -303,9 +304,13 @@ std::string_view FilePatternProperty::guessFilePattern() {
 
 void FilePatternProperty::clearNameFilters() { pattern_.clearNameFilters(); }
 
-void FilePatternProperty::addNameFilter(std::string filter) { pattern_.addNameFilter(filter); }
+void FilePatternProperty::addNameFilter(const std::string& filter) {
+    pattern_.addNameFilter(filter);
+}
 
-void FilePatternProperty::addNameFilter(FileExtension filter) { pattern_.addNameFilter(filter); }
+void FilePatternProperty::addNameFilter(const FileExtension& filter) {
+    pattern_.addNameFilter(filter);
+}
 
 void FilePatternProperty::addNameFilters(const std::vector<FileExtension>& filters) {
     pattern_.addNameFilters(filters);

@@ -51,6 +51,10 @@ public:
 class IVW_CORE_API BaseRepresentationConverter {
 public:
     BaseRepresentationConverter() = default;
+    BaseRepresentationConverter(const BaseRepresentationConverter&) = default;
+    BaseRepresentationConverter(BaseRepresentationConverter&&) = default;
+    BaseRepresentationConverter& operator=(const BaseRepresentationConverter&) = default;
+    BaseRepresentationConverter& operator=(BaseRepresentationConverter&&) = default;
     virtual ~BaseRepresentationConverter() = default;
 };
 
@@ -66,6 +70,10 @@ template <typename BaseRepr>
 class RepresentationConverter : public BaseRepresentationConverter {
 public:
     RepresentationConverter() = default;
+    RepresentationConverter(const RepresentationConverter&) = default;
+    RepresentationConverter(RepresentationConverter&&) = default;
+    RepresentationConverter& operator=(const RepresentationConverter&) = default;
+    RepresentationConverter& operator=(RepresentationConverter&&) = default;
     virtual ~RepresentationConverter() = default;
     using ConverterID = std::pair<std::type_index, std::type_index>;
     virtual ConverterID getConverterID() const = 0;

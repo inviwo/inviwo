@@ -55,6 +55,10 @@ class WheelEvent;
 class IVW_CORE_API PickingController {
 public:
     PickingController();
+    PickingController(const PickingController&) = delete;
+    PickingController(PickingController&&) = delete;
+    PickingController& operator=(const PickingController&) = delete;
+    PickingController& operator=(PickingController&&) = delete;
     ~PickingController();
 
     void propagateEvent(Event*, EventPropagator*);

@@ -35,7 +35,8 @@
 namespace inviwo {
 
 PickingMapper::PickingMapper(Processor* processor, size_t size,
-                             std::function<void(PickingEvent*)> callback, PickingManager* manager)
+                             const std::function<void(PickingEvent*)>& callback,
+                             PickingManager* manager)
     : manager_(manager)
     , processor_(processor)
     , callback_(callback)

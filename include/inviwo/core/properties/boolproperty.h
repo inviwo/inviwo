@@ -42,24 +42,21 @@ namespace inviwo {
  * @see BoolPropertyWidgetQt
  */
 
-class IVW_CORE_API BoolProperty : public TemplateProperty<bool> {
+class IVW_CORE_API BoolProperty final : public TemplateProperty<bool> {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.BoolProperty"};
 
-    BoolProperty(std::string_view identifier, std::string_view displayName, Document help,
-                 bool value = false,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
+    using TemplateProperty::TemplateProperty;
 
-    BoolProperty(std::string_view identifier, std::string_view displayName, bool value = false,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-
-    BoolProperty(const BoolProperty& rhs);
-    BoolProperty& operator=(const bool& value);
+    BoolProperty(const BoolProperty& rhs) = default;
+    BoolProperty(BoolProperty&& rhs) = default;
+    BoolProperty& operator=(const BoolProperty&) = default;
+    BoolProperty& operator=(BoolProperty&&) = default;
     virtual BoolProperty* clone() const override;
-    virtual ~BoolProperty();
+    virtual ~BoolProperty() = default;
+
+    using TemplateProperty::operator=;
 
     virtual Document getDescription() const override;
 };

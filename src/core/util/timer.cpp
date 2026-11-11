@@ -172,12 +172,13 @@ Timer::~Timer() { stop(); }
 void Timer::start(Milliseconds interval, std::function<void()> callback) {
     interval_ = interval;
     callback_ = callback;
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, interval, true);
+    controlblock_ =
+        std::make_shared<TimerThread::ControlBlock>(std::move(callback), interval, true);
     thread_.add(controlblock_);
 }
 void Timer::start(Milliseconds interval) { start(interval, callback_); }
 
-void Timer::start(std::function<void()> callback) { start(interval_, callback); }
+void Timer::start(std::function<void()> callback) { start(interval_, std::move(callback)); }
 void Timer::start() { start(interval_, callback_); }
 
 void Timer::setInterval(Milliseconds interval) {
@@ -215,11 +216,11 @@ Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThr
 Delay::~Delay() { cancel(); }
 
 void Delay::start(Milliseconds delay, std::function<void()> callback) {
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, delay, false);
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(std::move(callback), delay, false);
     thread_.add(controlblock_);
 }
 void Delay::start(Milliseconds delay) { start(delay, defaultCallback_); }
-void Delay::start(std::function<void()> callback) { start(defaultDelay_, callback); }
+void Delay::start(std::function<void()> callback) { start(defaultDelay_, std::move(callback)); }
 void Delay::start() { start(defaultDelay_, defaultCallback_); }
 
 void Delay::cancel() { controlblock_.reset(); }
@@ -235,7 +236,7 @@ std::function<void()> Delay::getDefaultCallback() const { return defaultCallback
 namespace util {
 
 TimerThread& getDefaultTimerThread() {
-    if (auto app = InviwoApplication::getPtr()) {
+    if (auto* app = InviwoApplication::getPtr()) {
         return app->getTimerThread();
     } else {
         throw Exception("No timer thread found");

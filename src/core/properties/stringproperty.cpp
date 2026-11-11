@@ -33,8 +33,6 @@
 
 namespace inviwo {
 
-std::string_view StringProperty::getClassIdentifier() const { return classIdentifier; }
-
 StringProperty::StringProperty(std::string_view identifier, std::string_view displayName,
                                Document help, std::string_view value,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
@@ -46,12 +44,7 @@ StringProperty::StringProperty(std::string_view identifier, std::string_view dis
                                PropertySemantics semantics)
     : StringProperty(identifier, displayName, {}, value, invalidationLevel, std::move(semantics)) {}
 
-StringProperty::StringProperty(const StringProperty& rhs) : TemplateProperty<std::string>(rhs) {}
-
-StringProperty& StringProperty::operator=(const std::string& value) {
-    TemplateProperty<std::string>::operator=(value);
-    return *this;
-}
+std::string_view StringProperty::getClassIdentifier() const { return classIdentifier; }
 
 StringProperty* StringProperty::clone() const { return new StringProperty(*this); }
 

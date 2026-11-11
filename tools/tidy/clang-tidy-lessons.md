@@ -115,3 +115,36 @@ Use these as a review checklist on any diff.
   `std::invoke`, so one body covers `void` and non-`void` returns.
 - Keep a record: each commit message lists the reverted hunks and the reason. This is the most
   useful artifact for later auditing.
+
+## 5. Lessons from the "all checks, folder by folder" pass over `core`
+
+- **Special member functions** (`cppcoreguidelines-special-member-functions`): pick per class kind.
+  Interfaces/observers: `= default`. Factories, managers, resource owners, RAII guards: `= delete`.
+  Classes with custom copy semantics (properties, `clone()`-based): delegating move constructor.
+  Never "delete" a move constructor on something that is returned by value elsewhere (modules
+  outside this repo, e.g. dataframe/postprocessing, broke on deleted property move ctors).
+  Do not add `void operator=(const T&) = delete` next to `T& operator=(const T&) = delete`
+  (the "differ only in return type" error), and keep `= default` copy ctor where `clone()` needs it.
+- **`performance-unnecessary-value-param`**: changing a by-value parameter to `const&` flips overload
+  resolution when a sibling overload is a forwarding-reference template
+  (`operator()(const PathComponent&, Args&&...)` vs `operator()(Args&&...)` -> infinite template
+  recursion). Keep by-value + `NOLINT` there. Also check `static_cast<R (C::*)(Args)>(&C::f)` in the
+  python bindings after any signature change.
+- **`misc-const-correctness`** is wrong for: views that are not const-iterable
+  (`set_union`, `set_intersection`, `concat_view`), mutable lambdas, and variables whose
+  `decltype` is tested. Revert and add `NOLINT` with a reason.
+- **`performance-enum-size`**: needs `<cstdint>`; generated headers (colorbrewer) must be fixed in
+  the generator too. `Colormap` needs `uint16_t`. Tests that exercise the underlying type keep
+  `NOLINT`.
+- **`misc-use-anonymous-namespace` / `misc-use-internal-linkage`** have no fix-it; in test files wrap
+  helpers, fixtures and mock classes in `namespace { }` and drop `static`. Use `NOLINTBEGIN/END`
+  rather than `NOLINTNEXTLINE` when the diagnostic location is on a later line of a multi-line
+  declaration (e.g. `Args&&... args` for `missing-std-forward`).
+- **`misc-override-with-different-visibility`**: make the override private to match the base, if
+  nobody calls it through the derived type.
+- **Re-apply CI constraints after auto-fix**: `modernize-use-ranges` re-introduced
+  `std::ranges::iota` and `ranges::sort` on zip iterators; both fail on AppleClang/zip proxies.
+- Auto-fix runs of `-fix` sometimes skip diagnostics (e.g. repeated `ms` in one file); rerun the
+  check with `CHECKS=` restricted to it before fixing by hand.
+- Redirect build/tidy output to a file and grep it; a single recursive-template error can
+  produce hundreds of KB of output.

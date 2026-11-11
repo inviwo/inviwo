@@ -54,8 +54,13 @@ public:
                     CameraProperty* cameraProp = nullptr);
 
     virtual CameraTrackball* clone() const override;
-
     virtual ~CameraTrackball();
+
+protected:
+    CameraTrackball(const CameraTrackball&) = default;
+    CameraTrackball(CameraTrackball&&) = delete;
+    CameraTrackball& operator=(const CameraTrackball&) = delete;
+    CameraTrackball& operator=(CameraTrackball&&) = delete;
 };
 
 }  // namespace inviwo

@@ -50,7 +50,7 @@ namespace inviwo {
  * @see TextEditorWidgetQt
  */
 
-class IVW_CORE_API StringProperty : public TemplateProperty<std::string> {
+class IVW_CORE_API StringProperty final : public TemplateProperty<std::string> {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.StringProperty"};
@@ -64,7 +64,6 @@ public:
                    std::string_view value = "",
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
-
     /**
      *  @brief Constructor for the StringProperty
      *  The PropertySemantics can be set to Editor.
@@ -75,11 +74,14 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    StringProperty(const StringProperty& rhs);
-    StringProperty& operator=(const std::string& value);
+    StringProperty(const StringProperty& rhs) = default;
+    StringProperty(StringProperty&& rhs) = default;
+    StringProperty& operator=(const StringProperty&) = default;
+    StringProperty& operator=(StringProperty&&) = default;
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;
 
+    using TemplateProperty::operator=;
     StringProperty& set(std::string_view value);
     StringProperty& set(const char* value);
     using TemplateProperty<std::string>::set;

@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
+#include <cstdint>
 #include <iosfwd>
 #include <string_view>
 
@@ -39,7 +40,7 @@ namespace inviwo {
 /**
  * Controls the behavior of
  */
-enum class ConstraintBehavior {
+enum class ConstraintBehavior : std::uint8_t {
     /**
      * The default behavior. Clamps values and the boundary is editable by the user in the GUI and
      * by the programmer from code. The bounds are linked to other properties. Typical use case

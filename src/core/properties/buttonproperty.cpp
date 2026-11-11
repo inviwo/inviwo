@@ -63,8 +63,6 @@ ButtonProperty::ButtonProperty(std::string_view identifier, std::string_view dis
     : ButtonProperty(identifier, displayName, Document{}, std::move(callback), invalidationLevel,
                      std::move(semantics)) {}
 
-ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
-
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback)
     : Property(rhs) {
     setValid();
@@ -77,7 +75,7 @@ ButtonProperty::~ButtonProperty() = default;
 
 void ButtonProperty::set(const Property* src) {
     bool* ptr = nullptr;
-    if (auto boolprop = dynamic_cast<const ButtonProperty*>(src);
+    if (const auto* boolprop = dynamic_cast<const ButtonProperty*>(src);
         boolprop && (boolprop->buttonPressed_)) {
         ptr = &buttonPressed_;
     }

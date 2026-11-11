@@ -46,13 +46,13 @@ namespace inviwo {
  *
  * @see ContextMenuAction
  */
-class IVW_CORE_API ContextMenuEvent : public Event {
+class IVW_CORE_API ContextMenuEvent final : public Event {
 public:
     ContextMenuEvent(std::string_view id, KeyModifiers modifiers, std::any data);
     ContextMenuEvent(const ContextMenuEvent& rhs) = default;
-    ContextMenuEvent(ContextMenuEvent&&) = default;
+    ContextMenuEvent(ContextMenuEvent&&) noexcept = default;
     ContextMenuEvent& operator=(const ContextMenuEvent& that) = default;
-    ContextMenuEvent& operator=(ContextMenuEvent&&) = default;
+    ContextMenuEvent& operator=(ContextMenuEvent&&) noexcept = default;
 
     virtual ~ContextMenuEvent();
 

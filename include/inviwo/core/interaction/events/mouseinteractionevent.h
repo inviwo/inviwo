@@ -47,8 +47,6 @@ public:
                                    dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(1),
                                    double depth = 1.0);
 
-    MouseInteractionEvent(const MouseInteractionEvent& rhs) = default;
-    MouseInteractionEvent& operator=(const MouseInteractionEvent& that) = default;
     virtual MouseInteractionEvent* clone() const override = 0;
     virtual ~MouseInteractionEvent() = default;
 
@@ -117,6 +115,12 @@ public:
      */
     void setMouseCursorCallback(MouseCursorCallback callback);
     const MouseCursorCallback& getMouseCursorCallback() const;
+
+protected:
+    MouseInteractionEvent(const MouseInteractionEvent& rhs) = default;
+    MouseInteractionEvent& operator=(const MouseInteractionEvent& that) = default;
+    MouseInteractionEvent(MouseInteractionEvent&& rhs) noexcept = default;
+    MouseInteractionEvent& operator=(MouseInteractionEvent&& that) noexcept = default;
 
 private:
     MouseButtons buttonState_;

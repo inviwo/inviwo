@@ -410,8 +410,8 @@ void exposeProperties(pybind11::module& m) {
         .def("requestFile", &FileProperty::requestFile)
         .def("addNameFilter",
              static_cast<void (FileProperty::*)(std::string_view)>(&FileProperty::addNameFilter))
-        .def("addNameFilter",
-             static_cast<void (FileProperty::*)(FileExtension)>(&FileProperty::addNameFilter))
+        .def("addNameFilter", static_cast<void (FileProperty::*)(const FileExtension&)>(
+                                  &FileProperty::addNameFilter))
         .def("clearNameFilters", &FileProperty::clearNameFilters)
 
         .def("getNameFilters",

@@ -45,11 +45,13 @@ class IVW_CORE_API PickingControllerMouseState {
 public:
     explicit PickingControllerMouseState(PickingManager* pickingManager);
     PickingControllerMouseState(const PickingControllerMouseState&) = delete;
+    PickingControllerMouseState(PickingControllerMouseState&&) = delete;
     PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
+    PickingControllerMouseState& operator=(PickingControllerMouseState&&) = delete;
     ~PickingControllerMouseState();
 
-    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId);
-    void propagateEvent(WheelEvent* e, EventPropagator* propagator, size_t globalId);
+    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId) const;
+    void propagateEvent(WheelEvent* e, EventPropagator* propagator, size_t globalId) const;
 
     std::unique_ptr<PickingControllerMouseStateSM> msm;
 };

@@ -49,6 +49,10 @@ class LogStream;
 class IVW_CORE_API SystemSettings : public Settings {
 public:
     explicit SystemSettings(InviwoApplication* app);
+    SystemSettings(const SystemSettings&) = delete;
+    SystemSettings(SystemSettings&&) = delete;
+    SystemSettings& operator=(const SystemSettings&) = delete;
+    SystemSettings& operator=(SystemSettings&&) = delete;
     virtual ~SystemSettings();
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;

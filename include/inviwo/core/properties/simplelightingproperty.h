@@ -68,6 +68,10 @@ public:
                            PropertySemantics semantics = PropertySemantics::Default);
 
     SimpleLightingProperty(const SimpleLightingProperty& rhs);
+    SimpleLightingProperty(SimpleLightingProperty&& rhs)
+        : SimpleLightingProperty(static_cast<const SimpleLightingProperty&>(rhs)) {}
+    SimpleLightingProperty& operator=(const SimpleLightingProperty&) = delete;
+    SimpleLightingProperty& operator=(SimpleLightingProperty&&) = delete;
     virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
 

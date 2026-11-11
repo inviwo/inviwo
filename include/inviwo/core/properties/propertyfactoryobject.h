@@ -39,6 +39,10 @@ namespace inviwo {
 class IVW_CORE_API PropertyFactoryObject {
 public:
     PropertyFactoryObject(std::string_view className, std::string_view typeName);
+    PropertyFactoryObject(const PropertyFactoryObject&) = default;
+    PropertyFactoryObject(PropertyFactoryObject&&) = default;
+    PropertyFactoryObject& operator=(const PropertyFactoryObject&) = default;
+    PropertyFactoryObject& operator=(PropertyFactoryObject&&) = default;
     virtual ~PropertyFactoryObject();
 
     virtual std::unique_ptr<Property> create(std::string_view identifier,
@@ -59,6 +63,10 @@ public:
         : PropertyFactoryObject(PropertyTraits<T>::classIdentifier(),
                                 util::demangle(typeid(T).name())) {}
 
+    PropertyFactoryObjectTemplate(const PropertyFactoryObjectTemplate&) = default;
+    PropertyFactoryObjectTemplate(PropertyFactoryObjectTemplate&&) = default;
+    PropertyFactoryObjectTemplate& operator=(const PropertyFactoryObjectTemplate&) = default;
+    PropertyFactoryObjectTemplate& operator=(PropertyFactoryObjectTemplate&&) = default;
     virtual ~PropertyFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Property> create(std::string_view identifier,

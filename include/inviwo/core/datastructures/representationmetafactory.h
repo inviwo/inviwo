@@ -52,6 +52,10 @@ public:
     using BaseReprId = BaseRepresentationFactory::BaseReprId;
 
     RepresentationMetaFactory() = default;
+    RepresentationMetaFactory(const RepresentationMetaFactory&) = delete;
+    RepresentationMetaFactory(RepresentationMetaFactory&&) = delete;
+    RepresentationMetaFactory& operator=(const RepresentationMetaFactory&) = delete;
+    RepresentationMetaFactory& operator=(RepresentationMetaFactory&&) = delete;
     ~RepresentationMetaFactory() = default;
 
     // Does not take ownership

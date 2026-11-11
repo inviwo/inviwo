@@ -38,6 +38,8 @@
 
 namespace inviwo {
 
+namespace {
+
 struct MockCompositePropertyObserver : CompositePropertyObserver {
     MOCK_METHOD(void, onSetCollapsed, (bool value), (override));
 };
@@ -51,6 +53,8 @@ struct MockPropertyOwnerObserver : PropertyOwnerObserver {
     MOCK_METHOD(void, onDidRemoveProperty,
                 (PropertyOwner * owner, Property* property, size_t index), (override));
 };
+
+}  // namespace
 
 TEST(CompositeProperty, Collapse) {
 

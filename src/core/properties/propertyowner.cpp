@@ -84,6 +84,18 @@ PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
     PropertyOwnerObservable::operator=(std::move(rhs));
 }
 
+PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
+    if (this != &that) {
+        clear();
+        for (const auto& p : that.ownedProperties_) {
+            insertPropertyImpl(properties_.end(), p->clone(), true);
+        }
+        invalidationLevel_ = that.invalidationLevel_;
+        PropertyOwnerObservable::operator=(that);
+    }
+    return *this;
+}
+
 PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
     if (this != &that) {
         clear();
@@ -145,14 +157,14 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
                         property->getIdentifier(), property->getClassIdentifier(), getIdentifier(),
                         existing->getIdentifier(), existing->getClassIdentifier());
     }
-    if (auto parent = dynamic_cast<Property*>(this); parent && (parent == property)) {
+    if (const auto* parent = dynamic_cast<Property*>(this); parent && (parent == property)) {
         throw Exception(SourceContext{},
                         "Cannot add Property: [id: '{}', class id: '{}'] to itself.",
                         property->getIdentifier(), property->getClassIdentifier());
     }
 
     notifyObserversWillAddProperty(this, property, index);
-    insertPropertyImpl(properties_.begin() + index, property, owner);
+    insertPropertyImpl(properties_.begin() + static_cast<std::ptrdiff_t>(index), property, owner);
     notifyObserversDidAddProperty(property, index);
 }
 
@@ -175,13 +187,12 @@ void PropertyOwner::insertPropertyImpl(iterator it, Property* property, bool own
 }
 
 Property* PropertyOwner::removeProperty(std::string_view identifier) {
-    return removeProperty(
-        std::find_if(properties_.begin(), properties_.end(),
-                     [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
+    return removeProperty(std::ranges::find_if(
+        properties_, [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
 }
 
 Property* PropertyOwner::removeProperty(Property* property) {
-    return removeProperty(std::find(properties_.begin(), properties_.end(), property));
+    return removeProperty(std::ranges::find(properties_, property));
 }
 
 Property* PropertyOwner::removeProperty(Property& property) { return removeProperty(&property); }
@@ -192,7 +203,7 @@ Property* PropertyOwner::removeProperty(size_t index) {
                              "Index '{}' out of range while removing property, ({} elements)",
                              index, size());
     }
-    return removeProperty(begin() + index);
+    return removeProperty(begin() + static_cast<std::ptrdiff_t>(index));
 }
 
 Property* PropertyOwner::removeProperty(iterator it) { return removePropertyImpl(it); }
@@ -252,7 +263,7 @@ std::vector<Property*>& PropertyOwner::getPropertiesRecursive(
     destination.reserve(destination.size() + properties_.size());
     destination.insert(destination.end(), properties_.begin(), properties_.end());
 
-    for (auto comp : compositeProperties_) {
+    for (const auto* comp : compositeProperties_) {
         comp->getPropertiesRecursive(destination);
     }
     return destination;
@@ -284,9 +295,8 @@ Property* PropertyOwner::getPropertyByPath(std::string_view path) const {
     if (rest.empty()) {
         return getPropertyByIdentifier(first);
     } else {
-        const auto it =
-            std::find_if(compositeProperties_.begin(), compositeProperties_.end(),
-                         [f = first](auto* comp) { return comp->getIdentifier() == f; });
+        const auto it = std::ranges::find_if(
+            compositeProperties_, [f = first](auto* comp) { return comp->getIdentifier() == f; });
         if (it != compositeProperties_.end()) {
             return (*it)->getPropertyByPath(rest);
         } else {
@@ -304,7 +314,7 @@ Property* PropertyOwner::operator[](size_t i) { return properties_[i]; }
 const Property* PropertyOwner::operator[](size_t i) const { return properties_[i]; }
 
 auto PropertyOwner::find(Property* property) const -> const_iterator {
-    return std::find(begin(), end(), property);
+    return std::ranges::find(properties_, property);
 }
 
 bool PropertyOwner::move(Property* property, size_t newIndex) {
@@ -315,7 +325,7 @@ bool PropertyOwner::move(Property* property, size_t newIndex) {
         notifyObserversDidRemoveProperty(this, property, index);
 
         notifyObserversWillAddProperty(this, property, newIndex);
-        properties_.insert(properties_.begin() + newIndex, property);
+        properties_.insert(properties_.begin() + static_cast<std::ptrdiff_t>(newIndex), property);
         notifyObserversDidAddProperty(property, newIndex);
         return true;
     } else {
@@ -370,8 +380,7 @@ void PropertyOwner::deserialize(Deserializer& d) {
         // This is for finding renamed composites, and moving old properties to new composites.
         NodeVersionConverter tvc([this](TxElement* node) {
             std::vector<const CompositeProperty*> props;
-            std::copy(compositeProperties_.begin(), compositeProperties_.end(),
-                      std::back_inserter(props));
+            std::ranges::copy(compositeProperties_, std::back_inserter(props));
             return xml::findMatchingSubPropertiesForComposites(node, props);
         });
         d.convertVersion(&tvc);
@@ -420,11 +429,11 @@ void PropertyOwner::resetAllProperties() {
 }
 
 void PropertyOwner::invokeEvent(Event* event) {
-    for (auto elem : eventProperties_) {
+    for (auto* elem : eventProperties_) {
         elem->invokeEvent(event);
         if (event->hasBeenUsed()) return;
     }
-    for (auto elem : compositeProperties_) {
+    for (auto* elem : compositeProperties_) {
         elem->invokeEvent(event);
         if (event->hasBeenUsed()) return;
     }
