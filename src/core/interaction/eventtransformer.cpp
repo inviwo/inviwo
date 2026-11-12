@@ -318,6 +318,9 @@ EventTransformer::EventTransformer(const std::vector<View>& someViews)
     , touch_{std::make_unique<TouchSM>(views)}
     , touchPicking_{std::make_unique<TouchSM>(views)} {}
 
+EventTransformer::EventTransformer(EventTransformer&&) = default;
+EventTransformer& EventTransformer::operator=(EventTransformer&&) = default;
+
 EventTransformer::~EventTransformer() = default;
 
 std::optional<size_t> EventTransformer::getViewIdx(const dvec3& globalNdc) const {
