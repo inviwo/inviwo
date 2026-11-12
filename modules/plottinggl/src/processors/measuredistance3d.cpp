@@ -425,7 +425,6 @@ void MeasureDistance3D::invokeEvent(Event* event) {
                 case MouseState::Press: break;
                 case MouseState::Move:  sm->sm.process_event(MoveLocator{.pos = mousePos}); break;
                 case MouseState::Release:
-                    mouseEvent->ndc();
                     sm->sm.process_event(PlaceLocator{.pos = mousePos});
                     break;
                 case MouseState::DoubleClick: break;

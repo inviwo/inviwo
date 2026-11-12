@@ -33,8 +33,6 @@
 
 #include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
@@ -48,10 +46,6 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/shader/shader.h>
-
-#include <memory>
-#include <unordered_map>
-#include <unordered_set>
 
 namespace inviwo {
 class Deserializer;
@@ -92,10 +86,10 @@ protected:
     void updateIndicatorMesh();
 
     // updates the selected position, pos is given in normalized viewport coordinates, i.e. [0,1]
-    void setVolPosFromScreenPos(vec2 pos);
-    vec2 getScreenPosFromVolPos();
+    void setVolPosFromScreenPos(dvec2 pos);
+    dvec2 getScreenPosFromVolPos();
 
-    vec3 convertScreenPosToVolume(const vec2& screenPos, bool clamp = true) const;
+    dvec3 convertScreenPosToVolume(const dvec2& screenPos, bool clamp = true) const;
 
     void invalidateMesh();
 
@@ -127,13 +121,13 @@ private:
     IntProperty sliceY_;
     IntProperty sliceZ_;
 
-    FloatVec3Property worldPosition_;
+    DoubleVec3Property worldPosition_;
 
-    FloatVec3Property planeNormal_;
-    FloatVec3Property planePosition_;
-    FloatProperty imageScale_;
+    DoubleVec3Property planeNormal_;
+    DoubleVec3Property planePosition_;
+    DoubleProperty imageScale_;
     OptionPropertyInt rotationAroundAxis_;  // Clockwise rotation around slice axis
-    FloatProperty imageRotation_;
+    DoubleProperty imageRotation_;
     BoolProperty flipHorizontal_;
     BoolProperty flipVertical_;
     OptionPropertyInt volumeWrapping_;
@@ -168,9 +162,9 @@ private:
     bool meshDirty_;
     bool updating_;
 
-    mat4 sliceRotation_;
-    mat4 inverseSliceRotation_;  // Used to calculate the slice "z position" from the plain point.
+    dmat4 sliceRotation_;
+    dmat4 inverseSliceRotation_;  // Used to calculate the slice "z position" from the plain point.
     size3_t volumeDimensions_;
-    mat4 texToWorld_;
+    dmat4 texToWorld_;
 };
 }  // namespace inviwo

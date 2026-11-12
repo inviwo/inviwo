@@ -30,7 +30,6 @@
 
 #include <modules/opengl/shader/shader.h>
 
-#include <inviwo/core/datastructures/camera/camera.h>
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/glmvec.h>

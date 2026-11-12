@@ -43,10 +43,9 @@ void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
 
     {
         // Construct the edges of a unit box and intersect with the plane.
-        const std::array<vec3, 8> corners{
-            vec3{0.0f, 0.0f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec3{1.0f, 1.0f, 0.0f},
-            vec3{0.0f, 1.0f, 0.0f}, vec3{0.0f, 0.0f, 1.0f}, vec3{1.0f, 0.0f, 1.0f},
-            vec3{1.0f, 1.0f, 1.0f}, vec3{0.0f, 1.0f, 1.0f},
+        const std::array<dvec3, 8> corners{
+            dvec3{0.0, 0.0, 0.0}, dvec3{1.0, 0.0, 0.0}, dvec3{1.0, 1.0, 0.0}, dvec3{0.0, 1.0, 0.0},
+            dvec3{0.0, 0.0, 1.0}, dvec3{1.0, 0.0, 1.0}, dvec3{1.0, 1.0, 1.0}, dvec3{0.0, 1.0, 1.0},
         };
         const std::array<size2_t, 12> edges{size2_t{0, 1}, size2_t{1, 2}, size2_t{2, 3},
                                             size2_t{3, 0}, size2_t{4, 5}, size2_t{5, 6},
@@ -56,22 +55,22 @@ void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
         for (auto edge : edges) {
             const auto point = plane.getIntersection(corners[edge[0]], corners[edge[1]]);
             if (point) {
-                pos.push_back(*point);
+                pos.emplace_back(vec3{*point});
             }
         }
     }
     if (pos.size() > startIndex + 2) {
         const vec3 midpoint =
             std::accumulate(pos.begin() + startIndex, pos.end(), vec3{0}) / pos.size();
-        const vec3 mainVector = glm::normalize(pos.back() - midpoint);
-        const vec3 mainNormal = glm::normalize(glm::cross(mainVector, plane.getNormal()));
+        const dvec3 mainVector{glm::normalize(pos.back() - midpoint)};
+        const dvec3 mainNormal = glm::normalize(glm::cross(mainVector, plane.getNormal()));
 
-        std::vector<float> dotProdVals;
+        std::vector<double> dotProdVals;
         dotProdVals.reserve(pos.size() - startIndex);
 
         for (auto it = pos.begin() + startIndex; it != pos.end(); ++it) {
-            const auto point = *it;
-            const vec3 candVector = glm::normalize(point - midpoint);
+            const auto point{*it};
+            const dvec3 candVector{glm::normalize(point - midpoint)};
             const auto dotProdModifier = glm::dot(candVector, mainNormal);
             auto dotProd = glm::dot(candVector, mainVector);
             if (dotProdModifier < 0 && candVector != mainVector) {

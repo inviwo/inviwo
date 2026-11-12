@@ -55,6 +55,7 @@
 #include <inviwo/core/properties/invalidationlevel.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glm.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shader.h>
@@ -102,11 +103,11 @@ EmbeddedVolumeSlice::EmbeddedVolumeSlice()
     , outport_{"outport", "Rendered slice"_help}
     , shader_{"embeddedvolumeslice.vert", "embeddedvolumeslice.frag", Shader::Build::No}
     , planeNormal_{"planeNormal", "Plane Normal",
-                   util::ordinalSymmetricVector(vec3(1.f, 0.f, 0.f), vec3(1.f, 1.f, 1.f))
+                   util::ordinalSymmetricVector(dvec3{1.0, 0.0, 0.0}, dvec3{1.0, 1.0, 1.0})
                        .set("Defines the normal of the plane in texture/data space [0,1]"_help)}
     , planePosition_{"planePosition", "Plane Position",
-                     util::ordinalSymmetricVector(vec3(0.5f), vec3(1.0f))
-                         .setMin(vec3(0.f))
+                     util::ordinalSymmetricVector(dvec3{0.5}, dvec3{1.0})
+                         .setMin(dvec3{0.0})
                          .set("Defines a point in the plane in texture/data space [0,1]"_help)}
     , transferFunction_{"transferFunction", "Transfer Function",
                         "Defines the transfer function for mapping "
@@ -130,7 +131,7 @@ EmbeddedVolumeSlice::EmbeddedVolumeSlice()
 }
 
 void EmbeddedVolumeSlice::initializeResources() {
-    auto vso = shader_.getVertexShaderObject();
+    auto* vso = shader_.getVertexShaderObject();
     vso->clearInDeclarations();
     vso->addInDeclaration("in_Vertex", buffertraits::PositionsBuffer::bi().location, "vec3");
     shader_.build();
@@ -165,22 +166,22 @@ void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {
         const Plane plane{*planePosition_, glm::normalize(*planeNormal_)};
         const auto& ct = data->getCoordinateTransformer(camera_);
 
-        const vec3 ndc1{p->getNDC().x, p->getNDC().y, -1.0};
+        const dvec3 ndc1{p->getNDC().x, p->getNDC().y, -1.0};
         const auto worldPos1 = camera_.getWorldPosFromNormalizedDeviceCoords(ndc1);
-        const auto dataPos1 = vec3{ct.getWorldToDataMatrix() * dvec4{dvec3(worldPos1), 1.0}};
+        const auto dataPos1 = util::transformPos(ct.getWorldToDataMatrix(), dvec3{worldPos1});
 
-        const vec3 ndc2{p->getNDC().x, p->getNDC().y, 1.0};
+        const dvec3 ndc2{p->getNDC().x, p->getNDC().y, 1.0};
         const auto worldPos2 = camera_.getWorldPosFromNormalizedDeviceCoords(ndc2);
-        const auto dataPos2 = vec3{ct.getWorldToDataMatrix() * dvec4{dvec3(worldPos2), 1.0}};
+        const auto dataPos2 = util::transformPos(ct.getWorldToDataMatrix(), dvec3{worldPos2});
 
         if (const auto dataPoint = plane.getIntersection(dataPos1, dataPos2); dataPoint) {
             const auto index = static_cast<size3_t>(
-                vec3{ct.getDataToIndexMatrix() * dvec4{dvec3(*dataPoint), 1.0}});
+                util::transformPos(ct.getDataToIndexMatrix(), dvec3{*dataPoint}));
 
             const auto cind = glm::clamp(index, size3_t{0}, data->getDimensions() - size3_t{1});
             const auto value = data->getRepresentation<VolumeRAM>()->getAsDVec4(cind);
 
-            const auto worldPos = vec3{ct.getDataToWorldMatrix() * dvec4{dvec3(*dataPoint), 1.0}};
+            const auto worldPos = util::transformPos(ct.getDataToWorldMatrix(), dvec3{*dataPoint});
 
             p->setToolTip(fmt::format("<div>{}\n<pre>Index: {}\nWorld: {}\nValue: {}</pre></div>",
                                       getDisplayName(), index, worldPos, value));
