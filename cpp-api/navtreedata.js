@@ -85,14 +85,14 @@ var NAVTREEINDEX =
 "classinviwo_1_1animation_1_1AnimationEditorQt.html#aa819cfd5d0602043cdb933a34450ef07",
 "classinviwo_1_1animation_1_1Track.html#a79e06505029bcd98ae304d3789490aaa",
 "classinviwo_1_1plot_1_1AxisStyleProperty.html#a42932f355386f4a448560f6f7c2d2b60",
-"functions.html",
-"namespaceinviwo_1_1filesystem.html#a7b963481462bd9f5417c01da5ae733d6",
-"namespaceinviwo_1_1util.html#aa2bb2a87355c0aa175f5dc794164c129",
-"structinviwo_1_1DataTraits_3_01DataFrame_01_4.html",
-"structinviwo_1_1OrdinalRefPropertyState.html",
-"structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf",
-"structinviwo_1_1plot_1_1LinearRange.html",
-"structinviwo_1_1utilgl_1_1CullFaceState.html"
+"examples.html",
+"namespaceinviwo_1_1filesystem.html#a5d04e2908fe7c413b873ac8463cea217",
+"namespaceinviwo_1_1util.html#aa15da526769c7e6cfac443da69fbeb01",
+"structinviwo_1_1DataTraits.html",
+"structinviwo_1_1OrdinalPropertyState.html",
+"structinviwo_1_1TetraMeshBuffers.html",
+"structinviwo_1_1plot_1_1GridParams.html",
+"structinviwo_1_1utilgl_1_1ColorMaskiState.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

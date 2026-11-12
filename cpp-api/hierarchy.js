@@ -1218,6 +1218,7 @@ var hierarchy =
             [ "inviwo::transform::PortTransformProperty", "classinviwo_1_1transform_1_1PortTransformProperty.html", null ],
             [ "inviwo::transform::RotateProperty", "classinviwo_1_1transform_1_1RotateProperty.html", null ],
             [ "inviwo::transform::ScaleProperty", "classinviwo_1_1transform_1_1ScaleProperty.html", null ],
+            [ "inviwo::transform::SpatialEntityTransformProperty", "classinviwo_1_1transform_1_1SpatialEntityTransformProperty.html", null ],
             [ "inviwo::transform::TranslateProperty", "classinviwo_1_1transform_1_1TranslateProperty.html", null ]
           ] ]
         ] ],
@@ -1825,6 +1826,7 @@ var hierarchy =
         [ "inviwo::MinMaxProperty< float >", "classinviwo_1_1MinMaxProperty.html", null ],
         [ "inviwo::MinMaxProperty< size_t >", "classinviwo_1_1MinMaxProperty.html", null ],
         [ "inviwo::OrdinalOptProperty< size_t >", "classinviwo_1_1OrdinalOptProperty.html", null ],
+        [ "inviwo::OrdinalOptProperty< dvec2 >", "classinviwo_1_1OrdinalOptProperty.html", null ],
         [ "inviwo::OrdinalProperty< float >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalProperty< vec4 >", "classinviwo_1_1OrdinalProperty.html", null ],
         [ "inviwo::OrdinalProperty< vec3 >", "classinviwo_1_1OrdinalProperty.html", null ],
