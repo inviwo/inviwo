@@ -31,6 +31,7 @@
 
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>

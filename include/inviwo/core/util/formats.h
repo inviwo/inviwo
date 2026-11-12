@@ -30,9 +30,7 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
-#include <inviwo/core/util/glmconvert.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/staticstring.h>
 #include <inviwo/core/util/foreacharg.h>
@@ -40,7 +38,13 @@
 
 #include <inviwo/core/algorithm/buildarray.h>
 
-#include <glm/gtc/type_precision.hpp>
+#include <glm/fwd.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/ext/matrix_float2x2.hpp>
+#include <glm/ext/matrix_float3x3.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
 
 #include <limits>
 #include <string>

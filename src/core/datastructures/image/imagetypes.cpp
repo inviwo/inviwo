@@ -31,8 +31,6 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
 
-#include <ostream>
-
 namespace inviwo {
 
 std::string_view enumToStr(ImageType type) {

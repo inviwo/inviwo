@@ -31,7 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/formats.h>
-#include <glm/vec4.hpp>
+#include <inviwo/core/util/glmvec.h>
 #include <glm/gtx/component_wise.hpp>
 #include <string_view>
 #include <cstdint>
