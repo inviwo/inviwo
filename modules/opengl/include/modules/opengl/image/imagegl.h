@@ -38,9 +38,8 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglutils.h>
 
-#include <cstddef>
 #include <optional>
-#include <tuple>
+#include <span>
 #include <typeindex>
 #include <vector>
 
@@ -148,6 +147,8 @@ public:
     size_t getNumberOfColorLayers() const;
 
     GLenum getPickingAttachmentID() const;
+
+    std::span<const GLenum> getDrawBuffers(ImageType type) const;
 
     /**
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
