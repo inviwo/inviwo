@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -81,29 +82,24 @@ struct QuantilePoint {
 // Extract non-negative alpha from a TF primitive.
 double alphaOf(const TFPrimitiveData& p) { return std::max(0.0, static_cast<double>(p.color.a)); }
 
-// Make clamp-to-edge extrapolation explicit in the control-point data. Sampling a TF (see
-// evaluate) holds the boundary opacity/color constant outside [front.pos, back.pos], but
-// computeCdf only integrates mass *between* control points. That inconsistency makes the OT
-// machinery transport a compactly supported distribution while the result renders with
-// clamp-to-edge flats, so the two disagree on [0, front.pos] and [back.pos, 1]. Materializing
-// the implied flat regions as boundary vertices at the domain edges (0 and 1) reconciles the
-// views: computeCdf, the domain bounds (domainMin/domainMax), structural-vertex insertion and
-// evaluate then all agree on a common [0, 1] support. Inputs already reaching an edge (or with
-// control points outside [0, 1]) are left untouched, so full-range TFs are unaffected.
+// Materialize nonzero clamp-to-edge shelves so the transport CDF includes their mass. A
+// transparent edge has no shelf mass, so extending it would only introduce an artificial
+// zero-opacity control point and boundary constraint.
 std::vector<TFPrimitiveData> extendToClampSupport(std::vector<TFPrimitiveData> tf) {
     if (tf.empty()) return tf;
-    if (tf.front().pos > 0) {
+    if (tf.front().pos > 0.0 && alphaOf(tf.front()) > 0.0) {
         tf.insert(tf.begin(), TFPrimitiveData{0.0, tf.front().color});
     }
-    if (tf.back().pos < 1.0) {
+    if (tf.back().pos < 1.0 && alphaOf(tf.back()) > 0.0) {
         tf.push_back(TFPrimitiveData{1.0, tf.back().color});
     }
     return tf;
 }
 
-// Sort and deduplicate TF primitives by position, then make clamp-to-edge support explicit
-// (see extendToClampSupport). A piecewise-linear function cannot represent vertical
-// discontinuities, so duplicate positions are collapsed (last wins).
+// Sort and deduplicate TF primitives by position. A piecewise-linear function cannot represent
+// vertical discontinuities, so duplicate positions are collapsed (last wins). Clamp-to-edge is
+// a sampling rule outside the authored control-point range; only nonzero clamp shelves carry
+// mass for transport (see extendToClampSupport).
 std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
     if (tf.empty()) return {};
 
@@ -136,7 +132,6 @@ std::vector<TFPrimitiveData> sanitize(std::span<const TFPrimitiveData> tf) {
     return extendToClampSupport(std::move(result));
 }
 
-// The position span of the TF. Returns a NaN pair if input is empty.
 std::pair<double, double> minMaxPos(std::span<const TFPrimitiveData> tf) {
     if (tf.empty()) {
         const double nan = std::numeric_limits<double>::quiet_NaN();
@@ -171,17 +166,8 @@ std::vector<TFPrimitiveData> clampToRelativeDomain(std::vector<TFPrimitiveData> 
     return deduped;
 }
 
-// Remove the synthetic clamp shelf that extendToClampSupport inserts outside the original
-// support. Quantile sampling subdivides that shelf, so deleting only the vertex at 0 or 1
-// leaves interior samples (for example at 0.1/16) outside the caller's domain. The removal
-// is gated and safe-by-construction:
-//   * supportMin > eps confirms the original input did not already reach the edge;
-//   * a vertex is dropped only while it lies strictly outside [supportMin, supportMax] and
-//     is collinear with its neighbour in both alpha and color. That is true for the constant
-//     flat extendToClampSupport creates, and false for a real ramp, so genuine structure is
-//     never cut.
-// Because the dropped span is constant, clamp-to-edge sampling of the trimmed TF reproduces it
-// exactly. At least two vertices are kept.
+// Remove constant clamp shelves added for transport. Sampling the trimmed result clamps to the
+// same edge value, so the synthetic vertices are not needed in the returned transfer function.
 std::vector<TFPrimitiveData> trimSyntheticEdges(std::vector<TFPrimitiveData> tf, double supportMin,
                                                 double supportMax) {
     const auto collinear = [](const TFPrimitiveData& a, const TFPrimitiveData& b) {
@@ -684,14 +670,6 @@ void addStructuralVertices(std::span<const TFPrimitiveData> aspan,
 // Output TF construction helper
 // ---------------------------------------------------------------------------
 
-// Append a zero-alpha boundary point with interpolated color.
-void appendZeroAlphaBoundary(std::vector<TFPrimitiveData>& result,
-                             std::span<const TFPrimitiveData> a, std::span<const TFPrimitiveData> b,
-                             double x, double t) {
-    const vec3 color = glm::mix(vec3{evaluate(a, x)}, vec3{evaluate(b, x)}, static_cast<float>(t));
-    result.push_back({x, vec4{color, 0.0f}});
-}
-
 // Sample X_t(q) at every level in L, add structural knot vertices, sort and deduplicate in x.
 std::vector<QuantilePoint> buildInterpolatedVertices(const TransportContext& ctx,
                                                      const std::vector<double>& levels) {
@@ -765,8 +743,8 @@ void computeSecantDensities(const TransportContext& ctx,
 }
 
 // Whether the interpolated TF must pin alpha to zero at its support start / end.
-// This happens when either input TF has zero alpha at the corresponding support
-// boundary, so a peak does not bleed across a transport gap.
+// This happens when both input TFs have zero alpha at the corresponding support
+// boundary, so a peak does not bleed across a shared transport gap.
 struct BoundaryZeroFlags {
     bool atStart = false;
     bool atEnd = false;
@@ -777,13 +755,13 @@ BoundaryZeroFlags computeBoundaryZeroFlags(const TransportContext& ctx) {
     const double alphaAtStartB = static_cast<double>(evaluate(ctx.bspan, supportMin(ctx.cdfB)).a);
     const double alphaAtEndA = static_cast<double>(evaluate(ctx.aspan, supportMax(ctx.cdfA)).a);
     const double alphaAtEndB = static_cast<double>(evaluate(ctx.bspan, supportMax(ctx.cdfB)).a);
-    return BoundaryZeroFlags{(alphaAtStartA <= eps) || (alphaAtStartB <= eps),
-                             (alphaAtEndA <= eps) || (alphaAtEndB <= eps)};
+    return BoundaryZeroFlags{(alphaAtStartA <= eps) && (alphaAtStartB <= eps),
+                             (alphaAtEndA <= eps) && (alphaAtEndB <= eps)};
 }
 
-// Uniformly rescale alpha on [compStart, compEnd] so the output piecewise-linear
-// trapezoidal mass matches the target mass share m_t * sum(Delta q) that X_t
-// assigns to the component. Used by both reconstructions.
+// Scale alpha on [compStart, compEnd], saturating at one, so the output piecewise-linear
+// trapezoidal mass matches the target mass share m_t * sum(Delta q) that X_t assigns to the
+// component. Used by both reconstructions.
 void rescaleComponentMass(const TransportContext& ctx,
                           const std::vector<QuantilePoint>& vertices, AlphaReconstruction& result,
                           std::size_t compStart, std::size_t compEnd) {
@@ -796,11 +774,43 @@ void rescaleComponentMass(const TransportContext& ctx,
         compTargetMass += ctx.targetMass * dq;
         compActualMass += 0.5 * (result.alpha[j] + result.alpha[j + 1]) * dx;
     }
-    if (compActualMass > eps) {
-        const double scale = compTargetMass / compActualMass;
-        for (std::size_t j = compStart; j <= compEnd; ++j) {
-            result.alpha[j] *= scale;
+    if (compActualMass <= eps) return;
+
+    const auto integratedMass = [&](double scale) {
+        double mass = 0.0;
+        for (std::size_t j = compStart; j < compEnd; ++j) {
+            const double dx = vertices[j + 1].pos - vertices[j].pos;
+            if (dx <= eps) continue;
+            const double alpha0 = std::clamp(result.alpha[j] * scale, 0.0, 1.0);
+            const double alpha1 = std::clamp(result.alpha[j + 1] * scale, 0.0, 1.0);
+            mass += 0.5 * (alpha0 + alpha1) * dx;
         }
+        return mass;
+    };
+
+    double maxScale = 0.0;
+    for (std::size_t j = compStart; j <= compEnd; ++j) {
+        if (result.alpha[j] > eps) {
+            maxScale = std::max(maxScale, 1.0 / result.alpha[j]);
+        }
+    }
+    if (maxScale <= 0.0) return;
+
+    double low = 0.0;
+    double high = maxScale;
+    if (integratedMass(high) >= compTargetMass) {
+        for (int iteration = 0; iteration < 64; ++iteration) {
+            const double mid = std::midpoint(low, high);
+            if (integratedMass(mid) < compTargetMass) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+        }
+    }
+
+    for (std::size_t j = compStart; j <= compEnd; ++j) {
+        result.alpha[j] = std::clamp(result.alpha[j] * high, 0.0, 1.0);
     }
 }
 
@@ -892,13 +902,12 @@ AlphaReconstruction reconstructAlpha(const TransportContext& ctx,
     }
 
     for (auto& aVal : result.alpha) {
-        aVal = std::max(0.0, aVal);
+        aVal = std::clamp(aVal, 0.0, 1.0);
     }
     return result;
 }
 
-std::vector<TFPrimitiveData> buildOutputTransferFunction(const TransportContext& ctx,
-                                                         const std::vector<QuantilePoint>& vertices,
+std::vector<TFPrimitiveData> buildOutputTransferFunction(const std::vector<QuantilePoint>& vertices,
                                                          const AlphaReconstruction& reconstruction,
                                                          double domainMin, double domainMax) {
     const std::size_t n = vertices.size();
@@ -906,7 +915,9 @@ std::vector<TFPrimitiveData> buildOutputTransferFunction(const TransportContext&
     result.reserve(n + 2);
 
     if (vertices.front().pos - domainMin > eps) {
-        appendZeroAlphaBoundary(result, ctx.aspan, ctx.bspan, domainMin, ctx.t);
+        result.push_back({domainMin,
+                          vec4{vertices.front().color,
+                               static_cast<float>(reconstruction.alpha.front())}});
     }
 
     for (std::size_t idx = 0; idx < n; ++idx) {
@@ -915,7 +926,9 @@ std::vector<TFPrimitiveData> buildOutputTransferFunction(const TransportContext&
     }
 
     if (domainMax - vertices.back().pos > eps) {
-        appendZeroAlphaBoundary(result, ctx.aspan, ctx.bspan, domainMax, ctx.t);
+        result.push_back({domainMax,
+                          vec4{vertices.back().color,
+                               static_cast<float>(reconstruction.alpha.back())}});
     }
     return result;
 }
@@ -934,7 +947,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationFromLevels(
     }
 
     const auto reconstruction = reconstructAlpha(ctx, vertices);
-    auto result = buildOutputTransferFunction(ctx, vertices, reconstruction, domainMin, domainMax);
+    auto result = buildOutputTransferFunction(vertices, reconstruction, domainMin, domainMax);
     if (result.empty()) {
         return linearBlend(ctx.aspan, ctx.bspan, ctx.t);
     }
@@ -1300,6 +1313,32 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
     const BoundaryZeroFlags boundary = computeBoundaryZeroFlags(ctx);
     const bool zeroAtStart = boundary.atStart;
     const bool zeroAtEnd = boundary.atEnd;
+    const double alphaAtStartA =
+        static_cast<double>(evaluate(ctx.aspan, supportMin(ctx.cdfA)).a);
+    const double alphaAtStartB =
+        static_cast<double>(evaluate(ctx.bspan, supportMin(ctx.cdfB)).a);
+    const double alphaAtEndA =
+        static_cast<double>(evaluate(ctx.aspan, supportMax(ctx.cdfA)).a);
+    const double alphaAtEndB =
+        static_cast<double>(evaluate(ctx.bspan, supportMax(ctx.cdfB)).a);
+    const bool mixedOpacityAtStart = (alphaAtStartA <= eps) != (alphaAtStartB <= eps);
+    const bool mixedOpacityAtEnd = (alphaAtEndA <= eps) != (alphaAtEndB <= eps);
+    const auto firstPositive =
+        std::find_if(result.density.begin(), result.density.end(),
+                     [&](double density) { return density > result.gapThreshold; });
+    const auto lastPositive =
+        std::find_if(result.density.rbegin(), result.density.rend(),
+                     [&](double density) { return density > result.gapThreshold; });
+    const std::size_t firstPositiveInterval =
+        firstPositive == result.density.end()
+            ? result.density.size()
+            : static_cast<std::size_t>(std::distance(result.density.begin(), firstPositive));
+    const std::size_t lastPositiveInterval =
+        lastPositive == result.density.rend()
+            ? result.density.size()
+            : result.density.size() -
+                  static_cast<std::size_t>(std::distance(result.density.rbegin(), lastPositive)) -
+                  1;
 
     // Identify connected components separated by near-zero density intervals; force
     // zero alpha at component boundaries that are gap edges (matching the secant-path
@@ -1352,10 +1391,18 @@ AlphaReconstruction reconstructAlphaClosedForm(const TransportContext& ctx,
         // output piecewise-linear TF differs from the exact integral of alpha_t because
         // alpha_t is nonlinear within each sub-interval. Scaling all alphas uniformly
         // forces the trapezoidal mass to match the target m_t * sum(dq).
-        rescaleComponentMass(ctx, vertices, result, compStart, compEnd);
+        const bool touchesMixedBoundary =
+            (mixedOpacityAtStart && compStart == firstPositiveInterval) ||
+            (mixedOpacityAtEnd && compEnd == lastPositiveInterval + 1);
+        // A zero/nonzero edge has a singular exact density as q approaches the
+        // transparent endpoint. Rescaling that edge component to compensate for its
+        // zero endpoint inflates the remaining samples and creates a false opacity spike.
+        if (!touchesMixedBoundary) {
+            rescaleComponentMass(ctx, vertices, result, compStart, compEnd);
+        }
     }
 
-    for (auto& aVal : result.alpha) aVal = std::max(0.0, aVal);
+    for (auto& aVal : result.alpha) aVal = std::clamp(aVal, 0.0, 1.0);
     return result;
 }
 
@@ -1933,7 +1980,7 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationClosedFormFromLevels(
 
     const auto intervals = buildSubIntervalsFromLevels(ctx, levels);
     const auto reconstruction = reconstructAlphaClosedForm(ctx, vertices, intervals);
-    auto result = buildOutputTransferFunction(ctx, vertices, reconstruction, domainMin, domainMax);
+    auto result = buildOutputTransferFunction(vertices, reconstruction, domainMin, domainMax);
     if (result.empty()) return linearBlend(ctx.aspan, ctx.bspan, ctx.t);
     return result;
 }
@@ -1944,7 +1991,7 @@ struct FeatureRange {
 };
 
 // Zero controls are shared boundaries; consecutive zeros delimit gaps, not features.
-// Inputs already include clamp-to-edge support.
+// The first and last authored control points delimit the outer features.
 std::vector<FeatureRange> extractFeatures(std::span<const TFPrimitiveData> tf) {
     std::vector<FeatureRange> features;
     std::size_t first = 0;
@@ -2097,14 +2144,9 @@ std::vector<FeatureMatch> matchFeatures(std::span<const TFPrimitiveData> a,
     return matches;
 }
 
-// Shared driver for every optimal-transport interpolation entry point. The public variants
-// differ only in how they pick quantile levels and reconstruct vertex opacities; everything
-// around that is identical: clamp t, capture the interior support, sanitise the inputs (which
-// makes clamp-to-edge support explicit), handle the degenerate early-outs, guard against
-// vanishing mass, build the transport context and interpolated domain bounds, and finally trim
-// the synthetic boundary vertices back off the result so the returned TF spans only the
-// transported interior support again. The reconstruct callable receives the transport context
-// and the interpolated domain bounds and returns the output vertices for its sampling strategy.
+// Shared driver for every optimal-transport interpolation entry point. The reconstruct callable
+// selects quantile levels and opacity reconstruction; this driver handles input sanitization,
+// degenerate cases, feature matching, and output assembly.
 template <typename Reconstruct>
 std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const TFPrimitiveData> tfA,
                                                                std::span<const TFPrimitiveData> tfB,
@@ -2112,16 +2154,11 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
                                                                Reconstruct&& reconstruct) {
     t = std::clamp(t, 0.0, 1.0);
 
-    // Sitting on a keyframe must reproduce that keyframe exactly. Sanitizing and
-    // trimming can drop or rewrite control points, which the editor still draws
-    // like the original while the volume lookup table does not.
-    if (tfA.empty()) return std::vector<TFPrimitiveData>(tfB.begin(), tfB.end());
-    if (tfB.empty()) return std::vector<TFPrimitiveData>(tfA.begin(), tfA.end());
     if (t <= 0.0) return std::vector<TFPrimitiveData>(tfA.begin(), tfA.end());
     if (t >= 1.0) return std::vector<TFPrimitiveData>(tfB.begin(), tfB.end());
 
-    const auto [interiorMinA, interiorMaxA] = minMaxPos(tfA);
-    const auto [interiorMinB, interiorMaxB] = minMaxPos(tfB);
+    const auto [supportMinA, supportMaxA] = minMaxPos(tfA);
+    const auto [supportMinB, supportMaxB] = minMaxPos(tfB);
 
     auto a = sanitize(tfA);
     auto b = sanitize(tfB);
@@ -2129,12 +2166,15 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
     const std::span<const TFPrimitiveData> aspan{a.data(), a.size()};
     const std::span<const TFPrimitiveData> bspan{b.data(), b.size()};
 
+    if (a.empty()) return trimSyntheticEdges(std::move(b), supportMinB, supportMaxB);
+    if (b.empty()) return trimSyntheticEdges(std::move(a), supportMinA, supportMaxA);
+
     const Cdf cdfA = computeCdf(aspan);
     const Cdf cdfB = computeCdf(bspan);
 
     if (cdfA.totalMass <= eps || cdfB.totalMass <= eps ||
         (1.0 - t) * cdfA.totalMass + t * cdfB.totalMass <= eps) {
-        return clampToRelativeDomain(linearBlend(aspan, bspan, t));
+        return linearBlend(aspan, bspan, t);
     }
 
     std::vector<TFPrimitiveData> result;
@@ -2171,22 +2211,34 @@ std::vector<TFPrimitiveData> optimalTransportInterpolationImpl(std::span<const T
         transportGroup(aspan, bspan);
     }
 
-    // Keep transparent outer margins without extending internal features to [0, 1].
+    // Complete the transported domain boundaries.
     const double domainMin = (1.0 - t) * a.front().pos + t * b.front().pos;
     const double domainMax = (1.0 - t) * a.back().pos + t * b.back().pos;
+    const double trimMin = (1.0 - t) * supportMinA + t * supportMinB;
+    const double trimMax = (1.0 - t) * supportMaxA + t * supportMaxB;
     if (!result.empty() && result.front().pos - domainMin > eps) {
-        auto color = glm::mix(evaluate(aspan, domainMin), evaluate(bspan, domainMin),
-                              static_cast<float>(t));
-        color.a = 0.0f;
-        result.insert(result.begin(), TFPrimitiveData{domainMin, color});
+        result.insert(result.begin(), TFPrimitiveData{domainMin, result.front().color});
     }
     if (!result.empty() && domainMax - result.back().pos > eps) {
-        appendZeroAlphaBoundary(result, aspan, bspan, domainMax, t);
+        result.push_back({domainMax, result.back().color});
     }
 
-    const double trimMin = (1.0 - t) * interiorMinA + t * interiorMinB;
-    const double trimMax = (1.0 - t) * interiorMaxA + t * interiorMaxB;
-    return clampToRelativeDomain(trimSyntheticEdges(std::move(result), trimMin, trimMax));
+    const bool hasLeftClampShelf =
+        a.front().pos < supportMinA - eps || b.front().pos < supportMinB - eps;
+    const bool hasRightClampShelf =
+        a.back().pos > supportMaxA + eps || b.back().pos > supportMaxB + eps;
+    if (result.size() >= 2 && (hasLeftClampShelf || hasRightClampShelf)) {
+        const double alphaAtStart =
+            (1.0 - t) * static_cast<double>(evaluate(aspan, 0.0).a) +
+            t * static_cast<double>(evaluate(bspan, 0.0).a);
+        const double alphaAtEnd =
+            (1.0 - t) * static_cast<double>(evaluate(aspan, 1.0).a) +
+            t * static_cast<double>(evaluate(bspan, 1.0).a);
+        if (hasLeftClampShelf) result.front().color.a = static_cast<float>(alphaAtStart);
+        if (hasRightClampShelf) result.back().color.a = static_cast<float>(alphaAtEnd);
+    }
+
+    return trimSyntheticEdges(std::move(result), trimMin, trimMax);
 }
 
 }  // namespace

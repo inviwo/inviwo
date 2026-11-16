@@ -554,6 +554,183 @@ TEST(OptimalTransport, EvaluateInterpolatedAlphaClampsOutsideSupport) {
     EXPECT_GT(rightBoundary, 0.01);
 }
 
+TEST(OptimalTransport, ClampSupportRightBoundaryPreservesOpacity) {
+    TF a = {{0.027757775, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+            {0.041636664, vec4{0.03529412f, 0.03529412f, 0.03529412f, 0.0f}},
+            {0.1078887, vec4{0.05490196f, 0.05490196f, 0.05490196f, 0.0f}},
+            {0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.01f}},
+            {0.25378102, vec4{0.62f, 0.29f, 0.08f, 0.18f}},
+            {0.30132559, vec4{1.0f, 0.57f, 0.16f, 0.82f}},
+            {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+            {0.67508572, vec4{0.11372549f, 0.11372549f, 0.11372549f, 0.0f}},
+            {0.74351382, vec4{0.19641413f, 0.62441444f, 0.80784315f, 0.0f}}};
+    TF b = {{0.027757775, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+            {0.041636664, vec4{0.03529412f, 0.03529412f, 0.03529412f, 0.0f}},
+            {0.1078887, vec4{0.05490196f, 0.05490196f, 0.05490196f, 0.0f}},
+            {0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.0f}},
+            {0.25378102, vec4{0.34117648f, 0.33180743f, 0.32111084f, 0.0f}},
+            {0.30132559, vec4{0.5529412f, 0.5529412f, 0.5529412f, 0.0f}},
+            {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+            {0.67508572, vec4{0.12f, 0.42f, 0.72f, 0.12f}},
+            {0.74351382, vec4{0.10f, 0.68f, 1.0f, 0.86f}}};
+
+    const auto result = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.5);
+    const TransferFunction interpolated{result};
+
+    EXPECT_NEAR(interpolated.sample(0.9).a, interpolated.sample(1.0).a, 1e-5);
+    EXPECT_GT(interpolated.sample(1.0).a, 0.0f);
+    if (std::abs(result.back().pos - 1.0) <= 1e-9) {
+        ASSERT_GT(result.size(), 1);
+        EXPECT_NEAR(result.back().color.a, result[result.size() - 2].color.a, 1e-5);
+    }
+}
+
+TEST(OptimalTransport, ClampSupportDoesNotSaturateOpacity) {
+    const TF a{{0.027757775, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+               {0.041636664, vec4{0.03529412f, 0.03529412f, 0.03529412f, 0.0f}},
+               {0.1078887, vec4{0.05490196f, 0.05490196f, 0.05490196f, 0.0f}},
+               {0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.01f}},
+               {0.30132559, vec4{1.0f, 0.57f, 0.16f, 0.82f}},
+               {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+               {0.25378102, vec4{0.62f, 0.29f, 0.08f, 0.18f}},
+               {0.67508572, vec4{0.11372549f, 0.11372549f, 0.11372549f, 0.0f}},
+               {0.74351382, vec4{0.19641413f, 0.62441444f, 0.80784315f, 0.0f}}};
+    const TF b{{0.027757775, vec4{0.0f, 0.0f, 0.0f, 0.0f}},
+               {0.041636664, vec4{0.03529412f, 0.03529412f, 0.03529412f, 0.0f}},
+               {0.1078887, vec4{0.05490196f, 0.05490196f, 0.05490196f, 0.0f}},
+               {0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.0f}},
+               {0.25378102, vec4{0.34117648f, 0.33180743f, 0.32111084f, 0.0f}},
+               {0.30132559, vec4{0.5529412f, 0.5529412f, 0.5529412f, 0.0f}},
+               {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+               {0.67508572, vec4{0.12f, 0.42f, 0.72f, 0.12f}},
+               {0.74351382, vec4{0.10f, 0.68f, 1.0f, 0.86f}}};
+
+    for (const auto& result : {algorithm::optimalTransportInterpolationUniformQ(a, b, 0.75),
+                               algorithm::optimalTransportInterpolationUniformQExact(a, b, 0.75)}) {
+        double maxAlpha = 0.0;
+        for (const auto& p : result) {
+            maxAlpha = std::max(maxAlpha, static_cast<double>(p.color.a));
+        }
+        EXPECT_LT(maxAlpha, 1.0);
+    }
+}
+
+TEST(OptimalTransport, ClampToEdgeDoesNotDropRightEndpointOpacityImmediately) {
+    const TF a{{0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.0f}},
+               {0.25378102, vec4{0.34117648f, 0.33180743f, 0.32111084f, 0.12881356f}},
+               {0.30132559, vec4{0.5529412f, 0.5529412f, 0.5529412f, 0.5084746f}},
+               {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+               {0.67508572, vec4{0.11372549f, 0.11372549f, 0.11372549f, 0.0f}},
+               {0.74351382, vec4{0.19641413f, 0.62441444f, 0.80784315f, 0.5762712f}}};
+    const TF b{{0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.01f}},
+               {0.25378102, vec4{0.62f, 0.29f, 0.08f, 0.18f}},
+               {0.30132559, vec4{1.0f, 0.57f, 0.16f, 0.82f}},
+               {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}}};
+
+    const auto atStart = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.0);
+    const auto justAfterStart = algorithm::optimalTransportInterpolationUniformQ(a, b, 1e-4);
+    const TransferFunction start{atStart};
+    const TransferFunction interpolated{justAfterStart};
+
+    EXPECT_NEAR(start.sample(1.0).a, 0.5762712, 1e-5);
+    ASSERT_DOUBLE_EQ(atStart.back().pos, a.back().pos);
+    const double expectedMax = (1.0 - 1e-4) + 1e-4 * b.back().pos;
+    EXPECT_NEAR(justAfterStart.back().pos, expectedMax, 1e-9);
+    EXPECT_GT(justAfterStart.back().color.a, 0.5f);
+    EXPECT_GT(interpolated.sample(1.0).a, 0.5f);
+    EXPECT_NEAR(interpolated.sample(1.0).a, justAfterStart.back().color.a, 1e-5);
+
+    const auto later = algorithm::optimalTransportInterpolationUniformQ(a, b, 0.75);
+    const double laterExpectedMax = 0.25 + 0.75 * b.back().pos;
+    EXPECT_NEAR(later.back().pos, laterExpectedMax, 1e-9);
+    EXPECT_NEAR(TransferFunction{later}.sample(1.0).a, later.back().color.a, 1e-5);
+}
+
+TEST(OptimalTransport, NonzeroRightClampShelfApproachesEndpointOpacity) {
+    const TF tf2{{0.14599018, vec4{0.08627451f, 0.08627451f, 0.08627451f, 0.01f}},
+                 {0.25378102, vec4{0.62f, 0.29f, 0.08f, 0.18f}},
+                 {0.30132559, vec4{1.0f, 0.57f, 0.16f, 0.82f}},
+                 {0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}}};
+    const TF tf3{{0.41459855, vec4{0.098108366f, 0.098108366f, 0.098108366f, 0.0f}},
+                 {0.67508572, vec4{0.12f, 0.42f, 0.72f, 0.12f}},
+                 {0.74351382, vec4{0.10f, 0.68f, 1.0f, 0.86f}}};
+
+    const std::vector<TF> almostEnds{
+        algorithm::optimalTransportInterpolationUniformQ(tf2, tf3, 1.0 - 1e-3),
+        algorithm::optimalTransportInterpolationUniformQExact(tf2, tf3, 1.0 - 1e-3),
+        algorithm::optimalTransportInterpolationAdaptiveQSecant(tf2, tf3, 1.0 - 1e-3),
+        algorithm::optimalTransportInterpolationAdaptiveQExact(tf2, tf3, 1.0 - 1e-3),
+        algorithm::optimalTransportInterpolationOpacityOptimalQExact(tf2, tf3, 1.0 - 1e-3)};
+
+    for (std::size_t strategy = 0; strategy < almostEnds.size(); ++strategy) {
+        const auto& almostEnd = almostEnds[strategy];
+        SCOPED_TRACE(strategy);
+        ASSERT_FALSE(almostEnd.empty());
+        const TransferFunction interpolated{almostEnd};
+        EXPECT_NEAR(interpolated.sample(1.0).a, 0.86f, 1e-2);
+        EXPECT_NEAR(almostEnd.back().pos, 1.0, 1e-3);
+        EXPECT_NEAR(almostEnd.back().color.a, 0.86f, 1e-2);
+        for (const auto& point : almostEnd) {
+            EXPECT_LT(point.color.a, 0.9f) << "at position " << point.pos;
+        }
+    }
+
+    for (const double t : {1.0 - 1e-3, 1.0 - 1e-4, 1.0 - 1e-5}) {
+        const auto almostEnd =
+            algorithm::optimalTransportInterpolationOpacityOptimalQExact(tf2, tf3, t);
+        ASSERT_FALSE(almostEnd.empty());
+        for (const auto& point : almostEnd) {
+            EXPECT_LT(point.color.a, 0.9f) << "t=" << t << ", position=" << point.pos;
+        }
+        EXPECT_NEAR(almostEnd.back().color.a, t * 0.86f, 1e-3);
+    }
+}
+
+TEST(OptimalTransport, ClimateTransferFunctionInterpolationKeepsOpacityInRange) {
+    const TF extreme{{0.0, vec4{0.02f, 0.03f, 0.12f, 0.03f}},
+                     {0.45, vec4{0.03f, 0.16f, 0.42f, 0.04f}},
+                     {0.69, vec4{0.08f, 0.4f, 0.62f, 0.07f}},
+                     {0.8, vec4{0.3f, 0.68f, 0.68f, 0.1f}},
+                     {0.85, vec4{0.82f, 0.8f, 0.34f, 0.14f}},
+                     {0.89, vec4{1.0f, 0.56f, 0.12f, 0.35f}},
+                     {0.915385, vec4{1.0f, 0.22f, 0.04f, 0.95f}},
+                     {0.961538, vec4{0.78f, 0.02f, 0.08f, 1.0f}},
+                     {1.0, vec4{0.35f, 0.01f, 0.12f, 0.72f}}};
+    const TF heatwave{{0.0, vec4{0.02f, 0.04f, 0.16f, 1.0f}},
+                      {0.208846, vec4{0.03f, 0.15f, 0.4f, 1.0f}},
+                      {0.350385, vec4{0.04f, 0.35f, 0.65f, 1.0f}},
+                      {0.538462, vec4{0.12f, 0.62f, 0.75f, 1.0f}},
+                      {0.692308, vec4{0.42f, 0.78f, 0.7f, 1.0f}},
+                      {0.769231, vec4{0.94f, 0.82f, 0.34f, 1.0f}},
+                      {0.831923, vec4{1.0f, 0.56f, 0.14f, 1.0f}},
+                      {0.879231, vec4{0.86f, 0.12f, 0.08f, 1.0f}},
+                      {0.923077, vec4{0.55f, 0.03f, 0.2f, 1.0f}},
+                      {1.0, vec4{0.25f, 0.01f, 0.13f, 1.0f}}};
+    const double massExtreme = totalMass(extreme);
+    const double massHeatwave = totalMass(heatwave);
+
+    for (const double t : {0.1, 0.5, 0.9}) {
+        const std::vector<TF> results{
+            algorithm::optimalTransportInterpolationUniformQ(extreme, heatwave, t),
+            algorithm::optimalTransportInterpolationUniformQExact(extreme, heatwave, t),
+            algorithm::optimalTransportInterpolationAdaptiveQSecant(extreme, heatwave, t),
+            algorithm::optimalTransportInterpolationAdaptiveQExact(extreme, heatwave, t),
+            algorithm::optimalTransportInterpolationOpacityOptimalQExact(extreme, heatwave, t)};
+
+        for (std::size_t strategy = 0; strategy < results.size(); ++strategy) {
+            SCOPED_TRACE(::testing::Message() << "t=" << t << ", strategy=" << strategy);
+            const auto& result = results[strategy];
+            ASSERT_FALSE(result.empty());
+            for (const auto& point : result) {
+                EXPECT_TRUE(std::isfinite(point.color.a));
+                EXPECT_GE(point.color.a, 0.0f);
+                EXPECT_LE(point.color.a, 1.0f);
+            }
+            EXPECT_NEAR(totalMass(result), (1.0 - t) * massExtreme + t * massHeatwave, 1e-3);
+        }
+    }
+}
+
 namespace {
 struct OTConf {
     static constexpr double epsilon = 2e-2;

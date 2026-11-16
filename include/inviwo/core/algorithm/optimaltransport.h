@@ -106,6 +106,10 @@ IVW_CORE_API std::vector<TFPrimitiveData> optimalTransportInterpolationAdaptiveQ
  * Zero-opacity control points delimit features; the first and last control points
  * also delimit features even when their opacity is nonzero. Consecutive zero points describe
  * transparent gaps, not additional features. Clamp-to-edge support belongs to the outer features.
+ * Nonzero clamp-to-edge shelves outside the authored control-point range are included in the
+ * CDF; transparent edges do not add synthetic support points. When an input has a nonzero
+ * synthetic clamp shelf, the corresponding interpolated edge opacity is the linear blend of
+ * the input clamp-to-edge opacities for all quantile-sampling strategies.
  *
  * Features are matched in scalar-position order. Equal counts give one-to-one matches. For
  * unequal counts, the larger feature list is partitioned into nonempty contiguous groups, one
