@@ -60,6 +60,9 @@ public:
                         InvalidationLevel = InvalidationLevel::InvalidResources,
                         PropertySemantics semantics = PropertySemantics::Default);
     TextOverlayProperty(const TextOverlayProperty& rhs);
+    TextOverlayProperty(TextOverlayProperty&&) = delete;
+    TextOverlayProperty& operator=(const TextOverlayProperty&) = delete;
+    TextOverlayProperty& operator=(TextOverlayProperty&&) = delete;
     virtual TextOverlayProperty* clone() const override;
 
     StringProperty text;

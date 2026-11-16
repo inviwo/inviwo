@@ -55,8 +55,7 @@ public:
                           const PropertySemantics& semantics = PropertySemantics::Default);
 
     BoolCompositeProperty(const BoolCompositeProperty& rhs);
-    BoolCompositeProperty(BoolCompositeProperty&& rhs)
-        : BoolCompositeProperty(static_cast<const BoolCompositeProperty&>(rhs)) {}
+    BoolCompositeProperty(BoolCompositeProperty&& rhs) = delete;
     BoolCompositeProperty& operator=(const BoolCompositeProperty&) = delete;
     BoolCompositeProperty& operator=(BoolCompositeProperty&&) = delete;
 

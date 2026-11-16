@@ -62,6 +62,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
+    VolumeInformationProperty(VolumeInformationProperty&&) = delete;
+    VolumeInformationProperty& operator=(const VolumeInformationProperty&) = delete;
+    VolumeInformationProperty& operator=(VolumeInformationProperty&&) = delete;
     virtual VolumeInformationProperty* clone() const override;
     virtual ~VolumeInformationProperty() = default;
 

@@ -49,8 +49,7 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);
-    SimpleRaycastingProperty(SimpleRaycastingProperty&& rhs)
-        : SimpleRaycastingProperty(static_cast<const SimpleRaycastingProperty&>(rhs)) {}
+    SimpleRaycastingProperty(SimpleRaycastingProperty&& rhs) = delete;
     SimpleRaycastingProperty& operator=(const SimpleRaycastingProperty&) = delete;
     SimpleRaycastingProperty& operator=(SimpleRaycastingProperty&&) = delete;
     virtual SimpleRaycastingProperty* clone() const override;

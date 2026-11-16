@@ -152,7 +152,7 @@ struct ValueWrapper<TransferFunction> {
  * @ingroup properties
  * A property holding a TransferFunction data structure
  */
-class IVW_CORE_API TransferFunctionProperty : public Property,
+class IVW_CORE_API TransferFunctionProperty final : public Property,
                                               public TFPrimitiveSetObserver,
                                               public TFPropertyObservable {
 
@@ -183,9 +183,9 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
-    TransferFunctionProperty(TransferFunctionProperty&& rhs) = default;
+    TransferFunctionProperty(TransferFunctionProperty&& rhs) = delete;
     TransferFunctionProperty& operator=(const TransferFunctionProperty& rhs) = delete;
-    TransferFunctionProperty& operator=(TransferFunctionProperty&& rhs) = default;
+    TransferFunctionProperty& operator=(TransferFunctionProperty&& rhs) = delete;
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 

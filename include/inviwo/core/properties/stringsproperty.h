@@ -70,8 +70,7 @@ public:
                     PropertySemantics semantics = PropertySemantics::Default);
 
     StringsProperty(const StringsProperty& rhs);
-    StringsProperty(StringsProperty&& rhs)
-        : StringsProperty(static_cast<const StringsProperty&>(rhs)) {}
+    StringsProperty(StringsProperty&& rhs) = delete;
     StringsProperty& operator=(const StringsProperty&) = delete;
     StringsProperty& operator=(StringsProperty&&) = delete;
     virtual StringsProperty* clone() const override;

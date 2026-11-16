@@ -157,9 +157,9 @@ public:
                        const OrdinalOptPropertyState<T>& state);
 
     OrdinalOptProperty(const OrdinalOptProperty<T>& rhs) = default;
-    OrdinalOptProperty(OrdinalOptProperty<T>&& rhs) = default;
-    OrdinalOptProperty<T>& operator=(const OrdinalOptProperty<T>& that) = default;
-    OrdinalOptProperty<T>& operator=(OrdinalOptProperty<T>&& that) = default;
+    OrdinalOptProperty(OrdinalOptProperty<T>&& rhs) = delete;
+    OrdinalOptProperty<T>& operator=(const OrdinalOptProperty<T>& that) = delete;
+    OrdinalOptProperty<T>& operator=(OrdinalOptProperty<T>&& that) = delete;
     OrdinalOptProperty<T>& operator=(const std::optional<T>& value);
     OrdinalOptProperty<T>& operator=(const T& value);
     virtual OrdinalOptProperty<T>* clone() const override;

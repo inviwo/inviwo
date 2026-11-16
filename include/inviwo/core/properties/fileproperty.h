@@ -189,7 +189,7 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FileProperty(const FileProperty& rhs) = default;
-    FileProperty(FileProperty&& rhs) : FileProperty(static_cast<const FileProperty&>(rhs)) {}
+    FileProperty(FileProperty&& rhs) = delete;
     FileProperty& operator=(const FileProperty&) = delete;
     FileProperty& operator=(FileProperty&&) = delete;
 

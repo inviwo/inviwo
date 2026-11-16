@@ -166,9 +166,9 @@ public:
                     const OrdinalPropertyState<T>& state);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-    OrdinalProperty(OrdinalProperty&& rhs) = default;
-    OrdinalProperty& operator=(const OrdinalProperty&) = default;
-    OrdinalProperty& operator=(OrdinalProperty&&) = default;
+    OrdinalProperty(OrdinalProperty&& rhs) = delete;
+    OrdinalProperty& operator=(const OrdinalProperty&) = delete;
+    OrdinalProperty& operator=(OrdinalProperty&&) = delete;
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();

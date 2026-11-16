@@ -129,7 +129,7 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     ListProperty(const ListProperty& rhs);
-    ListProperty(ListProperty&& rhs) : ListProperty(static_cast<const ListProperty&>(rhs)) {}
+    ListProperty(ListProperty&& rhs) = delete;
     ListProperty& operator=(const ListProperty&) = delete;
     ListProperty& operator=(ListProperty&&) = delete;
 

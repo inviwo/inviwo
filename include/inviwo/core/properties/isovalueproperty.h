@@ -51,7 +51,7 @@ class IsoTFProperty;
  * The InvalidationLevel is set to InvalidationLevel::InvalidResources when isovalues are added or
  * removed. Otherwise InvalidationLevel::InvalidOutput is used.
  */
-class IVW_CORE_API IsoValueProperty : public Property,
+class IVW_CORE_API IsoValueProperty final : public Property,
                                       public TFPrimitiveSetObserver,
                                       public TFPropertyObservable {
 public:
@@ -73,9 +73,9 @@ public:
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
     IsoValueProperty(const IsoValueProperty& rhs);
-    IsoValueProperty(IsoValueProperty&& rhs);
+    IsoValueProperty(IsoValueProperty&& rhs) = delete;
     IsoValueProperty& operator=(const IsoValueProperty& rhs) = delete;
-    IsoValueProperty& operator=(IsoValueProperty&& rhs);
+    IsoValueProperty& operator=(IsoValueProperty&& rhs) = delete;
     virtual ~IsoValueProperty();
 
     virtual IsoValueProperty* clone() const override;

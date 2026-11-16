@@ -59,7 +59,7 @@ public:
                   const PropertySemantics& semantics = PropertySemantics::Default);
 
     PlaneProperty(const PlaneProperty& rhs);
-    PlaneProperty(PlaneProperty&& rhs) : PlaneProperty(static_cast<const PlaneProperty&>(rhs)) {}
+    PlaneProperty(PlaneProperty&& rhs) = delete;
     PlaneProperty& operator=(const PlaneProperty&) = delete;
     PlaneProperty& operator=(PlaneProperty&&) = delete;
     virtual PlaneProperty* clone() const override;

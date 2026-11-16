@@ -83,6 +83,9 @@ public:
                      PropertySemantics semantics = PropertySemantics::Default);
 
     ColormapProperty(const ColormapProperty& rhs);
+    ColormapProperty(ColormapProperty&&) = delete;
+    ColormapProperty& operator=(const ColormapProperty&) = delete;
+    ColormapProperty& operator=(ColormapProperty&&) = delete;
     virtual ColormapProperty* clone() const override;
 
     virtual ~ColormapProperty() = default;

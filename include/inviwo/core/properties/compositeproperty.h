@@ -65,10 +65,11 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
+    // Copies are for clone(), derived classes have to add their own member properties.
     CompositeProperty(const CompositeProperty& rhs) = default;
-    CompositeProperty(CompositeProperty&& rhs) = default;
-    CompositeProperty& operator=(const CompositeProperty& rhs) = default;
-    CompositeProperty& operator=(CompositeProperty&& rhs) = default;
+    CompositeProperty(CompositeProperty&& rhs) = delete;
+    CompositeProperty& operator=(const CompositeProperty& rhs) = delete;
+    CompositeProperty& operator=(CompositeProperty&& rhs) = delete;
 
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;

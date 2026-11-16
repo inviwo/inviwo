@@ -117,7 +117,7 @@ struct OrdinalRefPropertyState {
  * function. It does handle min/max/increment for the value.
  */
 template <typename T>
-class OrdinalRefProperty : public Property {
+class OrdinalRefProperty final : public Property {
 public:
     using value_type = T;
     using component_type = util::value_type<T>::type;
@@ -151,8 +151,7 @@ public:
                        OrdinalRefPropertyState<T> state);
 
     OrdinalRefProperty(const OrdinalRefProperty<T>& rhs);
-    OrdinalRefProperty(OrdinalRefProperty&& rhs)
-        : OrdinalRefProperty(static_cast<const OrdinalRefProperty&>(rhs)) {}
+    OrdinalRefProperty(OrdinalRefProperty&& rhs) = delete;
     OrdinalRefProperty& operator=(const OrdinalRefProperty&) = delete;
     OrdinalRefProperty& operator=(OrdinalRefProperty&&) = delete;
     OrdinalRefProperty<T>& operator=(const T& value);

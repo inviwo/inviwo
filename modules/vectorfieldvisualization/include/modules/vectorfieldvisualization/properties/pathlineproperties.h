@@ -46,6 +46,9 @@ public:
 
     PathLineProperties(std::string_view identifier, std::string_view displayName);
     PathLineProperties(const PathLineProperties& rhs);
+    PathLineProperties(PathLineProperties&&) = delete;
+    PathLineProperties& operator=(const PathLineProperties&) = delete;
+    PathLineProperties& operator=(PathLineProperties&&) = delete;
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();
 

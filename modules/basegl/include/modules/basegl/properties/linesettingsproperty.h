@@ -55,6 +55,9 @@ public:
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                          PropertySemantics semantics = PropertySemantics::Default);
     LineSettingsProperty(const LineSettingsProperty& rhs);
+    LineSettingsProperty(LineSettingsProperty&&) = delete;
+    LineSettingsProperty& operator=(const LineSettingsProperty&) = delete;
+    LineSettingsProperty& operator=(LineSettingsProperty&&) = delete;
     virtual ~LineSettingsProperty() = default;
 
     virtual LineSettingsProperty* clone() const override;

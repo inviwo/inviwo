@@ -134,6 +134,10 @@ public:
              InvalidationLevel invalidationLevel,
              PropertySemantics semantics = PropertySemantics::Default);
 
+    Property(Property&& rhs) = delete;
+    Property& operator=(const Property& that) = delete;
+    Property& operator=(Property&& that) = delete;
+
     /**
      * Creates a clone of this property. The clone will have the same identifier, hence the
      * identifier must be changed if the clone should be added to the same owner as this. The new
@@ -403,9 +407,6 @@ public:
 
 protected:
     Property(const Property& rhs);
-    Property(Property&& rhs);
-    Property& operator=(const Property& that);
-    Property& operator=(Property&& that);
 
     void notifyAboutChange();
 

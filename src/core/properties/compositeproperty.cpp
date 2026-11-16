@@ -33,8 +33,10 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networkvisitor.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <algorithm>
+#include <typeinfo>
 #include <utility>
 
 namespace inviwo {
@@ -54,7 +56,11 @@ CompositeProperty::CompositeProperty(std::string_view identifier, std::string_vi
                                      PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, {}, invalidationLevel, std::move(semantics)) {}
 
-CompositeProperty* CompositeProperty::clone() const { return new CompositeProperty(*this); }
+CompositeProperty* CompositeProperty::clone() const {
+    IVW_ASSERT(typeid(*this) == typeid(CompositeProperty),
+               "Derived CompositeProperty must override clone()");
+    return new CompositeProperty(*this);
+}
 
 std::string_view CompositeProperty::getIdentifier() const { return Property::getIdentifier(); }
 

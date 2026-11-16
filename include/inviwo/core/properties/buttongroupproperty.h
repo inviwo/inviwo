@@ -77,9 +77,9 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonGroupProperty(const ButtonGroupProperty& rhs) = default;
-    ButtonGroupProperty(ButtonGroupProperty&& rhs) = default;
-    ButtonGroupProperty& operator=(const ButtonGroupProperty&) = default;
-    ButtonGroupProperty& operator=(ButtonGroupProperty&&) = default;
+    ButtonGroupProperty(ButtonGroupProperty&& rhs) = delete;
+    ButtonGroupProperty& operator=(const ButtonGroupProperty&) = delete;
+    ButtonGroupProperty& operator=(ButtonGroupProperty&&) = delete;
 
     ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
 

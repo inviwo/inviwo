@@ -119,7 +119,7 @@ struct MinMaxPropertyState {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public Property {
+class MinMaxProperty final : public Property {
 public:
     using value_type = glm::tvec2<T, glm::defaultp>;
     virtual std::string_view getClassIdentifier() const override;
@@ -143,8 +143,7 @@ public:
                    const MinMaxPropertyState<T>& state);
 
     MinMaxProperty(const MinMaxProperty& rhs) = default;
-    MinMaxProperty(MinMaxProperty&& rhs)
-        : MinMaxProperty(static_cast<const MinMaxProperty&>(rhs)) {}
+    MinMaxProperty(MinMaxProperty&& rhs) = delete;
     MinMaxProperty& operator=(const MinMaxProperty&) = delete;
     MinMaxProperty& operator=(MinMaxProperty&&) = delete;
     MinMaxProperty& operator=(const value_type& value);

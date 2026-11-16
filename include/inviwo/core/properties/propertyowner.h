@@ -52,6 +52,10 @@ public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
 
+    PropertyOwner(PropertyOwner&& rhs) = delete;
+    PropertyOwner& operator=(const PropertyOwner& that) = delete;
+    PropertyOwner& operator=(PropertyOwner&& that) = delete;
+
     /**
      * @brief Removes all properties and notifies its observers of the removal.
      */
@@ -169,10 +173,11 @@ public:
 
 protected:
     PropertyOwner();
+    /**
+     * @brief Support for clone(): copies the owned properties only, observers are not copied.
+     * Derived classes have to add their own member properties.
+     */
     PropertyOwner(const PropertyOwner& rhs);
-    PropertyOwner(PropertyOwner&& rhs);
-    PropertyOwner& operator=(const PropertyOwner& that);
-    PropertyOwner& operator=(PropertyOwner&& that);
 
     void forEachProperty(std::function<void(Property&)> callback,
                          bool recursiveSearch = false) const;

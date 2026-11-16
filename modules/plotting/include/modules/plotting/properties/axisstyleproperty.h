@@ -56,6 +56,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     AxisStyleProperty(const AxisStyleProperty& rhs);
+    AxisStyleProperty(AxisStyleProperty&&) = delete;
+    AxisStyleProperty& operator=(const AxisStyleProperty&) = delete;
+    AxisStyleProperty& operator=(AxisStyleProperty&&) = delete;
     virtual AxisStyleProperty* clone() const override;
     virtual ~AxisStyleProperty() = default;
 

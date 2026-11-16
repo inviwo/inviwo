@@ -72,8 +72,7 @@ public:
                      PropertySemantics positionSemantics = PropertySemantics::Default,
                      InvalidationLevel = InvalidationLevel::InvalidResources);
     PositionProperty(const PositionProperty& rhs);
-    PositionProperty(PositionProperty&& rhs)
-        : PositionProperty(static_cast<const PositionProperty&>(rhs)) {}
+    PositionProperty(PositionProperty&& rhs) = delete;
     PositionProperty& operator=(const PositionProperty&) = delete;
     PositionProperty& operator=(PositionProperty&&) = delete;
     virtual ~PositionProperty() = default;

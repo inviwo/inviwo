@@ -87,6 +87,10 @@ public:
 
     auto get(unsigned i) const { return props[i].get(); }
 
+    SyncedListProperty(const SyncedListProperty&) = delete;
+    SyncedListProperty(SyncedListProperty&&) = delete;
+    SyncedListProperty& operator=(const SyncedListProperty&) = delete;
+    SyncedListProperty& operator=(SyncedListProperty&&) = delete;
     virtual ~SyncedListProperty() = default;
 
     std::array<Prop, N> props;

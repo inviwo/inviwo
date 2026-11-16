@@ -74,8 +74,7 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     FilePatternProperty(const FilePatternProperty& rhs);
-    FilePatternProperty(FilePatternProperty&& rhs)
-        : FilePatternProperty(static_cast<const FilePatternProperty&>(rhs)) {}
+    FilePatternProperty(FilePatternProperty&& rhs) = delete;
     FilePatternProperty& operator=(const FilePatternProperty&) = delete;
     FilePatternProperty& operator=(FilePatternProperty&&) = delete;
 

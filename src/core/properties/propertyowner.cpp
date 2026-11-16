@@ -65,56 +65,6 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
     }
 }
 
-PropertyOwner::PropertyOwner(PropertyOwner&& rhs)
-    : PropertyOwnerObservable{}
-    , properties_{}
-    , eventProperties_{}
-    , compositeProperties_{}
-    , ownedProperties_{std::move(rhs.ownedProperties_)}
-    , invalidationLevel_(rhs.invalidationLevel_) {
-
-    for (const auto& p : ownedProperties_) {
-        std::erase(rhs.properties_, p.get());
-        std::erase(rhs.eventProperties_, p.get());
-        std::erase(rhs.compositeProperties_, p.get());
-        insertPropertyImpl(properties_.end(), p.get(), false);
-    }
-    rhs.clear();
-
-    PropertyOwnerObservable::operator=(std::move(rhs));
-}
-
-PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
-    if (this != &that) {
-        clear();
-        for (const auto& p : that.ownedProperties_) {
-            insertPropertyImpl(properties_.end(), p->clone(), true);
-        }
-        invalidationLevel_ = that.invalidationLevel_;
-        PropertyOwnerObservable::operator=(that);
-    }
-    return *this;
-}
-
-PropertyOwner& PropertyOwner::operator=(PropertyOwner&& that) {
-    if (this != &that) {
-        clear();
-
-        invalidationLevel_ = that.invalidationLevel_;
-        ownedProperties_ = std::move(that.ownedProperties_);
-        for (const auto& p : ownedProperties_) {
-            std::erase(that.properties_, p.get());
-            std::erase(that.eventProperties_, p.get());
-            std::erase(that.compositeProperties_, p.get());
-            insertPropertyImpl(properties_.end(), p.get(), false);
-        }
-        that.clear();
-
-        PropertyOwnerObservable::operator=(std::move(that));
-    }
-    return *this;
-}
-
 PropertyOwner::~PropertyOwner() {
     while (!properties_.empty()) {
         removePropertyImpl(--properties_.end());

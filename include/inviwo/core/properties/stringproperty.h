@@ -75,9 +75,9 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     StringProperty(const StringProperty& rhs) = default;
-    StringProperty(StringProperty&& rhs) = default;
-    StringProperty& operator=(const StringProperty&) = default;
-    StringProperty& operator=(StringProperty&&) = default;
+    StringProperty(StringProperty&& rhs) = delete;
+    StringProperty& operator=(const StringProperty&) = delete;
+    StringProperty& operator=(StringProperty&&) = delete;
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;
 

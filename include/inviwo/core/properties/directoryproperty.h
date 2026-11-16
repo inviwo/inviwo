@@ -42,7 +42,7 @@ namespace inviwo {
  * Holds the value of the path to a file as a string.
  * @see FileProperty, StringProperty
  */
-class IVW_CORE_API DirectoryProperty : public FileProperty {
+class IVW_CORE_API DirectoryProperty final : public FileProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.DirectoryProperty"};
@@ -60,8 +60,7 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     DirectoryProperty(const DirectoryProperty& rhs);
-    DirectoryProperty(DirectoryProperty&& rhs)
-        : DirectoryProperty(static_cast<const DirectoryProperty&>(rhs)) {}
+    DirectoryProperty(DirectoryProperty&& rhs) = delete;
     DirectoryProperty& operator=(const DirectoryProperty&) = delete;
     DirectoryProperty& operator=(DirectoryProperty&&) = delete;
     virtual DirectoryProperty* clone() const override;

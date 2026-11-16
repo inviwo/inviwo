@@ -50,9 +50,9 @@ public:
     using TemplateProperty::TemplateProperty;
 
     BoolProperty(const BoolProperty& rhs) = default;
-    BoolProperty(BoolProperty&& rhs) = default;
-    BoolProperty& operator=(const BoolProperty&) = default;
-    BoolProperty& operator=(BoolProperty&&) = default;
+    BoolProperty(BoolProperty&& rhs) = delete;
+    BoolProperty& operator=(const BoolProperty&) = delete;
+    BoolProperty& operator=(BoolProperty&&) = delete;
     virtual BoolProperty* clone() const override;
     virtual ~BoolProperty() = default;
 

@@ -60,8 +60,7 @@ public:
                    const PropertySemantics& semantics = PropertySemantics::Default);
 
     MarginProperty(const MarginProperty& rhs);
-    MarginProperty(MarginProperty&& rhs)
-        : MarginProperty(static_cast<const MarginProperty&>(rhs)) {}
+    MarginProperty(MarginProperty&& rhs) = delete;
     MarginProperty& operator=(const MarginProperty&) = delete;
     MarginProperty& operator=(MarginProperty&&) = delete;
     virtual MarginProperty* clone() const override;

@@ -246,8 +246,7 @@ public:
         requires(fmt::is_formattable<U>::value || util::is_stream_insertable<U>::value);
 
     OptionProperty(const OptionProperty<T>& rhs);
-    OptionProperty(OptionProperty&& rhs)
-        : OptionProperty(static_cast<const OptionProperty&>(rhs)) {}
+    OptionProperty(OptionProperty&& rhs) = delete;
     OptionProperty& operator=(const OptionProperty&) = delete;
     OptionProperty& operator=(OptionProperty&&) = delete;
 

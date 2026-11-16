@@ -103,6 +103,9 @@ public:
                          int defaultIndex = 0);
 
     ColumnOptionProperty(const ColumnOptionProperty& rhs);
+    ColumnOptionProperty(ColumnOptionProperty&&) = delete;
+    ColumnOptionProperty& operator=(const ColumnOptionProperty&) = delete;
+    ColumnOptionProperty& operator=(ColumnOptionProperty&&) = delete;
     virtual ColumnOptionProperty* clone() const override;
 
     virtual ~ColumnOptionProperty() = default;

@@ -55,6 +55,9 @@ public:
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
 
+    TemplateProperty(TemplateProperty&&) = delete;
+    TemplateProperty& operator=(const TemplateProperty&) = delete;
+    TemplateProperty& operator=(TemplateProperty&&) = delete;
     TemplateProperty<T>& operator=(const T& value);
 
     virtual TemplateProperty<T>* clone() const override = 0;
@@ -79,9 +82,6 @@ public:
 
 protected:
     TemplateProperty(const TemplateProperty& rhs) = default;
-    TemplateProperty& operator=(const TemplateProperty&) = default;
-    TemplateProperty& operator=(TemplateProperty&&) = default;
-    TemplateProperty(TemplateProperty&&) = default;
     ValueWrapper<T> value_;
 };
 

@@ -63,6 +63,9 @@ public:
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
     SplitterProperty(const SplitterProperty& rhs);
+    SplitterProperty(SplitterProperty&&) = delete;
+    SplitterProperty& operator=(const SplitterProperty&) = delete;
+    SplitterProperty& operator=(SplitterProperty&&) = delete;
     virtual SplitterProperty* clone() const override;
     virtual ~SplitterProperty() = default;
 

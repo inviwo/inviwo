@@ -68,8 +68,7 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
-    AdvancedMaterialProperty(AdvancedMaterialProperty&& rhs)
-        : AdvancedMaterialProperty(static_cast<const AdvancedMaterialProperty&>(rhs)) {}
+    AdvancedMaterialProperty(AdvancedMaterialProperty&& rhs) = delete;
     AdvancedMaterialProperty& operator=(const AdvancedMaterialProperty&) = delete;
     AdvancedMaterialProperty& operator=(AdvancedMaterialProperty&&) = delete;
 

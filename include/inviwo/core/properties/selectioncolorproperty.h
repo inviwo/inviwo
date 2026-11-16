@@ -62,8 +62,7 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         const PropertySemantics& semantics = PropertySemantics::Default);
     SelectionColorProperty(const SelectionColorProperty& rhs);
-    SelectionColorProperty(SelectionColorProperty&& rhs)
-        : SelectionColorProperty(static_cast<const SelectionColorProperty&>(rhs)) {}
+    SelectionColorProperty(SelectionColorProperty&& rhs) = delete;
     SelectionColorProperty& operator=(const SelectionColorProperty&) = delete;
     SelectionColorProperty& operator=(SelectionColorProperty&&) = delete;
     virtual ~SelectionColorProperty() = default;
