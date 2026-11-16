@@ -112,12 +112,9 @@ void extractColumnsFromRow(const json& j, DataFrame& df) {
         for (const auto& row : j["data"]) {
             const auto& item = row[columnIndex];
             if (item.type() != json::value_t::null) {
-                try {
-                    addDataFrameColumnHelper(item.type(), columnHeader, df);
-                    found = true;
-                } catch (JSONConversionException& e) {
-                    throw e;
-                }
+                addDataFrameColumnHelper(item.type(), columnHeader, df);
+                found = true;
+
                 // Stop searching when we found a non-null item
                 break;
             }

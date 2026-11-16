@@ -40,6 +40,7 @@
 
 #include <glm/gtx/component_wise.hpp>
 #include <span>
+#include <utility>
 
 namespace inviwo {
 
@@ -190,12 +191,8 @@ public:
     explicit VolumeRAMPrecision(const VolumeReprConfig& config);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
-    VolumeRAMPrecision(VolumeRAMPrecision<T>&& rhs)
-        : VolumeRAMPrecision(static_cast<const VolumeRAMPrecision<T>&>(rhs)) {}
-    VolumeRAMPrecision<T>& operator=(VolumeRAMPrecision<T>&& that) {
-        operator=(static_cast<const VolumeRAMPrecision<T>&>(that));
-        return *this;
-    }
+    VolumeRAMPrecision(VolumeRAMPrecision<T>&& rhs);
+    VolumeRAMPrecision<T>& operator=(VolumeRAMPrecision<T>&& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
 
@@ -395,6 +392,35 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
                        Resource{.dims = glm::size4_t{dimensions_, 0},
                                 .format = DataFormat<T>::id(),
                                 .desc = "VolumeRAM"});
+    }
+    return *this;
+}
+
+template <typename T>
+VolumeRAMPrecision<T>::VolumeRAMPrecision(VolumeRAMPrecision<T>&& rhs)
+    : VolumeRAM{std::move(rhs)}
+    , dimensions_{std::exchange(rhs.dimensions_, size3_t{0})}
+    , ownsDataPtr_{std::exchange(rhs.ownsDataPtr_, true)}
+    , data_{std::move(rhs.data_)}
+    , swizzleMask_{rhs.swizzleMask_}
+    , interpolation_{rhs.interpolation_}
+    , wrapping_{rhs.wrapping_} {}
+
+template <typename T>
+VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(VolumeRAMPrecision<T>&& that) {
+    if (this != &that) {
+        VolumeRAM::operator=(std::move(that));
+        if (!ownsDataPtr_) {
+            data_.release();
+        } else {
+            resource::remove(resource::toRAM(data_));
+        }
+        data_ = std::move(that.data_);
+        dimensions_ = std::exchange(that.dimensions_, size3_t{0});
+        ownsDataPtr_ = std::exchange(that.ownsDataPtr_, true);
+        swizzleMask_ = that.swizzleMask_;
+        interpolation_ = that.interpolation_;
+        wrapping_ = that.wrapping_;
     }
     return *this;
 }

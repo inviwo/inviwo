@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PointLight : public LightSource {
+class IVW_CORE_API PointLight final : public LightSource {
 public:
     PointLight() : LightSource() { setFieldOfView(glm::two_pi<float>()); }
     PointLight(const PointLight&) = default;

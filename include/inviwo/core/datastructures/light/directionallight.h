@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API DirectionalLight : public LightSource {
+class IVW_CORE_API DirectionalLight final : public LightSource {
 public:
     DirectionalLight() = default;
     DirectionalLight(const DirectionalLight&) = default;

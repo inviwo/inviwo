@@ -51,10 +51,10 @@ public:
 class IVW_CORE_API BaseRepresentationConverter {
 public:
     BaseRepresentationConverter() = default;
-    BaseRepresentationConverter(const BaseRepresentationConverter&) = default;
-    BaseRepresentationConverter(BaseRepresentationConverter&&) = default;
-    BaseRepresentationConverter& operator=(const BaseRepresentationConverter&) = default;
-    BaseRepresentationConverter& operator=(BaseRepresentationConverter&&) = default;
+    BaseRepresentationConverter(const BaseRepresentationConverter&) = delete;
+    BaseRepresentationConverter(BaseRepresentationConverter&&) = delete;
+    BaseRepresentationConverter& operator=(const BaseRepresentationConverter&) = delete;
+    BaseRepresentationConverter& operator=(BaseRepresentationConverter&&) = delete;
     virtual ~BaseRepresentationConverter() = default;
 };
 
@@ -70,10 +70,10 @@ template <typename BaseRepr>
 class RepresentationConverter : public BaseRepresentationConverter {
 public:
     RepresentationConverter() = default;
-    RepresentationConverter(const RepresentationConverter&) = default;
-    RepresentationConverter(RepresentationConverter&&) = default;
-    RepresentationConverter& operator=(const RepresentationConverter&) = default;
-    RepresentationConverter& operator=(RepresentationConverter&&) = default;
+    RepresentationConverter(const RepresentationConverter&) = delete;
+    RepresentationConverter(RepresentationConverter&&) = delete;
+    RepresentationConverter& operator=(const RepresentationConverter&) = delete;
+    RepresentationConverter& operator=(RepresentationConverter&&) = delete;
     virtual ~RepresentationConverter() = default;
     using ConverterID = std::pair<std::type_index, std::type_index>;
     virtual ConverterID getConverterID() const = 0;

@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeSequenceSampler : public Spatial4DSampler<dvec3> {
+class IVW_CORE_API VolumeSequenceSampler final : public Spatial4DSampler<dvec3> {
     struct Wrapper {
         std::weak_ptr<Wrapper> next_;
         double duration_;

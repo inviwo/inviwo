@@ -46,10 +46,6 @@ PerspectiveCamera::PerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp,
                                      double farPlane, double aspectRatio, double fieldOfView)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), fovy_(fieldOfView) {}
 
-PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& other) = default;
-
-PerspectiveCamera& PerspectiveCamera::operator=(const PerspectiveCamera& other) = default;
-
 PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCamera(*this); }
 
 std::string_view PerspectiveCamera::getClassIdentifier() const { return classIdentifier; }

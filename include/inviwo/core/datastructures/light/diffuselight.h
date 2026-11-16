@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API DiffuseLight : public LightSource {
+class IVW_CORE_API DiffuseLight final : public LightSource {
 public:
     DiffuseLight() = default;
     DiffuseLight(const DiffuseLight&) = default;

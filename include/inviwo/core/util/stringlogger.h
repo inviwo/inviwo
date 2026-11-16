@@ -39,7 +39,7 @@ namespace inviwo {
 /**
  * @brief A logger class that logs to a string.
  */
-class IVW_CORE_API StringLogger : public Logger {
+class IVW_CORE_API StringLogger final : public Logger {
 public:
     StringLogger() = default;
     StringLogger(const StringLogger&) = default;

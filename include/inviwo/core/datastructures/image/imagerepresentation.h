@@ -44,10 +44,6 @@ class Image;
 class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation<Image> {
 public:
     ImageRepresentation() = default;
-    ImageRepresentation(const ImageRepresentation& rhs) = default;
-    ImageRepresentation& operator=(const ImageRepresentation& that) = default;
-    ImageRepresentation(ImageRepresentation&& rhs) = default;
-    ImageRepresentation& operator=(ImageRepresentation&& that) = default;
     virtual ImageRepresentation* clone() const override = 0;
     virtual ~ImageRepresentation() = default;
 
@@ -79,6 +75,10 @@ public:
     virtual void update(bool) override = 0;
 
 protected:
+    ImageRepresentation(const ImageRepresentation& rhs) = default;
+    ImageRepresentation& operator=(const ImageRepresentation& that) = default;
+    ImageRepresentation(ImageRepresentation&& rhs) = default;
+    ImageRepresentation& operator=(ImageRepresentation&& that) = default;
     Image* owner_ = nullptr;
 };
 

@@ -70,15 +70,16 @@ inline std::string_view format_as(MessageBreakLevel ll) { return enumToStr(ll); 
 class IVW_CORE_API Logger {
 public:
     Logger() = default;
-    Logger(const Logger&) = default;
-    Logger(Logger&&) = default;
-    Logger& operator=(const Logger&) = default;
-    Logger& operator=(Logger&&) = default;
     virtual ~Logger() = default;
 
     virtual void log(std::string_view logSource, LogLevel logLevel, LogAudience audience,
                      std::string_view file, std::string_view function, int line,
                      std::string_view msg) = 0;
+protected:
+    Logger(const Logger&) = default;
+    Logger(Logger&&) = default;
+    Logger& operator=(const Logger&) = default;
+    Logger& operator=(Logger&&) = default;
 };
 
 class IVW_CORE_API LogCentral : public Singleton<LogCentral>, public Logger {

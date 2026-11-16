@@ -43,10 +43,6 @@ OrthographicCamera::OrthographicCamera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookU
                                        double farPlane, double aspectRatio, double width)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane, aspectRatio), width_{width} {}
 
-OrthographicCamera::OrthographicCamera(const OrthographicCamera&) = default;
-
-OrthographicCamera& OrthographicCamera::operator=(const OrthographicCamera&) = default;
-
 OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
 
 std::string_view OrthographicCamera::getClassIdentifier() const { return classIdentifier; }

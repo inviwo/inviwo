@@ -41,7 +41,7 @@
 namespace inviwo {
 
 template <typename ReturnType = dvec4>
-class VolumeSampler : public SpatialSampler<ReturnType> {
+class VolumeSampler final : public SpatialSampler<ReturnType> {
 public:
     explicit VolumeSampler(std::shared_ptr<const Volume> vol,
                            CoordinateSpace space = CoordinateSpace::Data);

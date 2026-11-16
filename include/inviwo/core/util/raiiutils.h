@@ -51,9 +51,17 @@ public:
         }
     }
     KeepTrueWhileInScope(const KeepTrueWhileInScope&) = delete;
-    KeepTrueWhileInScope(KeepTrueWhileInScope&&) = delete;
     KeepTrueWhileInScope& operator=(const KeepTrueWhileInScope&) = delete;
-    KeepTrueWhileInScope& operator=(KeepTrueWhileInScope&&) = delete;
+    KeepTrueWhileInScope(KeepTrueWhileInScope&& rhs) noexcept
+        : variable_{std::exchange(rhs.variable_, nullptr)}, prevValue_{rhs.prevValue_} {}
+    KeepTrueWhileInScope& operator=(KeepTrueWhileInScope&& that) noexcept {
+        if (this != &that) {
+            if (variable_) (*variable_) = prevValue_;
+            variable_ = std::exchange(that.variable_, nullptr);
+            prevValue_ = that.prevValue_;
+        }
+        return *this;
+    }
     ~KeepTrueWhileInScope() {
         if (variable_) (*variable_) = prevValue_;
     }

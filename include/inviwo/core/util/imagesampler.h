@@ -54,7 +54,7 @@ class LayerRAM;
  * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
  */
 template <typename ReturnType = dvec4>
-class ImageSampler : public SpatialSampler<ReturnType> {
+class ImageSampler final : public SpatialSampler<ReturnType> {
 public:
     /**
      * Creates a ImageSampler for the given Layer, does not take ownership of \p layer.
@@ -165,7 +165,7 @@ using ImageSpatialSampler = ImageSampler<glm::vec<4, double>>;
  * should be the same.
  */
 template <typename ReturnType, typename DataType>
-class TemplateImageSampler : public SpatialSampler<ReturnType> {
+class TemplateImageSampler final : public SpatialSampler<ReturnType> {
 public:
     explicit TemplateImageSampler(const Layer* layer);
     explicit TemplateImageSampler(const Image* img);

@@ -45,15 +45,16 @@ namespace inviwo {
 class IVW_CORE_API ContextHolder {
 public:
     ContextHolder() = default;
-    ContextHolder(const ContextHolder&) = default;
-    ContextHolder(ContextHolder&&) = default;
-    ContextHolder& operator=(const ContextHolder&) = default;
-    ContextHolder& operator=(ContextHolder&&) = default;
     virtual ~ContextHolder() = default;
     virtual void activate() = 0;
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
     virtual Canvas::ContextID activeContext() const = 0;
     virtual Canvas::ContextID contextId() const = 0;
+protected:
+    ContextHolder(const ContextHolder&) = default;
+    ContextHolder(ContextHolder&&) = default;
+    ContextHolder& operator=(const ContextHolder&) = default;
+    ContextHolder& operator=(ContextHolder&&) = default;
 };
 
 class IVW_CORE_API CanvasContextHolder : public ContextHolder {

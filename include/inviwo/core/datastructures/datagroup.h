@@ -85,11 +85,8 @@ protected:
     DataGroup() = default;
     DataGroup(const DataGroup<Self, Repr>& rhs);
     DataGroup<Self, Repr>& operator=(const DataGroup<Self, Repr>& that);
-    DataGroup(DataGroup&& rhs) : DataGroup(static_cast<const DataGroup&>(rhs)) {}
-    DataGroup& operator=(DataGroup&& that) {
-        operator=(static_cast<const DataGroup&>(that));
-        return *this;
-    }
+    DataGroup(DataGroup&& rhs);
+    DataGroup& operator=(DataGroup&& that);
 
     mutable std::mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
@@ -119,6 +116,7 @@ std::shared_ptr<T> createGroupRepresentation()
 
 template <typename Self, typename Repr>
 DataGroup<Self, Repr>::DataGroup(const DataGroup<Self, Repr>& rhs) {
+    std::scoped_lock lock{rhs.mutex_};
     for (const auto& rep : rhs.representations_) {
         auto clone = std::shared_ptr<Repr>(rep.second->clone());
         clone->setOwner(static_cast<Self*>(this));
@@ -127,8 +125,19 @@ DataGroup<Self, Repr>::DataGroup(const DataGroup<Self, Repr>& rhs) {
 }
 
 template <typename Self, typename Repr>
+DataGroup<Self, Repr>::DataGroup(DataGroup<Self, Repr>&& rhs) {
+    std::scoped_lock lock{rhs.mutex_};
+    representations_ = std::move(rhs.representations_);
+    rhs.representations_.clear();
+    for (const auto& rep : representations_) {
+        rep.second->setOwner(static_cast<Self*>(this));
+    }
+}
+
+template <typename Self, typename Repr>
 DataGroup<Self, Repr>& DataGroup<Self, Repr>::operator=(const DataGroup<Self, Repr>& that) {
     if (this != &that) {
+        std::scoped_lock lock{mutex_, that.mutex_};
         decltype(representations_) newrepresentation;
         for (const auto& rep : that.representations_) {
             auto clone = std::shared_ptr<Repr>(rep.second->clone());
@@ -141,14 +150,27 @@ DataGroup<Self, Repr>& DataGroup<Self, Repr>::operator=(const DataGroup<Self, Re
 }
 
 template <typename Self, typename Repr>
+DataGroup<Self, Repr>& DataGroup<Self, Repr>::operator=(DataGroup<Self, Repr>&& that) {
+    if (this != &that) {
+        std::scoped_lock lock{mutex_, that.mutex_};
+        representations_ = std::move(that.representations_);
+        that.representations_.clear();
+        for (const auto& rep : representations_) {
+            rep.second->setOwner(static_cast<Self*>(this));
+        }
+    }
+    return *this;
+}
+
+template <typename Self, typename Repr>
 bool DataGroup<Self, Repr>::hasRepresentations() const {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::scoped_lock lock{mutex_};
     return !representations_.empty();
 }
 
 template <typename Self, typename Repr>
 void DataGroup<Self, Repr>::clearRepresentations() {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
     representations_.clear();
 }
 
@@ -159,7 +181,7 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
                   "Can only ask for representations that derive from the base representation");
 
     // check if a representation exists and return it
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock{mutex_};
     const auto it = representations_.find(std::type_index(typeid(T)));
     if (it != representations_.end()) {
         it->second->update(editable);
@@ -198,7 +220,7 @@ T* DataGroup<Self, Repr>::getEditableRepresentation() {
 template <typename Self, typename Repr>
 template <typename T>
 bool DataGroup<Self, Repr>::hasRepresentation() const {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::scoped_lock lock{mutex_};
     return representations_.find(std::type_index(typeid(T))) != representations_.end();
 }
 

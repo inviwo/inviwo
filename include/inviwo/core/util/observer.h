@@ -99,16 +99,17 @@ class IVW_CORE_API ObservableInterface {
 
 public:
     ObservableInterface() = default;
-    ObservableInterface(const ObservableInterface&) = default;
-    ObservableInterface(ObservableInterface&&) = default;
-    ObservableInterface& operator=(const ObservableInterface&) = default;
-    ObservableInterface& operator=(ObservableInterface&&) = default;
     virtual ~ObservableInterface() = default;
 
     virtual void startBlockingNotifications() = 0;
     virtual void stopBlockingNotifications() = 0;
 
 protected:
+    ObservableInterface(const ObservableInterface&) = default;
+    ObservableInterface(ObservableInterface&&) = default;
+    ObservableInterface& operator=(const ObservableInterface&) = default;
+    ObservableInterface& operator=(ObservableInterface&&) = default;
+
     virtual void addObserver(Observer* observer) = 0;
     virtual void removeObserver(Observer* observer) = 0;
     virtual void removeObservers() = 0;
@@ -183,7 +184,17 @@ template <typename T>
 class Observable : public ObservableInterface {
 public:
     Observable() = default;
+    virtual ~Observable();
 
+    void addObserver(T* observer);
+    void removeObserver(T* observer);
+
+    bool isObservedBy(T* observer) const;
+
+    virtual void startBlockingNotifications() override final;
+    virtual void stopBlockingNotifications() override final;
+
+protected:
     /**
      * This operation does nothing. We will not touch the observers of other.
      */
@@ -204,17 +215,8 @@ public:
      * this instead.
      */
     Observable<T>& operator=(Observable<T>&& that) noexcept;
-    virtual ~Observable();
 
-    void addObserver(T* observer);
-    void removeObserver(T* observer);
 
-    bool isObservedBy(T* observer) const;
-
-    virtual void startBlockingNotifications() override final;
-    virtual void stopBlockingNotifications() override final;
-
-protected:
     template <typename C>
     void forEachObserver(C callback);
 

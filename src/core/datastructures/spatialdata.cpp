@@ -51,6 +51,17 @@ SpatialEntity& SpatialEntity::operator=(const SpatialEntity& that) {
     return *this;
 }
 
+SpatialEntity::SpatialEntity(SpatialEntity&& rhs) noexcept
+    : modelMatrix_(rhs.modelMatrix_), worldMatrix_(rhs.worldMatrix_) {}
+
+SpatialEntity& SpatialEntity::operator=(SpatialEntity&& that) noexcept {
+    if (this != &that) {
+        modelMatrix_ = that.modelMatrix_;
+        worldMatrix_ = that.worldMatrix_;
+    }
+    return *this;
+}
+
 SpatialEntity::~SpatialEntity() = default;
 
 glm::dvec3 SpatialEntity::getOffset() const {

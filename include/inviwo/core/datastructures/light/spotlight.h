@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API SpotLight : public LightSource {
+class IVW_CORE_API SpotLight final : public LightSource {
 public:
     SpotLight() = default;
     SpotLight(const SpotLight&) = default;

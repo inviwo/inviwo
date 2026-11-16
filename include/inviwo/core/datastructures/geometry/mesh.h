@@ -89,11 +89,8 @@ public:
     Mesh(const Mesh& rhs, NoData);
 
     Mesh& operator=(const Mesh& that);
-    Mesh(Mesh&& rhs) : Mesh(static_cast<const Mesh&>(rhs)) {}
-    Mesh& operator=(Mesh&& that) {
-        operator=(static_cast<const Mesh&>(that));
-        return *this;
-    }
+    Mesh(Mesh&& rhs);
+    Mesh& operator=(Mesh&& that);
     virtual Mesh* clone() const override;
 
     virtual ~Mesh() = default;

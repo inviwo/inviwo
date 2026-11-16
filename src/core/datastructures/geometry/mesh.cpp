@@ -97,6 +97,33 @@ Mesh& Mesh::operator=(const Mesh& that) {
     return *this;
 }
 
+Mesh::Mesh(Mesh&& rhs)
+    : DataGroup<Mesh, MeshRepresentation>(std::move(rhs))
+    , SpatialEntity(std::move(rhs))
+    , MetaDataOwner(std::move(rhs))
+    , axes{std::move(rhs.axes)}
+    , buffers_{std::move(rhs.buffers_)}
+    , indices_{std::move(rhs.indices_)}
+    , meshInfo_{rhs.meshInfo_} {
+    rhs.buffers_.clear();
+    rhs.indices_.clear();
+}
+
+Mesh& Mesh::operator=(Mesh&& that) {
+    if (this != &that) {
+        DataGroup<Mesh, MeshRepresentation>::operator=(std::move(that));
+        SpatialEntity::operator=(std::move(that));
+        MetaDataOwner::operator=(std::move(that));
+        axes = std::move(that.axes);
+        buffers_ = std::move(that.buffers_);
+        indices_ = std::move(that.indices_);
+        meshInfo_ = that.meshInfo_;
+        that.buffers_.clear();
+        that.indices_.clear();
+    }
+    return *this;
+}
+
 Mesh* Mesh::clone() const { return new Mesh(*this); }
 
 const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }

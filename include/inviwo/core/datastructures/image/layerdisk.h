@@ -52,10 +52,7 @@ public:
                        InterpolationType interpolation = LayerConfig::defaultInterpolation,
                        const Wrapping2D& wrap = LayerConfig::defaultWrapping);
     explicit LayerDisk(const LayerReprConfig& config, const std::filesystem::path& path = {});
-    LayerDisk(const LayerDisk& rhs) = default;
-    LayerDisk& operator=(const LayerDisk& that) = default;
-    LayerDisk(LayerDisk&& rhs) = default;
-    LayerDisk& operator=(LayerDisk&& that) = default;
+
     virtual LayerDisk* clone() const override;
     virtual ~LayerDisk();
 
@@ -91,6 +88,12 @@ public:
 
     virtual void setWrapping(const Wrapping2D& wrapping) override;
     virtual Wrapping2D getWrapping() const override;
+
+protected:
+    LayerDisk(const LayerDisk& rhs) = default;
+    LayerDisk& operator=(const LayerDisk& that) = default;
+    LayerDisk(LayerDisk&& rhs) = default;
+    LayerDisk& operator=(LayerDisk&& that) = default;
 
 private:
     // clang-format off

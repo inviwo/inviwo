@@ -53,6 +53,10 @@ namespace inviwo {
  * @ingroup typedmesh
  */
 namespace buffertraits {
+
+//! Tag for constructing a trait that adopts the matching buffer already stored in a mesh
+struct FromMesh {};
+
 /**
  * @ingroup typedmesh
  * Based class used to decorate TypedMesh with buffers. Handles creation of buffers and adds it to
@@ -80,6 +84,17 @@ public:
     virtual ~TypedMeshBufferBase() = default;
 
     explicit TypedMeshBufferBase(Mesh& mesh) { mesh.addBuffer(bi(), buffer_); }
+    TypedMeshBufferBase(const Mesh& mesh, FromMesh) : buffer_{findBuffer(mesh)} {}
+
+    //! Find the buffer in \p mesh matching this trait's attribute location
+    static std::shared_ptr<Buffer<type>> findBuffer(const Mesh& mesh) {
+        for (const auto& [info, buffer] : mesh.getBuffers()) {
+            if (info.location == location) {
+                return std::static_pointer_cast<Buffer<type>>(buffer);
+            }
+        }
+        return nullptr;
+    }
 
     // Convenience functions
     auto getTypedRAMRepresentation() const { return buffer_->getRAMRepresentation(); }
@@ -364,22 +379,27 @@ public:
                          util::makeIndexBuffer(std::vector<std::uint32_t>{indices}));
     }
 
-    TypedMesh(const TypedMesh& rhs) : Mesh(rhs), BufferTraits()... {
-        copyConstrHelper<0, BufferTraits...>();
-    }
+    TypedMesh(const TypedMesh& rhs)
+        : Mesh(rhs)
+        , BufferTraits(*static_cast<const Mesh*>(this), buffertraits::FromMesh{})... {}
     TypedMesh& operator=(const TypedMesh& that) {
         if (this != &that) {
             Mesh::operator=(that);
-            copyConstrHelper<0, BufferTraits...>();
+            ((BufferTraits::buffer_ = BufferTraits::findBuffer(*this)), ...);
         }
         return *this;
     }
 
     virtual TypedMesh* clone() const override { return new TypedMesh(*this); }
 
-    TypedMesh(TypedMesh&& rhs) : TypedMesh(static_cast<const TypedMesh&>(rhs)) {}
+    TypedMesh(TypedMesh&& rhs)
+        : Mesh(std::move(rhs)), BufferTraits(std::move(static_cast<BufferTraits&>(rhs)))... {}
     TypedMesh& operator=(TypedMesh&& that) {
-        operator=(static_cast<const TypedMesh&>(that));
+        if (this != &that) {
+            Mesh::operator=(std::move(that));
+            ((static_cast<BufferTraits&>(*this) = std::move(static_cast<BufferTraits&>(that))),
+             ...);
+        }
         return *this;
     }
     virtual ~TypedMesh() = default;
@@ -512,16 +532,6 @@ public:
     template <typename BT>
     auto& getTypedDataContainer() {
         return BT::getTypedDataContainer();
-    }
-
-private:
-    template <unsigned I>
-    void copyConstrHelper() {}  // sink
-
-    template <unsigned I, typename T, typename... ARGS>
-    void copyConstrHelper() {
-        T::buffer_ = std::static_pointer_cast<Buffer<typename T::type>>(Mesh::buffers_[I].second);
-        copyConstrHelper<I + 1, ARGS...>();
     }
 };
 

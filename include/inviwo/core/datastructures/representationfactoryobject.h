@@ -43,10 +43,10 @@ namespace inviwo {
 class IVW_CORE_API BaseRepresentationFactoryObject {
 public:
     BaseRepresentationFactoryObject() = default;
-    BaseRepresentationFactoryObject(const BaseRepresentationFactoryObject&) = default;
-    BaseRepresentationFactoryObject(BaseRepresentationFactoryObject&&) = default;
-    BaseRepresentationFactoryObject& operator=(const BaseRepresentationFactoryObject&) = default;
-    BaseRepresentationFactoryObject& operator=(BaseRepresentationFactoryObject&&) = default;
+    BaseRepresentationFactoryObject(const BaseRepresentationFactoryObject&) = delete;
+    BaseRepresentationFactoryObject(BaseRepresentationFactoryObject&&) = delete;
+    BaseRepresentationFactoryObject& operator=(const BaseRepresentationFactoryObject&) = delete;
+    BaseRepresentationFactoryObject& operator=(BaseRepresentationFactoryObject&&) = delete;
     virtual ~BaseRepresentationFactoryObject() = default;
 };
 
@@ -64,10 +64,10 @@ public:
 
     explicit RepresentationFactoryObject(ReprId classIdentifier)
         : classIdentifier_{classIdentifier} {}
-    RepresentationFactoryObject(const RepresentationFactoryObject&) = default;
-    RepresentationFactoryObject(RepresentationFactoryObject&&) = default;
-    RepresentationFactoryObject& operator=(const RepresentationFactoryObject&) = default;
-    RepresentationFactoryObject& operator=(RepresentationFactoryObject&&) = default;
+    RepresentationFactoryObject(const RepresentationFactoryObject&) = delete;
+    RepresentationFactoryObject(RepresentationFactoryObject&&) = delete;
+    RepresentationFactoryObject& operator=(const RepresentationFactoryObject&) = delete;
+    RepresentationFactoryObject& operator=(RepresentationFactoryObject&&) = delete;
     virtual ~RepresentationFactoryObject() = default;
 
     ReprId getClassIdentifier() const { return classIdentifier_; }
@@ -83,11 +83,11 @@ class RepresentationFactoryObjectTemplate : public RepresentationFactoryObject<R
 public:
     RepresentationFactoryObjectTemplate()
         : RepresentationFactoryObject<Representation>{std::type_index(typeid(Derived))} {}
-    RepresentationFactoryObjectTemplate(const RepresentationFactoryObjectTemplate&) = default;
-    RepresentationFactoryObjectTemplate(RepresentationFactoryObjectTemplate&&) = default;
+    RepresentationFactoryObjectTemplate(const RepresentationFactoryObjectTemplate&) = delete;
+    RepresentationFactoryObjectTemplate(RepresentationFactoryObjectTemplate&&) = delete;
     RepresentationFactoryObjectTemplate& operator=(const RepresentationFactoryObjectTemplate&) =
-        default;
-    RepresentationFactoryObjectTemplate& operator=(RepresentationFactoryObjectTemplate&&) = default;
+        delete;
+    RepresentationFactoryObjectTemplate& operator=(RepresentationFactoryObjectTemplate&&) = delete;
     virtual ~RepresentationFactoryObjectTemplate() = default;
 };
 

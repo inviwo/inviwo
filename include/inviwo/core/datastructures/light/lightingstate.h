@@ -33,7 +33,6 @@
 #include <inviwo/core/util/fmtutils.h>
 
 #include <cstdint>
-#include <iosfwd>
 
 namespace inviwo {
 
@@ -51,8 +50,6 @@ enum class ShadingMode : std::uint8_t {
 };
 
 IVW_CORE_API std::string_view enumToStr(ShadingMode sm);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ShadingMode sm);
 
 struct IVW_CORE_API LightingState {
     ShadingMode shadingMode;

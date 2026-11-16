@@ -80,10 +80,6 @@ public:
     Camera(dvec3 lookFrom, dvec3 lookTo, dvec3 lookUp, double nearPlane, double farPlane,
            double aspectRatio);
     virtual ~Camera() = default;
-    Camera(const Camera& other) = default;
-    Camera& operator=(const Camera& other) = default;
-    Camera(Camera&& other) noexcept = default;
-    Camera& operator=(Camera&& other) noexcept = default;
     virtual Camera* clone() const = 0;
     virtual std::string_view getClassIdentifier() const = 0;
 
@@ -158,6 +154,11 @@ public:
     friend bool operator!=(const Camera& lhs, const Camera& rhs) { return !(lhs == rhs); }
 
 protected:
+    Camera(const Camera& other) = default;
+    Camera& operator=(const Camera& other) = default;
+    Camera(Camera&& other) noexcept = default;
+    Camera& operator=(Camera&& other) noexcept = default;
+
     virtual bool equal(const Camera& other) const = 0;
     bool equalTo(const Camera& other) const;
 

@@ -50,10 +50,6 @@ SkewedPerspectiveCamera::SkewedPerspectiveCamera(dvec3 lookFrom, dvec3 lookTo, d
     , fovy_(fieldOfView)
     , offset_(offset) {}
 
-SkewedPerspectiveCamera::SkewedPerspectiveCamera(const SkewedPerspectiveCamera&) = default;
-SkewedPerspectiveCamera& SkewedPerspectiveCamera::operator=(const SkewedPerspectiveCamera&) =
-    default;
-
 SkewedPerspectiveCamera* SkewedPerspectiveCamera::clone() const {
     return new SkewedPerspectiveCamera(*this);
 }

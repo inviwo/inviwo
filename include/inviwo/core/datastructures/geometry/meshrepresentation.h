@@ -42,10 +42,6 @@ class Mesh;
 class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation<Mesh> {
 public:
     MeshRepresentation() = default;
-    MeshRepresentation(const MeshRepresentation& rhs) = default;
-    MeshRepresentation& operator=(const MeshRepresentation& that) = default;
-    MeshRepresentation(MeshRepresentation&& rhs) = default;
-    MeshRepresentation& operator=(MeshRepresentation&& that) = default;
     virtual MeshRepresentation* clone() const override = 0;
     virtual ~MeshRepresentation() = default;
 
@@ -57,6 +53,11 @@ public:
     virtual void update(bool) override = 0;
 
 protected:
+    MeshRepresentation(const MeshRepresentation& rhs) = default;
+    MeshRepresentation& operator=(const MeshRepresentation& that) = default;
+    MeshRepresentation(MeshRepresentation&& rhs) = default;
+    MeshRepresentation& operator=(MeshRepresentation&& that) = default;
+
     Mesh* owner_{};
 };
 

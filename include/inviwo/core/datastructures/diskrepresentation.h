@@ -59,10 +59,6 @@ public:
     DiskRepresentation() = default;
     explicit DiskRepresentation(std::filesystem::path srcFile,
                                 DiskRepresentationLoader<Repr>* loader = nullptr);
-    DiskRepresentation(const DiskRepresentation& rhs) = default;
-    DiskRepresentation& operator=(const DiskRepresentation& that) = default;
-    DiskRepresentation(DiskRepresentation&& rhs) = default;
-    DiskRepresentation& operator=(DiskRepresentation&& that) = default;
     virtual ~DiskRepresentation() = default;
     virtual DiskRepresentation* clone() const;
 
@@ -73,6 +69,12 @@ public:
 
     std::shared_ptr<Repr> createRepresentation(std::stop_token stop = {}) const;
     void updateRepresentation(std::shared_ptr<Repr> dest, std::stop_token stop = {}) const;
+
+protected:
+    DiskRepresentation(const DiskRepresentation& rhs) = default;
+    DiskRepresentation& operator=(const DiskRepresentation& that) = default;
+    DiskRepresentation(DiskRepresentation&& rhs) = default;
+    DiskRepresentation& operator=(DiskRepresentation&& that) = default;
 
 private:
     std::filesystem::path sourceFile_;
@@ -125,10 +127,6 @@ template <typename Repr>
 class DiskRepresentationLoader {
 public:
     DiskRepresentationLoader() = default;
-    DiskRepresentationLoader(const DiskRepresentationLoader&) = default;
-    DiskRepresentationLoader(DiskRepresentationLoader&&) = default;
-    DiskRepresentationLoader& operator=(const DiskRepresentationLoader&) = default;
-    DiskRepresentationLoader& operator=(DiskRepresentationLoader&&) = default;
     virtual ~DiskRepresentationLoader() = default;
     virtual DiskRepresentationLoader* clone() const = 0;
     virtual std::shared_ptr<Repr> createRepresentation(const Repr&, std::stop_token stop) const = 0;
@@ -145,6 +143,12 @@ public:
             throw DataReaderException(SourceContext{}, "Error could not find input file: {}", path);
         }
     }
+
+protected:
+    DiskRepresentationLoader(const DiskRepresentationLoader&) = default;
+    DiskRepresentationLoader(DiskRepresentationLoader&&) = default;
+    DiskRepresentationLoader& operator=(const DiskRepresentationLoader&) = default;
+    DiskRepresentationLoader& operator=(DiskRepresentationLoader&&) = default;
 };
 
 }  // namespace inviwo

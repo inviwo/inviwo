@@ -50,14 +50,10 @@ public:
                                 double aspectRatio = cameradefaults::aspectRatio,
                                 double width = cameradefaults::width);
     virtual ~OrthographicCamera() = default;
-    OrthographicCamera(const OrthographicCamera& other);
-    OrthographicCamera& operator=(const OrthographicCamera& other);
-    OrthographicCamera(OrthographicCamera&& other)
-        : OrthographicCamera(static_cast<const OrthographicCamera&>(other)) {}
-    OrthographicCamera& operator=(OrthographicCamera&& other) {
-        operator=(static_cast<const OrthographicCamera&>(other));
-        return *this;
-    }
+    OrthographicCamera(const OrthographicCamera& other) = default;
+    OrthographicCamera& operator=(const OrthographicCamera& other) = default;
+    OrthographicCamera(OrthographicCamera&& other) = default;
+    OrthographicCamera& operator=(OrthographicCamera&& other) = default;
     virtual OrthographicCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"OrthographicCamera"};

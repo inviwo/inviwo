@@ -32,7 +32,6 @@
 #include <inviwo/core/util/glmfmt.h>
 
 #include <fmt/format.h>
-#include <ostream>
 
 namespace inviwo {
 
@@ -52,7 +51,5 @@ std::string_view enumToStr(ShadingMode sm) {
     throw Exception(SourceContext{}, "Found invalid ShadingMode enum value '{}'",
                     static_cast<int>(sm));
 }
-
-std::ostream& operator<<(std::ostream& ss, ShadingMode sm) { return ss << enumToStr(sm); }
 
 }  // namespace inviwo

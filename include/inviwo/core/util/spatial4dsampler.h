@@ -41,11 +41,12 @@ namespace inviwo {
 class IVW_CORE_API Spatial4DSamplerBase {
 public:
     Spatial4DSamplerBase() = default;
+    virtual ~Spatial4DSamplerBase() = default;
+protected:
     Spatial4DSamplerBase(const Spatial4DSamplerBase&) = default;
     Spatial4DSamplerBase(Spatial4DSamplerBase&&) = default;
     Spatial4DSamplerBase& operator=(const Spatial4DSamplerBase&) = default;
     Spatial4DSamplerBase& operator=(Spatial4DSamplerBase&&) = default;
-    virtual ~Spatial4DSamplerBase() = default;
 };
 
 template <typename ReturnType>
@@ -55,10 +56,6 @@ public:
     using type = ReturnType;
 
     explicit Spatial4DSampler(std::shared_ptr<const SpatialEntity> spatialEntity);
-    Spatial4DSampler(const Spatial4DSampler&) = default;
-    Spatial4DSampler(Spatial4DSampler&&) = default;
-    Spatial4DSampler& operator=(const Spatial4DSampler&) = default;
-    Spatial4DSampler& operator=(Spatial4DSampler&&) = default;
     virtual ~Spatial4DSampler() = default;
 
     virtual ReturnType sample(const dvec4& pos,
@@ -74,6 +71,11 @@ public:
     mat4 getWorldMatrix() const;
 
 protected:
+    Spatial4DSampler(const Spatial4DSampler&) = default;
+    Spatial4DSampler(Spatial4DSampler&&) = default;
+    Spatial4DSampler& operator=(const Spatial4DSampler&) = default;
+    Spatial4DSampler& operator=(Spatial4DSampler&&) = default;
+    
     virtual ReturnType sampleDataSpace(const dvec4& pos) const = 0;
     virtual bool withinBoundsDataSpace(const dvec4& pos) const = 0;
 

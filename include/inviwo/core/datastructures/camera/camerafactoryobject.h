@@ -41,10 +41,10 @@ namespace inviwo {
 class IVW_CORE_API CameraFactoryObject {
 public:
     explicit CameraFactoryObject(std::string_view classIdentifier);
-    CameraFactoryObject(const CameraFactoryObject&) = default;
-    CameraFactoryObject(CameraFactoryObject&&) = default;
-    CameraFactoryObject& operator=(const CameraFactoryObject&) = default;
-    CameraFactoryObject& operator=(CameraFactoryObject&&) = default;
+    CameraFactoryObject(const CameraFactoryObject&) = delete;
+    CameraFactoryObject(CameraFactoryObject&&) = delete;
+    CameraFactoryObject& operator=(const CameraFactoryObject&) = delete;
+    CameraFactoryObject& operator=(CameraFactoryObject&&) = delete;
     virtual ~CameraFactoryObject() = default;
 
     std::unique_ptr<Camera> create(dvec3 lookFrom = cameradefaults::lookFrom,
