@@ -293,7 +293,8 @@ void TextRenderer::render(std::string_view str, const vec2& posf, const vec2& sc
         // Translate quad to correct position and render
         const mat4 dataToWorld(
             glm::translate(pos) *
-            glm::scale(vec3(glyph.size.x * scaling.x, -glyph.size.y * scaling.y, 1.f)));
+            glm::scale(vec3(static_cast<float>(glyph.size.x) * scaling.x,
+                            -static_cast<float>(glyph.size.y) * scaling.y, 1.f)));
 
         const mat4 texTransform(glm::translate(vec3(vec2(glyph.texAtlasPos) / texDims, 0.0f)) *
                                 glm::scale(vec3(vec2(glyph.size) / texDims, 1.0f)));

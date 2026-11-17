@@ -535,10 +535,10 @@ void ScatterPlotGL::setShaderUniforms(TextureUnitContainer& cont, const size2_t&
 
 void ScatterPlotGL::renderAxis(const size2_t& dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
-    const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
-                             dims.y - 1 - properties_.margins_.getTop());
+    const size2_t upperRight(dims.x - 1 - static_cast<size_t>(properties_.margins_.getRight()),
+                             dims.y - 1 - static_cast<size_t>(properties_.margins_.getTop()));
 
-    const auto padding = properties_.axisMargin_.get();
+    const auto padding = static_cast<size_t>(properties_.axisMargin_.get());
 
     properties_.xAxis_.update(axisRenderers_[0].getData());
     properties_.yAxis_.update(axisRenderers_[1].getData());

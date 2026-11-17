@@ -137,7 +137,7 @@ void openProcessorFile(const OpenProcessorFile& config) {
             return;
         }
 
-        getRepoLink(config.cppFile).transform(openUrl);
+        [[maybe_unused]] const auto result = getRepoLink(config.cppFile).transform(openUrl);
     }
 }
 

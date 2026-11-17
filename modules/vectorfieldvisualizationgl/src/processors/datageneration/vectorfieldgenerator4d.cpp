@@ -126,7 +126,8 @@ void VectorFieldGenerator4D::process() {
 
     const auto seq = std::make_shared<VolumeSequenceOutport::type>();
 
-    const float dt = (tRange_.get().y - tRange_.get().x) / (size_.get().w - 1);
+    const float dt =
+        (tRange_.get().y - tRange_.get().x) / (static_cast<float>(size_.get().w) - 1.0f);
 
     vec3 corners[4];
     corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
@@ -145,7 +146,7 @@ void VectorFieldGenerator4D::process() {
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     for (size_t i = 0; i < size_.get().w; ++i) {
         auto t = static_cast<float>(i);
-        t /= size_.get().w - 1;
+        t /= static_cast<float>(size_.get().w) - 1.0f;
         t = tRange_.get().x + t * (tRange_.get().y - tRange_.get().x);
 
         const auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());

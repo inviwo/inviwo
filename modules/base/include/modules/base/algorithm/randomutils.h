@@ -46,6 +46,7 @@
 #include <random>
 #include <numbers>
 #include <bit>
+#include <utility>
 
 namespace inviwo::util {
 
@@ -64,7 +65,7 @@ T haltonSequence(size_t n, size_t base) {
     while (a != 0) {
         const auto rest = a % base;
         const auto b = (T(1.0) / static_cast<T>(denom));
-        val += rest * b;
+        val += static_cast<T>(rest) * b;
         a -= rest;
         a /= base;
         denom *= base;
@@ -286,10 +287,10 @@ std::shared_ptr<Layer> perlinNoise(size2_t dims, float persistence, size_t start
     const auto size = std::bit_ceil(std::max(dims.x, dims.y));
     std::vector<std::shared_ptr<Layer>> levels;
     std::vector<TemplateImageSampler<float, float>> samplers;
-    auto currentSize = std::pow(2, startLevel);
+    auto currentSize = startLevel * startLevel;
     auto iterations = endLevel - startLevel + 1;
     float currentPersistance = 1;
-    while (currentSize <= size && iterations--) {
+    while (std::cmp_less_equal(currentSize, size) && iterations--) {
         const size2_t layerSize{static_cast<size_t>(currentSize)};
         auto dist = std::uniform_real_distribution<float>(-currentPersistance, currentPersistance);
         const auto randomLayer = util::randomLayer<float>(layerSize, randomNumberGenerator, dist);

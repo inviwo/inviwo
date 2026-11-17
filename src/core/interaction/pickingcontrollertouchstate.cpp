@@ -98,7 +98,7 @@ PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchP
     if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
         // Possible to press touchpads
         const auto nPressed = std::accumulate(
-            points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
+            points.begin(), points.end(), 0uz, [](size_t v, const auto& p) -> size_t {
                 return v + (p.state() == TouchState::Stationary ? 1 : 0);
             });
         if (nPressed == 0) {

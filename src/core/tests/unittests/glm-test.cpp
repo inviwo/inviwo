@@ -286,20 +286,22 @@ TEST(GLMTest, glmcomp1) {
 TEST(GLMTest, glmcomp2) {
     dvec4 x{0.0, 1.0, 2.0, 3.0};
     for (size_t i = 0; i < util::extent<dvec4>::value; ++i) {
-        EXPECT_EQ(1.0 * i, util::glmcomp(x, i));
+        EXPECT_EQ(1.0 * static_cast<double>(i), util::glmcomp(x, i));
     }
 }
 TEST(GLMTest, glmcomp3) {
     dmat4 x{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0};
     for (size_t i = 0; i < util::flat_extent<dmat4>::value; ++i) {
-        EXPECT_EQ(1.0 * i, util::glmcomp(x, i));
+        EXPECT_EQ(1.0 * static_cast<double>(i), util::glmcomp(x, i));
     }
 }
 TEST(GLMTest, glmcomp4) {
     dmat4 x{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0};
     for (size_t i = 0; i < util::extent<dmat4>::value; ++i) {
         for (size_t j = 0; j < util::extent<dmat4>::value; ++j) {
-            EXPECT_EQ(1.0 * (i * util::extent<dmat4>::value + j), util::glmcomp(x, i, j));
+            EXPECT_EQ(1.0 * (static_cast<double>(i) *
+                             static_cast<double>(util::extent<dmat4>::value + j)),
+                      util::glmcomp(x, i, j));
         }
     }
 }

@@ -289,8 +289,8 @@ QWidget* PropertyListFrame::findWidgetFor(Property* property) {
 PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget")
     , app_{app}
-    , scrollArea_(new QScrollArea(this))
-    , frame_(new PropertyListFrame(this, app->getPropertyWidgetFactory())) {
+    , frame_(new PropertyListFrame(this, app->getPropertyWidgetFactory()))
+    , scrollArea_(new QScrollArea(this)) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(45, 80)));  // default size

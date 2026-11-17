@@ -118,16 +118,21 @@ public:
         addMinor(div.start - div.step);
 
         for (size_t i = 0; i <= div.count; ++i) {
-            const auto x = view_->mapFromScene(widthPerSecond * (div.start + i * div.step), 0).x();
+            const auto x =
+                view_
+                    ->mapFromScene(widthPerSecond * (div.start + static_cast<double>(i) * div.step),
+                                   0)
+                    .x();
             const QRectF box(x - 0.5 * gridSpacing, rect().top(), gridSpacing, timelineHeight);
             painter.drawText(box, Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip,
-                             text.arg(div.start + i * div.step, 0, 'f', div.fractionalDigits));
+                             text.arg(div.start + static_cast<double>(i) * div.step, 0, 'f',
+                                      div.fractionalDigits));
 
             majorTicksLines.push_back(QLineF(x, rect().top() + fontHeight, x, rect().bottom()));
 
-            addMinor(div.start + i * div.step);
+            addMinor(div.start + static_cast<double>(i) * div.step);
         }
-        addMinor(div.start + div.count * div.step);
+        addMinor(div.start + static_cast<double>(div.count) * div.step);
 
         painter.drawLines(minorTicksLines);
         gridPen.setWidthF(2.0);
