@@ -30,11 +30,15 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/network/processornetwork.h>
+
+#include <unordered_map>
+#include <vector>
 
 namespace inviwo {
 
+class ProcessorNetwork;
 class Processor;
+class Property;
 
 /**
  * @brief Utility class to calculate and apply auto linking
@@ -60,8 +64,7 @@ public:
     const std::unordered_map<Property*, std::vector<Property*>>& getAutoLinkCandidates() const;
 
     void sortAutoLinkCandidates();
-    void sortAutoLinkCandidates(dvec2 pos);
-
+    
     void addLinksToClosestCandidates(ProcessorNetwork& network, bool bidirectional);
 
     static void addLinks(ProcessorNetwork& network, Processor& target, Processor* source = nullptr,
