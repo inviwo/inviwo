@@ -84,7 +84,7 @@ class Capabilities;
 class InviwoModule;
 class ModuleManager;
 class InviwoModuleFactoryObject;
-class ModuleAction;
+struct ModuleAction;
 class FileObserver;
 
 class Property;
