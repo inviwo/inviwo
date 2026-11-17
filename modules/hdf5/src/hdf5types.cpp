@@ -36,9 +36,13 @@ namespace inviwo::hdf5 {
 #include <warn/ignore/switch-enum>
 std::optional<DataFormatId> util::getDataFormatFromDataSet(const H5::DataSet& dataset) {
     switch (dataset.getTypeClass()) {
+        case H5T_NO_CLASS: break;
+
         case H5T_INTEGER: {
             const auto type = dataset.getIntType();
             switch (type.getSign()) {
+                case H5T_SGN_ERROR: break;
+
                 case H5T_SGN_NONE: {
                     return DataFormatBase::find(NumericType::UnsignedInteger, 1,
                                                 type.getPrecision());
@@ -46,13 +50,25 @@ std::optional<DataFormatId> util::getDataFormatFromDataSet(const H5::DataSet& da
                 case H5T_SGN_2: {
                     return DataFormatBase::find(NumericType::SignedInteger, 1, type.getPrecision());
                 }
+                case H5T_NSGN: break;
             }
-            return DataFormatBase::find(NumericType::Float, 1, type.getPrecision());
+            break;
         }
         case H5T_FLOAT: {
             const auto type = dataset.getFloatType();
             return DataFormatBase::find(NumericType::Float, 1, type.getPrecision());
         }
+        case H5T_TIME: break;
+        case H5T_STRING: break;
+        case H5T_BITFIELD: break;
+        case H5T_OPAQUE: break;
+        case H5T_COMPOUND: break;
+        case H5T_REFERENCE: break;
+        case H5T_ENUM: break;
+        case H5T_VLEN: break;
+        case H5T_ARRAY: break;
+        case H5T_COMPLEX: break;
+        case H5T_NCLASSES: break;
     }
 
     log::warn("HDF type not supported");

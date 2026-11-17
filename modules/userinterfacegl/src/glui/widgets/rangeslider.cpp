@@ -222,15 +222,19 @@ void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
             centerPos = vec2(sliderPos.x + handleWidth / 2.0, 0);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(sliderPos.y - sliderPos.x, extent.y);
-            margin.x = uiTextures_->getDimensions().x / static_cast<float>(widgetExtent_.x);
-            margin.y = centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.y);
+            margin.x = static_cast<float>(uiTextures_->getDimensions().x) /
+                       static_cast<float>(widgetExtent_.x);
+            margin.y = static_cast<float>(centerTextures_->getDimensions().y) /
+                       static_cast<float>(widgetExtent_.y);
         } else {
             // offset left position of center piece by half the size of a handle
             centerPos = vec2(0, sliderPos.x + handleWidth / 2.0);
             // extent of center piece corresponds to difference between the two handles
             centerExtent = vec2(extent.x, sliderPos.y - sliderPos.x);
-            margin.x = centerTextures_->getDimensions().y / static_cast<float>(widgetExtent_.x);
-            margin.y = uiTextures_->getDimensions().x / static_cast<float>(widgetExtent_.y);
+            margin.x = static_cast<float>(centerTextures_->getDimensions().y) /
+                       static_cast<float>(widgetExtent_.x);
+            margin.y = static_cast<float>(uiTextures_->getDimensions().x) /
+                       static_cast<float>(widgetExtent_.y);
         }
         uiShader.setUniform("marginScale", margin);
         uiShader.setUniform("origin", vec2(origin + widgetPos_) + centerPos);
@@ -250,11 +254,13 @@ void RangeSlider::renderWidget(const ivec2& origin, const size2_t&) {
         vec2 positionMask;
         if (orientation_ == UIOrientation::Horizontal) {
             positionMask = vec2(1, 0);
-            uiShader.setUniform("extent", vec2(extent.y * aspectRatio, extent.y));
+            uiShader.setUniform("extent",
+                                vec2(static_cast<float>(extent.y) * aspectRatio, extent.y));
             uiShader.setUniform("marginScale", vec2(roundness));
         } else {
             positionMask = vec2(0, 1);
-            uiShader.setUniform("extent", vec2(extent.x, extent.x * aspectRatio));
+            uiShader.setUniform("extent",
+                                vec2(extent.x, static_cast<float>(extent.x) * aspectRatio));
             uiShader.setUniform("marginScale", vec2(roundness));
         }
 
@@ -283,7 +289,7 @@ ivec2 RangeSlider::computeLabelPos(int descent) const {
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         const ivec2 extent(getWidgetExtentScaled());
         vec2 labelSize(labelExtent_);
-        labelSize.y -= descent;
+        labelSize.y -= static_cast<float>(descent);
         const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
         const vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
@@ -350,7 +356,7 @@ vec2 RangeSlider::getSliderPos() const {
 double RangeSlider::convertDeltaToSlider(dvec2 delta) const {
     const auto ext = getWidgetExtentScaled();
     // account for the width of the handle
-    const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+    const double handleWidth = static_cast<float>(uiTextures_->getDimensions().x) * scalingFactor_;
     if (flipped_) {
         delta *= -1.0;
     }

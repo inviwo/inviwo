@@ -101,7 +101,8 @@ float FloatPropertyWidget::sliderToRepr(int val) const {
 }
 int FloatPropertyWidget::reprToSlider(float val) const {
     return static_cast<int>((val - property_->getMinValue()) /
-                            (property_->getMaxValue() - property_->getMinValue()) * sliderMax_);
+                            (property_->getMaxValue() - property_->getMinValue()) *
+                            static_cast<float>(sliderMax_));
 }
 
 }  // namespace glui

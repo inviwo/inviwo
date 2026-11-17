@@ -133,9 +133,9 @@ void SeedPointGenerator::process() {
     }
 
     switch (generator_.get()) {
-        case RND:    randomPoints(); break;
-        case PLANE:  planePoints(); break;
-        case LINE:   linePoints(); break;
+        case RND: randomPoints(); break;
+        case PLANE: planePoints(); break;
+        case LINE: linePoints(); break;
         case SPHERE: spherePoints(); break;
         default: log::warn("No points generated since given type is not yet implemented"); break;
     }
@@ -194,7 +194,8 @@ void SeedPointGenerator::linePoints() {
     const auto points = std::make_shared<std::vector<vec3>>();
     const float dt = 1.0f / static_cast<float>(std::max((numberOfPoints_.get() - 1), 1));
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        const auto p = lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (i * dt);
+        const auto p =
+            lineStart_.get() + (lineEnd_.get() - lineStart_.get()) * (static_cast<float>(i) * dt);
         points->push_back(p);
     }
     seedPoints_.setData(points);

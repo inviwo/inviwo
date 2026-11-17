@@ -104,9 +104,10 @@ void AxisRenderProcessor::process() {
 
     const auto dims = outport_.getDimensions();
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
-    const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
+    const size2_t upperRight(dims.x - 1 - static_cast<size_t>(margins_.getRight()),
+                             dims.y - 1 - static_cast<size_t>(margins_.getTop()));
 
-    const auto padding = axisMargin_.get();
+    const auto padding = static_cast<size_t>(axisMargin_.get());
 
     if (axis1_.isModified()) axis1_.update(axisRenderers_[0].getData());
     if (axis2_.isModified()) axis2_.update(axisRenderers_[1].getData());
@@ -121,9 +122,9 @@ void AxisRenderProcessor::process() {
                              size2_t(lowerLeft.x, upperRight.y - padding), antialiasing_.get());
 
     // draw diagonally in upper half
-    axisRenderers_[2].render(
-        dims, size2_t(lowerLeft.x + padding, (lowerLeft.y + upperRight.y) * 0.5f),
-        size2_t(upperRight.x - padding, upperRight.y - padding), antialiasing_.get());
+    axisRenderers_[2].render(dims, size2_t(lowerLeft.x + padding, (lowerLeft.y + upperRight.y) / 2),
+                             size2_t(upperRight.x - padding, upperRight.y - padding),
+                             antialiasing_.get());
 
     utilgl::deactivateCurrentTarget();
 }

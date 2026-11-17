@@ -52,8 +52,8 @@ namespace inviwo {
 SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindow)
     : InviwoDockWidget(title, mainwindow, "SettingsWidget")
     , mainwindow_(mainwindow)
-    , scrollArea_(new QScrollArea())
-    , mainWidget_(new QWidget()) {
+    , mainWidget_(new QWidget())
+    , scrollArea_(new QScrollArea()) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size

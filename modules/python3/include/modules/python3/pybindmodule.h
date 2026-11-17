@@ -32,12 +32,18 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 
+#if defined(__clang__)
+#pragma clang diagnostic push
+#if __has_warning("-Wgnu-zero-variadic-macro-arguments")
+#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+#endif
+#endif
+
 // based on pybind11/embed.h PYBIND11_EMBEDDED_MODULE
 // But defines a function
 // void inviwo_static_pybind_init_<name>()
 // instead of using a global static variable to initialize the module
 // we need this to control the initialization order
-
 #ifdef INVIWO_ALL_DYN_LINK
 #define INVIWO_PYBIND_MODULE(name, variable, ...) PYBIND11_MODULE(name, variable, ##__VA_ARGS__)
 #else
@@ -56,4 +62,8 @@
         }                                                                                    \
     }                                                                                        \
     PYBIND11_MODULE_EXEC(name, variable)
+#endif
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
 #endif
