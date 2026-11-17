@@ -25,6 +25,8 @@ target_sources(ivwdataframe
 
 target_link_libraries(ivwdataframe PUBLIC inviwo::module::dataframe inviwo::module::python3)
 
+ivw_compile_optimize_on_target(ivwdataframe)
+
 ivw_install_helper(TARGET ivwdataframe
     NAMESPACE inviwo
     DESTINATION inviwo
