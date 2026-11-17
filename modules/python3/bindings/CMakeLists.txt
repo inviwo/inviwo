@@ -138,6 +138,7 @@ target_sources(inviwopy
 )
 target_link_libraries(inviwopy PUBLIC inviwo::core inviwo::module::python3)
 
+ivw_compile_optimize_on_target(inviwopy)
 
 ivw_install_helper(TARGET inviwopy
     NAMESPACE inviwo
