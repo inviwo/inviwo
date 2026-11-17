@@ -175,11 +175,11 @@ DepthOfField::DepthOfField()
     addProperties(aperture_, focusDepth_, manualFocus_, approximate_, viewCountExact_,
                   viewCountApprox_, simViewCountApprox_, clickToFocus_, camera_);
 
-    focusDepth_.readonlyDependsOn(manualFocus_, [](auto l) { return !l; });
-    clickToFocus_.readonlyDependsOn(manualFocus_, [](auto l) { return !l; });
-    viewCountExact_.visibilityDependsOn(approximate_, [](auto l) { return !l; });
-    viewCountApprox_.visibilityDependsOn(approximate_, [](auto l) { return l; });
-    simViewCountApprox_.visibilityDependsOn(approximate_, [](auto l) { return l; });
+    focusDepth_.readonlyDependsOn(manualFocus_, [](auto& l) { return !l.get(); });
+    clickToFocus_.readonlyDependsOn(manualFocus_, [](auto& l) { return !l.get(); });
+    viewCountExact_.visibilityDependsOn(approximate_, [](auto& l) { return !l.get(); });
+    viewCountApprox_.visibilityDependsOn(approximate_, [](auto& l) { return l.get(); });
+    simViewCountApprox_.visibilityDependsOn(approximate_, [](auto& l) { return l.get(); });
 
     trackingInport_.setOptional(true);
 
