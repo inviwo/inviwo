@@ -28,3 +28,14 @@
  *********************************************************************************/
 
 #include <modules/animation/datastructures/propertytrack.h>
+
+#include <inviwo/core/network/processornetwork.h>
+
+namespace inviwo::animation::detail {
+
+Property* getPropertyFromNetwork(ProcessorNetwork* network, std::string_view path) {
+    if (!network) return nullptr;
+    return network->getProperty(path);
+}
+
+}  // namespace inviwo::animation::detail

@@ -31,13 +31,17 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/portconnection.h>
 
 #include <cstdint>
 #include <functional>
 
-namespace inviwo::util {
+namespace inviwo {
+
+class ProcessorNetwork;
+
+namespace util {
 
 using OffsetCallback = std::function<ivec2(const std::vector<Processor*>& /*added*/,
                                            const std::vector<Processor*>& /*sources*/)>;
@@ -221,4 +225,6 @@ IVW_CORE_API std::shared_ptr<Processor> replaceProcessor(
 
 IVW_CORE_API bool canSplitConnection(const Processor& p, const PortConnection& connection);
 
-}  // namespace inviwo::util
+}  // namespace util
+
+}  // namespace inviwo

@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/networkeditor.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo::utilqt {
 

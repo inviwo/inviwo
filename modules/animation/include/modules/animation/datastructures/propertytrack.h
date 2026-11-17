@@ -32,7 +32,7 @@
 
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
-#include <inviwo/core/network/processornetwork.h>
+
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/exception.h>
@@ -54,6 +54,7 @@
 
 namespace inviwo {
 class Serializer;
+class ProcessorNetwork;
 template <typename T>
 class OptionProperty;
 
@@ -484,20 +485,6 @@ void PropertyTrack<Prop, Key, Seq>::serialize(Serializer& s) const {
     s.serialize("property", property_->getPath());
 }
 
-template <typename Prop, typename Key, typename Seq>
-void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
-    BaseTrack<Seq>::deserialize(d);
-
-    std::string propertyId;
-    d.deserialize("property", propertyId);
-
-    IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
-    property_ = dynamic_cast<Prop*>(network_->getProperty(propertyId));
-    if (!property_) {
-        throw SerializationException(SourceContext{}, "Could not find property {}", propertyId);
-    }
-}
-
 namespace detail {
 
 template <typename Key>
@@ -509,7 +496,24 @@ struct DefaultSequenceCreator<KeyframeSequenceTyped<Key>> {
     }
 };
 
+IVW_MODULE_ANIMATION_API Property* getPropertyFromNetwork(ProcessorNetwork* network,
+                                                          std::string_view path);
+
 }  // namespace detail
+
+template <typename Prop, typename Key, typename Seq>
+void PropertyTrack<Prop, Key, Seq>::deserialize(Deserializer& d) {
+    BaseTrack<Seq>::deserialize(d);
+
+    std::string propertyId;
+    d.deserialize("property", propertyId);
+
+    IVW_ASSERT(network_, "Property track deserialization requires a ProcessorNetwork");
+    property_ = dynamic_cast<Prop*>(detail::getPropertyFromNetwork(network_, propertyId));
+    if (!property_) {
+        throw SerializationException(SourceContext{}, "Could not find property {}", propertyId);
+    }
+}
 
 }  // namespace animation
 
