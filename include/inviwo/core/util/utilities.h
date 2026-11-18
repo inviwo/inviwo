@@ -87,7 +87,7 @@ IVW_CORE_API void validateIdentifier(std::string_view identifier, std::string_vi
  *     );
  */
 IVW_CORE_API std::string findUniqueIdentifier(std::string_view identifier,
-                                              std::function<bool(std::string_view)> isUnique,
+                                              const std::function<bool(std::string_view)>& isUnique,
                                               std::string_view sep = " ");
 
 [[deprecated("use util::stripIdentifier")]] IVW_CORE_API std::string cleanIdentifier(

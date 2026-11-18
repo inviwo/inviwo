@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-11-13 Properties are no longer movable or assignable
+`Property`, `PropertyOwner`, `CompositeProperty`, and all the concrete property classes now have reference semantics: move construction and copy/move assignment are deleted. The copy constructor of `PropertyOwner` is `protected`, the copy constructors of the concrete properties remain public since they are needed by `clone()` and by the copy constructors of composite properties. Use `clone()` to duplicate a property, and `set()` to copy a value from another property. Value assignment of leaf properties, e.g. `floatProperty = 1.0f`, is unchanged.
+Properties can no longer be moved into containers, `std::variant`s, or members. Construct them in place instead, for example by forwarding the constructor arguments, see `DataFrameToMesh`'s `ColumnMapper`, or by holding them in a `std::unique_ptr`. Returning a property as a prvalue still works.
+Leaf properties that are not used as base classes are now `final`. Derived `CompositeProperty` classes must override `clone()`, otherwise the object is sliced (checked in debug builds).
+
 ## 2026-10-13 Analytic Volume Raycaster
 Added the `AnalyticVolumeRaycaster` (basegl), a volume raycaster like the `StandardVolumeRaycaster` that does not need any entry and exit point images. Instead the entry and exit points are computed analytically in the fragment shader by intersecting each camera ray with a parallelepiped (origin and three edge vectors) or a sphere (center and radius). The geometry can be defined in the Data, Model, or World space of the volume, is optionally clipped against the volume bounding box, and is always clipped against the camera near and far planes. The functionality is provided by the new `AnalyticEntryExitComponent` shader component, which can replace the `EntryExitComponent` in other shader component based raycasters.
 

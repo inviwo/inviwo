@@ -39,6 +39,7 @@
 #include <inviwo/core/io/serialization/serialization.h>
 
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -53,7 +54,7 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
     , path_{}
     , displayName_("displayName", std::string(displayName))
     , readOnly_("readonly", readOnly == ReadOnly::Yes)
-    , semantics_("semantics", semantics)
+    , semantics_("semantics", std::move(semantics))
     , visible_("visible", true)
     , propertyModified_(true)
     , invalidationLevel_(invalidationLevel)
@@ -70,7 +71,7 @@ Property::Property(std::string_view identifier, std::string_view displayName, Do
 
 Property::Property(std::string_view identifier, std::string_view displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, Document{}, invalidationLevel, semantics) {}
+    : Property(identifier, displayName, Document{}, invalidationLevel, std::move(semantics)) {}
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
@@ -91,50 +92,8 @@ Property::Property(const Property& rhs)
     , autoLinkTo_{rhs.autoLinkTo_}
     , help_{rhs.help_} {}
 
-Property::Property(Property&& rhs)
-    : PropertyObservable(std::move(rhs))
-    , MetaDataOwner(std::move(rhs))
-    , onChangeCallback_{std::move(rhs.onChangeCallback_)}
-    , serializationMode_(std::move(rhs.serializationMode_))
-    , identifier_(std::move(rhs.identifier_))
-    , path_{}
-    , displayName_(std::move(rhs.displayName_))
-    , readOnly_(std::move(rhs.readOnly_))
-    , semantics_(std::move(rhs.semantics_))
-    , visible_(std::move(rhs.visible_))
-    , propertyModified_{rhs.propertyModified_}
-    , invalidationLevel_{rhs.invalidationLevel_}
-    , owner_(nullptr)
-    , propertyWidgets_{}
-    , initiatingWidget_(nullptr)
-    , autoLinkTo_{std::move(rhs.autoLinkTo_)}
-    , help_{std::move(rhs.help_)} {}
-
-Property& Property::operator=(Property&& that) {
-    if (this != &that) {
-        PropertyObservable::operator=(std::move(that));
-        MetaDataOwner::operator=(std::move(that));
-        onChangeCallback_ = std::move(that.onChangeCallback_);
-        serializationMode_ = std::move(that.serializationMode_);
-        identifier_ = std::move(that.identifier_);
-        path_.clear();
-        displayName_ = std::move(that.displayName_);
-        readOnly_ = std::move(that.readOnly_);
-        semantics_ = std::move(that.semantics_);
-        visible_ = std::move(that.visible_);
-        propertyModified_ = that.propertyModified_;
-        invalidationLevel_ = that.invalidationLevel_;
-        owner_ = nullptr;
-        propertyWidgets_.clear();
-        initiatingWidget_ = nullptr;
-        autoLinkTo_ = std::move(that.autoLinkTo_);
-        help_ = std::move(that.help_);
-    }
-    return *this;
-}
-
 Property::~Property() {
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         owner->removeProperty(this);
     }
 }
@@ -254,9 +213,9 @@ Property& Property::propertyModified() {
     onChangeCallback_.invokeAll();
     setModified();
 
-    if (auto owner = getOwner()) {
+    if (auto* owner = getOwner()) {
         // Evaluate property links
-        if (auto processor = owner->getProcessor()) {
+        if (auto* processor = owner->getProcessor()) {
             processor->notifyObserversAboutPropertyChange(this);
         }
 
@@ -353,8 +312,8 @@ Document Property::getDescription() const {
     tb(H("Identifier"), identifier_);
     tb(H("Class Identifier"), getClassIdentifier());
     tb(H("Path"), getPath());
-    util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); }, readOnly_,
-                            semantics_, visible_);
+    util::for_each_argument([&tb](const auto& p) { tb(H(camelCaseToHeader(p.name)), p.value); },
+                            readOnly_, semantics_, visible_);
     tb(H("Validation Level"), invalidationLevel_);
 
     return doc;
@@ -371,8 +330,8 @@ void Property::accept(NetworkVisitor& visitor) { visitor.visit(*this); }
 // modified is __not__ called. This state changes should not effect the outcome of a
 // network evaluation.
 void Property::notifyAboutChange() {
-    if (auto owner = getOwner()) {
-        if (auto processor = owner->getProcessor()) {
+    if (auto* owner = getOwner()) {
+        if (auto* processor = owner->getProcessor()) {
             // By putting a nullptr here we will avoid evaluation links.
             processor->notifyObserversAboutPropertyChange(nullptr);
         }
@@ -399,7 +358,7 @@ bool Property::needsSerialization() const {
         case PropertySerializationMode::All:     return true;
         case PropertySerializationMode::None:    return false;
         case PropertySerializationMode::Default: [[fallthrough]];
-        default:                                 return !isDefaultState() || !getMetaDataMap()->empty();
+        default: return !isDefaultState() || !getMetaDataMap()->empty();
     }
 }
 

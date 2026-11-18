@@ -46,6 +46,7 @@ namespace inviwo {
 
 template <typename T, size_t N>
 struct InviwoDefaultData {
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     constexpr InviwoDefaultData(StaticString<N> aname, uvec2 adim, T aval, T amin, T amax, T ainc)
         : name{aname}
         , dim{adim}

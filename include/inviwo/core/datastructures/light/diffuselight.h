@@ -34,9 +34,13 @@
 
 namespace inviwo {
 
-class IVW_CORE_API DiffuseLight : public LightSource {
+class IVW_CORE_API DiffuseLight final : public LightSource {
 public:
     DiffuseLight() = default;
+    DiffuseLight(const DiffuseLight&) = default;
+    DiffuseLight(DiffuseLight&&) = default;
+    DiffuseLight& operator=(const DiffuseLight&) = default;
+    DiffuseLight& operator=(DiffuseLight&&) = default;
     virtual ~DiffuseLight() = default;
     virtual DiffuseLight* clone() const override;
 

@@ -136,6 +136,8 @@ protected:
                        BufferTarget target = BufferTarget::Data);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
+    BufferRAM(BufferRAM&& rhs) = default;
+    BufferRAM& operator=(BufferRAM&& that) = default;
 };
 
 /**
@@ -152,6 +154,8 @@ public:
     explicit BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs) = default;
     BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that) = default;
+    BufferRAMPrecision(BufferRAMPrecision<T, Target>&& rhs) = default;
+    BufferRAMPrecision<T, Target>& operator=(BufferRAMPrecision<T, Target>&& that) = default;
     virtual ~BufferRAMPrecision() = default;
     virtual BufferRAMPrecision<T, Target>* clone() const override;
 
@@ -406,12 +410,14 @@ auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
         getDataFormatId(), [&]<typename T>() -> Result {
             switch (getBufferTarget()) {
                 case BufferTarget::Index:
-                    return callable(static_cast<BufferRAMPrecision<T, BufferTarget::Index>*>(this),
-                                    std::forward<Args>(args)...);
+                    return std::forward<Callable>(callable)(
+                        static_cast<BufferRAMPrecision<T, BufferTarget::Index>*>(this),
+                        std::forward<Args>(args)...);
                 case BufferTarget::Data:
                 default:
-                    return callable(static_cast<BufferRAMPrecision<T, BufferTarget::Data>*>(this),
-                                    std::forward<Args>(args)...);
+                    return std::forward<Callable>(callable)(
+                        static_cast<BufferRAMPrecision<T, BufferTarget::Data>*>(this),
+                        std::forward<Args>(args)...);
             }
         });
 }
@@ -422,12 +428,12 @@ auto BufferRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
         getDataFormatId(), [&]<typename T>() -> Result {
             switch (getBufferTarget()) {
                 case BufferTarget::Index:
-                    return callable(
+                    return std::forward<Callable>(callable)(
                         static_cast<const BufferRAMPrecision<T, BufferTarget::Index>*>(this),
                         std::forward<Args>(args)...);
                 case BufferTarget::Data:
                 default:
-                    return callable(
+                    return std::forward<Callable>(callable)(
                         static_cast<const BufferRAMPrecision<T, BufferTarget::Data>*>(this),
                         std::forward<Args>(args)...);
             }

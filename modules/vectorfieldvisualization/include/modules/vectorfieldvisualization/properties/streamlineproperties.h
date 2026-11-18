@@ -45,6 +45,9 @@ public:
 
     StreamLineProperties(std::string_view identifier, std::string_view displayName);
     StreamLineProperties(const StreamLineProperties& rhs);
+    StreamLineProperties(StreamLineProperties&&) = delete;
+    StreamLineProperties& operator=(const StreamLineProperties&) = delete;
+    StreamLineProperties& operator=(StreamLineProperties&&) = delete;
     virtual StreamLineProperties* clone() const override;
     virtual ~StreamLineProperties();
 };

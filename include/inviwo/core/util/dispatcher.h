@@ -66,6 +66,7 @@ public:
     // Allow move semantics
     Dispatcher(Dispatcher&& rhs) noexcept : mutex_{}, callbacks_{} {
         const std::scoped_lock lock{mutex_, rhs.mutex_};
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) must be done under the lock
         callbacks_ = std::move(rhs.callbacks_);
     }
     Dispatcher& operator=(Dispatcher&& that) noexcept {

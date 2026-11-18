@@ -46,6 +46,10 @@ class FileObserver;
 class IVW_CORE_API FileSystemObserver {
 public:
     FileSystemObserver() = default;
+    FileSystemObserver(const FileSystemObserver&) = delete;
+    FileSystemObserver(FileSystemObserver&&) = delete;
+    FileSystemObserver& operator=(const FileSystemObserver&) = delete;
+    FileSystemObserver& operator=(FileSystemObserver&&) = delete;
     virtual ~FileSystemObserver() = default;
 
     /**

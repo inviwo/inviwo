@@ -50,8 +50,12 @@
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
 
 #include <array>
-#include <variant>
+#include <memory>
+#include <optional>
 #include <span>
+#include <string>
+#include <utility>
+#include <variant>
 
 namespace inviwo {
 
@@ -105,15 +109,16 @@ public:
     struct Type {
         using ElemType = T;
 
-        explicit Type(Transform transform,
-                      std::optional<std::array<std::string, N>> defaults = std::nullopt)
+        // The transform is constructed in place from \p args since properties can not be moved.
+        template <typename... Args>
+        explicit Type(std::optional<std::array<std::string, N>> defaults, Args&&... args)
             : sources{util::make_array<N>([](auto i) {
                 static constexpr std::array<std::string_view, 4> labels = {"x", "y", "z", "w"};
                 return ColumnOptionProperty{fmt::format("source{}", i),
                                             fmt::format("Source {}", labels[i]),
                                             ColumnOptionProperty::AddNoneOption::Yes};
             })}
-            , transform{std::move(transform)}
+            , transform(std::forward<Args>(args)...)
             , defaultColumns{std::move(defaults)} {}
 
         std::array<ColumnOptionProperty, N> sources;
@@ -130,7 +135,7 @@ public:
     using Types = std::variant<SpatialType, RealType, IntType, PickingType, ColorType>;
 
     struct IVW_MODULE_DATAFRAME_API Info {
-        Info(BufferType bt, Types type, bool doTransformInit = false);
+        Info(BufferType bt, std::function<Types()> makeType, bool doTransformInit = false);
         glm::dvec2 getDataRange() const;
         Types type;
         BufferType bufferType;

@@ -190,8 +190,8 @@ Mesh::BufferVector ColumnMapper::getBuffers(const DataFrame& df) {
     return buffers;
 }
 
-ColumnMapper::Info::Info(BufferType bt, Types type, bool doTransformInit)
-    : type{std::move(type)}
+ColumnMapper::Info::Info(BufferType bt, std::function<Types()> makeType, bool doTransformInit)
+    : type{makeType()}
     , bufferType{bt}
     , comp{toLower(enumToStr(bt)), enumToStr(bt)}
     , range("range", "Range", "Range of input data, before any transforms"_help, 0.0, 0.0,
@@ -264,23 +264,37 @@ DataFrameToMesh::DataFrameToMesh()
     , bnl_{"brushingAndLinking"}
     , outport_{"outport_", ""_help}
     , drawType_{"drawType", "Draw Type", {{"points", "Points", 0}, {"lines", "Lines", 1}}, 0}
-    , infos_{{{PositionAttrib, SpatialType{OrdinalProperty<dmat4>{"transform", "Transform",
-                                                                  util::transformState<dmat4>()},
-                                           std::array<std::string, 3>{"x", "y", "z"}}},
-              {NormalAttrib, SpatialType{OrdinalProperty<dmat4>("transform", "Transform",
-                                                                util::transformState<dmat4>())}},
-              {ColorAttrib, ColorType{TransferFunctionProperty("transform", "Transform")}},
-              {TexCoordAttrib, SpatialType{OrdinalProperty<dmat4>("transform", "Transform",
-                                                                  util::transformState<dmat4>())}},
-              {CurvatureAttrib, RealType{ScaleAndOffset{}}},
-              {IndexAttrib, IntType{ScaleAndOffset{}}},
-              {RadiiAttrib, RealType{ScaleAndOffset{}}},
-              {PickingAttrib,
-               PickingType{
-                   OffsetAndPicking{this, 0, [this](PickingEvent* event) { picking(event); }}},
-               true},
-              {ScalarMetaAttrib, RealType{ScaleAndOffset{}}},
-              {IntMetaAttrib, IntType{ScaleAndOffset{}}}}}
+    , infos_{{{PositionAttrib,
+               []() {
+                   return SpatialType{std::array<std::string, 3>{"x", "y", "z"}, "transform",
+                                      "Transform", util::transformState<dmat4>()};
+               }},
+              {NormalAttrib,
+               []() {
+                   return SpatialType{std::nullopt, "transform", "Transform",
+                                      util::transformState<dmat4>()};
+               }},
+              {ColorAttrib,
+               []() {
+                   return ColorType{std::nullopt, "transform", "Transform"};
+               }},
+              {TexCoordAttrib,
+               []() {
+                   return SpatialType{std::nullopt, "transform", "Transform",
+                                      util::transformState<dmat4>()};
+               }},
+              {CurvatureAttrib, []() { return RealType{std::nullopt}; }},
+              {IndexAttrib, []() { return IntType{std::nullopt}; }},
+              {RadiiAttrib, []() { return RealType{std::nullopt}; }},
+              Info{PickingAttrib,
+                   [this]() -> util::ColumnMapper::Types {
+                       return util::ColumnMapper::Types{
+                           std::in_place_type_t<PickingType>{}, std::nullopt, this, 0,
+                           [this](PickingEvent* event) { picking(event); }};
+                   },
+                   true},
+              {ScalarMetaAttrib, []() { return RealType{std::nullopt}; }},
+              {IntMetaAttrib, []() { return IntType{std::nullopt}; }}}}
 
     , mapper_{infos_}
     , modelMatrix_{"modelMatrix", "Model Matrix", util::transformState(mat4{1.0})}

@@ -62,6 +62,10 @@ public:
     using clock_t = std::chrono::high_resolution_clock;
 
     TimerThread();
+    TimerThread(const TimerThread&) = delete;
+    TimerThread(TimerThread&&) = delete;
+    TimerThread& operator=(const TimerThread&) = delete;
+    TimerThread& operator=(TimerThread&&) = delete;
     ~TimerThread();
 
     std::optional<clock_t::time_point> lastDelay();
@@ -84,6 +88,7 @@ private:
         TimerInfo& operator=(const TimerInfo&) = default;
         TimerInfo(TimerInfo&&) = default;
         TimerInfo& operator=(TimerInfo&&) = default;
+        ~TimerInfo() = default;
 
         clock_t::time_point timePoint_;
         std::weak_ptr<ControlBlock> controlBlock_;
@@ -116,6 +121,10 @@ public:
 
     Timer(Milliseconds interval, std::function<void()> callback,
           TimerThread& thread = util::getDefaultTimerThread());
+    Timer(const Timer&) = delete;
+    Timer(Timer&&) = delete;
+    Timer& operator=(const Timer&) = delete;
+    Timer& operator=(Timer&&) = delete;
     ~Timer();
 
     void start(Milliseconds interval, std::function<void()> callback);
@@ -147,6 +156,10 @@ public:
     using Milliseconds = std::chrono::milliseconds;
     Delay(Milliseconds defaultDelay, std::function<void()> defaltCallback,
           TimerThread& thread = util::getDefaultTimerThread());
+    Delay(const Delay&) = delete;
+    Delay(Delay&&) = delete;
+    Delay& operator=(const Delay&) = delete;
+    Delay& operator=(Delay&&) = delete;
     ~Delay();
 
     void start(Milliseconds delay, std::function<void()> callback);

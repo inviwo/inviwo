@@ -33,17 +33,15 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/util/fmtutils.h>
 
-#include <iosfwd>
+#include <cstdint>
 
 namespace inviwo {
 
 class Document;
 
-enum class LightSourceType { Area = 0, SpotLight, Point, Directional };
+enum class LightSourceType : std::uint8_t { Area = 0, SpotLight, Point, Directional };
 
 IVW_CORE_API std::string_view enumToStr(LightSourceType lt);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, LightSourceType lt);
 
 class IVW_CORE_API LightSource : public SpatialEntity {
 public:
@@ -111,6 +109,11 @@ public:
     static constexpr std::string_view dataName{"LightSource"};
 
 protected:
+    LightSource(const LightSource&) = default;
+    LightSource(LightSource&&) = default;
+    LightSource& operator=(const LightSource&) = default;
+    LightSource& operator=(LightSource&&) = default;
+
     vec3 intensity_;     // Color of light source, flux density per solid angle (given in watt per
                          // steradian W*s*r^-1)
     float fieldOfView_;  // Field of view in radians

@@ -40,6 +40,9 @@
 
 namespace inviwo {
 
+// The iterator variables are only used in decltype
+// NOLINTBEGIN(clang-analyzer-deadcode.DeadStores)
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(IndirectIteratorTest, Pair) {
     std::vector<int> ref;
     std::vector<std::unique_ptr<int>> vec;
@@ -134,10 +137,13 @@ TEST(IndirectIteratorTest, Pair) {
         static_assert(std::is_assignable_v<decltype(*b), int>);
     }
 }
+// NOLINTEND(clang-analyzer-deadcode.DeadStores)
 
 using iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::iterator>;
 using const_iterator = util::IndirectIterator<std::vector<std::unique_ptr<int>>::const_iterator>;
-static int constFun(const_iterator iter) { return *iter; }
+namespace {
+int constFun(const_iterator iter) { return *iter; }
+}  // namespace
 
 TEST(IndirectIteratorTest, Conversion) {
     std::vector<std::unique_ptr<int>> vec;

@@ -68,9 +68,9 @@ public:
 
     explicit EventTransformer(const std::vector<View>& views = {});
     EventTransformer(const EventTransformer&) = delete;
-    EventTransformer(EventTransformer&&) = default;
+    EventTransformer(EventTransformer&&);
     EventTransformer& operator=(const EventTransformer&) = delete;
-    EventTransformer& operator=(EventTransformer&&) = default;
+    EventTransformer& operator=(EventTransformer&&);
     ~EventTransformer();
 
     bool propagateEvent(Event* event, Outport* source);
@@ -88,9 +88,9 @@ private:
     void propagateEvent(Event* event, const Propagator& propagate);
     void propagateEvent(PickingEvent& event, const Propagator& propagate);
 
-    void propagateEvent(MouseEvent& event, MouseSM& state, const Propagator& propagate);
-    void propagateEvent(WheelEvent& event, MouseSM& state, const Propagator& propagate);
-    void propagateEvent(GestureEvent& event, GestureSM& state, const Propagator& propagate);
+    void propagateEvent(MouseEvent& event, MouseSM& state, const Propagator& propagate) const;
+    void propagateEvent(WheelEvent& event, MouseSM& state, const Propagator& propagate) const;
+    void propagateEvent(GestureEvent& event, GestureSM& state, const Propagator& propagate) const;
     void propagateEvent(TouchEvent& event, TouchSM& state, const Propagator& propagate);
 
     std::unique_ptr<MouseSM> mouse_;

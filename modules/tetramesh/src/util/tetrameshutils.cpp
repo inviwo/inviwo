@@ -145,7 +145,8 @@ std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& tetraMesh, const std::
     mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
                      util::makeIndexBuffer(std::move(indices)));
     // copy all transformations to the boundary mesh
-    mesh->SpatialEntity::operator=(tetraMesh);
+    mesh->setModelMatrix(tetraMesh.getModelMatrix());
+    mesh->setWorldMatrix(tetraMesh.getWorldMatrix());
     return mesh;
 }
 

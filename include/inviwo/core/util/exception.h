@@ -52,7 +52,12 @@ public:
     explicit Exception(std::string_view message = "",
                        SourceContext context = std::source_location::current());
     Exception(fmt::string_view format, fmt::format_args&& args, SourceContext context);
+    Exception(const Exception&) = default;
+    Exception(Exception&&) = default;
+    Exception& operator=(const Exception&) = default;
+    Exception& operator=(Exception&&) = default;
     template <typename... Args>
+    // NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) fmt needs lvalues
     Exception(SourceContext context, fmt::format_string<Args...> format, Args&&... args)
         : Exception{format.get(), fmt::make_format_args(args...), std::move(context)} {}
     virtual ~Exception() noexcept;
@@ -102,8 +107,6 @@ public:
     using Exception::Exception;
     ModuleInitException(std::string_view message, SourceContext context,
                         std::vector<std::string> modulesToDeregister);
-    virtual ~ModuleInitException() noexcept = default;
-
     /**
      * When registering a module fails, also remove these modules.
      * Useful for implicit dependencies. Like OpenGL's dependency on GLFW or OpenGLQt module.

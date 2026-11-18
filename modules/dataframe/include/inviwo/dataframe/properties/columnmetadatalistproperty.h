@@ -64,6 +64,9 @@ public:
         PropertySemantics semantics = PropertySemantics::Default);
 
     ColumnMetaDataListProperty(const ColumnMetaDataListProperty& rhs);
+    ColumnMetaDataListProperty(ColumnMetaDataListProperty&&) = delete;
+    ColumnMetaDataListProperty& operator=(const ColumnMetaDataListProperty&) = delete;
+    ColumnMetaDataListProperty& operator=(ColumnMetaDataListProperty&&) = delete;
     virtual ColumnMetaDataListProperty* clone() const override;
 
     virtual ~ColumnMetaDataListProperty() = default;

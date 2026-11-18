@@ -39,6 +39,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <utility>
 
 namespace inviwo {
 
@@ -118,7 +119,7 @@ struct MinMaxPropertyState {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public Property {
+class MinMaxProperty final : public Property {
 public:
     using value_type = glm::tvec2<T, glm::defaultp>;
     virtual std::string_view getClassIdentifier() const override;
@@ -139,9 +140,12 @@ public:
                    PropertySemantics semantics = MinMaxPropertyState<T>::defaultSemantics());
 
     MinMaxProperty(std::string_view identifier, std::string_view displayName,
-                   MinMaxPropertyState<T> state);
+                   const MinMaxPropertyState<T>& state);
 
     MinMaxProperty(const MinMaxProperty& rhs) = default;
+    MinMaxProperty(MinMaxProperty&& rhs) = delete;
+    MinMaxProperty& operator=(const MinMaxProperty&) = delete;
+    MinMaxProperty& operator=(MinMaxProperty&&) = delete;
     MinMaxProperty& operator=(const value_type& value);
 
     virtual MinMaxProperty<T>* clone() const override;
@@ -244,10 +248,12 @@ struct PropertyTraits<MinMaxProperty<T>> {
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
+                                  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                                   Document help, T valueMin, T valueMax, T rangeMin, T rangeMax,
                                   T increment, T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics, ReadOnly readOnly)
-    : Property{identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly}
+    : Property{identifier,        displayName,          std::move(help),
+               invalidationLevel, std::move(semantics), readOnly}
     , value_{"value", value_type(valueMin, valueMax)}
     , range_{"range", value_type(rangeMin, rangeMax)}
     , increment_{"increment", increment}
@@ -264,13 +270,21 @@ MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view 
                                   T valueMin, T valueMax, T rangeMin, T rangeMax, T increment,
                                   T minSeparation, InvalidationLevel invalidationLevel,
                                   PropertySemantics semantics)
-    : MinMaxProperty{identifier,    displayName,       {},       valueMin,
-                     valueMax,      rangeMin,          rangeMax, increment,
-                     minSeparation, invalidationLevel, semantics} {}
+    : MinMaxProperty{identifier,
+                     displayName,
+                     {},
+                     valueMin,
+                     valueMax,
+                     rangeMin,
+                     rangeMax,
+                     increment,
+                     minSeparation,
+                     invalidationLevel,
+                     std::move(semantics)} {}
 
 template <typename T>
 MinMaxProperty<T>::MinMaxProperty(std::string_view identifier, std::string_view displayName,
-                                  MinMaxPropertyState<T> state)
+                                  const MinMaxPropertyState<T>& state)
     : MinMaxProperty{identifier,          displayName,
                      state.help,          state.valueMin,
                      state.valueMax,      state.rangeMin,
@@ -488,7 +502,7 @@ inline bool MinMaxProperty<T>::isDefaultState() const {
 
 template <typename T>
 const BaseCallBack* MinMaxProperty<T>::onRangeChange(std::function<void()> callback) {
-    return onRangeChangeCallback_.addLambdaCallback(callback);
+    return onRangeChangeCallback_.addLambdaCallback(std::move(callback));
 }
 
 template <typename T>
@@ -596,7 +610,7 @@ Document MinMaxProperty<T>::getDescription() const {
     tb(H("Stop"), value_.value[1]);
     tb(H("Max"), range_.value[1]);
 
-    util::for_each_argument([&tb](auto p) { tb(H(camelCaseToHeader(p.name)), p.value); },
+    util::for_each_argument([&tb](const auto& p) { tb(H(camelCaseToHeader(p.name)), p.value); },
                             increment_, minSeparation_);
 
     return doc;

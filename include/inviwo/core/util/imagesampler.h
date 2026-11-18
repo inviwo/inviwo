@@ -54,7 +54,7 @@ class LayerRAM;
  * pixel. Output values are bi-linear interpolated between the 4 nearest neighbors.
  */
 template <typename ReturnType = dvec4>
-class ImageSampler : public SpatialSampler<ReturnType> {
+class ImageSampler final : public SpatialSampler<ReturnType> {
 public:
     /**
      * Creates a ImageSampler for the given Layer, does not take ownership of \p layer.
@@ -68,6 +68,7 @@ public:
         , sharedImage_(nullptr) {}
 
     explicit ImageSampler(std::shared_ptr<const Layer> layer) : ImageSampler(layer.get()) {
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
         sharedLayer_ = std::move(layer);
     }
 
@@ -85,9 +86,14 @@ public:
      */
     explicit ImageSampler(std::shared_ptr<const Image> sharedImage)
         : ImageSampler(sharedImage->getColorLayer()) {
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
         sharedImage_ = std::move(sharedImage);
     }
 
+    ImageSampler(const ImageSampler&) = default;
+    ImageSampler(ImageSampler&&) = default;
+    ImageSampler& operator=(const ImageSampler&) = default;
+    ImageSampler& operator=(ImageSampler&&) = default;
     virtual ~ImageSampler() = default;
 
     using SpatialSampler<ReturnType>::sample;
@@ -159,11 +165,15 @@ using ImageSpatialSampler = ImageSampler<glm::vec<4, double>>;
  * should be the same.
  */
 template <typename ReturnType, typename DataType>
-class TemplateImageSampler : public SpatialSampler<ReturnType> {
+class TemplateImageSampler final : public SpatialSampler<ReturnType> {
 public:
     explicit TemplateImageSampler(const Layer* layer);
     explicit TemplateImageSampler(const Image* img);
     explicit TemplateImageSampler(std::shared_ptr<const Image> sharedImage);
+    TemplateImageSampler(const TemplateImageSampler&) = default;
+    TemplateImageSampler(TemplateImageSampler&&) = default;
+    TemplateImageSampler& operator=(const TemplateImageSampler&) = default;
+    TemplateImageSampler& operator=(TemplateImageSampler&&) = default;
     virtual ~TemplateImageSampler() = default;
 
     /**
@@ -217,6 +227,7 @@ template <typename ReturnType, typename DataType>
 TemplateImageSampler<ReturnType, DataType>::TemplateImageSampler(
     std::shared_ptr<const Image> sharedImage)
     : TemplateImageSampler(sharedImage->getColorLayer()) {
+    // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer) delegating constructor
     sharedImage_ = std::move(sharedImage);
 }
 

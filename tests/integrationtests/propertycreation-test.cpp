@@ -114,6 +114,9 @@ TEST_P(PropertyCreationTests, Create) {
                 << "ClassIdentifier mismatch" << errorMsg;
             EXPECT_EQ(org->getSemantics(), clone->getSemantics())
                 << "Semantics mismatch" << errorMsg;
+            EXPECT_NE(org, clone) << "Shared sub property" << errorMsg;
+            EXPECT_NE(org->getOwner(), clone->getOwner()) << "Shared owner" << errorMsg;
+            EXPECT_NE(clone->getOwner(), nullptr) << "Missing owner" << errorMsg;
         }
     }
 }

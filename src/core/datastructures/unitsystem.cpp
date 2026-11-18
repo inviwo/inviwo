@@ -97,6 +97,7 @@ constexpr bool any(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 template <typename OP>
 constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op) {
+    // NOLINTNEXTLINE(readability-use-anyofallof) structured binding over constexpr table
     for (auto&& [name, abbr, getter] : baseUnits) {
         const auto aPow = std::invoke(getter, a);
         const auto bPow = std::invoke(getter, b);
@@ -108,6 +109,7 @@ constexpr bool all(units::detail::unit_data a, units::detail::unit_data b, OP op
 }
 
 constexpr bool isSubset(units::detail::unit_data part, units::detail::unit_data whole) {
+    // NOLINTNEXTLINE(readability-use-anyofallof) structured binding over constexpr table
     for (auto&& [name, abbr, getter] : baseUnits) {
         const auto pPow = std::invoke(getter, part);
         const auto wPow = std::invoke(getter, whole);
@@ -149,7 +151,7 @@ unitgroups::EnabledGroups util::getSystemUnitGroups() {
     unitgroups::EnabledGroups enabledGroups = unitgroups::allGroups;
 
     if (InviwoApplication::isInitialized()) {
-        if (auto us = InviwoApplication::getPtr()->getSettingsByType<UnitSettings>()) {
+        if (auto* us = InviwoApplication::getPtr()->getSettingsByType<UnitSettings>()) {
             for (auto&& [enabled, prop] : util::zip(enabledGroups, us->unitGroups)) {
                 enabled = prop.get();
             }
@@ -176,6 +178,7 @@ std::unordered_map<units::detail::unit_data, std::vector<UnitDesc>> util::getUni
 }
 
 std::pair<double, std::vector<std::tuple<std::string_view, std::string_view, int>>>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enabledGroups,
                               UseUnitPrefixes usesPrefixes) {
 
@@ -274,8 +277,8 @@ util::findBestSetOfNamedUnits(Unit unit, const unitgroups::EnabledGroups& enable
     }
 
     // Order units alphabetically to make it deterministic (sort by abbr)
-    std::sort(winner.begin(), winner.end(),
-              [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
+    std::ranges::sort(winner,
+                      [](const auto& a, const auto& b) { return std::get<1>(a) < std::get<1>(b); });
 
     if (closestMultiplier == std::numeric_limits<double>::max()) {
         closestMultiplier = 1.0;
@@ -306,8 +309,8 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
 
     for (auto&& [prefix, abbr, pow] : niceUnits) {
         if (pow > 0) {
-            it = std::copy(prefix.begin(), prefix.end(), it);
-            it = std::copy(abbr.begin(), abbr.end(), it);
+            it = std::ranges::copy(prefix, it).out;
+            it = std::ranges::copy(abbr, it).out;
             it = std::copy(powers[pow].begin(), powers[pow].end(), it);
             ++pos;
         } else if (pow < 0) {
@@ -322,8 +325,8 @@ std::back_insert_iterator<fmt::memory_buffer> util::formatUnitTo(
         if (neg > 1) *it++ = '(';
         for (auto&& [prefix, abbr, pow] : niceUnits) {
             if (pow < 0) {
-                it = std::copy(prefix.begin(), prefix.end(), it);
-                it = std::copy(abbr.begin(), abbr.end(), it);
+                it = std::ranges::copy(prefix, it).out;
+                it = std::ranges::copy(abbr, it).out;
                 it = std::copy(powers[-pow].begin(), powers[-pow].end(), it);
             }
         }

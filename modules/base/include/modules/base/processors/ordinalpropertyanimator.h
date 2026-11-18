@@ -77,7 +77,9 @@ public:
 
     OrdinalAnimationProperty(std::string_view identifier, std::string_view displayName);
     OrdinalAnimationProperty(const OrdinalAnimationProperty& rhs);
-    OrdinalAnimationProperty& operator=(const OrdinalAnimationProperty& that) = default;
+    OrdinalAnimationProperty(OrdinalAnimationProperty&&) = delete;
+    OrdinalAnimationProperty& operator=(const OrdinalAnimationProperty& that) = delete;
+    OrdinalAnimationProperty& operator=(OrdinalAnimationProperty&&) = delete;
     virtual OrdinalAnimationProperty* clone() const override;
     virtual ~OrdinalAnimationProperty() = default;
 

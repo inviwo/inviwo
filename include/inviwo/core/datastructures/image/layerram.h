@@ -38,6 +38,7 @@
 #include <inviwo/core/resourcemanager/resource.h>
 
 #include <algorithm>
+#include <utility>
 
 #include <glm/gtx/component_wise.hpp>
 #include <span>
@@ -147,6 +148,8 @@ protected:
     explicit LayerRAM(LayerType type = LayerType::Color);
     LayerRAM(const LayerRAM& rhs) = default;
     LayerRAM& operator=(const LayerRAM& that) = default;
+    LayerRAM(LayerRAM&& rhs) = default;
+    LayerRAM& operator=(LayerRAM&& that) = default;
 };
 
 /**
@@ -170,6 +173,8 @@ public:
 
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
+    LayerRAMPrecision(LayerRAMPrecision<T>&& rhs);
+    LayerRAMPrecision<T>& operator=(LayerRAMPrecision<T>&& that);
     virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision();
 
@@ -325,7 +330,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
 
         const auto dim = that.dimensions_;
-        auto data = std::make_unique<T[]>(glm::compMul(dimensions_));
+        auto data = std::make_unique<T[]>(glm::compMul(dim));
         std::copy(that.getView().begin(), that.getView().end(), data.get());
         data_.swap(data);
 
@@ -340,6 +345,30 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
     }
     return *this;
 }
+
+template <typename T>
+LayerRAMPrecision<T>::LayerRAMPrecision(LayerRAMPrecision<T>&& rhs)
+    : LayerRAM(std::move(rhs))
+    , dimensions_(std::exchange(rhs.dimensions_, size2_t{0}))
+    , data_(std::move(rhs.data_))
+    , swizzleMask_(rhs.swizzleMask_)
+    , interpolation_{rhs.interpolation_}
+    , wrapping_{rhs.wrapping_} {}
+
+template <typename T>
+LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(LayerRAMPrecision<T>&& that) {
+    if (this != &that) {
+        LayerRAM::operator=(std::move(that));
+        resource::remove(resource::toRAM(data_));
+        data_ = std::move(that.data_);
+        dimensions_ = std::exchange(that.dimensions_, size2_t{0});
+        swizzleMask_ = that.swizzleMask_;
+        interpolation_ = that.interpolation_;
+        wrapping_ = that.wrapping_;
+    }
+    return *this;
+}
+
 template <typename T>
 LayerRAMPrecision<T>::~LayerRAMPrecision() {
     resource::remove(resource::toRAM(data_));
@@ -526,6 +555,7 @@ size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
 }
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
+// NOLINTBEGIN(cppcoreguidelines-rvalue-reference-param-not-moved)
 auto LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
     return dispatching::singleDispatch<Result, Predicate>(
         getDataFormatId(),
@@ -543,9 +573,15 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
         },
         std::forward<Callable>(callable), std::forward<Args>(args)...);
 }
+// NOLINTEND(cppcoreguidelines-rvalue-reference-param-not-moved)
 
 class IVW_CORE_API LayerRamResizer {
 public:
+    LayerRamResizer() = default;
+    LayerRamResizer(const LayerRamResizer&) = default;
+    LayerRamResizer(LayerRamResizer&&) = default;
+    LayerRamResizer& operator=(const LayerRamResizer&) = default;
+    LayerRamResizer& operator=(LayerRamResizer&&) = default;
     virtual ~LayerRamResizer() = default;
 
     /**

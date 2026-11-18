@@ -47,8 +47,10 @@ public:
                                double aspectRatio = cameradefaults::aspectRatio,
                                double fieldOfView = cameradefaults::fieldOfView);
     virtual ~PerspectiveCamera() = default;
-    PerspectiveCamera(const PerspectiveCamera& other);
-    PerspectiveCamera& operator=(const PerspectiveCamera& other);
+    PerspectiveCamera(const PerspectiveCamera& other) = default;
+    PerspectiveCamera& operator=(const PerspectiveCamera& other) = default;
+    PerspectiveCamera(PerspectiveCamera&& other) = default;
+    PerspectiveCamera& operator=(PerspectiveCamera&& other) = default;
     virtual PerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"PerspectiveCamera"};

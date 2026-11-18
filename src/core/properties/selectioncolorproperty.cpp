@@ -39,17 +39,17 @@ SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                std::string_view displayName, bool checked,
                                                vec3 color, float alpha,
                                                InvalidationLevel invalidationLevel,
-                                               PropertySemantics semantics)
+                                               const PropertySemantics& semantics)
     : SelectionColorProperty(identifier, displayName, Document{}, checked, color, alpha,
-                             invalidationLevel, std::move(semantics)) {}
+                             invalidationLevel, semantics) {}
 
 SelectionColorProperty::SelectionColorProperty(std::string_view identifier,
                                                std::string_view displayName, Document help,
                                                bool checked, vec3 color, float alpha,
                                                InvalidationLevel invalidationLevel,
-                                               PropertySemantics semantics)
+                                               const PropertySemantics& semantics)
     : BoolCompositeProperty(identifier, displayName, std::move(help), checked, invalidationLevel,
-                            std::move(semantics))
+                            semantics)
     , color_("color", "Color", util::ordinalColor(color).set("Overlay color"_help))
     , alpha_("alpha", "Alpha", "Determines the opacity of the overlay color"_help, alpha)
     , intensity_(

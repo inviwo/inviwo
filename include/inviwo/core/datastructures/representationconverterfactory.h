@@ -37,6 +37,7 @@
 #include <warn/ignore/all>
 #include <memory>
 #include <mutex>
+#include <algorithm>
 #include <typeindex>
 #include <unordered_set>
 #include <unordered_map>
@@ -52,6 +53,11 @@ class IVW_CORE_API BaseRepresentationConverterFactory {
 public:
     using BaseReprId = std::type_index;
     BaseRepresentationConverterFactory() = default;
+    BaseRepresentationConverterFactory(const BaseRepresentationConverterFactory&) = delete;
+    BaseRepresentationConverterFactory(BaseRepresentationConverterFactory&&) = delete;
+    BaseRepresentationConverterFactory& operator=(const BaseRepresentationConverterFactory&) =
+        delete;
+    BaseRepresentationConverterFactory& operator=(BaseRepresentationConverterFactory&&) = delete;
     virtual ~BaseRepresentationConverterFactory() = default;
     virtual BaseReprId getBaseReprId() = 0;
 };
@@ -73,6 +79,10 @@ public:
         std::unordered_multimap<ConverterID,
                                 std::unique_ptr<RepresentationConverterPackage<BaseRepr>>>;
     RepresentationConverterFactory() = default;
+    RepresentationConverterFactory(const RepresentationConverterFactory&) = delete;
+    RepresentationConverterFactory(RepresentationConverterFactory&&) = delete;
+    RepresentationConverterFactory& operator=(const RepresentationConverterFactory&) = delete;
+    RepresentationConverterFactory& operator=(RepresentationConverterFactory&&) = delete;
     virtual ~RepresentationConverterFactory() = default;
 
     virtual BaseReprId getBaseReprId() override final;
@@ -126,10 +136,8 @@ bool RepresentationConverterFactory<BaseRepr>::unRegisterObject(
         converters_, [converter](const auto& elem) { return elem.second == converter; });
 
     std::erase_if(packages_, [converter](const auto& elem) {
-        for (auto& conv : elem.second->getConverters()) {
-            if (conv == converter) return true;
-        }
-        return false;
+        return std::ranges::any_of(elem.second->getConverters(),
+                                   [converter](const auto& conv) { return conv == converter; });
     });
 
     return removed > 0;
@@ -165,6 +173,7 @@ RepresentationConverterFactory<BaseRepr>::getRepresentationConverter(std::type_i
 
 template <typename BaseRepr>
 const RepresentationConverterPackage<BaseRepr>*
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id) {
     /* Implementation of Dijkstra's algorithm following
      * https://en.wikipedia.org/wiki/Dijkstra's_algorithm#Pseudocode

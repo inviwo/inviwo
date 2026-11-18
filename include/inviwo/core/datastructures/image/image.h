@@ -93,6 +93,8 @@ public:
      */
     Image(const Image& rhs, NoData, const DataFormatBase* colorLayerFormat = nullptr);
     Image& operator=(const Image& that);
+    Image(Image&& rhs);
+    Image& operator=(Image&& that);
     virtual Image* clone() const;
     virtual ~Image() = default;
     virtual Document getInfo() const;

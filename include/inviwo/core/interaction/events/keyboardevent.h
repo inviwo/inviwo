@@ -39,7 +39,7 @@ namespace inviwo {
  * @class KeyboardEvent
  * Generated when keys are pressed and released.
  */
-class IVW_CORE_API KeyboardEvent : public InteractionEvent {
+class IVW_CORE_API KeyboardEvent final : public InteractionEvent {
 public:
     /**
      * @param key Enumerate representation of pressed key
@@ -51,9 +51,10 @@ public:
     explicit KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
                            KeyModifiers modifiers = KeyModifiers(flags::empty),
                            uint32_t nativeVirtualKey = 0, std::string_view utfText = "");
-
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
+    KeyboardEvent(KeyboardEvent&& rhs) noexcept = default;
+    KeyboardEvent& operator=(KeyboardEvent&& that) noexcept = default;
     virtual KeyboardEvent* clone() const override;
     virtual ~KeyboardEvent() = default;
 
@@ -64,7 +65,7 @@ public:
      * Platform-independent code for key.
      * @note Does not differentiate between lower and uppercase letters. Use text instead.
      */
-    virtual IvwKey key() const;
+    IvwKey key() const;
     void setKey(IvwKey button);
 
     /*

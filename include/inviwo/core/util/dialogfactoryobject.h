@@ -42,6 +42,10 @@ class Dialog;
 class IVW_CORE_API DialogFactoryObject {
 public:
     explicit DialogFactoryObject(std::string_view className);
+    DialogFactoryObject(const DialogFactoryObject&) = delete;
+    DialogFactoryObject(DialogFactoryObject&&) = delete;
+    DialogFactoryObject& operator=(const DialogFactoryObject&) = delete;
+    DialogFactoryObject& operator=(DialogFactoryObject&&) = delete;
     virtual ~DialogFactoryObject() = default;
 
     virtual std::unique_ptr<Dialog> create() = 0;
@@ -58,6 +62,10 @@ public:
     explicit DialogFactoryObjectTemplate(std::string_view className)
         : DialogFactoryObject(className) {}
 
+    DialogFactoryObjectTemplate(const DialogFactoryObjectTemplate&) = delete;
+    DialogFactoryObjectTemplate(DialogFactoryObjectTemplate&&) = delete;
+    DialogFactoryObjectTemplate& operator=(const DialogFactoryObjectTemplate&) = delete;
+    DialogFactoryObjectTemplate& operator=(DialogFactoryObjectTemplate&&) = delete;
     virtual ~DialogFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Dialog> create() override { return std::make_unique<T>(); }

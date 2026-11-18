@@ -41,6 +41,8 @@ namespace inviwo {
 
 namespace {
 
+// Underlying types are part of what is tested here
+// NOLINTBEGIN(performance-enum-size)
 enum class MyEnumA { a, b };
 
 enum class MyEnumB { a, b };
@@ -48,6 +50,7 @@ enum class MyEnumB { a, b };
 enum class MyEnumShort : short { a, b };
 
 enum class MyEnumUShort : unsigned short { a, b };
+// NOLINTEND(performance-enum-size)
 
 }  // namespace
 

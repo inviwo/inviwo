@@ -32,11 +32,11 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/fmtutils.h>
 
-#include <iosfwd>
+#include <cstdint>
 
 namespace inviwo {
 
-enum class ShadingMode : int {
+enum class ShadingMode : std::uint8_t {
     None,
     Ambient,
     Diffuse,
@@ -50,8 +50,6 @@ enum class ShadingMode : int {
 };
 
 IVW_CORE_API std::string_view enumToStr(ShadingMode sm);
-
-IVW_CORE_API std::ostream& operator<<(std::ostream& ss, ShadingMode sm);
 
 struct IVW_CORE_API LightingState {
     ShadingMode shadingMode;

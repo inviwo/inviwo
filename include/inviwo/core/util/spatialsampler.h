@@ -70,6 +70,11 @@ public:
     const SpatialCoordinateTransformer& getCoordinateTransformer() const;
 
 protected:
+    SpatialSampler(const SpatialSampler&) = default;
+    SpatialSampler(SpatialSampler&&) = default;
+    SpatialSampler& operator=(const SpatialSampler&) = default;
+    SpatialSampler& operator=(SpatialSampler&&) = default;
+
     virtual ReturnType sampleDataSpace(const dvec3& pos) const = 0;
     virtual bool withinBoundsDataSpace(const dvec3& pos) const = 0;
 

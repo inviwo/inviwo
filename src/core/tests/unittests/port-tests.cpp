@@ -167,6 +167,8 @@ using ::testing::Pointee;
 using ::testing::Pair;
 using ::testing::Eq;
 
+// Mock expectations as lambdas inflate the complexity of the test bodies
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST(PortTests, SingleInportOutport) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     const ProcessorNetworkEvaluator evaluator{&network};
@@ -332,5 +334,7 @@ TEST(PortTests, FlatMultiInportOutport) {
     EXPECT_TRUE(sink.inport.isReady());
     EXPECT_FALSE(sink.inport.isChanged());
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)
 
 }  // namespace inviwo

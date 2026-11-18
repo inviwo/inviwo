@@ -33,7 +33,6 @@
 #include <inviwo/core/datastructures/bitset.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -78,7 +77,7 @@ class TemplateColumn;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL : public InteractionHandler {
+class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
@@ -99,6 +98,9 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
         Properties(const Properties& rhs);
+        Properties(Properties&&) = delete;
+        Properties& operator=(const Properties&) = delete;
+        Properties& operator=(Properties&&) = delete;
         virtual Properties* clone() const override;
         virtual ~Properties() = default;
 
@@ -142,7 +144,7 @@ public:
     };
 
     explicit ScatterPlotGL(Processor* processor = nullptr);
-    virtual ~ScatterPlotGL() = default;
+    ~ScatterPlotGL() = default;
 
     void plot(Image& dest, bool useAxisRanges = false);
     void plot(Image& dest, const Image& src, bool useAxisRanges = false);

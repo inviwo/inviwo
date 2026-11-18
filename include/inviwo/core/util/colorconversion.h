@@ -212,6 +212,7 @@ constexpr vec3 hsv2rgb(const vec3& hsv) {
             g = p;
             b = q;
             break;
+        default: break;
     }
     return {static_cast<float>(r), static_cast<float>(g), static_cast<float>(b)};
 }

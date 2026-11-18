@@ -174,6 +174,27 @@ Image& Image::operator=(const Image& that) {
 
 Image* Image::clone() const { return new Image(*this); }
 
+Image::Image(Image&& rhs)
+    : DataGroup<Image, ImageRepresentation>(std::move(rhs))
+    , MetaDataOwner(std::move(rhs))
+    , colorLayers_{std::move(rhs.colorLayers_)}
+    , depthLayer_{std::move(rhs.depthLayer_)}
+    , pickingLayer_{std::move(rhs.pickingLayer_)} {
+    rhs.colorLayers_.clear();
+}
+
+Image& Image::operator=(Image&& that) {
+    if (this != &that) {
+        DataGroup<Image, ImageRepresentation>::operator=(std::move(that));
+        MetaDataOwner::operator=(std::move(that));
+        colorLayers_ = std::move(that.colorLayers_);
+        depthLayer_ = std::move(that.depthLayer_);
+        pickingLayer_ = std::move(that.pickingLayer_);
+        that.colorLayers_.clear();
+    }
+    return *this;
+}
+
 std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFormatBase* format) {
     return std::make_shared<Layer>(dimensions, format, LayerType::Color);
 }

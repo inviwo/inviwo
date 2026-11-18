@@ -39,6 +39,8 @@
 
 namespace inviwo::util {
 
+namespace {
+
 struct RegisterOrdinalPropertyForMetaData {
     template <typename T>
     auto operator()(
@@ -50,7 +52,7 @@ struct RegisterOrdinalPropertyForMetaData {
             [](std::string_view key, const MetaData* meta, CompositeProperty& container) {
                 auto m = static_cast<const MetaDataType<T>*>(meta);
 
-                if (auto existingProperty = container.getPropertyByIdentifier(key)) {
+                if (auto* existingProperty = container.getPropertyByIdentifier(key)) {
                     if (auto p = dynamic_cast<OrdinalProperty<T>*>(existingProperty)) {
                         p->set(m->get());
                         p->setVisible(true);
@@ -76,6 +78,8 @@ struct RegisterOrdinalPropertyForMetaData {
             });
     }
 };
+
+}  // namespace
 
 MetaDataToProperty::MetaDataToProperty() {
     using ordinalMetaTypes =
@@ -130,7 +134,7 @@ MetaDataToProperty::MetaDataToProperty() {
 void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDataMap* metaDataMap) {
     const auto keys = metaDataMap->getKeys();
     for (const auto& key : keys) {
-        auto meta = metaDataMap->get(key);
+        const auto* meta = metaDataMap->get(key);
         const auto it = factory_.find(meta->getClassIdentifier());
         if (it != factory_.end()) {
             it->second(key, meta, parent);
@@ -141,7 +145,7 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
 
     // Remove unused meta data properties
     std::vector<std::string> ids;
-    for (auto p : parent.getProperties()) {
+    for (const auto* p : parent.getProperties()) {
         ids.emplace_back(p->getIdentifier());
     }
     for (const auto& id : ids) {

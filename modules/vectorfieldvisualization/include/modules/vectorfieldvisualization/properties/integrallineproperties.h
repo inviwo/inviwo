@@ -54,6 +54,9 @@ public:
 
     IntegralLineProperties(std::string_view identifier, std::string_view displayName);
     IntegralLineProperties(const IntegralLineProperties& rhs);
+    IntegralLineProperties(IntegralLineProperties&&) = delete;
+    IntegralLineProperties& operator=(const IntegralLineProperties&) = delete;
+    IntegralLineProperties& operator=(IntegralLineProperties&&) = delete;
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 

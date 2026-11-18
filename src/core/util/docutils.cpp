@@ -31,9 +31,9 @@
 
 namespace inviwo::utildoc {
 
-TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
+TableBuilder::TableBuilder(Document::DocumentHandle handle, const Document::PathComponent& pos,
                            const UnorderedStringMap<std::string>& attributes)
-    : table_(handle.insert(std::move(pos), "table", "", attributes)) {}
+    : table_(handle.insert(pos, "table", "", attributes)) {}
 
 TableBuilder::TableBuilder(Document::DocumentHandle table) : table_(table) {}
 

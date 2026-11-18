@@ -59,6 +59,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     BufferInformationProperty(const BufferInformationProperty& rhs);
+    BufferInformationProperty(BufferInformationProperty&&) = delete;
+    BufferInformationProperty& operator=(const BufferInformationProperty&) = delete;
+    BufferInformationProperty& operator=(BufferInformationProperty&&) = delete;
     virtual BufferInformationProperty* clone() const override;
     virtual ~BufferInformationProperty() = default;
 
@@ -84,6 +87,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     MeshBufferInformationProperty(const MeshBufferInformationProperty& rhs);
+    MeshBufferInformationProperty(MeshBufferInformationProperty&&) = delete;
+    MeshBufferInformationProperty& operator=(const MeshBufferInformationProperty&) = delete;
+    MeshBufferInformationProperty& operator=(MeshBufferInformationProperty&&) = delete;
     virtual MeshBufferInformationProperty* clone() const override;
     virtual ~MeshBufferInformationProperty() = default;
 
@@ -107,6 +113,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     IndexBufferInformationProperty(const IndexBufferInformationProperty& rhs);
+    IndexBufferInformationProperty(IndexBufferInformationProperty&&) = delete;
+    IndexBufferInformationProperty& operator=(const IndexBufferInformationProperty&) = delete;
+    IndexBufferInformationProperty& operator=(IndexBufferInformationProperty&&) = delete;
     virtual IndexBufferInformationProperty* clone() const override;
     virtual ~IndexBufferInformationProperty() = default;
 

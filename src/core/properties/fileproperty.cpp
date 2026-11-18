@@ -55,7 +55,7 @@ void FileBase::addNameFilter(std::string_view filter) {
     nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter));
 }
 
-void FileBase::addNameFilter(FileExtension filter) { nameFilters_.push_back(filter); }
+void FileBase::addNameFilter(const FileExtension& filter) { nameFilters_.push_back(filter); }
 
 void FileBase::addNameFilters(const std::vector<FileExtension>& filters) {
     util::append(nameFilters_, filters);
@@ -67,12 +67,8 @@ const std::vector<FileExtension>& FileBase::getNameFilters() const { return name
 std::vector<FileExtension>& FileBase::getNameFilters() { return nameFilters_; }
 
 bool FileBase::matchesAnyNameFilter(const std::filesystem::path& file) const {
-    for (const auto& filter : nameFilters_) {
-        if (filter.matches(file)) {
-            return true;
-        }
-    }
-    return false;
+    return std::ranges::any_of(nameFilters_,
+                               [&](const auto& filter) { return filter.matches(file); });
 }
 
 void FileBase::setAcceptMode(AcceptMode acceptMode) {
@@ -195,7 +191,7 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
                            const std::filesystem::path& value, AcceptMode acceptMode,
                            FileMode fileMode, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics))
     , FileBase([this]() { propertyModified(); }, acceptMode, fileMode, contentType)
     , file_{"value"} {
     // Explicitly set the file name here. This ensures that the set file name is always serialized.
@@ -206,13 +202,13 @@ FileProperty::FileProperty(std::string_view identifier, std::string_view display
                            const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FileProperty(identifier, displayName, std::move(help), value, AcceptMode::Open,
-                   FileMode::AnyFile, contentType, invalidationLevel, semantics) {}
+                   FileMode::AnyFile, contentType, invalidationLevel, std::move(semantics)) {}
 
 FileProperty::FileProperty(std::string_view identifier, std::string_view displayName,
                            const std::filesystem::path& value, std::string_view contentType,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : FileProperty(identifier, displayName, Document{}, value, AcceptMode::Open, FileMode::AnyFile,
-                   contentType, invalidationLevel, semantics) {}
+                   contentType, invalidationLevel, std::move(semantics)) {}
 
 FileProperty& FileProperty::operator=(const std::filesystem::path& file) {
     set(file);
@@ -251,9 +247,9 @@ void FileProperty::set(const MultiFileProperty* property) {
 }
 
 void FileProperty::set(const Property* property) {
-    if (auto fp = dynamic_cast<const FileProperty*>(property)) {
+    if (const auto* fp = dynamic_cast<const FileProperty*>(property)) {
         set(fp);
-    } else if (auto mfp = dynamic_cast<const MultiFileProperty*>(property)) {
+    } else if (const auto* mfp = dynamic_cast<const MultiFileProperty*>(property)) {
         set(mfp);
     }
 }
@@ -350,8 +346,8 @@ void FileProperty::deserialize(Deserializer& d) {
 }
 
 void FileProperty::requestFile() {
-    for (auto widget : getWidgets()) {
-        if (auto fileRequester = dynamic_cast<FileRequestable*>(widget)) {
+    for (auto* widget : getWidgets()) {
+        if (auto* fileRequester = dynamic_cast<FileRequestable*>(widget)) {
             fileRequester->requestFile();
             return;
         }
@@ -407,6 +403,7 @@ Document FileProperty::getDescription() const {
             tb(H("Directory"), file_.value);
             break;
         }
+        default: break;
     }
 
     tb(H("Selected Extension"), selectedExtension_.value);

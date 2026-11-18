@@ -60,7 +60,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs);
-    ColumnMetaDataProperty& operator=(const ColumnMetaDataProperty& rhs);
+    ColumnMetaDataProperty(ColumnMetaDataProperty&&) = delete;
+    ColumnMetaDataProperty& operator=(const ColumnMetaDataProperty&) = delete;
+    ColumnMetaDataProperty& operator=(ColumnMetaDataProperty&&) = delete;
 
     virtual ColumnMetaDataProperty* clone() const override;
 

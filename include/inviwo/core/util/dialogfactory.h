@@ -39,6 +39,10 @@ namespace inviwo {
 class IVW_CORE_API DialogFactory : public StandardFactory<Dialog, DialogFactoryObject> {
 public:
     DialogFactory() = default;
+    DialogFactory(const DialogFactory&) = delete;
+    DialogFactory(DialogFactory&&) = delete;
+    DialogFactory& operator=(const DialogFactory&) = delete;
+    DialogFactory& operator=(DialogFactory&&) = delete;
     virtual ~DialogFactory() = default;
     bool registerObject(DialogFactoryObject* dialog) override;
 };

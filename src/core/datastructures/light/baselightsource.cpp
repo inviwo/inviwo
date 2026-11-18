@@ -54,8 +54,6 @@ std::string_view enumToStr(LightSourceType lt) {
                     static_cast<int>(lt));
 }
 
-std::ostream& operator<<(std::ostream& ss, LightSourceType lt) { return ss << enumToStr(lt); }
-
 mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     const vec3 A = vec3(0, 0, 1);
     const vec3 B = dir;

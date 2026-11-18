@@ -37,27 +37,7 @@ namespace inviwo {
 
 std::string_view BoolProperty::getClassIdentifier() const { return classIdentifier; }
 
-BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, Document help,
-                           bool value, InvalidationLevel invalidationLevel,
-                           PropertySemantics semantics)
-    : TemplateProperty<bool>(identifier, displayName, std::move(help), value, invalidationLevel,
-                             std::move(semantics)) {}
-
-BoolProperty::BoolProperty(std::string_view identifier, std::string_view displayName, bool value,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : TemplateProperty<bool>(identifier, displayName, value, invalidationLevel,
-                             std::move(semantics)) {}
-
-BoolProperty::BoolProperty(const BoolProperty& rhs) : TemplateProperty<bool>(rhs) {}
-
-BoolProperty& BoolProperty::operator=(const bool& value) {
-    TemplateProperty<bool>::operator=(value);
-    return *this;
-}
-
 BoolProperty* BoolProperty::clone() const { return new BoolProperty(*this); }
-
-BoolProperty::~BoolProperty() = default;
 
 Document BoolProperty::getDescription() const {
     using P = Document::PathComponent;

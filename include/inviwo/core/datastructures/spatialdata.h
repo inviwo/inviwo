@@ -100,8 +100,6 @@ public:
     SpatialEntity();
     explicit SpatialEntity(const glm::dmat4& modelMatrix);
     SpatialEntity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
-    SpatialEntity(const SpatialEntity& rhs);
-    SpatialEntity& operator=(const SpatialEntity& that);
     virtual SpatialEntity* clone() const = 0;
     virtual ~SpatialEntity();
 
@@ -133,6 +131,12 @@ public:
     static constexpr std::string_view dataName{"SpatialEntity"};
 
 protected:
+    SpatialEntity(const SpatialEntity& rhs);
+    SpatialEntity& operator=(const SpatialEntity& that);
+    SpatialEntity(SpatialEntity&& rhs) noexcept;
+    SpatialEntity& operator=(SpatialEntity&& that) noexcept;
+
+    // Transformers keep a pointer to their entity, so they are never copied or moved.
     mutable std::unique_ptr<SpatialCoordinateTransformer> transformer_;
     mutable std::unique_ptr<SpatialCameraCoordinateTransformer> cameraTransformer_;
 
@@ -140,13 +144,15 @@ protected:
     glm::dmat4 worldMatrix_;
 };
 
-class IVW_CORE_API SpatialIdentity : public SpatialEntity {
+class IVW_CORE_API SpatialIdentity final : public SpatialEntity {
 public:
     SpatialIdentity();
     explicit SpatialIdentity(const glm::dmat4& modelMatrix);
     SpatialIdentity(const glm::dmat4& modelMatrix, const glm::dmat4& worldMatrix);
     SpatialIdentity(const SpatialIdentity& rhs);
     SpatialIdentity& operator=(const SpatialIdentity& that);
+    SpatialIdentity(SpatialIdentity&& rhs) = default;
+    SpatialIdentity& operator=(SpatialIdentity&& that) = default;
     virtual SpatialIdentity* clone() const override;
     virtual ~SpatialIdentity();
 
@@ -158,12 +164,10 @@ class StructuredGridEntity : public SpatialEntity {
 public:
     using Bases = TypeList<SpatialEntity>;
     StructuredGridEntity() = default;
-    StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
     StructuredGridEntity(const glm::vec<N, size_t>& dimensions, const glm::vec<N, float>& spacing);
     explicit StructuredGridEntity(const dmat4& modelMatrix);
     StructuredGridEntity(const dmat4& modelMatrix, const dmat4& worldMatrix);
 
-    StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;
     virtual StructuredGridEntity<N>* clone() const override = 0;
 
     virtual ~StructuredGridEntity() = default;
@@ -183,6 +187,12 @@ public:
     virtual const StructuredCoordinateTransformer& getCoordinateTransformer() const override;
     virtual const StructuredCameraCoordinateTransformer& getCoordinateTransformer(
         const Camera& camera) const override;
+
+protected:
+    StructuredGridEntity(const StructuredGridEntity<N>& rhs) = default;
+    StructuredGridEntity<N>& operator=(const StructuredGridEntity<N>& that) = default;
+    StructuredGridEntity(StructuredGridEntity<N>&& rhs) = default;
+    StructuredGridEntity<N>& operator=(StructuredGridEntity<N>&& that) = default;
 };
 
 /*

@@ -41,6 +41,8 @@ namespace sml = boost::sml;
 
 namespace inviwo {
 
+namespace {
+
 namespace fsmt {
 
 // State
@@ -83,7 +85,7 @@ struct Finished : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
-static bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceType) {
+bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& deviceType) {
     if (deviceType == TouchDevice::DeviceType::TouchPad) {
         return point.state() == TouchState::Stationary;
     } else {
@@ -92,8 +94,7 @@ static bool isPressed(const TouchPoint& point, const TouchDevice::DeviceType& de
     }
 }
 
-static PickingPressItem touchToPressItems(const TouchEvent* e,
-                                          const std::vector<TouchPoint>& points) {
+PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchPoint>& points) {
     if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
         // Possible to press touchpads
         const auto nPressed = std::accumulate(
@@ -116,12 +117,12 @@ static PickingPressItem touchToPressItems(const TouchEvent* e,
 }
 
 template <typename E>
-static auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
-                 bool updatePrev = true, bool markAsUsed = true) {
+auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
+          bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                const PickingManager& pickingManager) {
-        auto action = pickingManager.getPickingActionFromIndex(fsmState.active_globalId);
+        const auto* action = pickingManager.getPickingActionFromIndex(fsmState.active_globalId);
         if (fsmState.active_globalId == PickingManager::VoidId || !action) return;
 
         auto te = fsmEvent.event;
@@ -169,7 +170,7 @@ static auto send(PickingState state, PickingPressState pressState, PickingHoverS
 }
 
 template <typename E>
-static auto uid() {
+auto uid() {
     return [](const E& e, FsmState& fsmstate) { fsmstate.active_globalId = e.globalId; };
 }
 
@@ -235,6 +236,7 @@ struct Fsm {
         // Possible TODO: Detect double click
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
            *idle + event<Started>  [nonZeroId && zeroMB]  / (uids, send<Started>(S::Started, P::None, H::Enter)) = hasId,
             idle + event<Started>  [nonZeroId && nonZeroMB] / (uids, ups, send<Started>(S::Started, P::Press, H::Enter)) = pressing,
@@ -265,11 +267,14 @@ struct Fsm {
             pressingOutside + event<Updated> [zeroMB] = idle,
             pressingOutside + event<Finished> = idle
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
 
 }  // namespace fsmt
+
+}  // namespace
 
 struct PickingControllerTouchStateSM {
     explicit PickingControllerTouchStateSM(PickingManager* pickingManager)
@@ -297,7 +302,7 @@ PickingControllerTouchState& PickingControllerTouchState::operator=(
 PickingControllerTouchState::~PickingControllerTouchState() = default;
 
 void PickingControllerTouchState::propagateEvent(TouchEvent* e, EventPropagator* propagator,
-                                                 size_t globalId) {
+                                                 size_t globalId) const {
     const auto points = e->touchPoints();
     const auto ps = TouchEvent::getPickingState(points);
     switch (ps) {

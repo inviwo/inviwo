@@ -42,6 +42,10 @@ std::string demangle(const char* name) {
     struct handle {
         char* p;
         explicit handle(char* ptr) : p(ptr) {}
+        handle(const handle&) = delete;
+        handle(handle&&) = delete;
+        handle& operator=(const handle&) = delete;
+        handle& operator=(handle&&) = delete;
         ~handle() { std::free(p); }
     };
     int status = -4;

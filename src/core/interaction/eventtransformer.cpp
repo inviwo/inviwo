@@ -105,6 +105,7 @@ struct SM {
         };
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
             *state<Idle>    + event<Move>                         / (updateView, sendEvent) = state<Idle>,
             state<Idle>     + event<Release>                      / (updateView, sendEvent) = state<Idle>,
@@ -118,6 +119,7 @@ struct SM {
             state<Pressing> + event<Release> [diffView && zeroMB] / (sendEvent, updateView) = state<Idle>,
             state<Pressing> + event<Wheel>                        / (sendEvent)             = state<Pressing>
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
@@ -184,6 +186,7 @@ struct SM {
         };
 
         // clang-format off
+        // NOLINTBEGIN(readability-redundant-parentheses)
         return sml::make_transition_table(
             *state<Idle>    + event<NoGesture>         / (updateView, sendEvent) = state<Idle>,
             state<Idle>     + event<Started>           / (updateView, sendEvent) = state<Active>,
@@ -198,6 +201,7 @@ struct SM {
             state<Active> + event<Finished> [diffView] / (sendEvent, updateView) = state<Idle>,
             state<Active> + event<Canceled>            / sendEvent               = state<Idle>
         );
+        // NOLINTEND(readability-redundant-parentheses)
         // clang-format on
     }
 };
@@ -206,6 +210,8 @@ struct SM {
 
 namespace touch {
 
+// Unfinished, see TODO below
+// NOLINTBEGIN(clang-diagnostic-unused-function,clang-diagnostic-unused-variable)
 inline void transformAndSendEvent(
     const TouchEvent& /*originalEvent*/, const EventTransformer::View& /*view*/,
     const std::function<void(Event&, const EventTransformer::View&)>& /*propagate*/) {
@@ -274,6 +280,7 @@ struct SM {
     }
 };
 
+// NOLINTEND(clang-diagnostic-unused-function,clang-diagnostic-unused-variable)
 }  // namespace touch
 
 }  // namespace
@@ -310,6 +317,9 @@ EventTransformer::EventTransformer(const std::vector<View>& someViews)
     , gesturePicking_{std::make_unique<GestureSM>(views)}
     , touch_{std::make_unique<TouchSM>(views)}
     , touchPicking_{std::make_unique<TouchSM>(views)} {}
+
+EventTransformer::EventTransformer(EventTransformer&&) = default;
+EventTransformer& EventTransformer::operator=(EventTransformer&&) = default;
 
 EventTransformer::~EventTransformer() = default;
 
@@ -354,7 +364,7 @@ void EventTransformer::propagateEvent(Event* event, const Propagator& propagate)
 }
 
 void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case MouseState::Press: {
             state.sm.process_event(mouse::Press{event, getViewIdx(event.ndc()), propagate});
@@ -376,12 +386,12 @@ void EventTransformer::propagateEvent(MouseEvent& event, MouseSM& state,
 }
 
 void EventTransformer::propagateEvent(WheelEvent& event, MouseSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     state.sm.process_event(mouse::Wheel{event, getViewIdx(event.ndc()), propagate});
 }
 
 void EventTransformer::propagateEvent(GestureEvent& event, GestureSM& state,
-                                      const Propagator& propagate) {
+                                      const Propagator& propagate) const {
     switch (event.state()) {
         case GestureState::NoGesture: {
             state.sm.process_event(gesture::NoGesture{event, getViewIdx(event.ndc()), propagate});

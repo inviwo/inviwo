@@ -62,6 +62,9 @@ public:
                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                        PropertySemantics semantics = PropertySemantics::Default);
     TransformationList(const TransformationList& other) = default;
+    TransformationList(TransformationList&&) = delete;
+    TransformationList& operator=(const TransformationList&) = delete;
+    TransformationList& operator=(TransformationList&&) = delete;
     ~TransformationList() = default;
 
     virtual std::string_view getClassIdentifier() const override;
@@ -81,6 +84,9 @@ public:
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                           PropertySemantics semantics = PropertySemantics::Default);
     TransformListProperty(const TransformListProperty& other);
+    TransformListProperty(TransformListProperty&&) = delete;
+    TransformListProperty& operator=(const TransformListProperty&) = delete;
+    TransformListProperty& operator=(TransformListProperty&&) = delete;
     ~TransformListProperty() = default;
 
     virtual std::string_view getClassIdentifier() const override;
@@ -117,6 +123,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     TranslateProperty(const TranslateProperty& rhs);
+    TranslateProperty(TranslateProperty&&) = delete;
+    TranslateProperty& operator=(const TranslateProperty&) = delete;
+    TranslateProperty& operator=(TranslateProperty&&) = delete;
     virtual TranslateProperty* clone() const override;
     virtual ~TranslateProperty() = default;
 
@@ -139,6 +148,9 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
     RotateProperty(const RotateProperty& rhs);
+    RotateProperty(RotateProperty&&) = delete;
+    RotateProperty& operator=(const RotateProperty&) = delete;
+    RotateProperty& operator=(RotateProperty&&) = delete;
     virtual RotateProperty* clone() const override;
     virtual ~RotateProperty() = default;
 
@@ -160,6 +172,9 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
     ScaleProperty(const ScaleProperty& rhs);
+    ScaleProperty(ScaleProperty&&) = delete;
+    ScaleProperty& operator=(const ScaleProperty&) = delete;
+    ScaleProperty& operator=(ScaleProperty&&) = delete;
     virtual ScaleProperty* clone() const override;
     virtual ~ScaleProperty() = default;
 
@@ -183,6 +198,9 @@ public:
     CustomTransformProperty(std::string_view identifier, std::string_view displayName,
                             const OrdinalPropertyState<dmat4>& state);
     CustomTransformProperty(const CustomTransformProperty& rhs);
+    CustomTransformProperty(CustomTransformProperty&&) = delete;
+    CustomTransformProperty& operator=(const CustomTransformProperty&) = delete;
+    CustomTransformProperty& operator=(CustomTransformProperty&&) = delete;
     virtual CustomTransformProperty* clone() const override;
     virtual ~CustomTransformProperty() = default;
 
@@ -200,6 +218,9 @@ public:
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                           PropertySemantics semantics = PropertySemantics::Default);
     PortTransformProperty(const PortTransformProperty& rhs);
+    PortTransformProperty(PortTransformProperty&&) = delete;
+    PortTransformProperty& operator=(const PortTransformProperty&) = delete;
+    PortTransformProperty& operator=(PortTransformProperty&&) = delete;
     virtual PortTransformProperty* clone() const override;
     virtual ~PortTransformProperty() = default;
 
@@ -222,6 +243,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     SpatialEntityTransformProperty(const SpatialEntityTransformProperty& rhs);
+    SpatialEntityTransformProperty(SpatialEntityTransformProperty&&) = delete;
+    SpatialEntityTransformProperty& operator=(const SpatialEntityTransformProperty&) = delete;
+    SpatialEntityTransformProperty& operator=(SpatialEntityTransformProperty&&) = delete;
     virtual SpatialEntityTransformProperty* clone() const override;
     virtual ~SpatialEntityTransformProperty() = default;
 

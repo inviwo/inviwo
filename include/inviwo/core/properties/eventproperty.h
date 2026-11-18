@@ -46,7 +46,7 @@ namespace inviwo {
  * key binding for the contained action.
  * @see EventPropertyWidgetQt
  */
-class IVW_CORE_API EventProperty : public Property {
+class IVW_CORE_API EventProperty final : public Property {
 public:
     enum class State : std::uint8_t { Started, Active, Finished };
 
@@ -133,6 +133,9 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(const EventProperty& rhs);
+    EventProperty(EventProperty&& rhs) = delete;
+    EventProperty& operator=(const EventProperty&) = delete;
+    EventProperty& operator=(EventProperty&&) = delete;
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 

@@ -154,8 +154,9 @@ public:
                    SerializationTarget target = SerializationTarget::Node);
 
     // glm vector types
-    template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int> = 0>
-    void serialize(std::string_view key, const Vec& data);
+    template <typename Vec>
+    void serialize(std::string_view key, const Vec& data)
+        requires(util::rank<Vec>::value == 1);
 
     // glm matrix types
     template <typename Mat, std::enable_if_t<util::rank<Mat>::value == 2, int> = 0>
@@ -311,8 +312,10 @@ void Serializer::serialize(std::string_view key, const flags::flags<T>& data,
 }
 
 // glm vector types
-template <typename Vec, std::enable_if_t<util::rank<Vec>::value == 1, int>>
-void Serializer::serialize(std::string_view key, const Vec& data) {
+template <typename Vec>
+void Serializer::serialize(std::string_view key, const Vec& data)
+    requires(util::rank<Vec>::value == 1)
+{
     const auto nodeSwitch = switchToNewNode(key);
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
         auto& attr = addAttribute(SerializeConstants::VectorAttributes[i]);

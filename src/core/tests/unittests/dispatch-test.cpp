@@ -40,13 +40,17 @@ namespace inviwo {
 
 using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
+namespace {
+
 template <template <class> class Predicate>
-static res_t test(DataFormatId id) {
+res_t test(DataFormatId id) {
     return dispatching::singleDispatch<res_t, Predicate>(id, []<typename T>() -> res_t {
         return res_t{DataFormat<T>::id(), DataFormat<T>::numericType(), DataFormat<T>::components(),
                      DataFormat<T>::precision()};
     });
 }
+
+}  // namespace
 
 TEST(DispatchTests, Test1) {
     auto&& [dataFormatId, numericType, components, precision] =

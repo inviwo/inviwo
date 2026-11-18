@@ -49,7 +49,7 @@ std::vector<std::string> stackTrace() {
         if (InviwoApplication::getPtr()->getSystemSettings().stackTraceInException_) {
             auto stack = getStackTrace();
             const auto offset = std::min(static_cast<size_t>(4), stack.size());
-            stack.erase(stack.begin(), stack.begin() + offset);
+            stack.erase(stack.begin(), stack.begin() + static_cast<std::ptrdiff_t>(offset));
             return stack;
         }
     }
@@ -66,12 +66,13 @@ bool breakOnException() {
 }  // namespace
 
 Exception::Exception(std::string_view message, SourceContext context)
-    : std::runtime_error(SafeCStr{message}), context_(std::move(context)), stack_{stackTrace()} {
+    : std::runtime_error(SafeCStr{message}), context_(context), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 Exception::Exception(fmt::string_view format, fmt::format_args&& args, SourceContext context)
-    : std::runtime_error{fmt::vformat(format, std::move(args))}, context_{std::move(context)} {
+    : std::runtime_error{fmt::vformat(format, args)}, context_{context} {
     if (breakOnException()) util::debugBreak();
 }
 
@@ -91,9 +92,11 @@ std::string Exception::getFullMessage(size_t maxFrames) const {
     if (stack_.empty()) {
         return what();
     } else {
-        return fmt::format(
-            "{}\nStack Trace:\n{}", what(),
-            fmt::join(stack_.begin(), stack_.begin() + std::min(maxFrames, stack_.size()), "\n"));
+        return fmt::format("{}\nStack Trace:\n{}", what(),
+                           fmt::join(stack_.begin(),
+                                     stack_.begin() + static_cast<std::ptrdiff_t>(
+                                                          std::min(maxFrames, stack_.size())),
+                                     "\n"));
     }
 }
 
@@ -103,8 +106,7 @@ const std::vector<std::string>& Exception::getStack() const { return stack_; }
 
 ModuleInitException::ModuleInitException(std::string_view message, SourceContext context,
                                          std::vector<std::string> modulesToDeregister)
-    : Exception(message, std::move(context))
-    , modulesToDeregister_(std::move(modulesToDeregister)) {}
+    : Exception(message, context), modulesToDeregister_(std::move(modulesToDeregister)) {}
 
 const std::vector<std::string>& ModuleInitException::getModulesToDeregister() const {
     return modulesToDeregister_;

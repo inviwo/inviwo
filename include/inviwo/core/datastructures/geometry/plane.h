@@ -41,6 +41,10 @@ class IVW_CORE_API Plane {
 public:
     constexpr Plane() = default;
     Plane(dvec3 point, dvec3 normal) noexcept;
+    Plane(const Plane&) = default;
+    Plane(Plane&&) = default;
+    Plane& operator=(const Plane&) = default;
+    Plane& operator=(Plane&&) = default;
     ~Plane() = default;
 
     const dvec3& getPoint() const noexcept { return point_; }

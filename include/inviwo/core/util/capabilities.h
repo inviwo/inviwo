@@ -36,6 +36,10 @@ namespace inviwo {
 class IVW_CORE_API Capabilities {
 public:
     Capabilities();
+    Capabilities(const Capabilities&) = delete;
+    Capabilities(Capabilities&&) = delete;
+    Capabilities& operator=(const Capabilities&) = delete;
+    Capabilities& operator=(Capabilities&&) = delete;
     virtual ~Capabilities();
 
     virtual void printInfo() = 0;

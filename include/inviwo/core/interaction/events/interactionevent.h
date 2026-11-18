@@ -44,8 +44,6 @@ namespace inviwo {
 class IVW_CORE_API InteractionEvent : public Event {
 public:
     explicit InteractionEvent(KeyModifiers modifiers = KeyModifiers(flags::empty));
-    InteractionEvent(const InteractionEvent& rhs) = default;
-    InteractionEvent& operator=(const InteractionEvent& that) = default;
     virtual InteractionEvent* clone() const override = 0;
     virtual ~InteractionEvent() = default;
 
@@ -88,6 +86,11 @@ public:
     const ContextMenuCallback& getContexMenuCallback() const;
 
 protected:
+    InteractionEvent(const InteractionEvent& rhs) = default;
+    InteractionEvent& operator=(const InteractionEvent& that) = default;
+    InteractionEvent(InteractionEvent&& rhs) noexcept = default;
+    InteractionEvent& operator=(InteractionEvent&& that) noexcept = default;
+
     KeyModifiers modifiers_;
     ToolTipCallback tooltip_;
     ContextMenuCallback contextMenuCallback_;

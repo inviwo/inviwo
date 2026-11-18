@@ -97,6 +97,33 @@ Mesh& Mesh::operator=(const Mesh& that) {
     return *this;
 }
 
+Mesh::Mesh(Mesh&& rhs)
+    : DataGroup<Mesh, MeshRepresentation>(std::move(rhs))
+    , SpatialEntity(std::move(rhs))
+    , MetaDataOwner(std::move(rhs))
+    , axes{std::move(rhs.axes)}
+    , buffers_{std::move(rhs.buffers_)}
+    , indices_{std::move(rhs.indices_)}
+    , meshInfo_{rhs.meshInfo_} {
+    rhs.buffers_.clear();
+    rhs.indices_.clear();
+}
+
+Mesh& Mesh::operator=(Mesh&& that) {
+    if (this != &that) {
+        DataGroup<Mesh, MeshRepresentation>::operator=(std::move(that));
+        SpatialEntity::operator=(std::move(that));
+        MetaDataOwner::operator=(std::move(that));
+        axes = std::move(that.axes);
+        buffers_ = std::move(that.buffers_);
+        indices_ = std::move(that.indices_);
+        meshInfo_ = that.meshInfo_;
+        that.buffers_.clear();
+        that.indices_.clear();
+    }
+    return *this;
+}
+
 Mesh* Mesh::clone() const { return new Mesh(*this); }
 
 const Mesh::BufferVector& Mesh::getBuffers() const { return buffers_; }
@@ -127,7 +154,7 @@ void Mesh::addBuffers(const BufferVector& buffers) {
 auto Mesh::removeBuffer(size_t idx) -> std::pair<BufferInfo, std::shared_ptr<BufferBase>> {
     if (idx < buffers_.size()) {
         auto old = buffers_[idx];
-        buffers_.erase(buffers_.begin() + idx);
+        buffers_.erase(buffers_.begin() + static_cast<std::ptrdiff_t>(idx));
         return old;
     } else {
         return {};
@@ -159,10 +186,10 @@ auto Mesh::replaceBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase
             }
         }
 
-        buffers_[idx] = std::make_pair(info, buff);
+        buffers_[idx] = std::make_pair(info, std::move(buff));
         return old;
     } else {
-        addBuffer(info, buff);
+        addBuffer(info, std::move(buff));
         return {};
     }
 }
@@ -183,10 +210,10 @@ auto Mesh::replaceBuffer(BufferBase* oldbuffer, BufferInfo info, std::shared_ptr
             }
         }
 
-        *it = std::make_pair(info, buff);
+        *it = std::make_pair(info, std::move(buff));
         return old;
     } else {
-        addBuffer(info, buff);
+        addBuffer(info, std::move(buff));
         return {};
     }
 }
@@ -214,7 +241,7 @@ std::shared_ptr<IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityTy
 
 void Mesh::removeIndexBuffer(size_t idx) {
     if (idx < indices_.size()) {
-        indices_.erase(indices_.begin() + idx);
+        indices_.erase(indices_.begin() + static_cast<std::ptrdiff_t>(idx));
     }
 }
 

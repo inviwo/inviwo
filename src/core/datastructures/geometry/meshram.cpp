@@ -34,6 +34,7 @@
 
 namespace inviwo {
 
+// NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
 MeshRAM::MeshRAM(const MeshRAM& rhs) : MeshRepresentation(rhs) { update(true); }
 
 MeshRAM& MeshRAM::operator=(const MeshRAM& that) {

@@ -36,6 +36,7 @@
 #include <memory>
 #include <vector>
 #include <mutex>
+#include <cstdint>
 #include <future>
 
 namespace inviwo {
@@ -45,7 +46,7 @@ public:
     using Calculation = std::vector<Histogram1D>();
     using Callback = void(std::shared_ptr<const std::vector<Histogram1D>>);
 
-    enum class Progress { Done, Calculating, NoData };
+    enum class Progress : std::uint8_t { Done, Calculating, NoData };
     struct Result {
         DispatcherHandle<Callback> handle = nullptr;
         Progress progress = Progress::NoData;
@@ -70,7 +71,7 @@ public:
     void recalculate(const std::function<Calculation>& calculate);
 
 private:
-    enum class Status { Valid, Calculating, NotSet };
+    enum class Status : std::uint8_t { Valid, Calculating, NotSet };
     struct State {
         std::mutex mutex;
         Dispatcher<Callback> callbacks;  // Should always be invoked on the main thread

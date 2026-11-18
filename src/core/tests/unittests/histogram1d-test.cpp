@@ -43,7 +43,9 @@
 
 namespace inviwo {
 
-static bool isHistogramUniform(const Histogram1D& histogram) {
+namespace {
+
+bool isHistogramUniform(const Histogram1D& histogram) {
     if (histogram.counts.size() <= 1) {
         return true;
     }
@@ -55,8 +57,10 @@ static bool isHistogramUniform(const Histogram1D& histogram) {
 
 class Histogram1DTest : public ::testing::Test {
 public:
+    // NOLINTNEXTLINE(bugprone-random-generator-seed) deterministic on purpose
     Histogram1DTest() : rand_{} {}
 
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     std::vector<Histogram1D> createHistogram(double minValue, double maxValue, size_t numValues,
                                              size_t binCount) {
         std::vector<double> data(numValues);
@@ -81,6 +85,8 @@ private:
     std::mt19937 rand_;
     std::uniform_real_distribution<double> dis_;
 };
+
+}  // namespace
 
 TEST_F(Histogram1DTest, intRangeBelowBinCount) {
     const size_t binCount = 64;

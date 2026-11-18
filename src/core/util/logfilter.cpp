@@ -48,7 +48,7 @@ void LogFilter::log(std::string_view logSource, LogLevel level, LogAudience audi
                     std::string_view file, std::string_view function, int line,
                     std::string_view msg) {
     if (level >= logVerbosity_) {
-        logger_->log(logSource, level, audience, file, function, line, std::move(msg));
+        logger_->log(logSource, level, audience, file, function, line, msg);
     }
 }
 

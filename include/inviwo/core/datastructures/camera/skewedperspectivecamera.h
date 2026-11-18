@@ -53,8 +53,10 @@ public:
                                      double fieldOfView = cameradefaults::fieldOfView,
                                      dvec2 frustumOffset = dvec2(0.0, 0.0));
     virtual ~SkewedPerspectiveCamera() = default;
-    SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other);
-    SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other);
+    SkewedPerspectiveCamera(const SkewedPerspectiveCamera& other) = default;
+    SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other) = default;
+    SkewedPerspectiveCamera(SkewedPerspectiveCamera&& other) = default;
+    SkewedPerspectiveCamera& operator=(SkewedPerspectiveCamera&& other) = default;
     virtual SkewedPerspectiveCamera* clone() const override;
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"SkewedPerspectiveCamera"};

@@ -46,6 +46,8 @@ public:
     ImageRAM();
     ImageRAM(const ImageRAM& rhs);
     ImageRAM& operator=(const ImageRAM& that);
+    ImageRAM(ImageRAM&& rhs) = default;
+    ImageRAM& operator=(ImageRAM&& that) = default;
     virtual ImageRAM* clone() const override;
     virtual ~ImageRAM();
 

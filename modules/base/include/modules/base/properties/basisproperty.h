@@ -83,6 +83,9 @@ public:
     void onResetOverride();
 
     BasisProperty(const BasisProperty& rhs);
+    BasisProperty(BasisProperty&&) = delete;
+    BasisProperty& operator=(const BasisProperty&) = delete;
+    BasisProperty& operator=(BasisProperty&&) = delete;
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 

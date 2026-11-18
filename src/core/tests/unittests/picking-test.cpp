@@ -91,7 +91,7 @@ TEST(PickingMapperTests, Create) {
     PickingManager manager;
     const PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
 
-    auto po = mapper.getPickingAction();
+    const auto* po = mapper.getPickingAction();
     EXPECT_NE(po, nullptr);
 
     EXPECT_EQ(po->getSize(), 100);
@@ -103,7 +103,7 @@ TEST(PickingMapperTests, Resize) {
 
     PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
     {
-        auto po = mapper.getPickingAction();
+        const auto* po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 100);
 
@@ -119,7 +119,7 @@ TEST(PickingMapperTests, Resize) {
     mapper = PickingMapper(nullptr, 200, [](const PickingEvent*) {}, &manager);
 
     {
-        auto po = mapper.getPickingAction();
+        const auto* po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 200);
 
@@ -135,7 +135,7 @@ TEST(PickingMapperTests, Resize) {
     mapper.resize(300);
 
     {
-        auto po = mapper.getPickingAction();
+        const auto* po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 300);
 

@@ -57,7 +57,9 @@ constexpr bool alwaysFalse() {
 struct IVW_CORE_API nonesuch {
     ~nonesuch() = delete;
     nonesuch(const nonesuch&) = delete;
-    void operator=(const nonesuch&) = delete;
+    nonesuch(nonesuch&&) = delete;
+    nonesuch& operator=(const nonesuch&) = delete;
+    nonesuch& operator=(nonesuch&&) = delete;
 };
 
 template <template <class...> class Op, class... Args>
@@ -79,6 +81,7 @@ template <class Expected, template <class...> class Op, class... Args>
 using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;
 
 template <class Expected, template <class...> class Op, class... Args>
+// NOLINTNEXTLINE(modernize-type-traits) this defines the _v variable template
 constexpr bool is_detected_exact_v = is_detected_exact<Expected, Op, Args...>::value;
 
 template <class To, template <class...> class Op, class... Args>

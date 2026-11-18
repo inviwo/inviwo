@@ -43,8 +43,10 @@
 
 namespace inviwo {
 
+namespace {
+
 template <typename... BufferTraits>
-static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     if (a.getDefaultMeshInfo() != b.getDefaultMeshInfo()) {
         return false;
     }
@@ -53,6 +55,7 @@ static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<Buff
         return false;
     }
     const auto compareBuffers = [](const auto& buffersA, const auto& buffersB) {
+        // NOLINTNEXTLINE(readability-use-anyofallof)
         for (auto&& elem : util::zip(buffersA, buffersB)) {
             auto& bufA = get<0>(elem);
             auto& bufB = get<1>(elem);
@@ -79,9 +82,11 @@ static bool operator==(const TypedMesh<BufferTraits...>& a, const TypedMesh<Buff
 }
 
 template <typename... BufferTraits>
-static bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
+bool operator!=(const TypedMesh<BufferTraits...>& a, const TypedMesh<BufferTraits...>& b) {
     return !(a == b);
 }
+
+}  // namespace
 
 TEST(buffertraits, positionsbuffer) {
     EXPECT_EQ(BufferType::PositionAttrib, buffertraits::PositionsBuffer::bi().type);
@@ -242,6 +247,7 @@ TEST(typedmesh, clone) {
     EXPECT_FALSE(mesh == *copy.get()) << "cloned mesh is not a deep copy";
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(vertexop, addVertexTraits) {
     using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
@@ -267,6 +273,7 @@ TEST(vertexop, addVertexTraits) {
     }
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST(vertexop, addVertex) {
     using MyMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 

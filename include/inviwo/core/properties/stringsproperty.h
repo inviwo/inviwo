@@ -70,6 +70,9 @@ public:
                     PropertySemantics semantics = PropertySemantics::Default);
 
     StringsProperty(const StringsProperty& rhs);
+    StringsProperty(StringsProperty&& rhs) = delete;
+    StringsProperty& operator=(const StringsProperty&) = delete;
+    StringsProperty& operator=(StringsProperty&&) = delete;
     virtual StringsProperty* clone() const override;
     virtual ~StringsProperty() = default;
 
@@ -146,6 +149,7 @@ Document StringsProperty<N>::getDescription() const {
     using P = Document::PathComponent;
     Document doc = Property::getDescription();
 
+    // NOLINTNEXTLINE(misc-const-correctness)
     utildoc::TableBuilder tb(doc.handle(), P::end(), {{"String", "Value"}});
     for (const auto& prop : strings) {
         tb(prop.getIdentifier(), prop.get());

@@ -34,10 +34,11 @@
 #include <inviwo/core/io/serialization/deserializer.h>
 
 #include <concepts>
+#include <cstdint>
 
 namespace inviwo {
 
-enum class PropertySerializationMode { Default = 0, All, None };
+enum class PropertySerializationMode : std::uint8_t { Default = 0, All, None };
 
 template <typename T>
 struct ValueWrapper {
@@ -48,9 +49,9 @@ struct ValueWrapper {
         : value(std::forward<U>(vals)...), defaultValue(value), name(name) {}
 
     ValueWrapper(const ValueWrapper<T>& rhs) = default;
-    ValueWrapper(ValueWrapper<T>&& rhs) = default;
+    ValueWrapper(ValueWrapper<T>&& rhs) noexcept = default;
     ValueWrapper<T>& operator=(const ValueWrapper<T>& that) = default;
-    ValueWrapper<T>& operator=(ValueWrapper<T>&& that) = default;
+    ValueWrapper<T>& operator=(ValueWrapper<T>&& that) noexcept= default;
     ~ValueWrapper() = default;
 
     ValueWrapper<T>& operator=(const T& val) {
@@ -58,7 +59,7 @@ struct ValueWrapper {
         return *this;
     }
 
-    operator const T&() const { return value; }
+    operator const T&() const { return value; } // NOLINT(misc-explicit-constructor)
 
     const T& operator*() const { return value; }
     const T* operator->() const { return &value; }

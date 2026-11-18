@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -81,6 +82,10 @@ class IVW_CORE_API CommandLineParser {
 public:
     CommandLineParser();
     CommandLineParser(int argc, char** argv);
+    CommandLineParser(const CommandLineParser&) = delete;
+    CommandLineParser(CommandLineParser&&) = delete;
+    CommandLineParser& operator=(const CommandLineParser&) = delete;
+    CommandLineParser& operator=(CommandLineParser&&) = delete;
     ~CommandLineParser();
 
     void parse(int argc, char** argv);
@@ -106,7 +111,7 @@ public:
     void remove(TCLAP::Arg* arg);
 
 private:
-    enum class Mode { Normal, Quiet };
+    enum class Mode : std::uint8_t { Normal, Quiet };
     void parseInternal(std::vector<std::string> args, Mode mode = Mode::Normal);
 
     std::vector<std::string> args_;

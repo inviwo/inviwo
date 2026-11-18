@@ -119,6 +119,10 @@ protected:
      */
     struct AlphaSettings : public CompositeProperty {
         AlphaSettings();
+        AlphaSettings(const AlphaSettings&) = delete;
+        AlphaSettings(AlphaSettings&&) = delete;
+        AlphaSettings& operator=(const AlphaSettings&) = delete;
+        AlphaSettings& operator=(AlphaSettings&&) = delete;
 
         BoolProperty enableUniform_;
         FloatProperty uniformScaling_;
@@ -144,6 +148,10 @@ protected:
      */
     struct EdgeSettings : public CompositeProperty {
         EdgeSettings();
+        EdgeSettings(const EdgeSettings&) = delete;
+        EdgeSettings(EdgeSettings&&) = delete;
+        EdgeSettings& operator=(const EdgeSettings&) = delete;
+        EdgeSettings& operator=(EdgeSettings&&) = delete;
         FloatProperty edgeThickness_;
         BoolProperty depthDependent_;
         BoolProperty smoothEdges_;

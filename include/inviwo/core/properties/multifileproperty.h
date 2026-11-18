@@ -44,7 +44,7 @@ namespace inviwo {
  *  A class for a list of file/directory paths
  * @see FileProperty
  */
-class IVW_CORE_API MultiFileProperty : public Property, public FileBase {
+class IVW_CORE_API MultiFileProperty final : public Property, public FileBase {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.MultiFileProperty"};
@@ -87,6 +87,9 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     MultiFileProperty(const MultiFileProperty& rhs) = default;
+    MultiFileProperty(MultiFileProperty&& rhs) = delete;
+    MultiFileProperty& operator=(const MultiFileProperty&) = delete;
+    MultiFileProperty& operator=(MultiFileProperty&&) = delete;
     MultiFileProperty& operator=(const std::vector<std::filesystem::path>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;

@@ -40,6 +40,7 @@ namespace inviwo {
  */
 class IVW_CORE_API TrackballObject {
 public:
+    TrackballObject() = default;
     virtual ~TrackballObject() = default;
     [[nodiscard]] virtual dvec3 getLookTo() const = 0;
     [[nodiscard]] virtual dvec3 getLookFrom() const = 0;
@@ -66,6 +67,12 @@ public:
         const dvec2& normalizedScreenCoord) const = 0;
 
     virtual void zoom(const ZoomOptions& opts) = 0;
+
+protected:
+    TrackballObject(const TrackballObject&) = default;
+    TrackballObject(TrackballObject&&) = default;
+    TrackballObject& operator=(const TrackballObject&) = default;
+    TrackballObject& operator=(TrackballObject&&) = default;
 };
 
 }  // namespace inviwo

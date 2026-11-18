@@ -41,16 +41,20 @@
 namespace inviwo {
 
 class IVW_CORE_API LogStream : public std::streambuf {
-    using int_type = std::streambuf::int_type;
+    using std::streambuf::int_type;
     using size_type = std::string::size_type;
     using traits = std::string::traits_type;
 
 public:
     LogStream(std::ostream& stream, std::string source, LogLevel level, LogAudience audience);
+    LogStream(const LogStream&) = delete;
+    LogStream(LogStream&&) = delete;
+    LogStream& operator=(const LogStream&) = delete;
+    LogStream& operator=(LogStream&&) = delete;
     ~LogStream();
-    std::streamsize xsputn(const char* s, std::streamsize count) override;
 
 protected:
+    std::streamsize xsputn(const char* s, std::streamsize count) override;
     virtual int sync() override;
 
 private:

@@ -29,6 +29,8 @@
 
 #include <inviwo/core/datastructures/tfprimitive.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive&) {}
@@ -44,11 +46,12 @@ TFPrimitive::TFPrimitive(double pos, const vec4& color)
 TFPrimitive::TFPrimitive(const TFPrimitiveData& data)
     : Observable<TFPrimitiveObserver>(), data_(data) {}
 
+// NOLINTNEXTLINE(bugprone-copy-constructor-init) observers must not be copied
 TFPrimitive::TFPrimitive(const TFPrimitive& rhs)
     : Observable<TFPrimitiveObserver>(), data_(rhs.data_) {}
 
 TFPrimitive::TFPrimitive(TFPrimitive&& rhs) noexcept
-    : Observable<TFPrimitiveObserver>(), data_(std::move(rhs.data_)) {}
+    : Observable<TFPrimitiveObserver>(), data_(rhs.data_) {}
 
 TFPrimitive& TFPrimitive::operator=(const TFPrimitive& rhs) {
     if ((this != &rhs) && (*this != rhs)) {
@@ -153,9 +156,7 @@ vec4 util::interpolateColor(std::span<const TFPrimitiveData> line, double x) {
     if (x <= line.front().pos) return line.front().color;
     if (x >= line.back().pos) return line.back().color;
 
-    const auto it =
-        std::upper_bound(line.begin(), line.end(), x,
-                         [](double x, const TFPrimitiveData& pt) { return x < pt.pos; });
+    const auto it = std::ranges::upper_bound(line, x, {}, &TFPrimitiveData::pos);
 
     const auto& p2 = *it;
     const auto& p1 = *(it - 1);

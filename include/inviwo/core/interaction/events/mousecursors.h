@@ -32,12 +32,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <cstdint>
 #include <string_view>
 
 namespace inviwo {
 
 // mouse cursors based on Qt::CursorShape
-enum class MouseCursor {
+enum class MouseCursor : std::uint8_t {
     Arrow,
     UpArrow,
     Cross,

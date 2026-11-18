@@ -79,6 +79,9 @@ public:
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput);
 
         ColorByProperty(const ColorByProperty& rhs);
+        ColorByProperty(ColorByProperty&&) = delete;
+        ColorByProperty& operator=(const ColorByProperty&) = delete;
+        ColorByProperty& operator=(ColorByProperty&&) = delete;
 
         virtual ColorByProperty* clone() const override;
         virtual ~ColorByProperty();

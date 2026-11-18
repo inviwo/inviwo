@@ -29,9 +29,4 @@
 
 #include <inviwo/core/datastructures/datarepresentation.h>
 
-namespace inviwo {
-
-MissingRepresentation::MissingRepresentation(const std::string& message, SourceContext context)
-    : Exception(message, context) {}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

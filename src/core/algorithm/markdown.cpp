@@ -61,6 +61,7 @@ void renderAttribute(const MD_ATTRIBUTE& attr, StrBuffer& strBuffer,
 
 }  // namespace
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 Document util::md2doc(std::string_view markdown) {
     struct State {
         std::vector<Document::DocumentHandle> handles;
@@ -153,6 +154,7 @@ Document util::md2doc(std::string_view markdown) {
                 }
                 break;
             }
+            default: break;
         }
 
         return 0;
@@ -219,6 +221,7 @@ Document util::md2doc(std::string_view markdown) {
             case MD_SPAN_WIKILINK:  // dummy
                 state->handles.push_back(state->handles.back().append("div"));
                 break;
+            default: break;
         }
 
         return 0;

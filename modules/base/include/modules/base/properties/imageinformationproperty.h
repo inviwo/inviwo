@@ -58,6 +58,9 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     ImageInformationProperty(const ImageInformationProperty& rhs);
+    ImageInformationProperty(ImageInformationProperty&&) = delete;
+    ImageInformationProperty& operator=(const ImageInformationProperty&) = delete;
+    ImageInformationProperty& operator=(ImageInformationProperty&&) = delete;
     virtual ImageInformationProperty* clone() const override;
     virtual ~ImageInformationProperty() = default;
 

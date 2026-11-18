@@ -49,6 +49,7 @@ struct proxy {
     proxy(proxy&&) = default;
     proxy& operator=(const proxy&) = default;
     proxy& operator=(proxy&&) = default;
+    ~proxy() = default;
 
     template <typename... Us>
     proxy(Us&&... args) : data{std::forward<Us>(args)...} {}
@@ -61,7 +62,7 @@ struct proxy {
     template <typename... Us>
     proxy& operator=(const proxy<Us...>& rhs) {
         data = rhs.data;
-        return this;
+        return *this;
     }
     template <typename... Us>
     proxy& operator=(proxy<Us...>&& rhs) {
@@ -130,6 +131,7 @@ bool operator<=(const proxy<Ts...>& lhs, const proxy<Us...>& rhs) {
 }
 
 template <typename... Ts>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 void swap(proxy<Ts...>&& a, proxy<Ts...>&& b) noexcept(noexcept(std::swap(a.data, b.data))) {
     std::swap(a.data, b.data);
 }

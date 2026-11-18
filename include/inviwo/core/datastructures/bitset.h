@@ -103,16 +103,16 @@ public:
 
     template <typename InputIt>
     BitSet(InputIt begin, InputIt end)
-        requires (is_iterator<InputIt>::value)
+        requires(is_iterator<InputIt>::value)
         : BitSet() {
         add(begin, end);
     }
 
     template <typename... Ts>
     BitSet(Ts&&... values)
-        requires (std::conjunction_v<std::is_convertible<Ts, uint32_t>...>)
+        requires(std::conjunction_v<std::is_convertible<Ts, uint32_t>...>)
         : BitSet() {
-        add(values...);
+        add(std::forward<Ts>(values)...);
     }
 
     BitSet(const BitSet& rhs);
@@ -179,7 +179,7 @@ public:
     void add(Ts&&... values)
         requires(std::conjunction_v<std::is_convertible<Ts, uint32_t>...>)
     {
-        (addSingle(static_cast<uint32_t>(values)), ...);
+        (addSingle(static_cast<uint32_t>(std::forward<Ts>(values))), ...);
     }
 
     /**

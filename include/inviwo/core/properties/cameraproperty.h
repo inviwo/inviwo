@@ -39,7 +39,6 @@
 #include <inviwo/core/properties/ordinalrefproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/util/glm.h>
 
@@ -82,6 +81,9 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(const CameraProperty& rhs);
+    CameraProperty(CameraProperty&& rhs) = delete;
+    CameraProperty& operator=(const CameraProperty&) = delete;
+    CameraProperty& operator=(CameraProperty&&) = delete;
 
     operator const Camera&() const;
 

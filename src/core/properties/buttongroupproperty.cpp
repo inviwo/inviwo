@@ -34,26 +34,12 @@
 
 namespace inviwo {
 
-std::string_view ButtonGroupProperty::getClassIdentifier() const { return classIdentifier; }
-
-ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
-                                         Document help, std::vector<Button> buttons,
-                                         InvalidationLevel invalidationLevel,
-                                         PropertySemantics semantics)
-    : Property(identifier, displayName, {}, invalidationLevel, std::move(semantics))
-    , buttons_{std::move(buttons)}
-    , partialHelp_{std::move(help)} {
-    setValid();  // the initial state for a button should be valid
-
-    updateHelp();
-}
-
-void ButtonGroupProperty::updateHelp() {
-    getHelp() = Document{};
-
-    getHelp().append(partialHelp_);
-    auto list = getHelp().handle().append("ul");
-    for (auto&& [i, button] : util::enumerate(buttons_)) {
+namespace {
+Document constructHelp(const Document& partial,
+                       const std::vector<ButtonGroupProperty::Button>& buttons) {
+    Document help = partial;
+    auto list = help.handle().append("ul");
+    for (auto&& [i, button] : util::enumerate(buttons)) {
         auto item = list.append("li");
         if (button.icon) {
             item.append("img", "", {{"src", *button.icon}, {"width", "20"}});
@@ -66,6 +52,21 @@ void ButtonGroupProperty::updateHelp() {
             item += *button.tooltip;
         }
     }
+    return help;
+}
+}  // namespace
+
+std::string_view ButtonGroupProperty::getClassIdentifier() const { return classIdentifier; }
+
+ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
+                                         Document help, std::vector<Button> buttons,
+                                         InvalidationLevel invalidationLevel,
+                                         PropertySemantics semantics)
+    : Property(identifier, displayName, constructHelp(help, buttons), invalidationLevel,
+               std::move(semantics))
+    , partialHelp_{std::move(help)}
+    , buttons_{std::move(buttons)} {
+    setValid();  // the initial state for a button should be valid
 }
 
 ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::string_view displayName,
@@ -87,24 +88,17 @@ ButtonGroupProperty::ButtonGroupProperty(std::string_view identifier, std::strin
     : ButtonGroupProperty(identifier, displayName, Document{}, std::move(buttons),
                           invalidationLevel, std::move(semantics)) {}
 
-ButtonGroupProperty::ButtonGroupProperty(const ButtonGroupProperty& rhs)
-    : Property(rhs), buttons_{}, partialHelp_{rhs.partialHelp_} {
-    setValid();
-    updateHelp();
-}
-
 ButtonGroupProperty::ButtonGroupProperty(const ButtonGroupProperty& rhs,
                                          std::vector<Button> buttons)
-    : Property(rhs), buttons_{std::move(buttons)}, partialHelp_{rhs.partialHelp_} {
-    setValid();
-    updateHelp();
+    : Property(rhs), partialHelp_{rhs.partialHelp_}, buttons_{std::move(buttons)} {
+    setHelp(constructHelp(partialHelp_, buttons));
 }
 
 ButtonGroupProperty* ButtonGroupProperty::clone() const { return new ButtonGroupProperty(*this); }
 
 void ButtonGroupProperty::addButton(Button button) {
     buttons_.push_back(std::move(button));
-    updateHelp();
+    setHelp(constructHelp(partialHelp_, buttons_));
 }
 
 auto ButtonGroupProperty::getButton(size_t i) const -> const Button& { return buttons_[i]; }
@@ -112,7 +106,7 @@ auto ButtonGroupProperty::getButton(size_t i) const -> const Button& { return bu
 size_t ButtonGroupProperty::size() const { return buttons_.size(); }
 
 void ButtonGroupProperty::set(const Property* src) {
-    if (auto prop = dynamic_cast<const ButtonGroupProperty*>(src)) {
+    if (const auto* prop = dynamic_cast<const ButtonGroupProperty*>(src)) {
         pressButton(prop->buttonPressed_);
     }
 }

@@ -173,6 +173,7 @@ std::shared_ptr<const T> DataOutport<T>::detachData() {
 
 template <typename T>
 template <typename, typename>
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 void DataOutport<T>::setData(T&& data) {
     setData(std::make_shared<T>(data));
 }

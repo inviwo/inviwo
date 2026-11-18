@@ -35,6 +35,7 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/compositepropertyobserver.h>
 
+#include <cstdint>
 #include <vector>
 
 namespace inviwo {
@@ -53,8 +54,8 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.CompositeProperty"};
 
-    enum class CollapseAction { Collapse, Expand };
-    enum class CollapseTarget { Current, Recursive, Children, Siblings };
+    enum class CollapseAction : std::uint8_t { Collapse, Expand };
+    enum class CollapseTarget : std::uint8_t { Current, Recursive, Children, Siblings };
 
     CompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -64,10 +65,11 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
+    // Copies are for clone(), derived classes have to add their own member properties.
     CompositeProperty(const CompositeProperty& rhs) = default;
-    CompositeProperty(CompositeProperty&& rhs) = default;
+    CompositeProperty(CompositeProperty&& rhs) = delete;
     CompositeProperty& operator=(const CompositeProperty& rhs) = delete;
-    CompositeProperty& operator=(CompositeProperty&& rhs) = default;
+    CompositeProperty& operator=(CompositeProperty&& rhs) = delete;
 
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;

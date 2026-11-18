@@ -117,7 +117,7 @@ struct OrdinalRefPropertyState {
  * function. It does handle min/max/increment for the value.
  */
 template <typename T>
-class OrdinalRefProperty : public Property {
+class OrdinalRefProperty final : public Property {
 public:
     using value_type = T;
     using component_type = util::value_type<T>::type;
@@ -151,6 +151,9 @@ public:
                        OrdinalRefPropertyState<T> state);
 
     OrdinalRefProperty(const OrdinalRefProperty<T>& rhs);
+    OrdinalRefProperty(OrdinalRefProperty&& rhs) = delete;
+    OrdinalRefProperty& operator=(const OrdinalRefProperty&) = delete;
+    OrdinalRefProperty& operator=(OrdinalRefProperty&&) = delete;
     OrdinalRefProperty<T>& operator=(const T& value);
     virtual OrdinalRefProperty<T>* clone() const override;
     virtual ~OrdinalRefProperty();
@@ -366,7 +369,8 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics, ReadOnly readOnly)
-    : Property(identifier, displayName, std::move(help), invalidationLevel, semantics, readOnly)
+    : Property(identifier, displayName, std::move(help), invalidationLevel, std::move(semantics),
+               readOnly)
     , get_{std::move(get)}
     , set_{std::move(set)}
     , fallbackValue_{}
@@ -410,9 +414,10 @@ OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::stri
                                           const std::pair<T, ConstraintBehavior>& maxValue,
                                           const T& increment, InvalidationLevel invalidationLevel,
                                           PropertySemantics semantics, ReadOnly readOnly)
-    : OrdinalRefProperty{identifier,        displayName, Document{}, std::move(get),
-                         std::move(set),    minValue,    maxValue,   increment,
-                         invalidationLevel, semantics,   readOnly} {}
+    : OrdinalRefProperty{
+          identifier, displayName, Document{}, std::move(get),    std::move(set),
+          minValue,   maxValue,    increment,  invalidationLevel, std::move(semantics),
+          readOnly} {}
 
 template <typename T>
 OrdinalRefProperty<T>::OrdinalRefProperty(std::string_view identifier, std::string_view displayName,
@@ -679,6 +684,7 @@ OrdinalRefProperty<T>& OrdinalRefProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 OrdinalRefProperty<T>& OrdinalRefProperty<T>::setDefault(const T& minVal, const T& maxVal,
                                                          const T& increment) {
     minValue_.defaultValue = minVal;

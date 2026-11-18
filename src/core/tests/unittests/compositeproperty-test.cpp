@@ -36,7 +36,10 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
+#include <memory>
 namespace inviwo {
+
+namespace {
 
 struct MockCompositePropertyObserver : CompositePropertyObserver {
     MOCK_METHOD(void, onSetCollapsed, (bool value), (override));
@@ -52,6 +55,8 @@ struct MockPropertyOwnerObserver : PropertyOwnerObserver {
                 (PropertyOwner * owner, Property* property, size_t index), (override));
 };
 
+}  // namespace
+
 TEST(CompositeProperty, Collapse) {
 
     CompositeProperty org{"org", "name", "help"_help};
@@ -66,18 +71,18 @@ TEST(CompositeProperty, Collapse) {
     org.setCollapsed(false);
     org.setCollapsed(false);
 
-    CompositeProperty copy{org};
+    const std::unique_ptr<CompositeProperty> copy{org.clone()};
 
     MockCompositePropertyObserver obs2;
-    copy.CompositePropertyObservable::addObserver(&obs2);
+    copy->CompositePropertyObservable::addObserver(&obs2);
 
     EXPECT_CALL(obs2, onSetCollapsed).Times(0);
     EXPECT_CALL(obs2, onSetCollapsed(true)).Times(1);
     EXPECT_CALL(obs2, onSetCollapsed(false)).Times(1);
-    copy.setCollapsed(true);
-    copy.setCollapsed(true);
-    copy.setCollapsed(false);
-    copy.setCollapsed(false);
+    copy->setCollapsed(true);
+    copy->setCollapsed(true);
+    copy->setCollapsed(false);
+    copy->setCollapsed(false);
 }
 
 TEST(CompositeProperty, addProperty) {
@@ -95,52 +100,39 @@ TEST(CompositeProperty, addProperty) {
     org.addProperty(f1);
 }
 
-TEST(CompositeProperty, ObserveMove) {
-
-    MockPropertyOwnerObserver obs1;
-
-    EXPECT_CALL(obs1, onWillAddProperty).Times(1);
-    EXPECT_CALL(obs1, onDidAddProperty).Times(1);
-    EXPECT_CALL(obs1, onWillRemoveProperty).Times(1);
-    EXPECT_CALL(obs1, onDidRemoveProperty).Times(1);
-
+TEST(CompositeProperty, CloneDoesNotCopyReferencedProperties) {
+    CompositeProperty org{"org", "name", "help"_help};
     FloatProperty f1{"f1", "f1"};
-    const auto copy = [&]() {
-        CompositeProperty org{"org", "name", "help"_help};
-        org.PropertyOwnerObservable::addObserver(&obs1);
-        org.addProperty(f1);
-        return static_cast<CompositeProperty&&>(org);
-    }();
+    org.addProperty(f1);
 
-    // The copy will only copy "owned" properties
-    EXPECT_EQ(copy.size(), 0);
+    const std::unique_ptr<CompositeProperty> copy{org.clone()};
+
+    // The clone only copies "owned" properties
+    EXPECT_EQ(org.size(), 1);
+    EXPECT_EQ(copy->size(), 0);
 }
 
-TEST(CompositeProperty, ObserveMoveOwned) {
-
+TEST(CompositeProperty, CloneOwned) {
     MockPropertyOwnerObserver obs1;
 
-    const ::testing::InSequence dummy;
+    CompositeProperty org{"org", "name", "help"_help};
+    org.PropertyOwnerObservable::addObserver(&obs1);
+
     EXPECT_CALL(obs1, onWillAddProperty).Times(1);
     EXPECT_CALL(obs1, onDidAddProperty).Times(1);
-    EXPECT_CALL(obs1, onWillRemoveProperty).Times(1);
-    EXPECT_CALL(obs1, onDidRemoveProperty).Times(1);
+    auto* owned = org.addProperty(std::make_unique<FloatProperty>("f1", "f1"));
 
-    const auto copy = [&]() {
-        CompositeProperty org{"org", "name", "help"_help};
-        org.PropertyOwnerObservable::addObserver(&obs1);
-        org.addProperty(std::make_unique<FloatProperty>("f1", "f1"));
+    const std::unique_ptr<CompositeProperty> copy{org.clone()};
 
-        EXPECT_TRUE(org.PropertyOwnerObservable::isObservedBy(&obs1));
+    ASSERT_EQ(copy->size(), 1);
+    EXPECT_EQ(copy->getProperties()[0]->getIdentifier(), "f1");
+    EXPECT_EQ(copy->getProperties()[0]->getOwner(), copy.get());
+    EXPECT_NE(copy->getProperties()[0], owned);
 
-        return static_cast<CompositeProperty&&>(org);
-    }();
-
-    ASSERT_EQ(copy.size(), 1);
-    EXPECT_EQ(copy.getProperties()[0]->getIdentifier(), "f1");
-    EXPECT_EQ(copy.getProperties()[0]->getOwner(), &copy);
-
-    EXPECT_TRUE(copy.PropertyOwnerObservable::isObservedBy(&obs1));
+    // The original is untouched and observers are not copied
+    EXPECT_EQ(owned->getOwner(), &org);
+    EXPECT_TRUE(org.PropertyOwnerObservable::isObservedBy(&obs1));
+    EXPECT_FALSE(copy->PropertyOwnerObservable::isObservedBy(&obs1));
 }
 
 }  // namespace inviwo

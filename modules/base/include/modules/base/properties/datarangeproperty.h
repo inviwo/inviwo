@@ -70,6 +70,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     DataRangeProperty(const DataRangeProperty& rhs);
+    DataRangeProperty(DataRangeProperty&&) = delete;
+    DataRangeProperty& operator=(const DataRangeProperty&) = delete;
+    DataRangeProperty& operator=(DataRangeProperty&&) = delete;
     virtual DataRangeProperty* clone() const override;
     virtual ~DataRangeProperty() = default;
 

@@ -71,6 +71,7 @@ struct TransformIterator {
     }
     TransformIterator(const TransformIterator& rhs) = default;
     TransformIterator(TransformIterator&& rhs) = default;
+    ~TransformIterator() = default;
     TransformIterator& operator=(const TransformIterator& that) {
         if (this != &that) {
             iterator_ = that.iterator_;
@@ -149,6 +150,7 @@ struct TransformIterator {
     reference operator*() const { return (*transform_)(*iterator_); }
     pointer operator->() const { return &(*transform_)(*iterator_); }
 
+    // NOLINTNEXTLINE(bugprone-unchecked-optional-access) always set when dereferencable
     reference operator*() { return (*transform_)(*iterator_); }
     pointer operator->() { return &(*transform_)(*iterator_); }
 
@@ -191,6 +193,7 @@ auto makeTransformIterator(Transform&& transform, Iter iter) {
 }
 
 template <typename Range, typename Transform>
+// NOLINTNEXTLINE(cppcoreguidelines-missing-std-forward) the transform is copied into both iterators
 auto transformRange(Range& range, Transform&& transform) {
     using std::begin;
     using std::end;

@@ -81,6 +81,7 @@ struct DefaultTraversalFilter {
 template <TraversalDirection D, VisitPattern V, typename Func,
           typename Filter = DefaultTraversalFilter, typename Alloc = std::allocator<Processor*>>
 void traverseNetwork(
+    // NOLINTNEXTLINE(modernize-use-transparent-functors) must match the caller's set type
     std::unordered_set<Processor*, std::hash<Processor*>, std::equal_to<Processor*>, Alloc>& state,
     Processor* processor, Func f, Filter connectionFilter = DefaultTraversalFilter{}) {
     if (state.contains(processor)) return;

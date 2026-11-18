@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/algorithm/markdown.h>
 
 #include <vector>
@@ -48,13 +47,15 @@ class CompositeProperty;
 class InviwoApplication;
 class NetworkVisitor;
 
-class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
-                                   public virtual Serializable,
-                                   public EventListener {
+class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable, public virtual Serializable {
 public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
+
+    PropertyOwner(PropertyOwner&& rhs) = delete;
     PropertyOwner& operator=(const PropertyOwner& that) = delete;
+    PropertyOwner& operator=(PropertyOwner&& that) = delete;
+
     /**
      * @brief Removes all properties and notifies its observers of the removal.
      */
@@ -166,15 +167,17 @@ public:
     virtual void setAllPropertiesCurrentStateAsDefault();
     virtual void resetAllProperties();
 
-    virtual void invokeEvent(Event* event) override;
+    virtual void invokeEvent(Event* event);
 
     virtual InviwoApplication* getInviwoApplication() = 0;
 
 protected:
     PropertyOwner();
+    /**
+     * @brief Support for clone(): copies the owned properties only, observers are not copied.
+     * Derived classes have to add their own member properties.
+     */
     PropertyOwner(const PropertyOwner& rhs);
-    PropertyOwner(PropertyOwner&& rhs);
-    PropertyOwner& operator=(PropertyOwner&& that);
 
     void forEachProperty(std::function<void(Property&)> callback,
                          bool recursiveSearch = false) const;

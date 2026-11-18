@@ -73,7 +73,7 @@ public:
                     .setDisplayName(fmt::format("Iso Values #{}", i));
                 prop.tf_.setIdentifier(fmt::format("transferFunction{}", i))
                     .setDisplayName(fmt::format("Transfer Function #{}", i));
-                return prop;
+                return IsoTFProperty{prop};
             } else {
                 return IsoTFProperty{"isotf", "TF & Iso Values", volumeInport,
                                      InvalidationLevel::InvalidResources};

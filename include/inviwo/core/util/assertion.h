@@ -53,6 +53,8 @@ namespace inviwo::cfg {
 constexpr bool assertions = true;
 }  // namespace inviwo::cfg
 
+// The message is a stream expression and can not be parenthesized
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define IVW_ASSERT(condition, message)                    \
     {                                                     \
         if (!(bool(condition))) {                         \
@@ -61,6 +63,7 @@ constexpr bool assertions = true;
             ::inviwo::assertion(std::move(stream).str()); \
         }                                                 \
     }
+// NOLINTEND(bugprone-macro-parentheses)
 
 // Deprecated
 #define ivwAssert(condition, message) IVW_ASSERT(condition, message)

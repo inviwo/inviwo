@@ -43,8 +43,10 @@
 
 namespace inviwo {
 
+namespace {
+
 template <typename T, typename M>
-static void testserialization(const T& def, const T& in) {
+void testserialization(const T& def, const T& in) {
     const T& indata = in;
     T outdata1 = def;
 
@@ -59,7 +61,7 @@ static void testserialization(const T& def, const T& in) {
     mdo1.getMetaDataMap()->serialize(serializer);
     std::stringstream ss;
     serializer.writeFile(ss);
-    auto wm = InviwoApplication::getPtr()->getWorkspaceManager();
+    const auto* wm = InviwoApplication::getPtr()->getWorkspaceManager();
     auto deserializer = wm->createWorkspaceDeserializer(ss, filename);
     MetaDataOwner mdo2;
     mdo2.getMetaDataMap()->deserialize(deserializer);
@@ -69,6 +71,8 @@ static void testserialization(const T& def, const T& in) {
     outdata2 = mdo2.getMetaData<M>("data", outdata2);
     EXPECT_EQ(indata, outdata2);
 }
+
+}  // namespace
 
 #define MetaDataMacro(n, t, d, v) \
     TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }

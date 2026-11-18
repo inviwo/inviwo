@@ -46,7 +46,7 @@ namespace inviwo {
  * @see OrthoGraphicAxis2D
  * @see BoxSelection
  */
-class IVW_CORE_API AxisRangeEvent : public Event {
+class IVW_CORE_API AxisRangeEvent final : public Event {
 public:
     using Rectangle = std::array<dvec2, 2>;
 

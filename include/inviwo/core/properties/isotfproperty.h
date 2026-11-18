@@ -75,9 +75,9 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     IsoTFProperty(const IsoTFProperty& rhs);
-    IsoTFProperty(IsoTFProperty&& rhs);
+    IsoTFProperty(IsoTFProperty&& rhs) = delete;
     IsoTFProperty& operator=(const IsoTFProperty& rhs) = delete;
-    IsoTFProperty& operator=(IsoTFProperty&& rhs);
+    IsoTFProperty& operator=(IsoTFProperty&& rhs) = delete;
     virtual ~IsoTFProperty() = default;
 
     virtual IsoTFProperty* clone() const override;
@@ -130,7 +130,6 @@ public:
     IsoValueProperty isovalues_;
     TransferFunctionProperty tf_;
 
-protected:
     virtual void onZoomHChange(const dvec2& zoomH) override;
     virtual void onZoomVChange(const dvec2& zoomV) override;
     virtual void onHistogramModeChange(HistogramMode mode) override;

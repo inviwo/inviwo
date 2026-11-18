@@ -74,6 +74,9 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     FilePatternProperty(const FilePatternProperty& rhs);
+    FilePatternProperty(FilePatternProperty&& rhs) = delete;
+    FilePatternProperty& operator=(const FilePatternProperty&) = delete;
+    FilePatternProperty& operator=(FilePatternProperty&&) = delete;
 
     virtual FilePatternProperty* clone() const override;
     virtual ~FilePatternProperty();
@@ -98,8 +101,8 @@ public:
     void setSelectedExtension(const FileExtension& ext);
 
     void clearNameFilters();
-    void addNameFilter(std::string filter);
-    void addNameFilter(FileExtension filter);
+    void addNameFilter(const std::string& filter);
+    void addNameFilter(const FileExtension& filter);
     void addNameFilters(const std::vector<FileExtension>& filters);
 
 protected:

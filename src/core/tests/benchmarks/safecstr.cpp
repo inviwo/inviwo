@@ -39,7 +39,9 @@
 
 namespace {
 
-std::string_view view =
+// NOLINTBEGIN(clang-analyzer-deadcode.DeadStores,bugprone-suspicious-stringview-data-usage,cppcoreguidelines-pro-type-member-init)
+
+constexpr std::string_view view =
     "01234567890123456789012345678901234567890123456789"
     "01234567890123456789012345678901234567890123456789"
     "01234567890123456789012345678901234567890123456789"
@@ -98,7 +100,7 @@ void StringConv(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = std::string(sv);
-        auto ptr = str.c_str();
+        const auto* ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
@@ -108,7 +110,7 @@ void ArrayConvInit(benchmark::State& state) {
     for (const auto _ : state) {
         std::array<char, 256> buff = {0};
         std::memcpy(buff.data(), sv.data(), sv.size());
-        auto ptr = buff.data();
+        auto* ptr = buff.data();
         benchmark::DoNotOptimize(ptr);
     }
 }
@@ -119,7 +121,7 @@ void ArrayConvZero(benchmark::State& state) {
         std::array<char, 256> buff;
         std::memcpy(buff.data(), sv.data(), sv.size());
         buff[sv.size()] = 0;
-        auto ptr = buff.data();
+        auto* ptr = buff.data();
         benchmark::DoNotOptimize(ptr);
     }
 }
@@ -128,7 +130,7 @@ void SafeCStr1_256(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = SafeCStr1<256>(sv);
-        auto ptr = str.c_str();
+        const auto* ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
@@ -137,10 +139,12 @@ void SafeCStr2_56(benchmark::State& state) {
     const std::string_view sv{view.data(), static_cast<size_t>(state.range(0))};
     for (const auto _ : state) {
         const auto str = SafeCStr2<56>(sv);
-        auto ptr = str.c_str();
+        const auto* ptr = str.c_str();
         benchmark::DoNotOptimize(ptr);
     }
 }
+
+// NOLINTEND(clang-analyzer-deadcode.DeadStores,bugprone-suspicious-stringview-data-usage,cppcoreguidelines-pro-type-member-init)
 
 }  // namespace
 

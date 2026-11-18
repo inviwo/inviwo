@@ -60,7 +60,7 @@ private:
  * @see FileProperty
  */
 
-class IVW_CORE_API ImageEditorProperty : public FileProperty {
+class IVW_CORE_API ImageEditorProperty final : public FileProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.ImageEditorProperty"};
@@ -71,6 +71,9 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     ImageEditorProperty(const ImageEditorProperty& rhs);
+    ImageEditorProperty(ImageEditorProperty&& rhs) = delete;
+    ImageEditorProperty& operator=(const ImageEditorProperty&) = delete;
+    ImageEditorProperty& operator=(ImageEditorProperty&&) = delete;
 
     virtual ImageEditorProperty* clone() const override;
     virtual ~ImageEditorProperty();

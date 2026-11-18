@@ -30,15 +30,22 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 
 namespace inviwo {
 
-class IVW_CORE_API InteractionHandler : public EventListener {
+class Event;
 
+class IVW_CORE_API InteractionHandler {
 public:
     InteractionHandler() = default;
     virtual ~InteractionHandler() = default;
+    virtual void invokeEvent(Event* event) = 0;
+
+protected:
+    InteractionHandler(const InteractionHandler&) = default;
+    InteractionHandler(InteractionHandler&&) = default;
+    InteractionHandler& operator=(const InteractionHandler&) = default;
+    InteractionHandler& operator=(InteractionHandler&&) = default;
 };
 
 }  // namespace inviwo

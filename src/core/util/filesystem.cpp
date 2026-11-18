@@ -271,7 +271,9 @@ fs::path getInviwoBinDir() {
 
 #ifdef __APPLE__
 
-static std::string expandTilde(const char* str) {
+namespace {
+
+std::string expandTilde(const char* str) {
     if (!str) return {};
 
     glob_t globbuf;
@@ -283,6 +285,8 @@ static std::string expandTilde(const char* str) {
         throw Exception(SourceContext{}, "Unable to expand tilde in string '{}'", str);
     }
 }
+
+}  // namespace
 
 #endif
 
@@ -305,9 +309,9 @@ fs::path getInviwoUserSettingsPath() {
 
 #elifdef __APPLE__
     char path[PATH_MAX];
-    auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
-                                                      SYSDIR_DOMAIN_MASK_USER);
-    if ((state = sysdir_get_next_search_path_enumeration(state, path))) {
+    const auto state = sysdir_start_search_path_enumeration(SYSDIR_DIRECTORY_APPLICATION_SUPPORT,
+                                                            SYSDIR_DOMAIN_MASK_USER);
+    if (sysdir_get_next_search_path_enumeration(state, path) != 0) {
         ss << expandTilde(path) << "/org.inviwo.network-editor";
     } else {
         throw Exception("Failed to get settings folder");
@@ -533,6 +537,7 @@ bool wildcardStringMatch(const std::string& pattern, const std::string& str) {
     return (*patternPtr == '\0');
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 bool wildcardStringMatchDigits(const std::string& pattern, const std::string& str, int& index,
                                bool matchLess, bool matchMore) {
 
@@ -561,7 +566,7 @@ bool wildcardStringMatchDigits(const std::string& pattern, const std::string& st
             }
             if (matchLess) {
                 // less digits (eat up all '#')
-                while ((*patternPtr != '\0') && (*patternPtr == '#') && (!isdigit(*strPtr))) {
+                while ((*patternPtr == '#') && (!isdigit(*strPtr))) {
                     ++patternPtr;
                 }
             }
@@ -709,33 +714,33 @@ const fs::path& getPath(PathType pathType) {
         util::make_array<NumberOfPathTypes>([](auto index) {
             auto result = findBasePath();
             switch (static_cast<PathType>(index)) {
-                case PathType::Data: result /= "data"; break;
+                case PathType::Data:              result /= "data"; break;
 
-                case PathType::Volumes: result /= "data/volumes"; break;
+                case PathType::Volumes:           result /= "data/volumes"; break;
 
-                case PathType::Workspaces: result /= "data/workspaces"; break;
+                case PathType::Workspaces:        result /= "data/workspaces"; break;
 
-                case PathType::PortInspectors: result /= "data/workspaces/portinspectors"; break;
+                case PathType::PortInspectors:    result /= "data/workspaces/portinspectors"; break;
 
-                case PathType::Scripts: result /= "data/scripts"; break;
+                case PathType::Scripts:           result /= "data/scripts"; break;
 
-                case PathType::Images: result /= "data/images"; break;
+                case PathType::Images:            result /= "data/images"; break;
 
-                case PathType::Databases: result /= "data/databases"; break;
+                case PathType::Databases:         result /= "data/databases"; break;
 
-                case PathType::Resources: result /= "resources"; break;
+                case PathType::Resources:         result /= "resources"; break;
 
                 case PathType::TransferFunctions: result /= "data/transferfunctions"; break;
 
-                case PathType::Settings: result = getInviwoUserSettingsPath(); break;
+                case PathType::Settings:          result = getInviwoUserSettingsPath(); break;
 
-                case PathType::Cache: result = getInviwoUserSettingsPath() / "cache"; break;
+                case PathType::Cache:   result = getInviwoUserSettingsPath() / "cache"; break;
 
                 case PathType::Modules: result = getInviwoUserSettingsPath() / "modules"; break;
-                case PathType::Help: result /= "data/help"; break;
+                case PathType::Help:    result /= "data/help"; break;
 
-                case PathType::Tests: result /= "tests"; break;
-                default: break;
+                case PathType::Tests:   result /= "tests"; break;
+                default:                break;
             }
             return result.lexically_normal();
         });

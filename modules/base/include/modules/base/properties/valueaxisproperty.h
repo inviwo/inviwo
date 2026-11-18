@@ -66,6 +66,9 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     ValueAxisProperty(const ValueAxisProperty& rhs);
+    ValueAxisProperty(ValueAxisProperty&&) = delete;
+    ValueAxisProperty& operator=(const ValueAxisProperty&) = delete;
+    ValueAxisProperty& operator=(ValueAxisProperty&&) = delete;
     virtual ValueAxisProperty* clone() const override;
     virtual ~ValueAxisProperty() = default;
 

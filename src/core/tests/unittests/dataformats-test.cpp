@@ -37,7 +37,7 @@
 namespace inviwo {
 
 TEST(DataFormatsTests, Float32Test) {
-    auto df = DataFloat32::get();
+    const auto* df = DataFloat32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -49,7 +49,7 @@ TEST(DataFormatsTests, Float32Test) {
 }
 
 TEST(DataFormatsTests, Float32Vec2Test) {
-    auto df = DataVec2Float32::get();
+    const auto* df = DataVec2Float32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -61,7 +61,7 @@ TEST(DataFormatsTests, Float32Vec2Test) {
 }
 
 TEST(DataFormatsTests, Float32Vec3Test) {
-    auto df = DataVec3Float32::get();
+    const auto* df = DataVec3Float32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(12, df->getSizeInBytes());
@@ -73,7 +73,7 @@ TEST(DataFormatsTests, Float32Vec3Test) {
 }
 
 TEST(DataFormatsTests, Float32Vec4Test) {
-    auto df = DataVec4Float32::get();
+    const auto* df = DataVec4Float32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -85,7 +85,7 @@ TEST(DataFormatsTests, Float32Vec4Test) {
 }
 
 TEST(DataFormatsTests, Float64Test) {
-    auto df = DataFloat64::get();
+    const auto* df = DataFloat64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -97,7 +97,7 @@ TEST(DataFormatsTests, Float64Test) {
 }
 
 TEST(DataFormatsTests, Float64Vec2Test) {
-    auto df = DataVec2Float64::get();
+    const auto* df = DataVec2Float64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -109,7 +109,7 @@ TEST(DataFormatsTests, Float64Vec2Test) {
 }
 
 TEST(DataFormatsTests, Float64Vec3Test) {
-    auto df = DataVec3Float64::get();
+    const auto* df = DataVec3Float64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(24, df->getSizeInBytes());
@@ -121,7 +121,7 @@ TEST(DataFormatsTests, Float64Vec3Test) {
 }
 
 TEST(DataFormatsTests, Float64Vec4Test) {
-    auto df = DataVec4Float64::get();
+    const auto* df = DataVec4Float64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(32, df->getSizeInBytes());
@@ -133,7 +133,7 @@ TEST(DataFormatsTests, Float64Vec4Test) {
 }
 
 TEST(DataFormatsTests, Int8Test) {
-    auto df = DataInt8::get();
+    const auto* df = DataInt8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(1, df->getSizeInBytes());
@@ -145,7 +145,7 @@ TEST(DataFormatsTests, Int8Test) {
 }
 
 TEST(DataFormatsTests, Int8Vec2Test) {
-    auto df = DataVec2Int8::get();
+    const auto* df = DataVec2Int8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(2, df->getSizeInBytes());
@@ -157,7 +157,7 @@ TEST(DataFormatsTests, Int8Vec2Test) {
 }
 
 TEST(DataFormatsTests, Int8Vec3Test) {
-    auto df = DataVec3Int8::get();
+    const auto* df = DataVec3Int8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(3, df->getSizeInBytes());
@@ -169,7 +169,7 @@ TEST(DataFormatsTests, Int8Vec3Test) {
 }
 
 TEST(DataFormatsTests, Int8Vec4Test) {
-    auto df = DataVec4Int8::get();
+    const auto* df = DataVec4Int8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -181,7 +181,7 @@ TEST(DataFormatsTests, Int8Vec4Test) {
 }
 
 TEST(DataFormatsTests, Int16Test) {
-    auto df = DataInt16::get();
+    const auto* df = DataInt16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(2, df->getSizeInBytes());
@@ -193,7 +193,7 @@ TEST(DataFormatsTests, Int16Test) {
 }
 
 TEST(DataFormatsTests, Int16Vec2Test) {
-    auto df = DataVec2Int16::get();
+    const auto* df = DataVec2Int16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -205,7 +205,7 @@ TEST(DataFormatsTests, Int16Vec2Test) {
 }
 
 TEST(DataFormatsTests, Int16Vec3Test) {
-    auto df = DataVec3Int16::get();
+    const auto* df = DataVec3Int16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(6, df->getSizeInBytes());
@@ -217,7 +217,7 @@ TEST(DataFormatsTests, Int16Vec3Test) {
 }
 
 TEST(DataFormatsTests, Int16Vec4Test) {
-    auto df = DataVec4Int16::get();
+    const auto* df = DataVec4Int16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -229,7 +229,7 @@ TEST(DataFormatsTests, Int16Vec4Test) {
 }
 
 TEST(DataFormatsTests, Int32Test) {
-    auto df = DataInt32::get();
+    const auto* df = DataInt32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -241,7 +241,7 @@ TEST(DataFormatsTests, Int32Test) {
 }
 
 TEST(DataFormatsTests, Int32Vec2Test) {
-    auto df = DataVec2Int32::get();
+    const auto* df = DataVec2Int32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -253,7 +253,7 @@ TEST(DataFormatsTests, Int32Vec2Test) {
 }
 
 TEST(DataFormatsTests, Int32Vec3Test) {
-    auto df = DataVec3Int32::get();
+    const auto* df = DataVec3Int32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(12, df->getSizeInBytes());
@@ -265,7 +265,7 @@ TEST(DataFormatsTests, Int32Vec3Test) {
 }
 
 TEST(DataFormatsTests, Int32Vec4Test) {
-    auto df = DataVec4Int32::get();
+    const auto* df = DataVec4Int32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -277,7 +277,7 @@ TEST(DataFormatsTests, Int32Vec4Test) {
 }
 
 TEST(DataFormatsTests, Int64Test) {
-    auto df = DataInt64::get();
+    const auto* df = DataInt64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -289,7 +289,7 @@ TEST(DataFormatsTests, Int64Test) {
 }
 
 TEST(DataFormatsTests, Int64Vec2Test) {
-    auto df = DataVec2Int64::get();
+    const auto* df = DataVec2Int64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -301,7 +301,7 @@ TEST(DataFormatsTests, Int64Vec2Test) {
 }
 
 TEST(DataFormatsTests, Int64Vec3Test) {
-    auto df = DataVec3Int64::get();
+    const auto* df = DataVec3Int64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(24, df->getSizeInBytes());
@@ -313,7 +313,7 @@ TEST(DataFormatsTests, Int64Vec3Test) {
 }
 
 TEST(DataFormatsTests, Int64Vec4Test) {
-    auto df = DataVec4Int64::get();
+    const auto* df = DataVec4Int64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(32, df->getSizeInBytes());
@@ -325,7 +325,7 @@ TEST(DataFormatsTests, Int64Vec4Test) {
 }
 
 TEST(DataFormatsTests, UInt8Test) {
-    auto df = DataUInt8::get();
+    const auto* df = DataUInt8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(1, df->getSizeInBytes());
@@ -337,7 +337,7 @@ TEST(DataFormatsTests, UInt8Test) {
 }
 
 TEST(DataFormatsTests, UInt8Vec2Test) {
-    auto df = DataVec2UInt8::get();
+    const auto* df = DataVec2UInt8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(2, df->getSizeInBytes());
@@ -349,7 +349,7 @@ TEST(DataFormatsTests, UInt8Vec2Test) {
 }
 
 TEST(DataFormatsTests, UInt8Vec3Test) {
-    auto df = DataVec3UInt8::get();
+    const auto* df = DataVec3UInt8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(3, df->getSizeInBytes());
@@ -361,7 +361,7 @@ TEST(DataFormatsTests, UInt8Vec3Test) {
 }
 
 TEST(DataFormatsTests, UInt8Vec4Test) {
-    auto df = DataVec4UInt8::get();
+    const auto* df = DataVec4UInt8::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -373,7 +373,7 @@ TEST(DataFormatsTests, UInt8Vec4Test) {
 }
 
 TEST(DataFormatsTests, UInt16Test) {
-    auto df = DataUInt16::get();
+    const auto* df = DataUInt16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(2, df->getSizeInBytes());
@@ -385,7 +385,7 @@ TEST(DataFormatsTests, UInt16Test) {
 }
 
 TEST(DataFormatsTests, UInt16Vec2Test) {
-    auto df = DataVec2UInt16::get();
+    const auto* df = DataVec2UInt16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -397,7 +397,7 @@ TEST(DataFormatsTests, UInt16Vec2Test) {
 }
 
 TEST(DataFormatsTests, UInt16Vec3Test) {
-    auto df = DataVec3UInt16::get();
+    const auto* df = DataVec3UInt16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(6, df->getSizeInBytes());
@@ -409,7 +409,7 @@ TEST(DataFormatsTests, UInt16Vec3Test) {
 }
 
 TEST(DataFormatsTests, UInt16Vec4Test) {
-    auto df = DataVec4UInt16::get();
+    const auto* df = DataVec4UInt16::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -421,7 +421,7 @@ TEST(DataFormatsTests, UInt16Vec4Test) {
 }
 
 TEST(DataFormatsTests, UInt32Test) {
-    auto df = DataUInt32::get();
+    const auto* df = DataUInt32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(4, df->getSizeInBytes());
@@ -433,7 +433,7 @@ TEST(DataFormatsTests, UInt32Test) {
 }
 
 TEST(DataFormatsTests, UInt32Vec2Test) {
-    auto df = DataVec2UInt32::get();
+    const auto* df = DataVec2UInt32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -445,7 +445,7 @@ TEST(DataFormatsTests, UInt32Vec2Test) {
 }
 
 TEST(DataFormatsTests, UInt32Vec3Test) {
-    auto df = DataVec3UInt32::get();
+    const auto* df = DataVec3UInt32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(12, df->getSizeInBytes());
@@ -457,7 +457,7 @@ TEST(DataFormatsTests, UInt32Vec3Test) {
 }
 
 TEST(DataFormatsTests, UInt32Vec4Test) {
-    auto df = DataVec4UInt32::get();
+    const auto* df = DataVec4UInt32::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -469,7 +469,7 @@ TEST(DataFormatsTests, UInt32Vec4Test) {
 }
 
 TEST(DataFormatsTests, UInt64Test) {
-    auto df = DataUInt64::get();
+    const auto* df = DataUInt64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(8, df->getSizeInBytes());
@@ -481,7 +481,7 @@ TEST(DataFormatsTests, UInt64Test) {
 }
 
 TEST(DataFormatsTests, UInt64Vec2Test) {
-    auto df = DataVec2UInt64::get();
+    const auto* df = DataVec2UInt64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(16, df->getSizeInBytes());
@@ -493,7 +493,7 @@ TEST(DataFormatsTests, UInt64Vec2Test) {
 }
 
 TEST(DataFormatsTests, UInt64Vec3Test) {
-    auto df = DataVec3UInt64::get();
+    const auto* df = DataVec3UInt64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(24, df->getSizeInBytes());
@@ -505,7 +505,7 @@ TEST(DataFormatsTests, UInt64Vec3Test) {
 }
 
 TEST(DataFormatsTests, UInt64Vec4Test) {
-    auto df = DataVec4UInt64::get();
+    const auto* df = DataVec4UInt64::get();
     ASSERT_NE(nullptr, df);
 
     EXPECT_EQ(32, df->getSizeInBytes());

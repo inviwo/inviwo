@@ -480,7 +480,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         repo-root: inviwo
-        database: ../build
+        database: build
         style: 'file'
         tidy-checks: ''
         version: ${{ env.LLVM_PATH }}

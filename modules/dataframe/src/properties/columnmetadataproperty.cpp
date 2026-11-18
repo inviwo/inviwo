@@ -91,17 +91,6 @@ ColumnMetaDataProperty::ColumnMetaDataProperty(const ColumnMetaDataProperty& rhs
     addProperties(header_, type_, range_, unit_, drop_);
 }
 
-ColumnMetaDataProperty& ColumnMetaDataProperty::operator=(const ColumnMetaDataProperty& rhs) {
-    if (this != &rhs) {
-        header_.set(rhs.header_.get());
-        type_.set(rhs.type_.get());
-        range_.set(rhs.range_.get());
-        unit_.set(rhs.unit_.get());
-        drop_.set(rhs.drop_.get());
-    }
-    return *this;
-}
-
 ColumnMetaDataProperty* ColumnMetaDataProperty::clone() const {
     return new ColumnMetaDataProperty(*this);
 }

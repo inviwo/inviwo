@@ -68,6 +68,9 @@ public:
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
     FontFaceOptionProperty(const FontFaceOptionProperty& rhs);
+    FontFaceOptionProperty(FontFaceOptionProperty&&) = delete;
+    FontFaceOptionProperty& operator=(const FontFaceOptionProperty&) = delete;
+    FontFaceOptionProperty& operator=(FontFaceOptionProperty&&) = delete;
     virtual FontFaceOptionProperty* clone() const override;
     virtual ~FontFaceOptionProperty() = default;
 };

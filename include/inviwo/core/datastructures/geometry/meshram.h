@@ -47,6 +47,8 @@ public:
     MeshRAM() = default;
     MeshRAM(const MeshRAM& rhs);
     MeshRAM& operator=(const MeshRAM& that);
+    MeshRAM(MeshRAM&& rhs) = default;
+    MeshRAM& operator=(MeshRAM&& that) = default;
     virtual MeshRAM* clone() const override;
     virtual ~MeshRAM() = default;
     virtual std::type_index getTypeIndex() const override final;

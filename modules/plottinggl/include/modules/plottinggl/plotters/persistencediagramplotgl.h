@@ -99,6 +99,9 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
         Properties(const Properties& rhs);
+        Properties(Properties&&) = delete;
+        Properties& operator=(const Properties&) = delete;
+        Properties& operator=(Properties&&) = delete;
         virtual Properties* clone() const override;
         virtual ~Properties() = default;
 

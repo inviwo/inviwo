@@ -58,6 +58,9 @@ public:
                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                           PropertySemantics semantics = PropertySemantics::Default);
     SequenceTimerProperty(const SequenceTimerProperty& rhs);
+    SequenceTimerProperty(SequenceTimerProperty&&) = delete;
+    SequenceTimerProperty& operator=(const SequenceTimerProperty&) = delete;
+    SequenceTimerProperty& operator=(SequenceTimerProperty&&) = delete;
     virtual SequenceTimerProperty* clone() const override;
     virtual ~SequenceTimerProperty() = default;
 
