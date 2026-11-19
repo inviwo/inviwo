@@ -33,6 +33,8 @@
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
+#include <inviwo/core/datastructures/representationutil.h>
+#include <inviwo/core/datastructures/representationfactorymanager.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 
@@ -49,6 +51,9 @@ int main(int argc, char** argv) {
     const auto logger = std::make_shared<inviwo::ConsoleLogger>();
     inviwo::LogCentral::getPtr()->setVerbosity(inviwo::LogVerbosity::Error);
     inviwo::LogCentral::getPtr()->registerLogger(logger);
+
+    inviwo::RepresentationFactoryManager rfm;
+    inviwo::util::registerCoreRepresentations(rfm);
 
     int ret = -1;
     {

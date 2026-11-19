@@ -73,25 +73,7 @@ std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index, std::shared
         .start = timeSelection_.start + timeSelection_.stride * index, .count = 1, .stride = 1};
 
     auto volume = getVolumeAtPathAsType(handle_, sel, prototype_, [&](const VolumeConfig& cfg) {
-        const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
-        const auto formatId = cfg.formatId.value_or(VolumeConfig::defaultFormatId);
-        if (reuse && reuse->getDimensions() == dims && reuse->getDataFormatId() == formatId) {
-            reuse->getMetaDataMap()->removeAll();
-
-            reuse->setSwizzleMask(cfg.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
-            reuse->setInterpolation(cfg.interpolation.value_or(VolumeConfig::defaultInterpolation));
-            reuse->setWrapping(cfg.wrapping.value_or(VolumeConfig::defaultWrapping));
-
-            reuse->axes[0] = cfg.xAxis.value_or(VolumeConfig::defaultXAxis);
-            reuse->axes[1] = cfg.yAxis.value_or(VolumeConfig::defaultYAxis);
-            reuse->axes[2] = cfg.zAxis.value_or(VolumeConfig::defaultZAxis);
-            reuse->dataMap = cfg.dataMap();
-            reuse->setModelMatrix(cfg.model.value_or(VolumeConfig::defaultModel));
-            reuse->setWorldMatrix(cfg.world.value_or(VolumeConfig::defaultWorld));
-
-            return reuse;
-        }
-        return std::make_shared<Volume>(cfg);
+        return reuseOrCreateVolume(cfg, reuse);
     });
     return volume;
 }

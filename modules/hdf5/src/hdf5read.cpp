@@ -248,6 +248,29 @@ std::shared_ptr<Volume> getVolumeAtPathAsType(
     return volume;
 }
 
+std::shared_ptr<Volume> reuseOrCreateVolume(const VolumeConfig& config,
+                                            std::shared_ptr<Volume> reuse) {
+    const auto dims = config.dimensions.value_or(VolumeConfig::defaultDimensions);
+    const auto formatId = config.formatId.value_or(VolumeConfig::defaultFormatId);
+    if (reuse && reuse->getDimensions() == dims && reuse->getDataFormatId() == formatId) {
+        reuse->getMetaDataMap()->removeAll();
+
+        reuse->setSwizzleMask(config.swizzleMask.value_or(VolumeConfig::defaultSwizzleMask));
+        reuse->setInterpolation(config.interpolation.value_or(VolumeConfig::defaultInterpolation));
+        reuse->setWrapping(config.wrapping.value_or(VolumeConfig::defaultWrapping));
+
+        reuse->axes[0] = config.xAxis.value_or(VolumeConfig::defaultXAxis);
+        reuse->axes[1] = config.yAxis.value_or(VolumeConfig::defaultYAxis);
+        reuse->axes[2] = config.zAxis.value_or(VolumeConfig::defaultZAxis);
+        reuse->dataMap = config.dataMap();
+        reuse->setModelMatrix(config.model.value_or(VolumeConfig::defaultModel));
+        reuse->setWorldMatrix(config.world.value_or(VolumeConfig::defaultWorld));
+
+        return reuse;
+    }
+    return std::make_shared<Volume>(config);
+}
+
 std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
                                             const std::vector<Selection>& selection,
                                             LayerConfig layerConfig) {
