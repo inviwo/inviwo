@@ -32,6 +32,7 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/chronoutils.h>

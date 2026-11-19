@@ -30,6 +30,7 @@ target_sources(ivwbase
         ${SOURCE_FILES}
 )
 target_link_libraries(ivwbase PUBLIC inviwo::module::base inviwo::module::python3)
+ivw_compile_optimize_on_target(ivwbase)
 
 ivw_install_helper(TARGET ivwbase
     NAMESPACE inviwo

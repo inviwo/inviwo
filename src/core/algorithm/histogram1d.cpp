@@ -56,8 +56,8 @@ Statistics calculateHistogramStats(const std::vector<size_t>& hist) {
     std::vector<size_t> sorted = hist;
     std::ranges::sort(sorted);
     const size_t sum = std::accumulate(hist.begin(), hist.end(), size_t{0});
-    const size_t sum2 =
-        std::accumulate(hist.begin(), hist.end(), 0, [](size_t a, size_t b) { return a + b * b; });
+    const size_t sum2 = std::accumulate(hist.begin(), hist.end(), size_t{0},
+                                        [](size_t a, size_t b) { return a + b * b; });
 
     std::vector<double> percentiles(101, 0.0);
     for (size_t i = 1; i < percentiles.size(); ++i) {

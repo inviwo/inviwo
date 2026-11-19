@@ -120,7 +120,8 @@ float FloatMinMaxPropertyWidget::sliderToRepr(int val) const {
 }
 int FloatMinMaxPropertyWidget::reprToSlider(float val) const {
     return static_cast<int>((val - property_->getRangeMin()) /
-                            (property_->getRangeMax() - property_->getRangeMin()) * sliderMax_);
+                            (property_->getRangeMax() - property_->getRangeMin()) *
+                            static_cast<float>(sliderMax_));
 }
 
 vec2 FloatMinMaxPropertyWidget::sliderToRepr(const ivec2& val) const {
@@ -133,7 +134,8 @@ ivec2 FloatMinMaxPropertyWidget::reprToSlider(const vec2& val) const {
 
 int FloatMinMaxPropertyWidget::reprSeparationToSlider() const {
     return static_cast<int>(property_->getMinSeparation() /
-                            (property_->getRangeMax() - property_->getRangeMin()) * sliderMax_);
+                            (property_->getRangeMax() - property_->getRangeMin()) *
+                            static_cast<float>(sliderMax_));
 }
 
 }  // namespace glui

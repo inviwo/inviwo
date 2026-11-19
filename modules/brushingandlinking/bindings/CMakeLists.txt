@@ -23,6 +23,8 @@ target_sources(ivwbnl
 )
 target_link_libraries(ivwbnl PUBLIC inviwo::module::brushingandlinking inviwo::module::python3)
 
+ivw_compile_optimize_on_target(ivwbnl)
+
 ivw_install_helper(TARGET ivwbnl
     NAMESPACE inviwo
     DESTINATION inviwo

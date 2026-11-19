@@ -24,6 +24,8 @@ target_sources(ivwanimation
 )
 target_link_libraries(ivwanimation PUBLIC inviwo::module::animation inviwo::module::python3)
 
+ivw_compile_optimize_on_target(ivwanimation)
+
 ivw_install_helper(TARGET ivwanimation
     NAMESPACE inviwo
     DESTINATION inviwo

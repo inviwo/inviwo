@@ -39,8 +39,9 @@ std::vector<double> scaleHistogram(const Histogram1D& hist, HistogramMode mode) 
     std::vector<double> result(hist.counts.size());
 
     if (mode == HistogramMode::Log) {
-        std::ranges::transform(hist.counts, result.begin(),
-                               [](auto& count) { return std::log10(1.0 + count); });
+        std::ranges::transform(hist.counts, result.begin(), [](auto& count) {
+            return std::log10(1.0 + static_cast<double>(count));
+        });
     } else {
         const double percentile = [&]() {
             switch (mode) {

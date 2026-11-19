@@ -30,16 +30,14 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/document.h>
-
 #include <inviwo/core/util/detected.h>
-#include <warn/push>
-#include <warn/ignore/all>
+
+#include <glm/ext/vector_uint3.hpp>
+
 #include <type_traits>
 #include <string>
 #include <string_view>
-#include <warn/pop>
 
 namespace inviwo::util {
 
@@ -71,7 +69,7 @@ constexpr std::string_view dataName() {
 }
 
 template <typename T>
-constexpr uvec3 colorCode() {
+constexpr glm::uvec3 colorCode() {
     if constexpr (requires {
                       { T::colorCode } -> std::convertible_to<glm::uvec3>;
                   }) {
@@ -81,7 +79,7 @@ constexpr uvec3 colorCode() {
                          }) {
         return T::COLOR_CODE;
     } else {
-        return uvec3(0);
+        return glm::uvec3(0);
     }
 }
 

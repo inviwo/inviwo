@@ -58,9 +58,9 @@ public:
         : QWidget(parent)
         , keyframe_(keyframe)
         , sequenceEditorWidget_(parent)
-        , timeSpinner_(new DoubleValueDragSpinBox())
         , actionWidget_(new QComboBox())
-        , jumpToWidget_(new DoubleValueDragSpinBox()) {
+        , jumpToWidget_(new DoubleValueDragSpinBox())
+        , timeSpinner_(new DoubleValueDragSpinBox()) {
 
         auto& ctrlKey = dynamic_cast<ControlKeyframe&>(keyframe);
 

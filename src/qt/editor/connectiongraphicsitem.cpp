@@ -30,6 +30,8 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 
+#include <inviwo/core/util/unindent.h>
+
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>

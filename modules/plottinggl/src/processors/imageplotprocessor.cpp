@@ -185,9 +185,10 @@ void ImagePlotProcessor::process() {
 
     const auto dims = outport_.getDimensions();
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
-    const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
+    const size2_t upperRight(dims.x - 1 - static_cast<size_t>(margins_.getRight()),
+                             dims.y - 1 - static_cast<size_t>(margins_.getTop()));
 
-    const auto padding = axisMargin_.get();
+    const auto padding = static_cast<size_t>(axisMargin_.get());
 
     // draw horizontal axis
     if (xAxis_.isModified()) xAxis_.update(axisRenderers_[0].getData());
@@ -276,8 +277,8 @@ ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_
     // adjust all margins by axis margin
     const auto padding = axisMargin_.get();
     const ivec2 lowerLeft(margins_.getLeft() + padding, margins_.getBottom() + padding);
-    ivec2 upperRight(dims.x - 1 - (margins_.getRight() + padding),
-                     dims.y - 1 - (margins_.getTop() + padding));
+    ivec2 upperRight(dims.x - 1 - static_cast<int>(margins_.getRight() + padding),
+                     dims.y - 1 - static_cast<int>(margins_.getTop() + padding));
 
     // ensure positive extent and minimum extent of (1,1)
     upperRight = glm::max(upperRight, lowerLeft);

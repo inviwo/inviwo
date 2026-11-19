@@ -40,6 +40,7 @@
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/autolinker.h>
 #include <inviwo/core/network/networkedge.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <algorithm>
 #include <iterator>
