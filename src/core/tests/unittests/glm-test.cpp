@@ -300,7 +300,7 @@ TEST(GLMTest, glmcomp4) {
     for (size_t i = 0; i < util::extent<dmat4>::value; ++i) {
         for (size_t j = 0; j < util::extent<dmat4>::value; ++j) {
             EXPECT_EQ(1.0 * (static_cast<double>(i) *
-                             static_cast<double>(util::extent<dmat4>::value + j)),
+                             static_cast<double>(util::extent<dmat4>::value) + static_cast<double>(j)),
                       util::glmcomp(x, i, j));
         }
     }
