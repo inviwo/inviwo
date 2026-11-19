@@ -462,7 +462,7 @@ GLenum ImageGL::getPickingAttachmentID() const {
 }
 
 std::span<const GLenum> ImageGL::getDrawBuffers(ImageType type) const {
-    std::span drawBuffers =
+    const std::span drawBuffers =
         typeContainsPicking(type) ? colorAndPickingAttachmentIDs_ : colorAttachmentIDs_;
     return drawBuffers;
 }

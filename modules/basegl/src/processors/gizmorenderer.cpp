@@ -81,7 +81,6 @@ void GizmoRenderer::process() {
     GizmoConfig config;
     gizmoProperties_.update(config);
 
-    const auto dims{outport_.getDimensions()};
     // render gizmo
     gizmoutil::renderGizmo(outport_, camera_.get(), gizmoData, config);
 

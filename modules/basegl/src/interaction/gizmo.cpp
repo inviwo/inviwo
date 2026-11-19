@@ -56,6 +56,7 @@
 #include <numbers>
 #include <ranges>
 #include <algorithm>
+#include <utility>
 
 namespace inviwo {
 
@@ -129,11 +130,6 @@ GizmoType getGizmoInteractionType(GizmoComponent comp) {
         default:              return GizmoType::None;
     }
 }
-
-constexpr std::array components = {GizmoComponent::MoveX,          GizmoComponent::MoveY,
-                                   GizmoComponent::MoveZ,          GizmoComponent::RotateX,
-                                   GizmoComponent::RotateY,        GizmoComponent::RotateZ,
-                                   GizmoComponent::RotateTrackball};
 
 constexpr std::array moveComponents = {GizmoComponent::MoveX, GizmoComponent::MoveY,
                                        GizmoComponent::MoveZ};
@@ -335,6 +331,8 @@ void Gizmo::startInteraction(PickingEvent* e) {
 }
 
 void Gizmo::dragInteraction(PickingEvent* e) {
+    if (!interaction_) return;
+
     const auto id = e->getPickedId();
     const auto pickedComponent = pickingIdToComponent(id);
     const GizmoType interactionType = getGizmoInteractionType(pickedComponent);
@@ -376,7 +374,7 @@ void Gizmo::dragInteraction(PickingEvent* e) {
 }
 
 const BaseCallBack* Gizmo::onInvalidate(std::function<void()> callback) {
-    return onInvalidateCallback_.addLambdaCallback(callback);
+    return onInvalidateCallback_.addLambdaCallback(std::move(callback));
 }
 
 std::shared_ptr<std::function<void()>> Gizmo::onInvalidateScoped(std::function<void()> callback) {
