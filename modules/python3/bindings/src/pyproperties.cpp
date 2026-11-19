@@ -180,6 +180,7 @@ void exposeProperties(pybind11::module& m) {
                       &Property::setInvalidationLevel)
         .def_property_readonly("widgets", &Property::getWidgets)
         .def_property_readonly("isModified", &Property::isModified)
+        .def("propertyModified", &Property::propertyModified)
         .def("hasWidgets", &Property::hasWidgets)
         .def("setCurrentStateAsDefault", &Property::setCurrentStateAsDefault)
         .def("resetToDefaultState", &Property::resetToDefaultState)

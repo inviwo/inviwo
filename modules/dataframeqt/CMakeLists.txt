@@ -17,6 +17,7 @@ set(HEADER_FILES
     ${MOC_FILES}
     include/inviwo/dataframeqt/dataframeqtmodule.h
     include/inviwo/dataframeqt/dataframeqtmoduledefine.h
+    include/inviwo/dataframeqt/datavisualizer/dataframedocktablevisualizer.h
     include/inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h
     include/inviwo/dataframeqt/processors/dataframedocktable.h
     include/inviwo/dataframeqt/processors/dataframetable.h
@@ -30,6 +31,7 @@ set(SOURCE_FILES
     src/dataframesortfilterproxy.cpp
     src/dataframetableprocessorwidget.cpp
     src/dataframetableview.cpp
+    src/datavisualizer/dataframedocktablevisualizer.cpp
     src/datavisualizer/dataframetablevisualizer.cpp
     src/processors/dataframedocktable.cpp
     src/processors/dataframetable.cpp

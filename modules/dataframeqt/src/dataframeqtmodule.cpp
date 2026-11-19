@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/rendering/datavisualizer.h>
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
+#include <inviwo/dataframeqt/datavisualizer/dataframedocktablevisualizer.h>
 #include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
 #include <inviwo/dataframeqt/processors/dataframedocktable.h>
 #include <inviwo/dataframeqt/processors/dataframetable.h>
@@ -49,6 +50,7 @@ DataFrameQtModule::DataFrameQtModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessorWidget<DataFrameDockTableWidget, DataFrameDockTable>();
 
     registerDataVisualizer(std::make_unique<DataFrameTableVisualizer>(app));
+    registerDataVisualizer(std::make_unique<DataFrameDockTableVisualizer>(app));
 }
 
 }  // namespace inviwo

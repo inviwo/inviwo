@@ -71,7 +71,7 @@ std::string_view TemporalVolumeComponent::getName() const { return volumePort.ge
 
 TFData TemporalVolumeComponent::tfData() { return TFData{&volumePort}; }
 
-void TemporalVolumeComponent::initializeResources(Shader& shader) {}
+void TemporalVolumeComponent::initializeResources(Shader&) {}
 
 void TemporalVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
     const auto temporal = volumePort.getData();

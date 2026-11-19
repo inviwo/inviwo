@@ -38,7 +38,7 @@
 #include <inviwo/core/rendering/datavisualizer.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/processors/csvsource.h>
+#include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 
 #include <map>
@@ -77,8 +77,8 @@ bool DataFrameTableVisualizer::hasVisualizerNetwork() const { return true; }
 std::pair<Processor*, Outport*> DataFrameTableVisualizer::addSourceProcessor(
     const std::filesystem::path& filename, ProcessorNetwork* network, const ivec2& origin) const {
 
-    auto* source =
-        network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0} + origin, filename));
+    auto* source = network->addProcessor(
+        util::makeProcessor<DataFrameSource>(GP{0, 0} + origin, app_, filename));
     auto* outport = source->getOutports().front();
     return {source, outport};
 }

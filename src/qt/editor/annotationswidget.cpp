@@ -52,8 +52,8 @@ namespace inviwo {
 AnnotationsWidget::AnnotationsWidget(InviwoApplication* app, NetworkEditorView* networkEditorView,
                                      QWidget* parent)
     : InviwoDockWidget{"Annotations", parent, "AnnotationsWidget"}
-    , scrollArea_(new QScrollArea())
-    , mainWidget_(new QWidget()) {
+    , mainWidget_(new QWidget())
+    , scrollArea_(new QScrollArea()) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(utilqt::emToPx(this, QSizeF(45, 60)));  // default size
