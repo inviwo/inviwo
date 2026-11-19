@@ -69,6 +69,14 @@ IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
     const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume);
 
 /**
+ * Helper for the @p getVolume callback of getVolumeAtPathAsType. If @p reuse has the same
+ * dimensions and data format as @p config its metadata is reset from @p config and it is returned,
+ * otherwise a new Volume is created from @p config.
+ */
+IVW_MODULE_HDF5_API std::shared_ptr<Volume> reuseOrCreateVolume(const VolumeConfig& config,
+                                                                std::shared_ptr<Volume> reuse);
+
+/**
  * Read the dataset at @p handle into a Layer. @see getVolumeAtPathAsType.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(

@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-11-19 HDF5 Directory To Temporal Volume
+Added the `HDF5DirectoryToTemporalVolume` processor (hdf5), which builds a `TemporalVolume` from a folder of HDF5 files with identical structure. The folder is filtered with include/exclude regular expressions (same as the sequence sources), the files are sorted by name, and the time steps of the selected dataset (rank >= 4, one dimension designated as time) are concatenated across all files. The dataset, basis, and range options are read from the first file. The new `HDF5MultiFileTemporalVolumeLoader` only reads dataset metadata on construction and opens each file on demand when a frame is loaded, so a file with a mismatching dataset only fails when one of its frames is requested. `hdf5::reuseOrCreateVolume` is a new helper for `getVolumeAtPathAsType` callbacks that reuses a previously loaded `Volume` when its dimensions and format match.
+
 ## 2026-11-18 Transformation Gizmo
 Added a transformation gizmo similar to the ones used in popular 3D modeling software.
 The gizmo is used to interactively modify the transformations of a Layer, Mesh, of Volume with the corresponding `Transform <Layer/Mesh/Volume> Gizmo` processor. Translation and rotations can be applied in global or local reference frames, that is in World, Model, and Data coordinates, respectively. The `Gizmo Renderer` is responsible for rendering the gizmo on top of the geometry and provides various customization options.
