@@ -124,6 +124,7 @@ set(HEADER_FILES
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
+    include/modules/base/processors/temporalvolumedummy.h
     include/modules/base/processors/temporalvolumeplayer.h
     include/modules/base/processors/temporalvolumesource.h
     include/modules/base/processors/testvolumecreator.h
@@ -292,6 +293,7 @@ set(SOURCE_FILES
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
+    src/processors/temporalvolumedummy.cpp
     src/processors/temporalvolumeplayer.cpp
     src/processors/temporalvolumesource.cpp
     src/processors/testvolumecreator.cpp
