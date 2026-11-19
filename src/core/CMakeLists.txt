@@ -31,7 +31,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulefactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodulelibraryobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulepath.h
@@ -184,7 +183,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/tempfilehandle.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfreader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionitfwriter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/transferfunctionlayerreader.h
@@ -198,7 +196,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadatamap.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/metadataowner.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/metadata/positionmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processormetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/metadata/processorwidgetmetadata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/autolinker.h
@@ -617,7 +614,6 @@ set(SOURCE_FILES
     io/serialization/serializer.cpp
     io/serialization/versionconverter.cpp
     io/tempfilehandle.cpp
-    io/textfilereader.cpp
     io/transferfunctionitfreader.cpp
     io/transferfunctionitfwriter.cpp
     io/transferfunctionlayerreader.cpp
@@ -630,7 +626,6 @@ set(SOURCE_FILES
     metadata/metadata.cpp
     metadata/metadatamap.cpp
     metadata/metadataowner.cpp
-    metadata/positionmetadata.cpp
     metadata/processormetadata.cpp
     metadata/processorwidgetmetadata.cpp
     network/autolinker.cpp

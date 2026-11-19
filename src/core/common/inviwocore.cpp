@@ -162,7 +162,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     util::for_each_type<MetaDataTypes>{}(
         [&]<typename T>() { registerMetaData(std::make_unique<MetaDataType<T>>()); });
 
-    registerMetaData(std::make_unique<PositionMetaData>());
     registerMetaData(std::make_unique<ProcessorMetaData>());
     registerMetaData(std::make_unique<ProcessorWidgetMetaData>());
     registerMetaData(

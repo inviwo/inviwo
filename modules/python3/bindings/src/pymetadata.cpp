@@ -34,7 +34,6 @@
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/metadatamap.h>
 #include <inviwo/core/metadata/metadataowner.h>
-#include <inviwo/core/metadata/positionmetadata.h>
 
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
@@ -246,10 +245,6 @@ void exposeMetaData(pybind11::module& m) {
     exposeMetaDataType<std::string>(m, "StringMetaData");
     exposeMetaDataType<std::vector<std::string>>(m, "StringVectorMetaData");
     exposeMetaDataType<std::map<std::string, std::string, std::less<>>>(m, "StringMapMetaData");
-
-    py::classh<PositionMetaData, IntVec2MetaData>(m, "PositionMetaData")
-        .def(py::init<>())
-        .def(py::init<int, int>(), py::arg("x"), py::arg("y"));
 
     py::classh<MetaDataMap>(m, "MetaDataMap")
         .def("keys",

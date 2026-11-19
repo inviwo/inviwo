@@ -78,16 +78,6 @@ private:
     // Only allow changes of main Animation from WorkspaceAnimations
     friend class WorkspaceAnimations;
     void set(Animation& animation);
-    /**
-     * Module callbacks must return void
-     * @see addKeyframe(Property* property, Seconds time)
-     */
-    void addKeyframeCallback(Property* property);
-    /**
-     * Module callbacks must return void
-     * @see addKeyframeSequence(Property* property, Seconds time)
-     */
-    void addKeyframeSequenceCallback(Property* property);
 
     Animation* animation_;
     InviwoApplication* app_;
@@ -95,6 +85,9 @@ private:
 
     // create this lazy so we have all the factories ready when we create it
     mutable std::optional<AnimationController> controller_;
+
+    std::shared_ptr<std::function<void(Property&)>> addKeyframeHandle_;
+    std::shared_ptr<std::function<void(Property&)>> addSequenceHandle_;
 
     WorkspaceManager::ClearHandle animationControllerClearHandle_;
     WorkspaceManager::SerializationHandle animationControllerSerializationHandle_;

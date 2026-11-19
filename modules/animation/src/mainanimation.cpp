@@ -31,7 +31,6 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/common/modulecallback.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -53,20 +52,21 @@ MainAnimation::MainAnimation(InviwoApplication* app, Animation& animation,
     , manager_{animationModule.getAnimationManager()}
     , controller_{} {
 
-    {
-        auto* callbackAction = new ModuleCallbackAction("Add Key Frame", &animationModule,
-                                                        ModuleCallBackActionState::Enabled);
+    addKeyframeHandle_ = std::make_shared<std::function<void(Property&)>>([this](Property& p) {
+        getController().getAnimation().addKeyframe(&p, getController().getCurrentTime());
+    });
+    app->addModuleAction({.name = "Add Key Frame",
+                          .group = "Animation",
+                          .state = ModuleAction::State::Enabled,
+                          .callback = addKeyframeHandle_});
 
-        callbackAction->getCallBack().addMemberFunction(this, &MainAnimation::addKeyframeCallback);
-        app->addCallbackAction(callbackAction);
-    }
-    {
-        auto* callbackAction = new ModuleCallbackAction("Add Sequence", &animationModule,
-                                                        ModuleCallBackActionState::Enabled);
-        callbackAction->getCallBack().addMemberFunction(
-            this, &MainAnimation::addKeyframeSequenceCallback);
-        app->addCallbackAction(callbackAction);
-    }
+    addSequenceHandle_ = std::make_shared<std::function<void(Property&)>>([this](Property& p) {
+        getController().getAnimation().addKeyframeSequence(&p, getController().getCurrentTime());
+    });
+    app->addModuleAction({.name = "Add Sequence",
+                          .group = "Animation",
+                          .state = ModuleAction::State::Enabled,
+                          .callback = addSequenceHandle_});
 
     animationControllerClearHandle_ =
         app->getWorkspaceManager()->onClear([&]() { getController().resetAllProperties(); });
@@ -95,15 +95,6 @@ const AnimationController& MainAnimation::getController() const {
     }
     return *controller_;
 }
-
-void MainAnimation::addKeyframeCallback(Property* property) {
-    getController().getAnimation().addKeyframe(property, getController().getCurrentTime());
-}
-
-void MainAnimation::addKeyframeSequenceCallback(Property* property) {
-    getController().getAnimation().addKeyframeSequence(property, getController().getCurrentTime());
-}
-
 }  // namespace animation
 
 }  // namespace inviwo
