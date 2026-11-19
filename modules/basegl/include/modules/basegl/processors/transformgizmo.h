@@ -51,6 +51,10 @@ template <typename T>
 class TransformGizmo : public Processor {
 public:
     TransformGizmo();
+    TransformGizmo(const TransformGizmo&) = delete;
+    TransformGizmo(TransformGizmo&&) = delete;
+    TransformGizmo& operator=(const TransformGizmo&) = delete;
+    TransformGizmo& operator=(TransformGizmo&&) = delete;
     virtual ~TransformGizmo() = default;
 
     virtual void process() override;

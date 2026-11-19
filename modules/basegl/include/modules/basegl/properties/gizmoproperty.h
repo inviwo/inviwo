@@ -47,6 +47,10 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
     GizmoProperty(const GizmoProperty& rhs);
+    GizmoProperty(GizmoProperty&&) = delete;
+    GizmoProperty& operator=(const GizmoProperty&) = delete;
+    GizmoProperty& operator=(GizmoProperty&&) = delete;
+
     virtual ~GizmoProperty() = default;
 
     virtual GizmoProperty* clone() const override;
