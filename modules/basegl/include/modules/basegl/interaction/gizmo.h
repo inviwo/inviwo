@@ -142,17 +142,6 @@ struct DataTraits<GizmoData> {
     IVW_MODULE_BASEGL_API static Document info(const GizmoData& data);
 };
 
-constexpr std::array components = {GizmoComponent::MoveX,          GizmoComponent::MoveY,
-                                   GizmoComponent::MoveZ,          GizmoComponent::RotateX,
-                                   GizmoComponent::RotateY,        GizmoComponent::RotateZ,
-                                   GizmoComponent::RotateTrackball};
-
-constexpr std::array moveComponents = {GizmoComponent::MoveX, GizmoComponent::MoveY,
-                                       GizmoComponent::MoveZ};
-
-constexpr std::array rotateComponents = {GizmoComponent::RotateX, GizmoComponent::RotateY,
-                                         GizmoComponent::RotateZ};
-
 class IVW_MODULE_BASEGL_API Gizmo {
 public:
     using CameraCallback = std::function<const Camera&()>;

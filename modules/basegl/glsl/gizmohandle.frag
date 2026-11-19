@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 in Vertex {
-    vec4 worldPosition;
-    vec3 normal;
     vec4 color;
     flat vec4 pickColor;    
 } in_frag;

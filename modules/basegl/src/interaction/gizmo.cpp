@@ -130,6 +130,17 @@ GizmoType getGizmoInteractionType(GizmoComponent comp) {
     }
 }
 
+constexpr std::array components = {GizmoComponent::MoveX,          GizmoComponent::MoveY,
+                                   GizmoComponent::MoveZ,          GizmoComponent::RotateX,
+                                   GizmoComponent::RotateY,        GizmoComponent::RotateZ,
+                                   GizmoComponent::RotateTrackball};
+
+constexpr std::array moveComponents = {GizmoComponent::MoveX, GizmoComponent::MoveY,
+                                       GizmoComponent::MoveZ};
+
+constexpr std::array rotateComponents = {GizmoComponent::RotateX, GizmoComponent::RotateY,
+                                         GizmoComponent::RotateZ};
+
 }  // namespace
 
 Gizmo::Gizmo(Processor* processor, CameraCallback getCamera)
