@@ -38,22 +38,15 @@ uniform bool pickingEnabled = true;
 uniform uint pickId = 0;
 
 out Vertex {
-    vec4 worldPosition;
-    vec3 normal;
     vec4 color;
     flat vec4 pickColor;    
 } out_vert;
 
-out vec3 viewNormal_;
-out vec3 texCoord_;
- 
 void main() {
     vec4 worldPosition = geometry.dataToWorld * vec4(in_Position, 1.0);
     
     out_vert.color = defaultColor;
-    out_vert.worldPosition = worldPosition;
-    out_vert.normal = geometry.dataToWorldNormalMatrix * in_Normal;
-    gl_Position = camera.worldToClip * worldPosition;
-
     out_vert.pickColor = vec4(pickingIndexToColor(pickId), pickingEnabled ? 1.0 : 0.0);
+    
+    gl_Position = camera.worldToClip * worldPosition;
 }
