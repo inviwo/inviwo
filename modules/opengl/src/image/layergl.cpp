@@ -52,19 +52,23 @@ LayerGL::LayerGL(std::shared_ptr<Texture2D> tex, LayerType type)
 
 LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  const SwizzleMask& swizzleMask, InterpolationType interpolation,
-                 const Wrapping2D& wrap)
+                 const Wrapping2D& wrap, utilgl::StorageFormat storage)
     : LayerRepresentation{type}, texture_(nullptr) {
 
-    const auto& glFormat = GLFormats::get(format->getId());
     if (getLayerType() == LayerType::Depth) {
-        texture_ = std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT,
-                                               GL_DEPTH_COMPONENT32F, glFormat.type, GL_NEAREST,
-                                               swizzleMask, utilgl::convertWrappingToGL(wrap));
+        texture_ =
+            std::make_shared<Texture2D>(dimensions, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT32F,
+                                        GLFormats::get(format->getId()).type, GL_NEAREST,
+                                        swizzleMask, utilgl::convertWrappingToGL(wrap));
     } else {
-        utilgl::convertInterpolationToGL(interpolation);
-        texture_ = std::make_shared<Texture2D>(dimensions, glFormat,
+        const auto ts = utilgl::textureStorage(format, storage);
+        texture_ = std::make_shared<Texture2D>(dimensions, ts.glFormat,
                                                utilgl::convertInterpolationToGL(interpolation),
                                                swizzleMask, utilgl::convertWrappingToGL(wrap));
+        if (ts.format != format) {
+            dataFormat_ = format;
+        }
+        setLossy(ts.lossy);
     }
 }
 
@@ -76,12 +80,14 @@ LayerGL::LayerGL(const LayerReprConfig& config)
               config.interpolation.value_or(LayerConfig::defaultInterpolation),
               config.wrapping.value_or(LayerConfig::defaultWrapping)} {}
 
-LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {}
+LayerGL::LayerGL(const LayerGL& rhs)
+    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()), dataFormat_{rhs.dataFormat_} {}
 
 LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     if (this != &rhs) {
         LayerRepresentation::operator=(rhs);
         texture_ = std::shared_ptr<Texture2D>(rhs.texture_->clone());
+        dataFormat_ = rhs.dataFormat_;
     }
     return *this;
 }
@@ -90,7 +96,9 @@ LayerGL::~LayerGL() = default;
 
 LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
 
-const DataFormatBase* LayerGL::getDataFormat() const { return texture_->getDataFormat(); }
+const DataFormatBase* LayerGL::getDataFormat() const {
+    return dataFormat_ ? dataFormat_ : texture_->getDataFormat();
+}
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;

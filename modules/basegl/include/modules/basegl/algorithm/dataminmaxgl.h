@@ -107,7 +107,7 @@ private:
     Shader linearMinMax_;
     Shader bufferMinMax_;
 
-    std::unordered_map<GLuint, DataFormatId> shaderDataFormat_;
+    std::unordered_map<GLuint, std::pair<DataFormatId, GLenum>> shaderDataFormat_;
 
     const DataFormatBase* bufferFormat_ = nullptr;
 };

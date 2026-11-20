@@ -41,6 +41,7 @@ set(HEADER_FILES
     include/modules/opengl/shader/standardshaders.h
     include/modules/opengl/shader/stringshaderresource.h
     include/modules/opengl/sharedopenglresources.h
+    include/modules/opengl/storageformat.h
     include/modules/opengl/texture/buffertexture.h
     include/modules/opengl/texture/pixelunpackbuffer.h
     include/modules/opengl/texture/texture.h
@@ -95,6 +96,7 @@ set(SOURCE_FILES
     src/shader/standardshaders.cpp
     src/shader/stringshaderresource.cpp
     src/sharedopenglresources.cpp
+    src/storageformat.cpp
     src/texture/buffertexture.cpp
     src/texture/pixelunpackbuffer.cpp
     src/texture/texture.cpp
