@@ -46,11 +46,16 @@ namespace inviwo {
 
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask,
                    InterpolationType interpolation, const Wrapping3D& wrapping,
-                   bool initializeTexture)
-    : VolumeRepresentation{}
-    , texture_{std::make_shared<Texture3D>(dimensions, GLFormats::get(format->getId()),
+                   bool initializeTexture, utilgl::StorageFormat storage)
+    : VolumeRepresentation{}, texture_{} {
+    const auto ts = utilgl::textureStorage(format, storage);
+    texture_ = std::make_shared<Texture3D>(dimensions, ts.glFormat,
                                            utilgl::convertInterpolationToGL(interpolation),
-                                           swizzleMask, utilgl::convertWrappingToGL(wrapping))} {
+                                           swizzleMask, utilgl::convertWrappingToGL(wrapping));
+    if (ts.format != format) {
+        dataFormat_ = format;
+    }
+    setLossy(ts.lossy);
     if (initializeTexture) {
         texture_->initialize(nullptr);
     }
@@ -70,12 +75,13 @@ VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex)
 }
 
 VolumeGL::VolumeGL(const VolumeGL& rhs)
-    : VolumeRepresentation(rhs), texture_(rhs.texture_->clone()) {}
+    : VolumeRepresentation(rhs), texture_(rhs.texture_->clone()), dataFormat_{rhs.dataFormat_} {}
 
 VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     if (this != &rhs) {
         VolumeRepresentation::operator=(rhs);
         texture_ = std::shared_ptr<Texture3D>(rhs.texture_->clone());
+        dataFormat_ = rhs.dataFormat_;
     }
     return *this;
 }
@@ -84,7 +90,9 @@ VolumeGL::~VolumeGL() = default;
 
 VolumeGL* VolumeGL::clone() const { return new VolumeGL(*this); }
 
-const DataFormatBase* VolumeGL::getDataFormat() const { return texture_->getDataFormat(); }
+const DataFormatBase* VolumeGL::getDataFormat() const {
+    return dataFormat_ ? dataFormat_ : texture_->getDataFormat();
+}
 
 void VolumeGL::bindTexture(GLenum texUnit) const {
     glActiveTexture(texUnit);

@@ -66,6 +66,17 @@ namespace inviwo {
  * valid representation, if there was no representation of the kind we asked for around. Or if there
  * is a invalid representation around, update that representation with the valid representation.
  *
+ * Lossy representations:
+ * A converter can create a representation that only holds a reduced version of the data, for
+ * example a float16 VolumeGL from a float32 VolumeRAM. Such a representation is marked as lossy
+ * (DataRepresentation::isLossy). A lossy representation can be valid, and will then be returned by
+ * getRepresentation, but it will never become the "last valid" representation, i.e. it is never
+ * used as the source when updating or creating other representations, and it is never used for
+ * querying properties like the data format of the Data object. Any representation converted from a
+ * lossy representation is also considered lossy. Calling getEditableRepresentation,
+ * invalidateAllOther, or addRepresentation with a lossy representation will clear the lossy flag
+ * and make that representation the source of truth.
+ *
  * Call getRepresentation to retrieve the data:
  * @code{.cpp}
  *      // Create a Buffer with a BufferRAM representation
@@ -116,7 +127,8 @@ public:
 
     /**
      * Get an editable representation. This will invalidate all other representations.
-     * They will now have to be updated from this one before use.
+     * They will now have to be updated from this one before use. If the representation was lossy
+     * the lossy flag is cleared, and it will be used as the source of truth.
      * @see getRepresentation and invalidateAllOther
      */
     template <typename T>
@@ -141,7 +153,7 @@ public:
 
     /**
      * Add the representation and set it as last valid.
-     * The owner of the representation will be set to this object.
+     * The owner of the representation will be set to this object, and any lossy flag is cleared.
      * @note A representation can only be added to one Data object.
      * @param representation The representation to add
      */
@@ -170,6 +182,7 @@ public:
      * This call will make all other representations invalid. You need to call this function if
      * you are modifying a representation directly without calling getEditableRepresentation.
      * getEditableRepresentation will automatically invalidate all other representations.
+     * If @p repr is lossy the lossy flag is cleared, and it will be used as the source of truth.
      * @see getEditableRepresentation
      */
     void invalidateAllOther(const Repr* repr);
@@ -216,6 +229,7 @@ private:
     mutable std::recursive_mutex mutex_;
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
+    // This is used as the source of truth, and should never point to a lossy representation.
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
 
     mutable std::optional<ResourceMeta> meta_;
@@ -249,30 +263,43 @@ std::shared_ptr<T> Data<Self, Repr>::getReprInternal(D& data) {
     }
 
     if (const auto repr = data.findRepr(requestedType); repr && repr->isValid()) {
-        data.lastValidRepresentation_ = repr;
+        if (!repr->isLossy()) {
+            data.lastValidRepresentation_ = repr;
+        }
         return std::dynamic_pointer_cast<T>(repr);
     } else {
+        if (!data.lastValidRepresentation_) {
+            throw Exception("Found no valid representation to convert from");
+        }
         auto factory = RepresentationFactoryManager::getRepresentationConverterFactory<Repr>();
 
         const auto lastValidType = data.lastValidRepresentation_->getTypeIndex();
         if (auto package = factory->getRepresentationConverter(lastValidType, requestedType)) {
+            auto srcRepr = data.lastValidRepresentation_;
+            bool lossy = false;
             for (auto converter : package->getConverters()) {
                 const auto dstType = converter->getConverterID().second;
-                const auto srcRepr = data.lastValidRepresentation_;
 
-                if (auto dstRepr = data.findRepr(dstType)) {
+                auto dstRepr = data.findRepr(dstType);
+                if (dstRepr) {
                     converter->update(srcRepr, dstRepr);
-                    data.lastValidRepresentation_ = dstRepr;
-                    data.lastValidRepresentation_->setValid(true);
+                    dstRepr->setValid(true);
                 } else {  // No representation found, create it
                     dstRepr = converter->createFrom(srcRepr);
                     if (!dstRepr) {
                         throw ConverterException("Converter failed to create");
                     }
-                    data.lastValidRepresentation_ = data.addRepresentationInternal(dstRepr);
+                    data.addRepresentationInternal(dstRepr);
                 }
+                // Anything derived from a lossy representation is also lossy
+                lossy = lossy || dstRepr->isLossy();
+                dstRepr->setLossy(lossy);
+                if (!lossy) {
+                    data.lastValidRepresentation_ = dstRepr;
+                }
+                srcRepr = dstRepr;
             }
-            return std::dynamic_pointer_cast<T>(data.lastValidRepresentation_);
+            return std::dynamic_pointer_cast<T>(srcRepr);
         } else {
             auto buff = fmt::memory_buffer();
             for (const auto& [converterId, converter] : factory->getConverters()) {
@@ -336,6 +363,7 @@ void Data<Self, Repr>::invalidateAllOtherInternal(const Repr* repr) {
         } else {
             found = true;
             elem.second->setValid(true);
+            elem.second->setLossy(false);
             lastValidRepresentation_ = elem.second;
         }
     }
@@ -376,6 +404,7 @@ std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
 template <typename Self, typename Repr>
 void Data<Self, Repr>::addRepresentation(std::shared_ptr<Repr> representation) {
     const std::scoped_lock lock(mutex_);
+    representation->setLossy(false);
     lastValidRepresentation_ = addRepresentationInternal(std::move(representation));
 }
 
@@ -393,11 +422,21 @@ void Data<Self, Repr>::removeRepresentation(const Repr* representation) {
     if (lastValidRepresentation_.get() == representation) {
         lastValidRepresentation_.reset();
 
+        std::shared_ptr<Repr> lossy;
         for (const auto& elem : representations_) {
             if (elem.second->isValid()) {
-                lastValidRepresentation_ = elem.second;
-                break;
+                if (!elem.second->isLossy()) {
+                    lastValidRepresentation_ = elem.second;
+                    break;
+                } else if (!lossy) {
+                    lossy = elem.second;
+                }
             }
+        }
+        // Only lossy representations remain, promote one since there is nothing better
+        if (!lastValidRepresentation_ && lossy) {
+            lossy->setLossy(false);
+            lastValidRepresentation_ = lossy;
         }
     }
 }
@@ -412,6 +451,8 @@ void Data<Self, Repr>::removeOtherRepresentations(const Repr* representation) {
             repr.insert(elem);
             if (lastValidRepresentation_.get() != representation) {
                 if (elem.second->isValid()) {
+                    // A lossy representation is promoted since it is all that remains
+                    elem.second->setLossy(false);
                     lastValidRepresentation_ = elem.second;
                 } else {
                     lastValidRepresentation_.reset();

@@ -62,6 +62,17 @@ public:
     bool isValid() const;
     void setValid(bool valid);
 
+    /**
+     * A lossy representation holds a reduced version of the data, for example a float16 VolumeGL
+     * created from a float32 VolumeRAM. A lossy representation can be valid and used, but the
+     * owning Data object will never use it as the source when updating or creating other
+     * representations. Calling getEditableRepresentation on a lossy representation will clear
+     * the flag and make it the source of truth.
+     * @see Data
+     */
+    bool isLossy() const;
+    void setLossy(bool lossy);
+
     virtual void updateResource(const ResourceMeta&) const {}
 
 protected:
@@ -72,6 +83,7 @@ protected:
     DataRepresentation& operator=(DataRepresentation&& that) = default;
 
     bool isValid_ = true;
+    bool isLossy_ = false;
     const Owner* owner_ = nullptr;
 };
 
@@ -93,6 +105,16 @@ bool DataRepresentation<Owner>::isValid() const {
 template <typename Owner>
 void DataRepresentation<Owner>::setValid(bool valid) {
     isValid_ = valid;
+}
+
+template <typename Owner>
+bool DataRepresentation<Owner>::isLossy() const {
+    return isLossy_;
+}
+
+template <typename Owner>
+void DataRepresentation<Owner>::setLossy(bool lossy) {
+    isLossy_ = lossy;
 }
 
 }  // namespace inviwo
