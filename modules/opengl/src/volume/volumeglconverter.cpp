@@ -32,6 +32,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/storageformat.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/texture3d.h>  // IWYU pragma: keep
 
@@ -42,16 +44,10 @@ namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
     std::shared_ptr<const VolumeRAM> src) const {
-    auto dst = std::make_shared<VolumeGL>(src->getDimensions(), src->getDataFormat(),
-                                          src->getSwizzleMask(), src->getInterpolation(),
-                                          src->getWrapping(), false);
-
-    if (!dst) {
-        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from RAM to GL",
-                                 *src->getDataFormat());
-    }
-
-    dst->getTexture()->initialize(src->getData());
+    auto dst = std::make_shared<VolumeGL>(
+        src->getDimensions(), src->getDataFormat(), src->getSwizzleMask(), src->getInterpolation(),
+        src->getWrapping(), false, utilgl::getStorageFormat(src->getOwner()));
+    utilgl::uploadToTexture(*src, *dst->getTexture(), true);
     return dst;
 }
 
@@ -62,7 +58,8 @@ void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> src,
     dst->setInterpolation(src->getInterpolation());
     dst->setWrapping(src->getWrapping());
 
-    dst->getTexture()->upload(src->getData());
+    utilgl::uploadToTexture(*src, *dst->getTexture(), false);
+    dst->setLossy(utilgl::isLossy(src->getDataFormat(), *dst->getTexture()));
 }
 
 std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
@@ -75,7 +72,7 @@ std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
                                  *src->getDataFormat());
     }
 
-    src->getTexture()->download(dst->getData());
+    utilgl::downloadFromTexture(*src->getTexture(), *dst);
     return dst;
 }
 
@@ -86,7 +83,7 @@ void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> src,
     dst->setInterpolation(src->getInterpolation());
     dst->setWrapping(src->getWrapping());
 
-    src->getTexture()->download(dst->getData());
+    utilgl::downloadFromTexture(*src->getTexture(), *dst);
 }
 
 }  // namespace inviwo

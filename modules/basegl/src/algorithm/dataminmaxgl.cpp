@@ -39,6 +39,7 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/storageformat.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
@@ -58,7 +59,8 @@ std::string_view getSamplerPrefix(const GLFormat& glFormat) {
     if (glFormat.normalization != utilgl::Normalization::None) {
         return {};
     }
-    const auto* format = DataFormatBase::get(GLFormats::get(glFormat));
+    const auto* format =
+        DataFormatBase::get(GLFormats::getDataFormat(glFormat.type, glFormat.channels));
     using namespace std::string_view_literals;
     switch (format->getNumericType()) {
         case NumericType::UnsignedInteger: return "u"sv;
@@ -90,14 +92,15 @@ std::string_view getImagePrefix(const GLFormat& glFormat) {
 
     // undo GL format normalization
     if (glFormat.normalization == utilgl::Normalization::Normalized) {
-        const DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
+        const DataMapper dataMapper{
+            DataFormatBase::get(GLFormats::getDataFormat(glFormat.type, glFormat.channels))};
 
         minmaxGL[0] = dataMapper.mapFromNormalizedToData(minmaxGL[0]);
         minmaxGL[1] = dataMapper.mapFromNormalizedToData(minmaxGL[1]);
     } else if (glFormat.normalization == utilgl::Normalization::SignNormalized) {
         using enum DataMapper::SignedNormalization;
         const DataMapper dataMapper{
-            DataFormatBase::get(GLFormats::get(glFormat)),
+            DataFormatBase::get(GLFormats::getDataFormat(glFormat.type, glFormat.channels)),
             OpenGLCapabilities::isSignedIntNormalizationSymmetric() ? Symmetric : Asymmetric};
 
         minmaxGL[0] = dataMapper.mapFromSignNormalizedToData(minmaxGL[0]);
@@ -255,7 +258,8 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const VolumeGL& volumeGL) {
         throw Exception("Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
-    const auto& glFormat = GLFormats::get(volumeGL.getDataFormatId());
+    // Use the format of the texture since it might differ for lossy representations
+    const auto glFormat = utilgl::getGLFormat(*volumeGL.getTexture());
 
     Shader& volumeMinMax = getVolumeMinMaxShader(glFormat);
     Shader& linearReduce = getLinearReduceShader();
@@ -277,7 +281,8 @@ std::pair<dvec4, dvec4> DataMinMaxGL::minMax(const LayerGL& layerGL) {
         throw Exception("Cannot compute min/max values of GL representation. Missing GPU support.");
     }
 
-    const auto& glFormat = GLFormats::get(layerGL.getDataFormatId());
+    // Use the format of the texture since it might differ for lossy representations
+    const auto glFormat = utilgl::getGLFormat(*layerGL.getTexture());
 
     Shader& layerMinMax = getLayerMinMaxShader(glFormat);
     Shader& linearReduce = getLinearReduceShader();
@@ -339,7 +344,8 @@ Shader& DataMinMaxGL::getNdShader(Shader& shader, const GLFormat& glFormat, int 
         shader.invalidate();
     }
 
-    const auto formatId = GLFormats::get(glFormat);
+    const auto formatId = std::pair{GLFormats::getDataFormat(glFormat.type, glFormat.channels),
+                                    glFormat.internalFormat};
     if (const auto it = shaderDataFormat_.find(computeShader->getID());
         it == shaderDataFormat_.end() || it->second != formatId) {
 
