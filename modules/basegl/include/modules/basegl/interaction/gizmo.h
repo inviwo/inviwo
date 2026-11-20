@@ -147,7 +147,6 @@ public:
     using CameraCallback = std::function<const Camera&()>;
 
     Gizmo(Processor* processor, CameraCallback getCamera);
-    virtual ~Gizmo() = default;
 
     void setType(GizmoType type);
     GizmoType getType() const;
