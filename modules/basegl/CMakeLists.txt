@@ -20,6 +20,8 @@ set(HEADER_FILES
     include/modules/basegl/datavisualizer/meshvisualizer.h
     include/modules/basegl/datavisualizer/volumeraycastvisualizer.h
     include/modules/basegl/datavisualizer/volumeslicevisualizer.h
+    include/modules/basegl/interaction/gizmo.h
+    include/modules/basegl/interaction/gizmoconfig.h
     include/modules/basegl/processors/axisalignedcutplane.h
     include/modules/basegl/processors/background.h
     include/modules/basegl/processors/cuberenderer.h
@@ -29,6 +31,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/entryexitpointsprocessor.h
     include/modules/basegl/processors/firstivwprocessor.h
     include/modules/basegl/processors/geometryentryexitpoints.h
+    include/modules/basegl/processors/gizmorenderer.h
     include/modules/basegl/processors/heightfieldprocessor.h
     include/modules/basegl/processors/imageprocessing/columnrowlayout.h
     include/modules/basegl/processors/imageprocessing/findedges.h
@@ -87,6 +90,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/shadercomponentprocessorbase.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
+    include/modules/basegl/processors/transformgizmo.h
     include/modules/basegl/processors/tuberendering.h
     include/modules/basegl/processors/volumemasker.h
     include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
@@ -106,6 +110,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
+    include/modules/basegl/properties/gizmoproperty.h
     include/modules/basegl/properties/linesettingsproperty.h
     include/modules/basegl/properties/splitterproperty.h
     include/modules/basegl/properties/stipplingproperty.h
@@ -161,6 +166,8 @@ set(SOURCE_FILES
     src/datavisualizer/meshvisualizer.cpp
     src/datavisualizer/volumeraycastvisualizer.cpp
     src/datavisualizer/volumeslicevisualizer.cpp
+    src/interaction/gizmo.cpp
+    src/interaction/gizmoconfig.cpp
     src/processors/axisalignedcutplane.cpp
     src/processors/background.cpp
     src/processors/cuberenderer.cpp
@@ -170,6 +177,7 @@ set(SOURCE_FILES
     src/processors/entryexitpointsprocessor.cpp
     src/processors/firstivwprocessor.cpp
     src/processors/geometryentryexitpoints.cpp
+    src/processors/gizmorenderer.cpp
     src/processors/heightfieldprocessor.cpp
     src/processors/imageprocessing/columnrowlayout.cpp
     src/processors/imageprocessing/findedges.cpp
@@ -228,6 +236,7 @@ set(SOURCE_FILES
     src/processors/shadercomponentprocessorbase.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
+    src/processors/transformgizmo.cpp
     src/processors/tuberendering.cpp
     src/processors/volumemasker.cpp
     src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
@@ -247,6 +256,7 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
+    src/properties/gizmoproperty.cpp
     src/properties/linesettingsproperty.cpp
     src/properties/splitterproperty.cpp
     src/rendering/linerenderer.cpp
@@ -298,6 +308,8 @@ set(SHADER_FILES
     glsl/cubeglyph.frag
     glsl/cubeglyph.geom
     glsl/cubeglyph.vert
+    glsl/gizmohandle.frag
+    glsl/gizmohandle.vert
     glsl/heightfield.frag
     glsl/img_binary.frag
     glsl/img_channel_combine.frag

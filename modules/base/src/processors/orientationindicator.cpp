@@ -62,11 +62,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo OrientationIndicator::processorInfo_{
-    "org.inviwo.OrientationIndicator",  // Class identifier
-    "Orientation Indicator",            // Display name
-    "Information",                      // Category
-    CodeState::Stable,                  // Code state
-    Tags::CPU,                          // Tags
+    "org.inviwo.OrientationIndicator",            // Class identifier
+    "Orientation Indicator",                      // Display name
+    "Information",                                // Category
+    CodeState::Stable,                            // Code state
+    Tags::CPU | Tag{"Coordinate"} | Tag{"Axis"},  // Tags
     "Generates a mesh with three arrows indicating the direction of the three coordinate axes."_help};
 
 const ProcessorInfo& OrientationIndicator::getProcessorInfo() const { return processorInfo_; }
@@ -124,7 +124,8 @@ OrientationIndicator::OrientationIndicator()
 }
 
 void OrientationIndicator::process() {
-    if (!mesh_ || util::any_of(util::ref<Property>(axisScale_, radius_, xColor_, yColor_, zColor_),
+    if (!mesh_ || util::any_of(util::ref<Property>(axisScale_, radius_, baseColor_, xColor_,
+                                                   yColor_, zColor_),
                                &Property::isModified)) {
         updateMesh();
     }
@@ -158,19 +159,20 @@ void OrientationIndicator::updateMesh() {
     const vec3 origin(0.0f);
     mat3 basis(glm::scale(axisScale_.get()));
 
-    const static float baseRadius = 0.06f;      // radius
-    const static float baseHeadradius = 0.15f;  // outer radius of arrow tips
-    const vec3 radius = axisScale_.get() * radius_.get() * baseRadius;
-    const vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
+    const float baseRadius = 0.06f;      // radius
+    const float baseHeadradius = 0.15f;  // outer radius of arrow tips
+    const vec3 arrowFraction = vec3{0.25f} * radius_.get() / axisScale_.get();
+    const float radius = radius_.get() * baseRadius;
+    const float headradius = radius_.get() * baseHeadradius;
 
     // build indicator using a sphere and three arrows
     const auto base = meshutil::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
-    const auto xArrow =
-        meshutil::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
-    const auto yArrow =
-        meshutil::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
-    const auto zArrow =
-        meshutil::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
+    const auto xArrow = meshutil::arrow(origin, origin + basis[0], xColor_, radius, arrowFraction.x,
+                                        headradius, 64);
+    const auto yArrow = meshutil::arrow(origin, origin + basis[1], yColor_, radius, arrowFraction.y,
+                                        headradius, 64);
+    const auto zArrow = meshutil::arrow(origin, origin + basis[2], zColor_, radius, arrowFraction.z,
+                                        headradius, 64);
     base->append(xArrow.get());
     base->append(yArrow.get());
     base->append(zArrow.get());

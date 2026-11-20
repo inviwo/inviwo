@@ -292,6 +292,39 @@ glm::vec<3, T> transformNormal(const glm::mat<4, 4, T>& modelViewMatrix,
     return glm::transpose(glm::inverse(Matrix<3, T>{modelViewMatrix})) * normal;
 }
 
+/**
+ * Return a vector that is orthogonal to @p vec and (1, 0, 0). If @p vec and (1, 0, 0) are
+ * co-aligned the result is (0, 1, 0).
+ */
+template <typename T>
+    requires ::std::is_floating_point_v<T>
+glm::vec<3, T> orthvec(glm::vec<3, T> vec) {
+    const glm::vec<3, T> u{1, 0, 0};
+    const auto n = glm::normalize(vec);
+    const auto p = glm::dot(u, n);
+    if (std::abs(p) != T{1}) {
+        return glm::normalize(u - p * n);
+    } else {
+        return {0, 1, 0};
+    }
+}
+
+/**
+ * Calculate the rotation matrix for rotating the vector @p v1 onto @p v2.
+ */
+template <typename T>
+    requires std::is_floating_point_v<T>
+glm::mat<4, 4, T> rotation(glm::vec<3, T> v1, glm::vec<3, T> v2) {
+    const auto axis = glm::cross(v1, v2);
+    if (auto l = glm::length(axis); l > 1.0e-6f) {
+        return glm::rotate(std::acos(glm::dot(v1, v2)), axis / l);
+    } else if (glm::dot(v1, v2) > 0) {
+        return {1};
+    } else {
+        return glm::rotate(glm::pi<T>(), orthvec(v1));
+    }
+}
+
 }  // namespace util
 
 }  // namespace inviwo

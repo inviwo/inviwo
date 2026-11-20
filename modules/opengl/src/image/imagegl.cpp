@@ -461,4 +461,10 @@ GLenum ImageGL::getPickingAttachmentID() const {
     return pickingAttachmentID_ ? *pickingAttachmentID_ : GLenum{0};
 }
 
+std::span<const GLenum> ImageGL::getDrawBuffers(ImageType type) const {
+    const std::span drawBuffers =
+        typeContainsPicking(type) ? colorAndPickingAttachmentIDs_ : colorAttachmentIDs_;
+    return drawBuffers;
+}
+
 }  // namespace inviwo
