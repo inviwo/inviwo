@@ -887,6 +887,7 @@ set(TEST_FILES
     tests/unittests/compositeproperty-test.cpp
     tests/unittests/concat-test.cpp
     tests/unittests/conversion-test.cpp
+    tests/unittests/data-test.cpp
     tests/unittests/dataformats-test.cpp
     tests/unittests/dispatch-test.cpp
     tests/unittests/document-test.cpp
