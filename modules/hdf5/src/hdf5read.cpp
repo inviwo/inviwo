@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/glmfmt.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
@@ -38,10 +39,13 @@
 
 #include <modules/hdf5/hdf5types.h>
 #include <modules/hdf5/hdf5exception.h>
+#include <modules/hdf5/datastructures/volumehdf.h>
+#include <modules/hdf5/datastructures/layerhdf.h>
 
 #include <modules/base/algorithm/algorithmoptions.h>
 
 #include <algorithm>
+#include <mutex>
 
 namespace inviwo::hdf5 {
 
@@ -168,7 +172,76 @@ LayerConfig getLayerConfig(const DataSet& dataset, const DimConfig<2>& config,
     return layerConfig;
 }
 
+// Read the hyperslab described by @p config into @p dst converting the data to @p format.
+template <size_t N>
+void readData(const DataSet& dataset, const DimConfig<N>& config, const DataFormatBase* format,
+              std::span<std::byte> dst) {
+    const H5::DataSpace dataSpace = dataset.getSpace();
+    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
+                              config.stride.data(), nullptr);
+
+    H5::DataSpace memorySpace(static_cast<int>(N), config.selectedDimensions.data());
+    memorySpace.selectAll();
+
+    if (memorySpace.getSelectNpoints() != dataSpace.getSelectNpoints()) {
+        throw Exception{
+            SourceContext{},
+            "Invalid selection, source selection size {} not equal to destination memory size {}",
+            memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
+    }
+
+    const auto expectedSize =
+        static_cast<size_t>(memorySpace.getSelectNpoints()) * format->getSizeInBytes();
+    if (dst.size() != expectedSize) {
+        throw Exception{SourceContext{},
+                        "Invalid destination buffer size {} bytes, expected {} bytes ({} x {})",
+                        dst.size(),
+                        expectedSize,
+                        memorySpace.getSelectNpoints(),
+                        format->getString()};
+    }
+
+    try {
+        dataset.read(dst.data(), util::getPredType(format), memorySpace, dataSpace);
+    } catch (H5::DataSetIException& e) {
+        throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
+    }
+}
+
+std::span<std::byte> asBytes(auto* repr) {
+    return std::span<std::byte>{
+        static_cast<std::byte*>(repr->getData()),
+        glm::compMul(repr->getDimensions()) * repr->getDataFormat()->getSizeInBytes()};
+}
+
 }  // namespace
+
+void readVolumeData(const Handle& handle, const std::vector<Selection>& selection,
+                    size3_t dimensions, const DataFormatBase* format, std::span<std::byte> dst) {
+    const std::scoped_lock lock{Handle::globalMutex()};
+    const auto dataset = handle.open();
+    const auto config = getDimConfig<3>(dataset.getSpace(), selection);
+    const auto dims = size3_t{config.selectedDimensions[2], config.selectedDimensions[1],
+                              config.selectedDimensions[0]};
+    if (dims != dimensions) {
+        throw Exception{SourceContext{}, "Selection resolves to dimensions {}, expected {}", dims,
+                        dimensions};
+    }
+    readData<3>(dataset, config, format, dst);
+}
+
+void readLayerData(const Handle& handle, const std::vector<Selection>& selection,
+                   size2_t dimensions, const DataFormatBase* format, std::span<std::byte> dst) {
+    const std::scoped_lock lock{Handle::globalMutex()};
+    const auto dataset = handle.open();
+    const auto config = getDimConfig<2>(dataset.getSpace(), selection);
+    const auto dims = size2_t{config.selectedDimensions[1], config.selectedDimensions[0]};
+    if (dims != dimensions) {
+        throw Exception{SourceContext{}, "Selection resolves to dimensions {}, expected {}", dims,
+                        dimensions};
+    }
+    readData<2>(dataset, config, format, dst);
+}
 
 std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(const Handle& handle,
                                                            std::vector<Selection> selection,
@@ -206,44 +279,30 @@ LayerConfig getLayerConfig(const Handle& handle, const std::vector<Selection>& s
 
 std::shared_ptr<Volume> getVolumeAtPathAsType(
     const Handle& handle, const std::vector<Selection>& selection, VolumeConfig volumeConfig,
-    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume) {
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume, Loading loading) {
 
+    const std::scoped_lock lock{Handle::globalMutex()};
     auto dataset = handle.open();
-    const H5::DataSpace dataSpace = dataset.getSpace();
-    const auto config = getDimConfig<3>(dataSpace, selection);
-
-    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
-                              config.stride.data(), nullptr);
-
-    H5::DataSpace memorySpace(3, config.selectedDimensions.data());
-    memorySpace.selectAll();
-
-    if (memorySpace.getSelectNpoints() != dataSpace.getSelectNpoints()) {
-        throw Exception{
-            SourceContext{},
-            "Invalid selection, source selection size {} not equal to destination memory size {}",
-            memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
-    }
+    const auto config = getDimConfig<3>(dataset.getSpace(), selection);
 
     auto volume = getVolume(getVolumeConfig(dataset, config, std::move(volumeConfig)));
-    auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
 
     IgnoreValues ignore{};
     readValueAttributes(dataset, *volume, ignore);
 
-    volumeRam->dispatch<void, dispatching::filter::Scalars>([&](auto vrprecision) {
-        using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
-        const auto data = vrprecision->getView();
-        try {
-            dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
-        } catch (H5::DataSetIException& e) {
-            throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
-        }
-    });
+    if (loading == Loading::Lazy) {
+        auto hdf = std::make_shared<VolumeHDF>(handle, selection, volume->config().reprConfig());
+        volume->addRepresentation(hdf);
+        volume->invalidateAllOther(hdf.get());
+    } else {
+        auto* volumeRam = volume->getEditableRepresentation<VolumeRAM>();
+        readData<3>(dataset, config, volumeRam->getDataFormat(), asBytes(volumeRam));
+    }
 
-    log::info("Read HDF Volume: Dimensions {}, Selection: {}, Type: {}, File: {}",
-              fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
-              volume->getDataFormat()->getString(), dataset.getFileName());
+    log::info("{} HDF Volume: Dimensions {}, Selection: {}, Type: {}, File: {}",
+              loading == Loading::Lazy ? "Opened" : "Read", fmt::join(config.dataDimensions, " x "),
+              fmt::join(config.asSelection(), " x "), volume->getDataFormat()->getString(),
+              dataset.getFileName());
 
     return volume;
 }
@@ -273,44 +332,28 @@ std::shared_ptr<Volume> reuseOrCreateVolume(const VolumeConfig& config,
 
 std::shared_ptr<Layer> getLayerAtPathAsType(const Handle& handle,
                                             const std::vector<Selection>& selection,
-                                            LayerConfig layerConfig) {
+                                            LayerConfig layerConfig, Loading loading) {
+    const std::scoped_lock lock{Handle::globalMutex()};
     auto dataset = handle.open();
-    const H5::DataSpace dataSpace = dataset.getSpace();
-
-    const auto config = getDimConfig<2>(dataSpace, selection);
-    dataSpace.selectHyperslab(H5S_SELECT_SET, config.count.data(), config.start.data(),
-                              config.stride.data(), nullptr);
-
-    H5::DataSpace memorySpace(2, config.selectedDimensions.data());
-    memorySpace.selectAll();
-
-    if (memorySpace.getSelectNpoints() != dataSpace.getSelectNpoints()) {
-        throw Exception{
-            SourceContext{},
-            "Invalid selection, source selection size {} not equal to destination memory size {}",
-            memorySpace.getSelectNpoints(), dataSpace.getSelectNpoints()};
-    }
+    const auto config = getDimConfig<2>(dataset.getSpace(), selection);
 
     auto layer = std::make_shared<Layer>(getLayerConfig(dataset, config, std::move(layerConfig)));
-    auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
 
     IgnoreValues ignore{};
     readValueAttributes(dataset, *layer, ignore);
 
-    layerRam->dispatch<void, dispatching::filter::Scalars>([&](auto lrprecision) {
-        using ValueType = ::inviwo::util::PrecisionValueType<decltype(lrprecision)>;
+    if (loading == Loading::Lazy) {
+        auto hdf = std::make_shared<LayerHDF>(handle, selection, layer->config().reprConfig());
+        layer->addRepresentation(hdf);
+    } else {
+        auto* layerRam = layer->getEditableRepresentation<LayerRAM>();
+        readData<2>(dataset, config, layerRam->getDataFormat(), asBytes(layerRam));
+    }
 
-        const auto data = lrprecision->getView();
-        try {
-            dataset.read(data.data(), TypeMap<ValueType>::getType(), memorySpace, dataSpace);
-        } catch (H5::DataSetIException& e) {
-            throw Exception(SourceContext{}, "HDF: unable to read data: {}", e.getDetailMsg());
-        }
-    });
-
-    log::info("Read HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
-              fmt::join(config.dataDimensions, " x "), fmt::join(config.asSelection(), " x "),
-              layer->getDataFormat()->getString(), dataset.getFileName());
+    log::info("{} HDF Layer: Dimensions {}, Selection: {}, Type: {}, File: {}",
+              loading == Loading::Lazy ? "Opened" : "Read", fmt::join(config.dataDimensions, " x "),
+              fmt::join(config.asSelection(), " x "), layer->getDataFormat()->getString(),
+              dataset.getFileName());
 
     return layer;
 }

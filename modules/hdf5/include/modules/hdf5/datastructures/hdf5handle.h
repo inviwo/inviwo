@@ -86,6 +86,8 @@ public:
 
     [[nodiscard]] const H5::Group& getGroup() const;
 
+    [[nodiscard]] const std::filesystem::path& getFilename() const;
+
     [[nodiscard]] const Path& getPath() const;
 
     [[nodiscard]] DataSet open() const;

@@ -30,6 +30,8 @@
 #include <modules/hdf5/processors/hdf5volumesource.h>
 
 #include <inviwo/core/datastructures/unitsystem.h>
+#include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -110,6 +112,13 @@ HDF5ToVolume::HDF5ToVolume()
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
     , adjustBasis_("adjustBasis", "Automatically adjust basis", true)
     , adjustOffset_("adjustOffset", "Automatically adjust offset", true)
+    , lazyLoading_{"lazyLoading", "Lazy Loading",
+                   "Defer reading the data until a representation of the volume is requested. "
+                   "Together with the HDF5GL module this allows uploading the data directly from "
+                   "the file into the GPU texture, without an intermediate copy in RAM. "
+                   "Note that the 'Data min/max' range sources are not available in this mode, "
+                   "the range of the data format is used instead."_help,
+                   false}
     , selection_("selection", "Selection", 6)
     , cache_{} {
 
@@ -130,7 +139,7 @@ HDF5ToVolume::HDF5ToVolume()
     dataRangeSelection_.setSerializationMode(PropertySerializationMode::All);
     valueRangeSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, selection_);
+    outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_, lazyLoading_, selection_);
 
     addProperties(volumeSelection_, basisGroup_, dataRangeGroup_, valueName_, valueUnit_,
                   interpolation_, axesNames_, axesUnits_, wrapping_[0], wrapping_[1], wrapping_[2],
@@ -215,12 +224,20 @@ void HDF5ToVolume::process() try {
             Axis{.name = valueName_.get(), .unit = units::unit_from_string(valueUnit_.get())},
     };
 
+    const auto loading = lazyLoading_.get() ? Loading::Lazy : Loading::Eager;
     const auto volume = std::shared_ptr<Volume>(getVolumeAtPathAsType(
-        *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_)));
+        *data + volumeInfo.path, selection_.getSelection(), config, std::ref(cache_), loading));
 
     const dvec2 dataMinMax = [&]() {
         if (dataRangeSelection_.getSelectedIndex() == 0 ||
             valueRangeSelection_.getSelectedIndex() == 0) {
+            if (loading == Loading::Lazy) {
+                log::warn(
+                    "HDF5 To Volume: 'Data min/max' is not available with lazy loading, using "
+                    "the range of the data format {} instead",
+                    volume->getDataFormat()->getString());
+                return DataMapper::defaultDataRangeFor(volume->getDataFormat());
+            }
             const auto [rangeMin, rangeMax] =
                 ::inviwo::util::volumeMinMax(volume->getRepresentation<VolumeRAM>());
             return dvec2{glm::compMin(rangeMin), glm::compMax(rangeMax)};
