@@ -68,9 +68,6 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     // keys should be sorted by time
     virtual void operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
                             Result& out) const override;
@@ -150,26 +147,6 @@ void ConstantInterpolation<Key, Result>::operator()(const std::vector<std::uniqu
             out = (*it)->getValue();
         }
     }
-}
-
-template <typename Key, typename Result>
-void ConstantInterpolation<Key, Result>::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-    Interpolation::serialize(s);
-}
-
-template <typename Key, typename Result>
-void ConstantInterpolation<Key, Result>::deserialize(Deserializer& d) {
-    std::string className;
-    d.deserialize("type", className, SerializationTarget::Attribute);
-    if (className != getClassIdentifier()) {
-        std::string_view cid = getClassIdentifier();
-        throw SerializationException(SourceContext{},
-                                     "Deserialized interpolation: {} from a serialized "
-                                     "interpolation with a different class identifier: {}",
-                                     cid, className);
-    }
-    Interpolation::deserialize(d);
 }
 
 }  // namespace inviwo::animation

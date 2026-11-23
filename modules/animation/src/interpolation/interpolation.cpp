@@ -43,7 +43,19 @@ void Interpolation::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
     PropertyOwner::serialize(s);
 }
-void Interpolation::deserialize(Deserializer& d) { PropertyOwner::deserialize(d); }
+
+void Interpolation::deserialize(Deserializer& d) {
+    std::string className;
+    d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        std::string_view cid = getClassIdentifier();
+        throw SerializationException(SourceContext{},
+                                     "Deserialized interpolation: {} from a serialized "
+                                     "interpolation with a different class identifier: {}",
+                                     cid, className);
+    }
+    PropertyOwner::deserialize(d);
+}
 
 bool operator==(const Interpolation& a, const Interpolation& b) { return a.equal(b); }
 bool operator!=(const Interpolation& a, const Interpolation& b) { return !a.equal(b); }

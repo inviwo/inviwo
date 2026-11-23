@@ -1407,6 +1407,8 @@ bool InviwoMainWindow::saveWorkspace(const std::filesystem::path& fileName) {
         return true;
     } catch (const Exception& e) {
         log::exception(e, "Unable to save network {} due to {}", fileName, e.getMessage());
+    } catch (const std::exception& e) {
+        util::logError(SourceContext{}, "Unable to save network {} due to {}", fileName, e.what());
     }
     return false;
 }
@@ -1680,9 +1682,9 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         const int answer = msgBox.exec();
 
         switch (answer) {
-            case QMessageBox::Yes: saveWorkspace(); break;
+            case QMessageBox::Yes:    saveWorkspace(); break;
 
-            case QMessageBox::No: break;
+            case QMessageBox::No:     break;
 
             case QMessageBox::Cancel: continueOperation = false; break;
         }

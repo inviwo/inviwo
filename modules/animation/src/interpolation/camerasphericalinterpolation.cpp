@@ -127,10 +127,4 @@ void CameraSphericalInterpolation::operator()(
     out.setLookUp(lookUp);
 }
 
-void CameraSphericalInterpolation::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-}
-
-void CameraSphericalInterpolation::deserialize(Deserializer& /*d*/) {}
-
 }  // namespace inviwo::animation

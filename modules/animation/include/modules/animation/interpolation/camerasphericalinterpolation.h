@@ -72,9 +72,6 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     /*
      * Uses orbit between two key frames if lookFrom has changed and pan/tilt otherwise.
      * Orbit: Rotate the lookFrom around the lookAt position.
