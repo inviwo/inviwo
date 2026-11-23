@@ -70,6 +70,7 @@
 #include <inviwopy/pyprocessors.h>
 #include <inviwopy/pyproperties.h>
 #include <inviwopy/pypropertyowner.h>
+#include <inviwopy/pyresourcemanager.h>
 #include <inviwopy/pyserialization.h>
 #include <inviwopy/pyspatialdata.h>
 #include <inviwopy/pytfprimitiveset.h>
@@ -154,6 +155,7 @@ INVIWO_PYBIND_MODULE(inviwopy, m) {
     exposeInviwoApplication(m);
     exposeDataFormat(formatsModule);
     exposeBitset(dataModule);
+    exposeResourceManager(m);  // needs DataFormatId and glm size4_t
     exposeSerialization(m);
     exposeHelp(helpModule);
     exposeMetaData(m);  // defines MetaDataOwner, used as base in properties, processors, data

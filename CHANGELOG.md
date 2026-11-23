@@ -1,5 +1,25 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-11-23 Python bindings for the ResourceManager
+The resource tracking classes are now exposed in `inviwopy`: `Resource`, `ResourceMeta`, `ResourceManager`, and `ResourceManagerObserver`, as well as the resource keys `RAM`, `GL`, and `PY` and the `add`/`move`/`remove`/`meta`/`toPY` functions of the C++ `inviwo::resource` namespace in the `inviwopy.resource` submodule. The application instance is available as `inviwopy.app.resourceManager`, and `inviwopy.app.systemSettings` gives access to the `SystemSettings` (resource tracking is off by default, see `enableResourceTracking`). `ResourceManagerObserver` can be subclassed in Python to get notified about added, updated, and removed resources. The identifier of the `SystemSettings` property was fixed from `enableResurceTracking` to `enableResourceTracking`, a previously saved value of that setting is not restored.
+```python
+import inviwopy
+from inviwopy import resource
+
+rm = inviwopy.app.resourceManager
+for group, name in enumerate(rm.names):
+    print(f"{name}: {rm.size(group)} resources, {rm.totalByteSize(group)} bytes")
+    for res in rm.resources(group):
+        print("  ", res)
+
+class Observer(inviwopy.ResourceManagerObserver):
+    def onDidAddResource(self, group, index, res):
+        print(f"added {res.desc} to {rm.names[group]}")
+
+observer = Observer()  # keep a reference, the manager does not own the observer
+rm.addObserver(observer)
+```
+
 ## 2026-11-20 HDF5 backed representations and direct GPU upload
 Added `hdf5::VolumeHDF` and `hdf5::LayerHDF` (hdf5), `VolumeRepresentation`/`LayerRepresentation`s backed by a hyperslab of an HDF5 dataset. They hold only a `hdf5::Handle` and a `Selection` per dataset dimension, no voxel data. The data is read, and converted to the requested data format by HDF5, when the representation is converted to another one: `VolumeHDF2RAMConverter`/`LayerHDF2RAMConverter` (hdf5) read into RAM, and the new `HDF5GL` module provides `VolumeHDF2GLConverter`/`LayerHDF2GLConverter` which read the data straight into a mapped pixel unpack buffer and from there into the GL texture, bypassing an intermediate `VolumeRAM`/`LayerRAM`. Since the converter factory picks the path with the fewest steps, `volume.getRepresentation<VolumeGL>()` uses the direct path whenever `HDF5GL` is loaded. The requested `utilgl::StorageFormat` of the owner is honored. The representations are read-only, `setDimensions` throws.
 
