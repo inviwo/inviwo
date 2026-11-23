@@ -1,5 +1,25 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-11-23 Python bindings for the ResourceManager
+The resource tracking classes are now exposed in `inviwopy`: `Resource`, `ResourceMeta`, `ResourceManager`, and `ResourceManagerObserver`, as well as the resource keys `RAM`, `GL`, and `PY` and the `add`/`move`/`remove`/`meta`/`toPY` functions of the C++ `inviwo::resource` namespace in the `inviwopy.resource` submodule. The application instance is available as `inviwopy.app.resourceManager`, and `inviwopy.app.systemSettings` gives access to the `SystemSettings` (resource tracking is off by default, see `enableResourceTracking`). `ResourceManagerObserver` can be subclassed in Python to get notified about added, updated, and removed resources. The identifier of the `SystemSettings` property was fixed from `enableResurceTracking` to `enableResourceTracking`, a previously saved value of that setting is not restored.
+```python
+import inviwopy
+from inviwopy import resource
+
+rm = inviwopy.app.resourceManager
+for group, name in enumerate(rm.names):
+    print(f"{name}: {rm.size(group)} resources, {rm.totalByteSize(group)} bytes")
+    for res in rm.resources(group):
+        print("  ", res)
+
+class Observer(inviwopy.ResourceManagerObserver):
+    def onDidAddResource(self, group, index, res):
+        print(f"added {res.desc} to {rm.names[group]}")
+
+observer = Observer()  # keep a reference, the manager does not own the observer
+rm.addObserver(observer)
+```
+
 ## 2026-11-13 Properties are no longer movable or assignable
 `Property`, `PropertyOwner`, `CompositeProperty`, and all the concrete property classes now have reference semantics: move construction and copy/move assignment are deleted. The copy constructor of `PropertyOwner` is `protected`, the copy constructors of the concrete properties remain public since they are needed by `clone()` and by the copy constructors of composite properties. Use `clone()` to duplicate a property, and `set()` to copy a value from another property. Value assignment of leaf properties, e.g. `floatProperty = 1.0f`, is unchanged.
 Properties can no longer be moved into containers, `std::variant`s, or members. Construct them in place instead, for example by forwarding the constructor arguments, see `DataFrameToMesh`'s `ColumnMapper`, or by holding them in a `std::unique_ptr`. Returning a property as a prvalue still works.

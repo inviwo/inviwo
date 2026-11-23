@@ -46,6 +46,7 @@ set(HEADER_FILES
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
     include/inviwopy/pypropertyowner.h
+    include/inviwopy/pyresourcemanager.h
     include/inviwopy/pyserialization.h
     include/inviwopy/pyspatialdata.h
     include/inviwopy/pytfprimitiveset.h
@@ -108,6 +109,7 @@ set(SOURCE_FILES
     src/pyprocessors.cpp
     src/pyproperties.cpp
     src/pypropertyowner.cpp
+    src/pyresourcemanager.cpp
     src/pyserialization.cpp
     src/pyspatialdata.cpp
     src/pytfprimitiveset.cpp
