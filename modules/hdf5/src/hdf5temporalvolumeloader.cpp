@@ -42,13 +42,14 @@ namespace inviwo::hdf5 {
 
 HDF5TemporalVolumeLoader::HDF5TemporalVolumeLoader(Handle handle, std::vector<Selection> selection,
                                                    size_t timeDimension, Seconds dt,
-                                                   VolumeConfig config)
+                                                   VolumeConfig config, Loading loading)
     : handle_{std::move(handle)}
     , selection_{std::move(selection)}
     , timeDimension_{timeDimension}
     , timeSelection_{}
     , dt_{dt}
-    , prototype_{std::move(config)} {
+    , prototype_{std::move(config)}
+    , loading_{loading} {
 
     const std::scoped_lock lock{Handle::globalMutex()};
     std::tie(prototype_, timeSelection_) =
@@ -72,9 +73,9 @@ std::shared_ptr<Volume> HDF5TemporalVolumeLoader::load(size_t index, std::shared
     sel[timeDimension_] = Selection{
         .start = timeSelection_.start + timeSelection_.stride * index, .count = 1, .stride = 1};
 
-    auto volume = getVolumeAtPathAsType(handle_, sel, prototype_, [&](const VolumeConfig& cfg) {
-        return reuseOrCreateVolume(cfg, reuse);
-    });
+    auto volume = getVolumeAtPathAsType(
+        handle_, sel, prototype_,
+        [&](const VolumeConfig& cfg) { return reuseOrCreateVolume(cfg, reuse); }, loading_);
     return volume;
 }
 

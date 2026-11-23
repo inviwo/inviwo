@@ -102,6 +102,7 @@ private:
     OptionPropertyInt datatype_;
     BoolProperty adjustBasis_;
     BoolProperty adjustOffset_;
+    BoolProperty lazyLoading_;
     DimSelectionsProperty selection_;
 
     VolumeReuseCache cache_;

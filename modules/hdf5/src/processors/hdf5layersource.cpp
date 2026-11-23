@@ -57,6 +57,11 @@ HDF5ToLayer::HDF5ToLayer()
     , information_("Information", "Data information")
     , outputGroup_("outputGroup", "Operations")
     , datatype_("convertType", "Convert to type", util::conversionOptions(), 0)
+    , lazyLoading_{"lazyLoading", "Lazy Loading",
+                   "Defer reading the data until a representation of the layer is requested. "
+                   "Together with the HDF5GL module this allows uploading the data directly from "
+                   "the file into the GPU texture, without an intermediate copy in RAM."_help,
+                   false}
     , selection_("selection", "Selection", 6) {
 
     addPort(inport_);
@@ -64,7 +69,7 @@ HDF5ToLayer::HDF5ToLayer()
 
     layerSelection_.setSerializationMode(PropertySerializationMode::All);
 
-    outputGroup_.addProperties(datatype_, selection_);
+    outputGroup_.addProperties(datatype_, lazyLoading_, selection_);
     addProperties(layerSelection_, information_, outputGroup_);
 }
 
@@ -98,7 +103,8 @@ void HDF5ToLayer::process() try {
     const LayerConfig layerConfig{.formatId = util::conversionFormat(datatype_.getSelectedIndex())};
 
     const auto layer =
-        getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(), layerConfig);
+        getLayerAtPathAsType(*data + layerMeta.path, selection_.getSelection(), layerConfig,
+                             lazyLoading_.get() ? Loading::Lazy : Loading::Eager);
     information_.updateForNewLayer(*layer, deserialized_ ? inviwo::util::OverwriteState::Yes
                                                          : inviwo::util::OverwriteState::No);
     deserialized_ = false;

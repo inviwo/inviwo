@@ -16,6 +16,7 @@
 
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_HDF5GL":                { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_WEBBROWSER":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TETRAMESH":             { "type": "BOOL", "value": "ON"}

@@ -5,6 +5,10 @@ set(HEADER_FILES
     include/modules/hdf5/datastructures/hdf5handle.h
     include/modules/hdf5/datastructures/hdf5path.h
     include/modules/hdf5/datastructures/hdf5selection.h
+    include/modules/hdf5/datastructures/layerhdf.h
+    include/modules/hdf5/datastructures/layerhdfconverter.h
+    include/modules/hdf5/datastructures/volumehdf.h
+    include/modules/hdf5/datastructures/volumehdfconverter.h
     include/modules/hdf5/hdf5exception.h
     include/modules/hdf5/hdf5module.h
     include/modules/hdf5/hdf5moduledefine.h
@@ -30,6 +34,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/datastructures/hdf5handle.cpp
     src/datastructures/hdf5path.cpp
+    src/datastructures/layerhdf.cpp
+    src/datastructures/layerhdfconverter.cpp
+    src/datastructures/volumehdf.cpp
+    src/datastructures/volumehdfconverter.cpp
     src/hdf5exception.cpp
     src/hdf5module.cpp
     src/hdf5multifiletemporalvolumeloader.cpp
@@ -54,8 +62,10 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(TEST_FILES
     tests/unittests/hdf5-unittest-main.cpp
     tests/unittests/dimselection-test.cpp
+    tests/unittests/layerhdf-test.cpp
     tests/unittests/multifiletemporalvolumeloader-test.cpp
     tests/unittests/path-test.cpp
+    tests/unittests/volumehdf-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
