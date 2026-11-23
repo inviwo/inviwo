@@ -165,7 +165,14 @@ HDF5DirectoryToTemporalVolume::HDF5DirectoryToTemporalVolume()
     , dt_{"dt", "Time Step (s)", inviwo::util::ordinalScale(1.0, 1000.0)}
     , cacheSize_{"cacheSize", "Cache Size",
                  inviwo::util::ordinalCount<size_t>(8u, 256u).set(
-                     "Maximum number of decoded frames kept in memory"_help)} {
+                     "Maximum number of decoded frames kept in memory"_help)}
+    , lazyLoading_{"lazyLoading", "Lazy Loading",
+                   "Defer reading the voxel data of each frame until a representation is "
+                   "requested. Together with the HDF5GL module this allows uploading frames "
+                   "directly from the file into the GPU texture, without an intermediate copy in "
+                   "RAM. Note that in this mode the file I/O happens when a frame is used, hence "
+                   "prefetching does not hide any loading time."_help,
+                   false} {
 
     addPort(outport_);
 
@@ -188,7 +195,7 @@ HDF5DirectoryToTemporalVolume::HDF5DirectoryToTemporalVolume()
     valueRangeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     outputGroup_.addProperties(datatype_, adjustBasis_, adjustOffset_);
-    timeGroup_.addProperties(timeDimension_, dt_, cacheSize_);
+    timeGroup_.addProperties(timeDimension_, dt_, cacheSize_, lazyLoading_);
 
     config_.addProperties(basisGroup_, dataRangeGroup_, valueName_, valueUnit_, interpolation_,
                           axesNames_, axesUnits_, wrapping_[0], wrapping_[1], wrapping_[2]);
@@ -372,7 +379,7 @@ void HDF5DirectoryToTemporalVolume::process() try {
 
     auto loader = std::make_unique<HDF5MultiFileTemporalVolumeLoader>(
         files_, volumeInfo.path, selection_.getSelection(), timeDimension_.getSelectedValue(),
-        Seconds{dt_.get()}, config);
+        Seconds{dt_.get()}, config, lazyLoading_.get() ? Loading::Lazy : Loading::Eager);
 
     outport_.setData(std::make_shared<TemporalVolume>(std::move(loader), cacheSize_.get()));
 

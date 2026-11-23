@@ -92,6 +92,12 @@ struct TypeMap<unsigned long long> {
 namespace util {
 IVW_MODULE_HDF5_API std::optional<DataFormatId> getDataFormatFromDataSet(
     const H5::DataSet& dataset);
+
+/**
+ * The native HDF5 memory type matching the scalar data format @p format.
+ * @throws Exception if @p format is not a scalar integer or 32/64 bit float format.
+ */
+IVW_MODULE_HDF5_API H5::PredType getPredType(const DataFormatBase* format);
 }  // namespace util
 
 }  // namespace inviwo::hdf5

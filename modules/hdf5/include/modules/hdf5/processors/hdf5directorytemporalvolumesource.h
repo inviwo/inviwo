@@ -129,6 +129,7 @@ private:
     OptionProperty<size_t> timeDimension_;
     DoubleProperty dt_;
     IntSizeTProperty cacheSize_;
+    BoolProperty lazyLoading_;
 };
 
 }  // namespace inviwo::hdf5

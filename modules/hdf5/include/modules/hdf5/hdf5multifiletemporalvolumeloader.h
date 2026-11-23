@@ -32,6 +32,7 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <modules/hdf5/datastructures/hdf5path.h>
 #include <modules/hdf5/datastructures/hdf5selection.h>
+#include <modules/hdf5/hdf5read.h>
 
 #include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
@@ -70,11 +71,14 @@ public:
      * @param timeDimension index into @p selection designating the time axis
      * @param dt            time between consecutive frames
      * @param config        the prototype VolumeConfig to use
+     * @param loading       whether to read the voxel data in load() or defer it, see Loading and
+     *                      HDF5TemporalVolumeLoader
      * @throws Exception if @p files is empty or any file has an incompatible dataset rank
      */
     HDF5MultiFileTemporalVolumeLoader(std::vector<std::filesystem::path> files, Path path,
                                       std::vector<Selection> selection, size_t timeDimension,
-                                      Seconds dt, VolumeConfig config);
+                                      Seconds dt, VolumeConfig config,
+                                      Loading loading = Loading::Eager);
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
                                          std::stop_token stop) const override;
@@ -97,6 +101,7 @@ private:
     std::vector<size_t> frameOffsets_;       // files_.size() + 1 entries, cumulative frame counts
     Seconds dt_;
     VolumeConfig prototype_;
+    Loading loading_;
 };
 
 }  // namespace inviwo::hdf5

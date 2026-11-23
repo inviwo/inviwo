@@ -37,6 +37,11 @@
 #include <inviwo/core/datastructures/representationfactorymanager.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
+
+#include <modules/hdf5/datastructures/volumehdfconverter.h>
+#include <modules/hdf5/datastructures/layerhdfconverter.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -54,6 +59,10 @@ int main(int argc, char** argv) {
 
     inviwo::RepresentationFactoryManager rfm;
     inviwo::util::registerCoreRepresentations(rfm);
+    rfm.registerRepresentationConverter<inviwo::VolumeRepresentation>(
+        std::make_unique<inviwo::hdf5::VolumeHDF2RAMConverter>());
+    rfm.registerRepresentationConverter<inviwo::LayerRepresentation>(
+        std::make_unique<inviwo::hdf5::LayerHDF2RAMConverter>());
 
     int ret = -1;
     {
