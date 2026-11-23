@@ -389,32 +389,43 @@ void PythonEditorWidget::runOrStop(bool runScript) {
 }
 
 void PythonEditorWidget::run() {
-    util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->addObserver(this);
+    try {
 
-    const util::OnScopeExit reenable([&]() {
-        runAction_->setChecked(false);
-        util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->removeObserver(
-            this);
-    });
+        util::getModuleByTypeOrThrow<Python3Module>(app_).getPythonInterpreter()->addObserver(this);
+        const util::OnScopeExit reenable([&]() {
+            runAction_->setChecked(false);
+            util::getModuleByTypeOrThrow<Python3Module>(app_)
+                .getPythonInterpreter()
+                ->removeObserver(this);
+        });
 
-    if (!appendLog_->isChecked()) {
-        clearOutput();
+        if (!appendLog_->isChecked()) clearOutput();
+
+        // save the current code to QSettings such that it can be recovered in case of a crash or if
+        // the user forgets to save it as a file.
+        saveState();
+
+        mainWindow_->statusBar()->showMessage("Running ...");
+        Clock c;
+        c.start();
+        const bool ok = script_.run();
+        c.stop();
+
+        mainWindow_->statusBar()->showMessage(
+            utilqt::toQString(fmt::format("{} ({})", ok ? "Executed Successfully" : "Failed",
+                                          util::durationToString(c.getElapsedTime()))));
+
+    } catch (const Exception& e) {
+         mainWindow_->statusBar()->showMessage("Failed Execution");
+         log::exception(e);
+    } catch (const std::exception& e) {
+         mainWindow_->statusBar()->showMessage("Failed Execution");
+         log::exception(e);
+    } catch (...) {
+        mainWindow_->statusBar()->showMessage("Failed Execution");
+        log::exception();
     }
 
-    // save the current code to QSettings such that it can be recovered in case of a crash or if the
-    // user forgets to save it as a file.
-    saveState();
-
-    mainWindow_->statusBar()->showMessage("Running ...");
-    Clock c;
-    c.start();
-    const bool ok = script_.run();
-    c.stop();
-
-    std::stringstream ss;
-    ss << (ok ? "Executed Successfully" : "Failed");
-    ss << " (" << util::durationToString(c.getElapsedTime()) << ")";
-    mainWindow_->statusBar()->showMessage(utilqt::toQString(ss.str()));
 }
 
 void PythonEditorWidget::stop() {
