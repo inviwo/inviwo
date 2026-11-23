@@ -43,13 +43,12 @@ DimSelectionProperty::DimSelectionProperty(std::string_view identifier,
                                            InvalidationLevel invalidationLevel)
     : CompositeProperty(identifier, displayName, invalidationLevel)
     , start("start", "Start", "First element to read along this dimension"_help, size_t{0},
-            {size_t{0}, ConstraintBehavior::Immutable}, {size_t{255}, ConstraintBehavior::Mutable})
+            {size_t{0}, ConstraintBehavior::Immutable}, {size_t{255}, ConstraintBehavior::Ignore})
     , count("count", "Count", "Number of elements to read, 0 selects all remaining elements"_help,
             size_t{0}, {size_t{0}, ConstraintBehavior::Immutable},
-            {size_t{255}, ConstraintBehavior::Mutable})
+            {size_t{255}, ConstraintBehavior::Ignore})
     , stride("stride", "Stride", "Step between selected elements"_help, size_t{1},
-             {size_t{1}, ConstraintBehavior::Immutable},
-             {size_t{64}, ConstraintBehavior::Mutable}) {
+             {size_t{1}, ConstraintBehavior::Immutable}, {size_t{64}, ConstraintBehavior::Ignore}) {
 
     addProperties(start, count, stride);
 }
