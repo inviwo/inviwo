@@ -82,8 +82,8 @@ private:
      *
      * @return minimum texture size required to accommodate atlas
      */
-    static ivec2 calcTexLayout(std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
-                               double minArea);
+    static size2_t calcTexLayout(std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
+                                 size_t minArea);
 
     void initAtlas(TextRenderer& textRenderer, const std::vector<TexAtlasEntry>& entries,
                    std::vector<TextBoundingBox>&& bboxes);
@@ -91,7 +91,7 @@ private:
     std::shared_ptr<Texture2D> atlasTex_;
     TexAtlasRenderInfo renderInfo_;
     static constexpr int maxTexSize_ = 8192;
-    static constexpr int margin_ = 2;
+    static constexpr size_t margin_ = 2uz;
 };
 
 }  // namespace util

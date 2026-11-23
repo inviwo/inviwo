@@ -1058,7 +1058,7 @@ void TFEditor::duplicate(std::span<TFEditorPrimitive*> primitives) {
 
 bool TFEditor::handleGroupSelection(QKeyEvent* event) {
 #ifdef _WIN32
-    static constexpr std::array<std::pair<qint32, int>, 10> nativeKeyMap{
+    static constexpr std::array<std::pair<quint32, int>, 10> nativeKeyMap{
         {{2, 1}, {3, 2}, {4, 3}, {5, 4}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {10, 9}, {11, 0}}};
     const quint32 nativeKey = event->nativeScanCode();
 #elifdef __APPLE__
