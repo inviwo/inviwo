@@ -29,6 +29,8 @@
 
 #include <modules/hdf5/hdf5module.h>
 
+#include <modules/hdf5/hdf5settings.h>
+#include <modules/hdf5/datastructures/hdf5handle.h>
 #include <modules/hdf5/ports/hdf5port.h>
 #include <modules/hdf5/datastructures/volumehdfconverter.h>
 #include <modules/hdf5/datastructures/layerhdfconverter.h>
@@ -40,6 +42,9 @@
 #include <modules/hdf5/processors/hdf5buffersource.h>
 #include <modules/hdf5/processors/hdf5dataframesource.h>
 #include <modules/hdf5/processors/hdf5pathselection.h>
+
+#include <memory>
+#include <mutex>
 
 namespace inviwo {
 
@@ -60,6 +65,17 @@ HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
     registerProcessor<hdf5::HDF5ToBuffer>();
     registerProcessor<hdf5::HDF5ToDataFrame>();
     registerProcessor<hdf5::PathSelection>();
+
+    auto settings = std::make_unique<hdf5::HDF5Settings>();
+    settings->internalThreads_.onChange([s = settings.get()]() {
+        const std::scoped_lock lock{hdf5::Handle::globalMutex()};
+        s->apply();
+    });
+    {
+        const std::scoped_lock lock{hdf5::Handle::globalMutex()};
+        settings->apply();
+    }
+    registerSettings(std::move(settings));
 }
 
 }  // namespace inviwo

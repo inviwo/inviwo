@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/modules/hdf5/hdf5moduledefine.h
     include/modules/hdf5/hdf5multifiletemporalvolumeloader.h
     include/modules/hdf5/hdf5read.h
+    include/modules/hdf5/hdf5settings.h
     include/modules/hdf5/hdf5temporalvolumeloader.h
     include/modules/hdf5/hdf5types.h
     include/modules/hdf5/hdf5utils.h
@@ -42,6 +43,7 @@ set(SOURCE_FILES
     src/hdf5module.cpp
     src/hdf5multifiletemporalvolumeloader.cpp
     src/hdf5read.cpp
+    src/hdf5settings.cpp
     src/hdf5temporalvolumeloader.cpp
     src/hdf5types.cpp
     src/hdf5utils.cpp
