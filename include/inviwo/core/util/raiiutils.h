@@ -56,14 +56,14 @@ public:
         : variable_{std::exchange(rhs.variable_, nullptr)}, prevValue_{rhs.prevValue_} {}
     KeepTrueWhileInScope& operator=(KeepTrueWhileInScope&& that) noexcept {
         if (this != &that) {
-            if (variable_) (*variable_) = prevValue_;
+            if (variable_) *variable_ = prevValue_;
             variable_ = std::exchange(that.variable_, nullptr);
             prevValue_ = that.prevValue_;
         }
         return *this;
     }
     ~KeepTrueWhileInScope() {
-        if (variable_) (*variable_) = prevValue_;
+        if (variable_) *variable_ = prevValue_;
     }
 
 private:
