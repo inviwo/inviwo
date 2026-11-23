@@ -62,7 +62,7 @@ TEST(MeshCutting, BarycentricInsidePolygon) {
     const auto testCenter = [](const std::vector<vec2>& poly) {
         const auto res = meshutil::detail::barycentricInsidePolygon(vec2{0.5, 0.5}, poly);
         for (size_t j = 0; j < res.size(); ++j) {
-            EXPECT_FLOAT_EQ(res[j], 1.0f / res.size());
+            EXPECT_FLOAT_EQ(res[j], 1.0f / static_cast<float>(res.size()));
         }
     };
 

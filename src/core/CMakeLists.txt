@@ -1036,25 +1036,28 @@ target_link_libraries(inviwo-core
 # These headers where identified by the CompileScore extension in Visual Studio as the ones 
 # where most time is spent on (accumulative).
 set(PCH_HEADERS_CORE
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/data.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/mesh.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializebase.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyowner.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/document.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/exception.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmmat.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmutils.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmvec.h
+   <inviwo/core/common/inviwoapplication.h>
+   <inviwo/core/common/inviwomodule.h>
+   <inviwo/core/datastructures/data.h>
+   <inviwo/core/datastructures/geometry/mesh.h>
+   <inviwo/core/datastructures/image/image.h>
+   <inviwo/core/datastructures/volume/volume.h>
+   <inviwo/core/io/serialization/deserializer.h>
+   <inviwo/core/io/serialization/serializebase.h>
+   <inviwo/core/io/serialization/serializer.h>
+   <inviwo/core/processors/processor.h>
+   <inviwo/core/properties/property.h>
+   <inviwo/core/properties/propertyowner.h>
+   <inviwo/core/properties/valuewrapper.h>
+   <inviwo/core/properties/optionproperty.h>
+   <inviwo/core/util/document.h>
+   <inviwo/core/util/exception.h>
+   <inviwo/core/util/glm.h>
+   <inviwo/core/util/glmmat.h>
+   <inviwo/core/util/glmutils.h>
+   <inviwo/core/util/glmvec.h>
+   <inviwo/core/util/formats.h>
+   <inviwo/core/util/utfutils.h>
 )
 # Standard headers and external header files used in PCH file
 # as identified by CompileScore extension in Visual Studio.
@@ -1065,6 +1068,10 @@ set(PCH_HEADERS_EXTERNAL
     <string>
     <string_view>
     <ostream>
+    <chrono>
+    <filesystem>
+    <ranges>
+    <algorithm>
 
     <glm/detail/setup.hpp>
     <fmt/format.h>

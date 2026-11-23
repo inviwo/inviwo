@@ -35,7 +35,6 @@
 #include <inviwo/core/algorithm/linearmap.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmutils.h>
-#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
@@ -75,17 +74,16 @@ public:
     constexpr DataMapper();
     constexpr explicit DataMapper(dvec2 dataRange);
     constexpr DataMapper(dvec2 dataRange, dvec2 valueRange);
-    constexpr explicit DataMapper(
-        const DataFormatBase* format,
-        SignedNormalization normalization = SignedNormalization::Asymmetric);
+    explicit DataMapper(const DataFormatBase* format,
+                        SignedNormalization normalization = SignedNormalization::Asymmetric);
     DataMapper(const DataFormatBase* format, SignedNormalization normalization, Axis valueAxis);
     DataMapper(dvec2 dataRange, Axis valueAxis);
     DataMapper(dvec2 dataRange, dvec2 valueRange, Axis valueAxis);
 
-    DataMapper(const DataMapper& rhs);
-    DataMapper(DataMapper&& rhs) noexcept;
-    DataMapper& operator=(const DataMapper& that);
-    DataMapper& operator=(DataMapper&& that) noexcept;
+    DataMapper(const DataMapper& rhs) = default;
+    DataMapper(DataMapper&& rhs) noexcept = default;
+    DataMapper& operator=(const DataMapper& that) = default;
+    DataMapper& operator=(DataMapper&& that) noexcept = default;
     ~DataMapper() = default;
 
     /**
@@ -115,10 +113,7 @@ public:
      */
     Axis valueAxis;  ///< Name and Unit, i.e. "absorption", "Hounsfield".
 
-    static constexpr dvec2 defaultDataRangeFor(
-        const DataFormatBase* format,
-        SignedNormalization normalization = SignedNormalization::Asymmetric);
-    constexpr void initWithFormat(
+    static dvec2 defaultDataRangeFor(
         const DataFormatBase* format,
         SignedNormalization normalization = SignedNormalization::Asymmetric);
 
@@ -126,7 +121,7 @@ public:
      * Map from `dataRange` to the `valueRange`
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromDataToValue(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromDataToValue(T val) const {
         return util::linearMap(static_cast<util::same_extent_t<T, double>>(val), dataRange,
                                valueRange);
     }
@@ -135,7 +130,7 @@ public:
      * Map from `valueRange` to the `dataRange`
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromValueToData(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromValueToData(T val) const {
         return util::linearMap(static_cast<util::same_extent_t<T, double>>(val), valueRange,
                                dataRange);
     }
@@ -144,7 +139,7 @@ public:
      * Map from `dataRange` to the Normalized range [0,1]
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromDataToNormalized(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromDataToNormalized(T val) const {
         return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                            dataRange);
     }
@@ -153,7 +148,7 @@ public:
      * Map from `dataRange` to the Sign Normalized range [-1,1]
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromDataToSignNormalized(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromDataToSignNormalized(T val) const {
         return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                            dataRange) *
                    2.0 -
@@ -164,7 +159,7 @@ public:
      * Map from Normalized range [0,1] to the `dataRange`
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromNormalizedToData(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromNormalizedToData(T val) const {
         return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                              dataRange);
     }
@@ -173,7 +168,7 @@ public:
      * Map from Sign Normalized range [-1,1] to the `dataRange`
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromSignNormalizedToData(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromSignNormalizedToData(T val) const {
         return util::linearMapFromNormalized(
             (static_cast<util::same_extent_t<T, double>>(val) + 1.0) * 0.5, dataRange);
     }
@@ -182,7 +177,7 @@ public:
      * Map from `valueRange` to the Normalized range [0,1]
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromValueToNormalized(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromValueToNormalized(T val) const {
         return util::linearMapToNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                            valueRange);
     }
@@ -191,7 +186,7 @@ public:
      * Map from Normalized range [0,1] to the `valueRange`
      */
     template <typename T>
-    util::same_extent_t<T, double> mapFromNormalizedToValue(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromNormalizedToValue(T val) const {
         return util::linearMapFromNormalized(static_cast<util::same_extent_t<T, double>>(val),
                                              valueRange);
     }
@@ -200,7 +195,7 @@ public:
      * Map from `dataRange` to the `Space`
      */
     template <Space space, typename T>
-    util::same_extent_t<T, double> mapFromDataTo(T val) const {
+    constexpr util::same_extent_t<T, double> mapFromDataTo(T val) const {
         if constexpr (space == Space::Data) {
             return static_cast<util::same_extent_t<T, double>>(val);
         } else if constexpr (space == Space::Normalized) {
@@ -217,38 +212,11 @@ public:
 
 IVW_CORE_API std::string format_as(const DataMapper& dataMapper);
 
-constexpr DataMapper::DataMapper()
-    : DataMapper(DataUInt8::get(), SignedNormalization::Asymmetric) {}
-
-constexpr DataMapper::DataMapper(const DataFormatBase* format, SignedNormalization normalization)
-    : DataMapper{defaultDataRangeFor(format, normalization)} {}
+constexpr DataMapper::DataMapper() : DataMapper(dvec2{0.0, 1.0}) {}
 
 constexpr DataMapper::DataMapper(dvec2 dataRange) : DataMapper{dataRange, dataRange} {}
 
 constexpr DataMapper::DataMapper(dvec2 dataRange, dvec2 valueRange)
     : dataRange{dataRange}, valueRange{valueRange}, valueAxis{} {}
-
-constexpr dvec2 DataMapper::defaultDataRangeFor(const DataFormatBase* format,
-                                                SignedNormalization normalization) {
-    switch (format->getNumericType()) {
-        case NumericType::Float:           return {0.0, 1.0};
-        case NumericType::UnsignedInteger: return {0.0, format->getMax()};
-        case NumericType::SignedInteger:
-            if (normalization == SignedNormalization::Symmetric) {
-                return {-format->getMax(), format->getMax()};
-            } else {
-                return {format->getMin(), format->getMax()};
-            }
-        case NumericType::NotSpecialized: return {format->getMin(), format->getMax()};
-    }
-    return {format->getMin(), format->getMax()};
-}
-
-constexpr void DataMapper::initWithFormat(const DataFormatBase* format,
-                                          SignedNormalization normalization) {
-    dataRange = defaultDataRangeFor(format, normalization);
-    valueRange = dataRange;
-    valueAxis = {"", Unit{}};
-}
 
 }  // namespace inviwo

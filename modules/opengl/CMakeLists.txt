@@ -161,7 +161,7 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
-ivw_create_module(
+ivw_create_module(NO_PCH
     PACKAGES glbinding OpenGL
     FILES ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES}
 )
@@ -176,3 +176,7 @@ target_include_directories(inviwo-module-opengl PUBLIC ${OPENGL_INCLUDE_DIR})
 
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
+
+ivw_compile_optimize_on_target(inviwo-module-opengl HEADERS
+    <glbinding/gl/gl.h>
+)

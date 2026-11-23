@@ -89,13 +89,20 @@ set(TEST_FILES
 ivw_add_unittest(${TEST_FILES})
 
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES} ${PYTHON_PROCESSORS_FILES})
+ivw_create_module(NO_PCH 
+    FILES
+        ${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES} ${PYTHON_PROCESSORS_FILES}
+)
 
 find_package(pybind11 CONFIG REQUIRED)
 target_compile_definitions(inviwo-module-python3 PUBLIC PYBIND11_DETAILED_ERROR_MESSAGES)
 target_link_libraries(inviwo-module-python3 PUBLIC
     pybind11::embed
     Python3::Python
+)
+
+ivw_compile_optimize_on_target(inviwo-module-python3 HEADERS 
+    <pybind11/pybind11.h>
 )
 
 add_subdirectory(bindings)

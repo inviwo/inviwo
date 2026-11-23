@@ -30,10 +30,9 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/ostreamjoiner.h>
-#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/fmtutils.h>
 
+#include <optional>
 #include <array>
 #include <string_view>
 

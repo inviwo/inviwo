@@ -31,6 +31,7 @@
 
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
@@ -63,8 +64,8 @@ namespace inviwo {
 StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty* property)
     : PropertyWidgetQt(property)
     , property_(property)
-    , label_(new EditableLabelQt(this, property_))
-    , textEdit_(new MultilineTextEdit) {
+    , textEdit_(new MultilineTextEdit)
+    , label_(new EditableLabelQt(this, property_)) {
 
     auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
@@ -109,8 +110,8 @@ void StringMultilinePropertyWidgetQt::updateFromProperty() {
 MultiFileStringPropertyWidgetQt::MultiFileStringPropertyWidgetQt(MultiFileProperty* property)
     : PropertyWidgetQt(property)
     , property_(property)
-    , label_(new EditableLabelQt(this, property_))
-    , textEdit_(new MultilineTextEdit) {
+    , textEdit_(new MultilineTextEdit)
+    , label_(new EditableLabelQt(this, property_)) {
 
     auto* hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);

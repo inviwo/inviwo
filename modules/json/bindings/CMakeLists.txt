@@ -28,6 +28,8 @@ target_link_libraries(ivwjson PUBLIC
     nlohmann_json::nlohmann_json
 )
 
+ivw_compile_optimize_on_target(ivwjson)
+
 ivw_install_helper(TARGET ivwjson
     NAMESPACE inviwo
     DESTINATION inviwo

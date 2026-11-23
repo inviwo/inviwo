@@ -101,9 +101,10 @@ void VolumeVoronoiSegmentation::process() {
         const auto nrows = dataFrame->getIndexColumn()->getSize();
         std::vector<std::pair<uint32_t, vec3>> seedPointsWithIndices(nrows);
 
-        copyColumn(
-            *dataFrame->getColumn(iCol), seedPointsWithIndices,
-            [&](const auto& src, auto& dst) { dst.first = static_cast<uint32_t>(offset + src); });
+        copyColumn(*dataFrame->getColumn(iCol), seedPointsWithIndices,
+                   [&](const auto& src, auto& dst) {
+                       dst.first = static_cast<uint32_t>(offset + static_cast<int>(src));
+                   });
 
         const auto setColumnDataAsFloats = [&](int column, int idx) {
             if (column < 0 || static_cast<size_t>(column) >= dataFrame->getNumberOfColumns()) {

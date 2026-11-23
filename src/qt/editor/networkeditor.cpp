@@ -37,6 +37,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/networkannotations.h>

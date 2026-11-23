@@ -168,7 +168,7 @@ ivec2 Slider::computeLabelPos(int descent) const {
     if (glm::all(glm::greaterThan(labelExtent_, ivec2(0)))) {
         const ivec2 extent(getWidgetExtentScaled());
         vec2 labelSize(labelExtent_);
-        labelSize.y -= descent;
+        labelSize.y -= static_cast<float>(descent);
         const ivec2 labelOrigin(extent.x + labelSpacing, extent.y / 2);
         // compute offset for vertical alignment in the center
         const vec2 labelOffset(0.0f, -labelSize.y * 0.5f);
@@ -212,7 +212,7 @@ double Slider::getSliderPos() const {
 double Slider::convertDeltaToSlider(const dvec2& delta) const {
     const auto ext = getWidgetExtentScaled();
     // account for the width of the handle
-    const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+    const double handleWidth = static_cast<double>(uiTextures_->getDimensions().x) * scalingFactor_;
     if (orientation_ == UIOrientation::Vertical) {
         return delta.y / static_cast<double>(ext.y - handleWidth);
     } else {

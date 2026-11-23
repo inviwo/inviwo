@@ -552,11 +552,10 @@ void ParallelCoordinates::partitionLines() {
     const auto iCol = dataFrame_.getData()->getIndexColumn();
     const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-    const auto lastFilteredIt =
-        std::ranges::partition(lines_.starts, [&](auto ind) {
-            return brushingAndLinking_.isFiltered(
-                indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
-        }).begin();
+    const auto lastFilteredIt = std::ranges::partition(lines_.starts, [&](auto ind) {
+                                    return brushingAndLinking_.isFiltered(
+                                        indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
+                                }).begin();
     const auto lastRegularIt = std::partition(lastFilteredIt, lines_.starts.end(), [&](auto ind) {
         const auto idx = indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)];
         return !brushingAndLinking_.isSelected(idx) && !brushingAndLinking_.isHighlighted(idx);
@@ -597,7 +596,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         axis.sliderWidget->setWidgetExtent(ivec2{handleSize_.get(), ap.second.y - ap.first.y});
         const auto handleWidth = axis.sliderWidget->getHandleWidth();
         axis.sliderWidget->setWidgetExtent(
-            ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
+            ivec2{handleSize_.get(), ap.second.y - ap.first.y + static_cast<size_t>(handleWidth)});
 
         if (brushingAndLinking_.isSelected(axis.pcp->columnId(), BrushingTarget::Column)) {
             sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
@@ -942,8 +941,8 @@ void ParallelCoordinates::boxSelection(AxisRangeEventState state, AxisRangeInter
             switch (boxSelectionMode_) {
                 using enum BoxSelectionMode;
                 case DataValues: b = columnDataValueIntersections(r); break;
-                case Lines:      b = lineIntersections(r); break;
-                default:         break;
+                case Lines: b = lineIntersections(r); break;
+                default: break;
             }
             b -= brushingAndLinking_.getFilteredIndices();
             if (mode == AxisRangeInteractionMode::Append) {

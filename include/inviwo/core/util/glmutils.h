@@ -106,15 +106,15 @@ struct value_type {
 };
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct value_type<glm::vec<L, T, Q>> {
-    using type = glm::vec<L, T, Q>::value_type;
+    using type = T;
 };
 template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 struct value_type<glm::mat<C, R, T, Q>> {
-    using type = glm::mat<C, R, T, Q>::value_type;
+    using type = T;
 };
 template <typename T, glm::qualifier Q>
 struct value_type<glm::tquat<T, Q>> {
-    using type = glm::tquat<T, Q>::value_type;
+    using type = T;
 };
 
 template <typename T>

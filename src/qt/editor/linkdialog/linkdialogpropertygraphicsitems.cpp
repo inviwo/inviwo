@@ -28,21 +28,27 @@
  *
  *********************************************************************************/
 
+#include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
+
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/unindent.h>
+
+
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
+#include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
+#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
+
+#include <numeric>
 #include <algorithm>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QVector2D>
 #include <warn/pop>
-
-#include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
-#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/network/processornetwork.h>
-
-#include <numeric>
 
 namespace inviwo {
 
@@ -118,11 +124,11 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
     switch (which) {
         case Qt::MinimumSize:
         case Qt::MaximumSize:
-        case Qt::PreferredSize: return rect().size() + QSize(12, 12);
+        case Qt::PreferredSize:  return rect().size() + QSize(12, 12);
 
         case Qt::MinimumDescent:
         case Qt::NSizeHints:
-        default: break;
+        default:                 break;
     }
 
     return constraint;

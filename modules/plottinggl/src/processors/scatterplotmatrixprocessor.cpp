@@ -277,7 +277,8 @@ void ScatterPlotMatrixProcessor::process() {
             textureQuadRenderer_.renderToRect(bgTextures_[idx], origin, extent, dims);
 
             if (showCorrelationValues_) {
-                const vec2 statstextPos = vec2(extent) * vec2((j + 0.5f), i + 0.5f) -
+                const vec2 statstextPos = vec2(extent) * vec2((static_cast<float>(j) + 0.5f),
+                                                              static_cast<float>(i) + 0.5f) -
                                           vec2(statsTextures_[i]->getDimensions()) / 2.0f;
                 textureQuadRenderer_.render(statsTextures_[idx], ivec2(statstextPos), dims);
             }
@@ -285,7 +286,8 @@ void ScatterPlotMatrixProcessor::process() {
             ++idx;
         }
 
-        vec2 textPos = vec2(extent) * vec2(i + 0.5f, i + 0.5f);
+        vec2 textPos =
+            vec2(extent) * vec2(static_cast<float>(i) + 0.5f, static_cast<float>(i) + 0.5f);
         textPos -= vec2(labelsTextures_[i]->getDimensions()) / 2.f;
 
         textureQuadRenderer_.render(labelsTextures_[i], ivec2(textPos), dims);
