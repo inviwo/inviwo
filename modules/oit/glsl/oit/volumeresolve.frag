@@ -95,11 +95,17 @@ uniform float samplingDistance; // distance between two volume samples in world 
 // }
 // ```
 
-uniform sampler3D volumeSamplers[MAX_SUPPORTED_VOLUMES];
-uniform sampler2D tfSamplers[MAX_SUPPORTED_VOLUMES];
-uniform VolumeParameters volumeParameters[MAX_SUPPORTED_VOLUMES];
-uniform int volumeChannels[MAX_SUPPORTED_VOLUMES];
-uniform float opacityScaling[MAX_SUPPORTED_VOLUMES];
+#if MAX_SUPPORTED_VOLUMES <= 0
+#define NUM_SAMPLERS 1 
+#else
+#define NUM_SAMPLERS MAX_SUPPORTED_VOLUMES
+#endif
+
+uniform sampler3D volumeSamplers[NUM_SAMPLERS];
+uniform sampler2D tfSamplers[NUM_SAMPLERS];
+uniform VolumeParameters volumeParameters[NUM_SAMPLERS];
+uniform int volumeChannels[NUM_SAMPLERS];
+uniform float opacityScaling[NUM_SAMPLERS];
 uniform LightParameters lighting;
 
 struct RaycastingInfo {
@@ -108,7 +114,7 @@ struct RaycastingInfo {
     bool isActive;
 };
 
-RaycastingInfo raycastingInfos[MAX_SUPPORTED_VOLUMES];
+RaycastingInfo raycastingInfos[NUM_SAMPLERS];
 
 // Computes only the number of fragments
 int getFragmentCount(uint pixelIdx);

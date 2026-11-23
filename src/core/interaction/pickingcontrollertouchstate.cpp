@@ -99,7 +99,7 @@ PickingPressItem touchToPressItems(const TouchEvent* e, const std::vector<TouchP
         // Possible to press touchpads
         const auto nPressed = std::accumulate(
             points.begin(), points.end(), 0uz, [](size_t v, const auto& p) -> size_t {
-                return v + (p.state() == TouchState::Stationary ? 1 : 0);
+                return v + (p.state() == TouchState::Stationary ? 1uz : 0uz);
             });
         if (nPressed == 0) {
             return PickingPressItem::None;

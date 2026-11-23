@@ -96,12 +96,13 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, const std::vector<std::
 void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,
                              std::vector<TextBoundingBox>& bboxes) {
 
-    const auto minArea =
-        std::accumulate(bboxes.begin(), bboxes.end(), 0u, [&](size_t sum, const TextBoundingBox& bbox) {
-            return sum + (bbox.glyphsExtent.x + 2 * margin_) * (bbox.glyphsExtent.y + 2 * margin_);
+    const auto minArea = std::accumulate(
+        bboxes.begin(), bboxes.end(), 0uz, [&](size_t sum, const TextBoundingBox& bbox) {
+            return sum +
+                   (bbox.glyphsExtent.x + 2uz * margin_) * (bbox.glyphsExtent.y + 2uz * margin_);
         });
 
-    if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
+    if (minArea > maxTexSize_ * maxTexSize_) {
         throw Exception("Max size for texture atlas exceeded");
     }
 
@@ -118,11 +119,11 @@ void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEnt
     const auto texSize = calcTexLayout(indices, entries, minArea);
 
     if (!atlasTex_) {
-        atlasTex_ = std::make_shared<Texture2D>(static_cast<size2_t>(texSize), GL_RGBA, GL_RGBA,
-                                                GL_UNSIGNED_BYTE, GL_LINEAR);
+        atlasTex_ =
+            std::make_shared<Texture2D>(texSize, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
         atlasTex_->initialize(nullptr);
 
-    } else if (glm::any(glm::lessThan(atlasTex_->getDimensions(), size2_t(texSize)))) {
+    } else if (glm::any(glm::lessThan(atlasTex_->getDimensions(), texSize))) {
         atlasTex_->resize(texSize);
     }
 
@@ -133,28 +134,28 @@ std::shared_ptr<Texture2D> TextureAtlas::getTexture() const { return atlasTex_; 
 
 const TexAtlasRenderInfo& TextureAtlas::getRenderInfo() const { return renderInfo_; }
 
-ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
-                                  std::vector<TexAtlasEntry>& entries, double minArea) {
-    if (entries.empty()) return {1, 1};
+size2_t TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
+                                    std::vector<TexAtlasEntry>& entries, size_t minArea) {
+    if (entries.empty()) return {1uz, 1uz};
 
-    const int width = [&](int w) {
+    const size_t width = [&](size_t w) {
         const auto maxEntryWidth = entries[indices.front()].texExtent.x;
-        const int minWidth = static_cast<int>(std::sqrt(minArea));
+        const auto minWidth = static_cast<size_t>(std::sqrt(static_cast<double>(minArea)));
         while ((w < minWidth || w < maxEntryWidth) && w < maxTexSize_) {
-            w *= 2;
+            w *= 2uz;
         }
         return w;
     }(32);
 
-    std::vector<int> lineLengths;
-    std::vector<int> lineHeights;
-    lineLengths.push_back(0);
-    lineHeights.push_back(0);
-    int conservativeHeight = 0;
+    std::vector<size_t> lineLengths;
+    std::vector<size_t> lineHeights;
+    lineLengths.push_back(0uz);
+    lineHeights.push_back(0uz);
+    size_t conservativeHeight = 0uz;
     // Fill each line by putting each element after the previous one.
     // If an element does not fit, start new line.
     for (const auto i : indices) {
-        const auto& extent = entries[i].texExtent + 2 * margin_;
+        const auto& extent = size2_t{entries[i].texExtent} + 2uz * margin_;
         size_t line = 0;
         while (line < lineLengths.size()) {
             if (lineLengths[line] + extent.x < width) {
@@ -182,15 +183,15 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
     std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
     lineHeights.insert(lineHeights.begin(), 0);
     for (auto& elem : entries) {
-        elem.texPos.y = lineHeights[elem.texPos.y] + margin_;
+        elem.texPos.y = static_cast<int>(lineHeights[elem.texPos.y] + margin_);
     }
 
-    const int height = [&](int h) {
+    const auto height = [&](size_t h) {
         while (h < lineHeights.back()) {
-            h *= 2;
+            h *= 2uz;
         }
         return h;
-    }(32);
+    }(32uz);
 
     if (height > maxTexSize_) {
         throw Exception("Max size for texture atlas exceeded");

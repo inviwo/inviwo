@@ -91,7 +91,7 @@ RasterizationRenderer::RasterizationRenderer()
     , background_{"imageInport", "Optional background image"_help}
     , outport_{"image",
                "output image containing the rendered objects and the optional input image"_help}
-    , intermediateImage_{}
+    , intermediateImage_{size2_t{1uz}, outport_.getDataFormat()}
     , camera_{"camera", "Camera", [this]() { return boundingBox(); }}
     , lighting_{"lighting", "Lighting", &camera_}
     , trackball_{&camera_}

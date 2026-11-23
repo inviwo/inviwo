@@ -66,7 +66,7 @@ struct IVW_CORE_API LayerConfig {
     std::optional<glm::dmat4> world = std::nullopt;
 
     static constexpr auto defaultDimensions = size2_t(8, 8);
-    static constexpr auto defaultFormatId = DataUInt8::id();
+    static constexpr auto defaultFormatId = DataVec4UInt8::id();
     static constexpr auto defaultType = LayerType::Color;
     static constexpr auto defaultSwizzleMask = swizzlemasks::rgba;
     static constexpr auto defaultInterpolation = InterpolationType::Linear;
