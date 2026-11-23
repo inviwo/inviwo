@@ -108,10 +108,4 @@ void CameraLinearInterpolation::operator()(const std::vector<std::unique_ptr<Cam
     out.setLookUp(lookUp);
 }
 
-void CameraLinearInterpolation::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-}
-
-void CameraLinearInterpolation::deserialize(Deserializer& /*d*/) {}
-
 }  // namespace inviwo::animation

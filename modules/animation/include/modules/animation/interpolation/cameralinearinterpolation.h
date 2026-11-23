@@ -70,9 +70,6 @@ public:
 
     virtual bool equal(const Interpolation& other) const override;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
     /*
      * Returns linear interpolation of keyframe values at time t.
      * Uses the easing stored on the outgoing keyframe for each interval.

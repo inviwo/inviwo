@@ -30,7 +30,6 @@
 
 #include <modules/animation/animationmoduledefine.h>
 #include <modules/animation/interpolation/interpolation.h>
-#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/algorithm/easing.h>
 
 #include <algorithm>
@@ -68,9 +67,6 @@ public:
     virtual std::string_view getClassIdentifier() const override;
 
     virtual bool equal(const Interpolation& other) const override;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
 
     /*
      * Returns linear interpolation of keyframe values at time t.
@@ -142,14 +138,6 @@ void LinearInterpolation<Key, Result>::operator()(const std::vector<std::unique_
 
     out = static_cast<VT>(glm::mix(dv1, dv2, util::ease((to - t1) / (t2 - t1), easeIn, easeOut)));
 }
-
-template <typename Key, typename Result>
-void LinearInterpolation<Key, Result>::serialize(Serializer& s) const {
-    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-}
-
-template <typename Key, typename Result>
-void LinearInterpolation<Key, Result>::deserialize(Deserializer& /*d*/) {}
 
 }  // namespace animation
 
