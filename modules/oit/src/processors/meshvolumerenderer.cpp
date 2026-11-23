@@ -33,6 +33,7 @@
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/formats.h>
 
 #include <modules/oit/datastructures/rasterization.h>
 #include <modules/oit/rasterizeevent.h>
@@ -67,6 +68,7 @@ MeshVolumeRenderer::MeshVolumeRenderer()
     : rasterizations_("raster")
     , background_{"imageInport", "Optional background image"_help}
     , outport_("image")
+    , intermediateImage_{size2_t{1uz}, outport_.getDataFormat()}
     , raycastingProps_{"raycasting", "Raycasting",
                        "Properties relevant for volumetric raycasting during rasterization"_help}
     , samplingDistance_("samplingDistance", "Sampling Distance (world space)",
