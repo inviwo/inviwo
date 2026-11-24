@@ -59,6 +59,8 @@ class Processor;
 class Event;
 class Camera;
 class PickingEvent;
+class MeshGL;
+class Mesh;
 
 enum class GizmoType : std::uint8_t { None, Move, Rotate, MoveRotate };
 enum class GizmoDrawState : std::uint8_t { Hidden, Visible, Interaction };
@@ -130,6 +132,29 @@ struct IVW_MODULE_BASEGL_API GizmoData {
     GizmoComponent active = GizmoComponent::None;
     std::uint32_t globalPickingId = 0u;
     std::optional<std::array<dvec3, 2>> rotationIndicators = std::nullopt;
+};
+
+class IVW_MODULE_BASEGL_API GizmoResources {
+public:
+    Shader& flatShader() const;
+    Shader& pointShader() const;
+    Shader& lineShader() const;
+
+    const MeshGL* arrowMeshGL() const;
+    const MeshGL* pointMeshGL() const;
+    const MeshGL* sphereMeshGL() const;
+    const MeshGL* semicircleMeshGL() const;
+    const MeshGL* circleMeshGL() const;
+
+private:
+    mutable std::shared_ptr<Shader> flatShader_{};
+    mutable std::shared_ptr<Shader> pointShader_{};
+    mutable std::shared_ptr<Shader> lineShader_{};
+    mutable std::shared_ptr<Mesh> arrowMesh_{};
+    mutable std::shared_ptr<Mesh> pointMesh_{};
+    mutable std::shared_ptr<Mesh> sphereMesh_{};
+    mutable std::shared_ptr<Mesh> semicircleMesh_{};
+    mutable std::shared_ptr<Mesh> circleMesh_{};
 };
 
 IVW_MODULE_BASEGL_API std::string format_as(const GizmoData& data);
@@ -220,7 +245,8 @@ IVW_MODULE_BASEGL_API dmat4 gizmoScaleTransform(const Camera& camera, size2_t sc
                                                 int pixelWidgetSize, const dmat4& gizmoBasis);
 
 IVW_MODULE_BASEGL_API void renderGizmo(const ImageOutport& outport, const Camera& camera,
-                                       const GizmoData& gizmo, const GizmoConfig& config);
+                                       const GizmoData& gizmo, const GizmoConfig& config,
+                                       const GizmoResources& resources = {});
 
 }  // namespace gizmoutil
 

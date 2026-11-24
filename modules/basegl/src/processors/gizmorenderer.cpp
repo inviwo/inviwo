@@ -82,7 +82,7 @@ void GizmoRenderer::process() {
     gizmoProperties_.update(config);
 
     // render gizmo
-    gizmoutil::renderGizmo(outport_, camera_.get(), gizmoData, config);
+    gizmoutil::renderGizmo(outport_, camera_.get(), gizmoData, config, gizmoResources_);
 
     utilgl::deactivateCurrentTarget();
 }
