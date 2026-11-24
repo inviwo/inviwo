@@ -60,6 +60,7 @@ private:
     GizmoProperty gizmoProperties_;
     CameraProperty camera_;
     CameraTrackball trackball_;
+    GizmoResources gizmoResources_;
 };
 
 }  // namespace inviwo

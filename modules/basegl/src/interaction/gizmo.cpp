@@ -93,41 +93,41 @@ Line getLineFromViewDirection(const Camera& camera, dvec3 ndc) {
 constexpr GizmoComponent pickingIdToComponent(size_t id) {
     switch (id) {
         using enum GizmoComponent;
-        case static_cast<size_t>(MoveX):           return MoveX;
-        case static_cast<size_t>(MoveY):           return MoveY;
-        case static_cast<size_t>(MoveZ):           return MoveZ;
-        case static_cast<size_t>(RotateX):         return RotateX;
-        case static_cast<size_t>(RotateY):         return RotateY;
-        case static_cast<size_t>(RotateZ):         return RotateZ;
+        case static_cast<size_t>(MoveX): return MoveX;
+        case static_cast<size_t>(MoveY): return MoveY;
+        case static_cast<size_t>(MoveZ): return MoveZ;
+        case static_cast<size_t>(RotateX): return RotateX;
+        case static_cast<size_t>(RotateY): return RotateY;
+        case static_cast<size_t>(RotateZ): return RotateZ;
         case static_cast<size_t>(RotateTrackball): return RotateTrackball;
-        default:                                   return None;
+        default: return None;
     }
 }
 
 GizmoAxis gizmoComponentToAxis(GizmoComponent comp) {
     switch (comp) {
         using enum GizmoComponent;
-        case MoveX:   return GizmoAxis::X;
-        case MoveY:   return GizmoAxis::Y;
-        case MoveZ:   return GizmoAxis::Z;
+        case MoveX: return GizmoAxis::X;
+        case MoveY: return GizmoAxis::Y;
+        case MoveZ: return GizmoAxis::Z;
         case RotateX: return GizmoAxis::X;
         case RotateY: return GizmoAxis::Y;
         case RotateZ: return GizmoAxis::Z;
-        default:      return GizmoAxis::Invalid;
+        default: return GizmoAxis::Invalid;
     }
 }
 
 GizmoType getGizmoInteractionType(GizmoComponent comp) {
     switch (comp) {
         using enum GizmoComponent;
-        case MoveX:           [[fallthrough]];
-        case MoveY:           [[fallthrough]];
-        case MoveZ:           return GizmoType::Move;
-        case RotateX:         [[fallthrough]];
-        case RotateY:         [[fallthrough]];
-        case RotateZ:         [[fallthrough]];
+        case MoveX: [[fallthrough]];
+        case MoveY: [[fallthrough]];
+        case MoveZ: return GizmoType::Move;
+        case RotateX: [[fallthrough]];
+        case RotateY: [[fallthrough]];
+        case RotateZ: [[fallthrough]];
         case RotateTrackball: return GizmoType::Rotate;
-        default:              return GizmoType::None;
+        default: return GizmoType::None;
     }
 }
 
@@ -431,24 +431,16 @@ std::shared_ptr<Mesh> semicircle(vec3 center, vec3 normal, size_t segments) {
     return mesh;
 }
 
-struct GizmoResources {
-    static Shader& flatShader();
-    static Shader& pointShader();
-    static Shader& lineShader();
+namespace gizmoresource {
 
-    static const MeshGL* arrowMeshGL();
-    static const MeshGL* pointMeshGL();
-    static const MeshGL* sphereMeshGL();
-    static const MeshGL* semicircleMeshGL();
-    static const MeshGL* circleMeshGL();
-};
+std::shared_ptr<Shader> flatShader() {
+    static std::weak_ptr<Shader> weakShader;
 
-Shader& GizmoResources::flatShader() {
-    static std::unique_ptr<Shader> shader;
-
-    if (!shader) {
+    if (auto shader = weakShader.lock()) {
+        return shader;
+    } else {
         shader =
-            std::make_unique<Shader>("gizmohandle.vert", "gizmohandle.frag", Shader::Build::No);
+            std::make_shared<Shader>("gizmohandle.vert", "gizmohandle.frag", Shader::Build::No);
         shader->getVertexShaderObject()->clearInDeclarations();
         shader->getVertexShaderObject()->addInDeclaration(
             "in_Position", static_cast<int>(BufferType::PositionAttrib), "vec3");
@@ -458,30 +450,36 @@ Shader& GizmoResources::flatShader() {
             "in_Color", static_cast<int>(BufferType::ColorAttrib), "vec4");
         shader->build();
         shader->setLabel("GizmoShader (flat)");
+        weakShader = shader;
+        return shader;
     }
-    return *shader;
 }
 
-Shader& GizmoResources::pointShader() {
-    static std::unique_ptr<Shader> shader;
+std::shared_ptr<Shader> pointShader() {
+    static std::weak_ptr<Shader> weakShader;
 
-    if (!shader) {
-        shader = std::make_unique<Shader>("pointrenderer.vert", "pointrenderer.geom",
+    if (auto shader = weakShader.lock()) {
+        return shader;
+    } else {
+        shader = std::make_shared<Shader>("pointrenderer.vert", "pointrenderer.geom",
                                           "pointrenderer.frag", Shader::Build::No);
         shader->getVertexShaderObject()->clearInDeclarations();
         shader->getVertexShaderObject()->addInDeclaration(
             "in_Position", static_cast<int>(BufferType::PositionAttrib), "vec3");
         shader->build();
         shader->setLabel("GizmoShader (point)");
+        weakShader = shader;
+        return shader;
     }
-    return *shader;
 }
 
-Shader& GizmoResources::lineShader() {
-    static std::unique_ptr<Shader> shader;
+std::shared_ptr<Shader> lineShader() {
+    static std::weak_ptr<Shader> weakShader;
 
-    if (!shader) {
-        shader = std::make_unique<Shader>("linerenderer.vert", "linerenderer.geom",
+    if (auto shader = weakShader.lock()) {
+        return shader;
+    } else {
+        shader = std::make_shared<Shader>("linerenderer.vert", "linerenderer.geom",
                                           "linerenderer.frag", Shader::Build::No);
 
         shader->getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "1");
@@ -490,66 +488,74 @@ Shader& GizmoResources::lineShader() {
             "in_Position", static_cast<int>(BufferType::PositionAttrib), "vec3");
         shader->build();
         shader->setLabel("GizmoShader (line)");
+        weakShader = shader;
+        return shader;
     }
-    return *shader;
 }
 
-const MeshGL* GizmoResources::arrowMeshGL() {
-    static std::shared_ptr<Mesh> mesh;
-    static const MeshGL* meshGL = nullptr;
+std::shared_ptr<Mesh> arrowMesh() {
+    static std::weak_ptr<Mesh> weakMesh;
 
-    if (!mesh) {
+    if (auto mesh = weakMesh.lock()) {
+        return mesh;
+    } else {
         mesh = meshutil::arrow(vec3{0.05f, 0.0f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec4{0.0f}, 0.03f,
                                0.35f, 0.09f, 64);
-        meshGL = mesh->getRepresentation<MeshGL>();
+        weakMesh = mesh;
+        return mesh;
     }
-    return meshGL;
 }
 
-const MeshGL* GizmoResources::pointMeshGL() {
-    static std::shared_ptr<Mesh> mesh;
-    static const MeshGL* meshGL = nullptr;
+std::shared_ptr<Mesh> pointMesh() {
+    static std::weak_ptr<Mesh> weakMesh;
 
-    if (!mesh) {
+    if (auto mesh = weakMesh.lock()) {
+        return mesh;
+    } else {
         mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
         mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer({vec3{0.0f}}));
-        meshGL = mesh->getRepresentation<MeshGL>();
+        weakMesh = mesh;
+        return mesh;
     }
-    return meshGL;
 }
 
-const MeshGL* GizmoResources::sphereMeshGL() {
-    static std::shared_ptr<Mesh> mesh;
-    static const MeshGL* meshGL = nullptr;
+std::shared_ptr<Mesh> sphereMesh() {
+    static std::weak_ptr<Mesh> weakMesh;
 
-    if (!mesh) {
+    if (auto mesh = weakMesh.lock()) {
+        return mesh;
+    } else {
         mesh = SimpleMeshCreator::sphere(0.99f, 256, 128, vec4{0.5f, 0.5f, 0.5f, 1.0f});
-        meshGL = mesh->getRepresentation<MeshGL>();
+        weakMesh = mesh;
+        return mesh;
     }
-    return meshGL;
 }
 
-const MeshGL* GizmoResources::semicircleMeshGL() {
-    static std::shared_ptr<Mesh> mesh;
-    static const MeshGL* meshGL = nullptr;
+std::shared_ptr<Mesh> semicircleMesh() {
+    static std::weak_ptr<Mesh> weakMesh;
 
-    if (!mesh) {
+    if (auto mesh = weakMesh.lock()) {
+        return mesh;
+    } else {
         mesh = semicircle(vec3{0.0f}, vec3{1.0f, 0.0f, 0.0f}, 128);
-        meshGL = mesh->getRepresentation<MeshGL>();
+        weakMesh = mesh;
+        return mesh;
     }
-    return meshGL;
 }
 
-const MeshGL* GizmoResources::circleMeshGL() {
-    static std::shared_ptr<Mesh> mesh;
-    static const MeshGL* meshGL = nullptr;
+std::shared_ptr<Mesh> circleMesh() {
+    static std::weak_ptr<Mesh> weakMesh;
 
-    if (!mesh) {
+    if (auto mesh = weakMesh.lock()) {
+        return mesh;
+    } else {
         mesh = circle(vec3{0.0f}, vec3{1.0f, 0.0f, 0.0f}, 256);
-        meshGL = mesh->getRepresentation<MeshGL>();
+        weakMesh = mesh;
+        return mesh;
     }
-    return meshGL;
 }
+
+}  // namespace gizmoresource
 
 float getAlpha(GizmoComponent comp, const GizmoData& gizmo, const GizmoConfig& config) {
     if (gizmo.hovered == comp) {
@@ -574,11 +580,11 @@ dmat4 orientationTransform(dvec3 axisDir, dvec3 axisNormal, dvec3 position, dvec
 }
 
 void renderMoveGizmo(Shader& flatShader, const dmat4& widgetTransform, const Camera& camera,
-                     const GizmoData& gizmo, const GizmoConfig& config,
-                     GLenum pickingAttachmentId) {
+                     const GizmoData& gizmo, const GizmoConfig& config, GLenum pickingAttachmentId,
+                     const GizmoResources& resources) {
     const auto viewDir{glm::normalize(dvec3{gizmo.basis[3]} - camera.getLookFrom())};
     constexpr dvec3 arrowDir{1.0, 0.0, 0.0};
-    const auto* meshGL = GizmoResources::arrowMeshGL();
+    const auto* meshGL = resources.arrowMeshGL();
     MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
 
     auto activeComponents = moveComponents | std::views::filter([&](auto i) {
@@ -625,8 +631,9 @@ void renderMoveGizmo(Shader& flatShader, const dmat4& widgetTransform, const Cam
 }
 
 void renderRotateGizmo(const dmat4& widgetTransform, const Camera& camera, const GizmoData& gizmo,
-                       const GizmoConfig& config, vec2 dims, GLenum pickingAttachmentId) {
-    auto& lineShader = GizmoResources::lineShader();
+                       const GizmoConfig& config, vec2 dims, GLenum pickingAttachmentId,
+                       const GizmoResources& resources) {
+    auto& lineShader = resources.lineShader();
     const utilgl::Activate activeShader{&lineShader};
 
     utilgl::setShaderUniforms(lineShader, camera, "camera");
@@ -638,7 +645,7 @@ void renderRotateGizmo(const dmat4& widgetTransform, const Camera& camera, const
     constexpr dvec3 semicircleDir{1.0, 0.0, 0.0};
     constexpr dvec3 semicircleNormal{0.0, 1.0, 0.0};
 
-    const auto* meshGL = GizmoResources::semicircleMeshGL();
+    const auto* meshGL = resources.semicircleMeshGL();
     MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
 
     // draw rotation handles in reverse order so that x is on top
@@ -674,8 +681,9 @@ void renderRotateGizmo(const dmat4& widgetTransform, const Camera& camera, const
 }
 
 void renderInteractionOrigin(const Camera& camera, const GizmoData& gizmo,
-                             const GizmoConfig& config, vec2 dims) {
-    auto& pointShader = GizmoResources::pointShader();
+                             const GizmoConfig& config, vec2 dims,
+                             const GizmoResources& resources) {
+    auto& pointShader = resources.pointShader();
     const utilgl::Activate activeShader{&pointShader};
     const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
 
@@ -688,13 +696,14 @@ void renderInteractionOrigin(const Camera& camera, const GizmoData& gizmo,
     utilgl::setShaderUniforms(pointShader, SpatialIdentity{glm::translate(gizmo.origin)},
                               "geometry");
 
-    const auto* meshGL = GizmoResources::pointMeshGL();
+    const auto* meshGL = resources.pointMeshGL();
     MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
     drawer.draw();
 }
 
 void renderRotationInteraction(const dmat4& widgetTransform, const Camera& camera,
-                               const GizmoData& gizmo, const GizmoConfig& config, vec2 dims) {
+                               const GizmoData& gizmo, const GizmoConfig& config, vec2 dims,
+                               const GizmoResources& resources) {
     const auto axis = gizmoComponentToAxis(gizmo.active);
     if (axis == GizmoAxis::Invalid) return;
 
@@ -706,7 +715,7 @@ void renderRotationInteraction(const dmat4& widgetTransform, const Camera& camer
     SpatialIdentity trafo{m, widgetTransform};
 
     {
-        auto& lineShader = GizmoResources::lineShader();
+        auto& lineShader = resources.lineShader();
         const utilgl::Activate activeShader{&lineShader};
 
         utilgl::setShaderUniforms(lineShader, camera, "camera");
@@ -718,13 +727,13 @@ void renderRotationInteraction(const dmat4& widgetTransform, const Camera& camer
         lineShader.setUniform("antialiasing", 0.5f);
         lineShader.setUniform("lineWidth", config.lineWidth);
 
-        const auto* meshGL = GizmoResources::circleMeshGL();
+        const auto* meshGL = resources.circleMeshGL();
         MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
         drawer.draw();
     }
 
     if (gizmo.rotationIndicators) {
-        auto& pointShader = GizmoResources::pointShader();
+        auto& pointShader = resources.pointShader();
         const utilgl::Activate activeShader{&pointShader};
         const utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
 
@@ -734,7 +743,7 @@ void renderRotationInteraction(const dmat4& widgetTransform, const Camera& camer
         pointShader.setUniform("config.radius", config.lineWidth * 1.4f);
         pointShader.setUniform("viewport", vec4{0.0f, 0.0f, 2.0f / dims.x, 2.0f / dims.y});
 
-        const auto* meshGL = GizmoResources::pointMeshGL();
+        const auto* meshGL = resources.pointMeshGL();
         MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
 
         trafo.setModelMatrix(glm::translate((*gizmo.rotationIndicators)[0]));
@@ -748,6 +757,56 @@ void renderRotationInteraction(const dmat4& widgetTransform, const Camera& camer
 }
 
 }  // namespace
+
+Shader& GizmoResources::flatShader() const {
+    if (!flatShader_) {
+        flatShader_ = gizmoresource::flatShader();
+    }
+    return *flatShader_;
+}
+Shader& GizmoResources::pointShader() const {
+    if (!pointShader_) {
+        pointShader_ = gizmoresource::pointShader();
+    }
+    return *pointShader_;
+}
+Shader& GizmoResources::lineShader() const {
+    if (!lineShader_) {
+        lineShader_ = gizmoresource::lineShader();
+    }
+    return *lineShader_;
+}
+
+const MeshGL* GizmoResources::arrowMeshGL() const {
+    if (!arrowMesh_) {
+        arrowMesh_ = gizmoresource::arrowMesh();
+    }
+    return arrowMesh_->getRepresentation<MeshGL>();
+}
+const MeshGL* GizmoResources::pointMeshGL() const {
+    if (!pointMesh_) {
+        pointMesh_ = gizmoresource::pointMesh();
+    }
+    return pointMesh_->getRepresentation<MeshGL>();
+}
+const MeshGL* GizmoResources::sphereMeshGL() const {
+    if (!sphereMesh_) {
+        sphereMesh_ = gizmoresource::sphereMesh();
+    }
+    return sphereMesh_->getRepresentation<MeshGL>();
+}
+const MeshGL* GizmoResources::semicircleMeshGL() const {
+    if (!semicircleMesh_) {
+        semicircleMesh_ = gizmoresource::semicircleMesh();
+    }
+    return semicircleMesh_->getRepresentation<MeshGL>();
+}
+const MeshGL* GizmoResources::circleMeshGL() const {
+    if (!circleMesh_) {
+        circleMesh_ = gizmoresource::circleMesh();
+    }
+    return circleMesh_->getRepresentation<MeshGL>();
+}
 
 namespace gizmoutil {
 
@@ -774,7 +833,7 @@ dmat4 gizmoScaleTransform(const Camera& camera, size2_t screenDim, int pixelWidg
 }
 
 void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoData& gizmo,
-                 const GizmoConfig& config) {
+                 const GizmoConfig& config, const GizmoResources& resources) {
 
     if (gizmo.state == GizmoDrawState::Hidden) return;
 
@@ -790,7 +849,7 @@ void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoD
     const utilgl::CullFaceState cull{gl::GLenum::GL_BACK};
     const utilgl::GlBoolState depthTest{GL_DEPTH_TEST, false};
 
-    auto& shader = GizmoResources::flatShader();
+    auto& shader = resources.flatShader();
     const utilgl::Activate activeFlatShader{&shader};
     utilgl::setShaderUniforms(shader, camera, "camera");
 
@@ -800,7 +859,7 @@ void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoD
                                                             GizmoComponent::RotateTrackball));
         utilgl::setShaderUniforms(shader, SpatialIdentity{dmat4{1.0}, widgetTransform}, "geometry");
 
-        const auto* meshGL = GizmoResources::sphereMeshGL();
+        const auto* meshGL = resources.sphereMeshGL();
         MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
         glDrawBuffer(destImage.getPickingAttachmentID());
         drawer.draw();
@@ -809,7 +868,7 @@ void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoD
     // render move gizmo
     if (showMove) {
         renderMoveGizmo(shader, widgetTransform, camera, gizmo, config,
-                        destImage.getPickingAttachmentID());
+                        destImage.getPickingAttachmentID(), resources);
     }
 
     // render visible part of trackball only when hovered
@@ -820,7 +879,7 @@ void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoD
                                               : vec4{0.0f});
         utilgl::setShaderUniforms(shader, SpatialIdentity{dmat4{1.0}, widgetTransform}, "geometry");
 
-        const auto* meshGL = GizmoResources::sphereMeshGL();
+        const auto* meshGL = resources.sphereMeshGL();
         MeshDrawerGL::DrawObject drawer{meshGL, meshGL->getDefaultMeshInfo()};
         glDrawBuffer(gl::GLenum::GL_COLOR_ATTACHMENT0);
         drawer.draw();
@@ -829,14 +888,14 @@ void renderGizmo(const ImageOutport& outport, const Camera& camera, const GizmoD
     // render the initial position of move interactions and trackball rotation
     if (std::ranges::contains(moveComponents, gizmo.active) ||
         gizmo.active == GizmoComponent::RotateTrackball) {
-        renderInteractionOrigin(camera, gizmo, config, dims);
+        renderInteractionOrigin(camera, gizmo, config, dims, resources);
     } else if (std::ranges::contains(rotateComponents, gizmo.active)) {
-        renderRotationInteraction(widgetTransform, camera, gizmo, config, dims);
+        renderRotationInteraction(widgetTransform, camera, gizmo, config, dims, resources);
     }
 
     if (!interacting && showRotate) {
         renderRotateGizmo(widgetTransform, camera, gizmo, config, dims,
-                          destImage.getPickingAttachmentID());
+                          destImage.getPickingAttachmentID(), resources);
     }
 
     // reset draw buffers
