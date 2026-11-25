@@ -37,6 +37,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <tuple>
 
 namespace inviwo {
 
@@ -62,6 +63,12 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     CompositeProperty(std::string_view identifier, std::string_view displayName,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                      PropertySemantics semantics = PropertySemantics::Default);
+
+    template <typename... Ts>
+    CompositeProperty(std::string_view identifier, std::string_view displayName, Document help,
+                      std::tuple<Ts...> children,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
@@ -125,5 +132,16 @@ private:
     ValueWrapper<bool> collapsed_;
     InvalidationLevel subPropertyInvalidationLevel_;
 };
+
+template <typename... Ts>
+CompositeProperty::CompositeProperty(std::string_view identifier, std::string_view displayName,
+                                     Document help, std::tuple<Ts...> children,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, std::move(help), invalidationLevel,
+                        std::move(semantics)) {
+
+    std::apply([&](Ts... child) { (addProperty(std::forward<Ts>(child)), ...); }, children);
+}
 
 }  // namespace inviwo
