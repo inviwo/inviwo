@@ -65,7 +65,7 @@ if(EXISTS "$ENV{VCPKG_ROOT}")
             if(IVW_VCPKG_AUTO_UPDATE)
                 message(STATUS "Auto updating vcpkg at '$ENV{VCPKG_ROOT}' to the inviwo baseline: ${baseline}")
                 execute_process(
-                    COMMAND "${GIT_EXECUTABLE}" pull
+                    COMMAND "${GIT_EXECUTABLE}" fetch
                     WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
                     RESULT_VARIABLE IS_ANCESTOR_RESULT
                 )
@@ -82,7 +82,7 @@ if(EXISTS "$ENV{VCPKG_ROOT}")
                     )
                 else()
                     execute_process(
-                        COMMAND "bootstrap-vcpkg.bat"
+                        COMMAND "bootstrap-vcpkg.sh"
                         WORKING_DIRECTORY "$ENV{VCPKG_ROOT}"
                         RESULT_VARIABLE IS_ANCESTOR_RESULT
                     )
