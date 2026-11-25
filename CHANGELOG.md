@@ -1,12 +1,29 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers.
 
+## 2026-11-23 Python bindings for the ResourceManager
+The resource tracking classes are now exposed in `inviwopy`: `Resource`, `ResourceMeta`, `ResourceManager`, and `ResourceManagerObserver`, as well as the resource keys `RAM`, `GL`, and `PY` and the `add`/`move`/`remove`/`meta`/`toPY` functions of the C++ `inviwo::resource` namespace in the `inviwopy.resource` submodule. The application instance is available as `inviwopy.app.resourceManager`, and `inviwopy.app.systemSettings` gives access to the `SystemSettings` (resource tracking is off by default, see `enableResourceTracking`). `ResourceManagerObserver` can be subclassed in Python to get notified about added, updated, and removed resources. The identifier of the `SystemSettings` property was fixed from `enableResurceTracking` to `enableResourceTracking`, a previously saved value of that setting is not restored.
+```python
+import inviwopy
+from inviwopy import resource
+
+rm = inviwopy.app.resourceManager
+for group, name in enumerate(rm.names):
+    print(f"{name}: {rm.size(group)} resources, {rm.totalByteSize(group)} bytes")
+    for res in rm.resources(group):
+        print("  ", res)
+
+class Observer(inviwopy.ResourceManagerObserver):
+    def onDidAddResource(self, group, index, res):
+        print(f"added {res.desc} to {rm.names[group]}")
+
+observer = Observer()  # keep a reference, the manager does not own the observer
+rm.addObserver(observer)
+
 ## 2026-11-18 Transformation Gizmo
 Added a transformation gizmo similar to the ones used in popular 3D modeling software.
 The gizmo is used to interactively modify the transformations of a Layer, Mesh, of Volume with the corresponding `Transform <Layer/Mesh/Volume> Gizmo` processor. Translation and rotations can be applied in global or local reference frames, that is in World, Model, and Data coordinates, respectively. The `Gizmo Renderer` is responsible for rendering the gizmo on top of the geometry and provides various customization options.
 
 Check out the `transformgizmo.inv` example workspace in the BaseGL module on how to use the gizmo.
-
-![Move-Rotate Gizmo](resources/changelog/transform-gizmo.jpg)
 
 ## 2026-11-13 Properties are no longer movable or assignable
 `Property`, `PropertyOwner`, `CompositeProperty`, and all the concrete property classes now have reference semantics: move construction and copy/move assignment are deleted. The copy constructor of `PropertyOwner` is `protected`, the copy constructors of the concrete properties remain public since they are needed by `clone()` and by the copy constructors of composite properties. Use `clone()` to duplicate a property, and `set()` to copy a value from another property. Value assignment of leaf properties, e.g. `floatProperty = 1.0f`, is unchanged.

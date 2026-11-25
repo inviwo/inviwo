@@ -81,7 +81,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                                     KeyModifier::Control | KeyModifier::Alt}
 
     , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false}
-    , enableResourceTracking_{"enableResurceTracking",
+    , enableResourceTracking_{"enableResourceTracking",
                               "Track creation and destruction of resources",
                               "Useful for gettting a overview of memory usage, "
                               "but comes with a small runtime overhead"_help,

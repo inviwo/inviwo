@@ -247,4 +247,19 @@ TEST(Python3Scripts, MetaDataTest) {
     EXPECT_EQ(dvec2(1, 2), prop.getMetaData<DoubleVec2MetaData>("dvec2", dvec2{0}));
 }
 
+TEST(Python3Scripts, ResourceManager) {
+    const pybind11::gil_scoped_acquire guard{};
+
+    auto script = PythonScript::fromFile(getPath() / "resourcemanager.py");
+
+    bool status = false;
+    script.run([&](const pybind11::dict& dict) {
+        // add A, B, C; meta update; update A2; move (remove B, add B2); remove B2;
+        // clear (remove A2, C)
+        EXPECT_EQ(10, dict["totalEvents"].cast<int>());
+        status = true;
+    });
+    ASSERT_TRUE(status);
+}
+
 }  // namespace inviwo

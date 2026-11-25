@@ -84,6 +84,7 @@ set(TEST_FILES
     tests/unittests/scripts/metadata.py
     tests/unittests/scripts/option_property.py
     tests/unittests/scripts/passvalues.py
+    tests/unittests/scripts/resourcemanager.py
     tests/unittests/scripts/simple_buffer_test.py
 )
 ivw_add_unittest(${TEST_FILES})
