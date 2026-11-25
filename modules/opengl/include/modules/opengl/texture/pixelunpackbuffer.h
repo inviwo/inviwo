@@ -79,7 +79,8 @@ public:
     std::span<std::byte> map();
 
     /**
-     * Unmap the buffer. The buffer stays bound.
+     * Unmap the buffer. The buffer stays bound. Must be called before the data in the mapped range
+     * are dereferenced by any OpenGL commands.
      * @return false if the data store became corrupt while mapped (glUnmapBuffer returned
      *         GL_FALSE), in which case the contents must be considered undefined.
      */

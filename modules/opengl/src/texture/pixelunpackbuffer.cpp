@@ -55,11 +55,7 @@ PixelUnpackBuffer::PixelUnpackBuffer(PixelUnpackBuffer&& rhs) noexcept
 PixelUnpackBuffer& PixelUnpackBuffer::operator=(PixelUnpackBuffer&& rhs) noexcept {
     if (this != &rhs) {
         if (id_ != 0) {
-            if (mapped_) {
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, id_);
-                glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-                glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-            }
+            // glDeleteBuffers implicitly unmaps a mapped buffer
             glDeleteBuffers(1, &id_);
         }
         id_ = std::exchange(rhs.id_, 0);
@@ -71,11 +67,7 @@ PixelUnpackBuffer& PixelUnpackBuffer::operator=(PixelUnpackBuffer&& rhs) noexcep
 
 PixelUnpackBuffer::~PixelUnpackBuffer() {
     if (id_ != 0) {
-        if (mapped_) {
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, id_);
-            glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-            glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-        }
+        // glDeleteBuffers implicitly unmaps a mapped buffer
         glDeleteBuffers(1, &id_);
     }
 }
