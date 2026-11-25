@@ -104,6 +104,8 @@ protected:
     QMainWindow* mainWindow_;
     std::shared_ptr<MenuItem> editActionsHandle_;
     bool vScrolling_ = false;
+
+    std::shared_ptr<std::function<void()>> parentCallback;
 };
 
 }  // namespace animation

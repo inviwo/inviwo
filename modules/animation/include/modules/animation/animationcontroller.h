@@ -165,6 +165,9 @@ public:
     ButtonProperty insertControlTrack;
     ButtonProperty insertInvalidationTrack;
 
+    CompositeProperty settings;
+    StringProperty parentWidget;
+
 protected:
     /// Low-level setting of currentTime_. Use eval() to set time in the public interface.
     void setTime(Seconds time);
