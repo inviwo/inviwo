@@ -18,7 +18,12 @@ class Observer(inviwopy.ResourceManagerObserver):
 
 observer = Observer()  # keep a reference, the manager does not own the observer
 rm.addObserver(observer)
-```
+
+## 2026-11-18 Transformation Gizmo
+Added a transformation gizmo similar to the ones used in popular 3D modeling software.
+The gizmo is used to interactively modify the transformations of a Layer, Mesh, of Volume with the corresponding `Transform <Layer/Mesh/Volume> Gizmo` processor. Translation and rotations can be applied in global or local reference frames, that is in World, Model, and Data coordinates, respectively. The `Gizmo Renderer` is responsible for rendering the gizmo on top of the geometry and provides various customization options.
+
+Check out the `transformgizmo.inv` example workspace in the BaseGL module on how to use the gizmo.
 
 ## 2026-11-13 Properties are no longer movable or assignable
 `Property`, `PropertyOwner`, `CompositeProperty`, and all the concrete property classes now have reference semantics: move construction and copy/move assignment are deleted. The copy constructor of `PropertyOwner` is `protected`, the copy constructors of the concrete properties remain public since they are needed by `clone()` and by the copy constructors of composite properties. Use `clone()` to duplicate a property, and `set()` to copy a value from another property. Value assignment of leaf properties, e.g. `floatProperty = 1.0f`, is unchanged.

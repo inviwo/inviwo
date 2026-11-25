@@ -118,8 +118,8 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.TranslateProperty"};
 
     TranslateProperty(std::string_view identifier, std::string_view displayName,
-                      const dvec3& value = dvec3{0.0}, const dvec3& minValue = dvec3{-1.e6},
-                      const dvec3& maxValue = dvec3{1.e6}, const dvec3& increment = dvec3{0.001},
+                      const dvec3& value = dvec3{0.0}, const dvec3& minValue = dvec3{-10.0},
+                      const dvec3& maxValue = dvec3{10.0}, const dvec3& increment = dvec3{0.001},
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     TranslateProperty(const TranslateProperty& rhs);
@@ -167,8 +167,8 @@ public:
     static constexpr std::string_view classIdentifier{"org.inviwo.trafo.ScaleProperty"};
 
     ScaleProperty(std::string_view identifier, std::string_view displayName,
-                  const dvec3& value = dvec3{1.0}, const dvec3& minValue = dvec3{-1.e3},
-                  const dvec3& maxValue = dvec3{1.e3}, const dvec3& increment = dvec3{0.001},
+                  const dvec3& value = dvec3{1.0}, const dvec3& minValue = dvec3{-10.0},
+                  const dvec3& maxValue = dvec3{10.0}, const dvec3& increment = dvec3{0.001},
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
     ScaleProperty(const ScaleProperty& rhs);
@@ -190,8 +190,8 @@ public:
 
     CustomTransformProperty(
         std::string_view identifier, std::string_view displayName, const dmat4& value = dmat4{1.0},
-        const dmat4& minValue = util::filled<dmat4>(-1.e6),
-        const dmat4& maxValue = util::filled<dmat4>(1.e6),
+        const dmat4& minValue = util::filled<dmat4>(-10.0),
+        const dmat4& maxValue = util::filled<dmat4>(10.0),
         const dmat4& increment = util::filled<dmat4>(0.001),
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);

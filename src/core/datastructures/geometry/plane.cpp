@@ -37,6 +37,9 @@
 
 namespace inviwo {
 
+dvec3 Line::projectPoint(const dvec3& p) const {
+    return direction * glm::dot(p - point, direction) / glm::dot(direction, direction) + point;
+}
 
 Plane::Plane(dvec3 point, dvec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
 
@@ -117,6 +120,24 @@ std::optional<double> Plane::getIntersectionWeight(const dvec3& start, const dve
         }
     }
 
+    // No intersection
+    return std::nullopt;
+}
+
+std::optional<dvec3> Plane::getIntersection(const Line& line) const {
+    // Distance from point to plane
+    const double d = glm::dot(point_ - line.point, normal_);
+    if (glm::abs(d) < glm::epsilon<double>()) {
+        // segment is in plane, return start point.
+        return line.point;
+    }
+    // Distance of segment projected onto plane normal
+    const double denom =
+        glm::dot(normal_, line.direction);  // if zero, segment is parallel to plane
+    if (std::abs(denom) > glm::epsilon<double>()) {
+        const double tHit = d / denom;
+        return line.point + tHit * line.direction;
+    }
     // No intersection
     return std::nullopt;
 }
