@@ -66,6 +66,7 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , breakOnNextMessageProperty_{"breakOnNextMessage",
                                   "Break On Next Warning/Error",
                                   [](Event*) {
+                                      log::info("Break on next Warning/Error");
                                       LogCentral::getPtr()->setMessageBreakOnNextLevel(
                                           MessageBreakLevel::Warn);
                                   },
@@ -75,7 +76,10 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , breakOnException_{"breakOnException", "Break on Exception", false}
     , breakOnNextExceptionProperty_{"breakOnNextException",
                                     "Break On Next Exception",
-                                    [this](Event*) { breakOnNextException_ = true; },
+                                    [this](Event*) {
+                                        breakOnNextException_ = true;
+                                        log::info("Break on next Exception");
+                                    },
                                     IvwKey::E,
                                     KeyState::Press,
                                     KeyModifier::Control | KeyModifier::Alt}

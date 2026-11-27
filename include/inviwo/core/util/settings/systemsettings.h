@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/multifileproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 
+#include <atomic>
+
 namespace inviwo {
 
 class InviwoApplication;
@@ -79,7 +81,7 @@ public:
     std::unique_ptr<LogStream> cout_;
     std::unique_ptr<LogStream> cerr_;
 
-    bool breakOnNextException_;
+    std::atomic<bool> breakOnNextException_;
     bool breakOnException();
 };
 
