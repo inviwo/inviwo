@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/modules/hdf5/hdf5exception.h
     include/modules/hdf5/hdf5module.h
     include/modules/hdf5/hdf5moduledefine.h
+    include/modules/hdf5/hdf5multifiletemporalvolumeloader.h
     include/modules/hdf5/hdf5read.h
     include/modules/hdf5/hdf5temporalvolumeloader.h
     include/modules/hdf5/hdf5types.h
@@ -19,6 +20,7 @@ set(HEADER_FILES
     include/modules/hdf5/processors/hdf5source.h
     include/modules/hdf5/processors/hdf5volumesource.h
     include/modules/hdf5/processors/hdf5temporalvolumesource.h
+    include/modules/hdf5/processors/hdf5directorytemporalvolumesource.h
     include/modules/hdf5/processors/hdf5layersource.h
     include/modules/hdf5/processors/hdf5buffersource.h
     include/modules/hdf5/processors/hdf5dataframesource.h
@@ -30,6 +32,7 @@ set(SOURCE_FILES
     src/datastructures/hdf5path.cpp
     src/hdf5exception.cpp
     src/hdf5module.cpp
+    src/hdf5multifiletemporalvolumeloader.cpp
     src/hdf5read.cpp
     src/hdf5temporalvolumeloader.cpp
     src/hdf5types.cpp
@@ -40,6 +43,7 @@ set(SOURCE_FILES
     src/processors/hdf5source.cpp
     src/processors/hdf5volumesource.cpp
     src/processors/hdf5temporalvolumesource.cpp
+    src/processors/hdf5directorytemporalvolumesource.cpp
     src/processors/hdf5layersource.cpp
     src/processors/hdf5buffersource.cpp
     src/processors/hdf5dataframesource.cpp
@@ -50,6 +54,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(TEST_FILES
     tests/unittests/hdf5-unittest-main.cpp
     tests/unittests/dimselection-test.cpp
+    tests/unittests/multifiletemporalvolumeloader-test.cpp
     tests/unittests/path-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
