@@ -36,6 +36,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/storageformat.h>
 
 #include <memory>
 #include <typeindex>
@@ -51,12 +52,19 @@ class TextureUnit;
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
     explicit LayerGL(std::shared_ptr<Texture2D> tex, LayerType type = LayerConfig::defaultType);
-    explicit LayerGL(size2_t dimensions = LayerConfig::defaultDimensions,
-                     LayerType type = LayerConfig::defaultType,
-                     const DataFormatBase* format = DataFormatBase::get(LayerConfig::defaultFormatId),
-                     const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
-                     InterpolationType interpolation = LayerConfig::defaultInterpolation,
-                     const Wrapping2D& wrapping = LayerConfig::defaultWrapping);
+    /**
+     * @param storage Requested storage format of the texture, ignored for depth layers. If it
+     * differs from the default the representation is marked as lossy, while getDataFormat still
+     * reports @p format. See utilgl::StorageFormat for the supported mappings.
+     */
+    explicit LayerGL(
+        size2_t dimensions = LayerConfig::defaultDimensions,
+        LayerType type = LayerConfig::defaultType,
+        const DataFormatBase* format = DataFormatBase::get(LayerConfig::defaultFormatId),
+        const SwizzleMask& swizzleMask = LayerConfig::defaultSwizzleMask,
+        InterpolationType interpolation = LayerConfig::defaultInterpolation,
+        const Wrapping2D& wrapping = LayerConfig::defaultWrapping,
+        utilgl::StorageFormat storage = utilgl::StorageFormat::Default);
     explicit LayerGL(const LayerReprConfig& config);
 
     LayerGL(const LayerGL& rhs);
@@ -91,6 +99,7 @@ public:
 
 private:
     std::shared_ptr<Texture2D> texture_;  // Can be shared
+    const DataFormatBase* dataFormat_ = nullptr;
     mutable GLenum texUnit_ = GLenum{0};
 };
 

@@ -36,6 +36,7 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/glmvec.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/storageformat.h>
 
 #include <memory>
 #include <typeindex>
@@ -57,12 +58,18 @@ struct GL {};
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
-    explicit VolumeGL(size3_t dimensions = VolumeConfig::defaultDimensions,
-                      const DataFormatBase* format = DataFormatBase::get(VolumeConfig::defaultFormatId),
-                      const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
-                      InterpolationType interpolation = VolumeConfig::defaultInterpolation,
-                      const Wrapping3D& wrapping = VolumeConfig::defaultWrapping,
-                      bool initializeTexture = true);
+    /**
+     * @param storage Requested storage format of the texture. If it differs from the default the
+     *        representation is marked as lossy, while getDataFormat still reports @p format.
+     *        See utilgl::StorageFormat for the supported mappings.
+     */
+    explicit VolumeGL(
+        size3_t dimensions = VolumeConfig::defaultDimensions,
+        const DataFormatBase* format = DataFormatBase::get(VolumeConfig::defaultFormatId),
+        const SwizzleMask& swizzleMask = VolumeConfig::defaultSwizzleMask,
+        InterpolationType interpolation = VolumeConfig::defaultInterpolation,
+        const Wrapping3D& wrapping = VolumeConfig::defaultWrapping, bool initializeTexture = true,
+        utilgl::StorageFormat storage = utilgl::StorageFormat::Default);
 
     explicit VolumeGL(const VolumeReprConfig& config, bool initializeTexture = true);
 
@@ -101,6 +108,7 @@ public:
 
 private:
     std::shared_ptr<Texture3D> texture_;
+    const DataFormatBase* dataFormat_ = nullptr;
 };
 
 template <>

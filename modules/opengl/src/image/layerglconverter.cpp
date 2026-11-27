@@ -32,7 +32,9 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/storageformat.h>
 #include <modules/opengl/texture/texture2d.h>  // IWYU pragma: keep
 
 #include <ostream>
@@ -42,16 +44,10 @@ namespace inviwo {
 
 std::shared_ptr<LayerGL> LayerRAM2GLConverter::createFrom(
     std::shared_ptr<const LayerRAM> src) const {
-    auto dst = std::make_shared<LayerGL>(src->getDimensions(), src->getLayerType(),
-                                         src->getDataFormat(), src->getSwizzleMask(),
-                                         src->getInterpolation(), src->getWrapping());
-
-    if (!dst) {
-        throw ConverterException(SourceContext{}, "Cannot convert format '{}' from RAM to GL",
-                                 *src->getDataFormat());
-    }
-
-    dst->getTexture()->initialize(src->getData());
+    auto dst = std::make_shared<LayerGL>(
+        src->getDimensions(), src->getLayerType(), src->getDataFormat(), src->getSwizzleMask(),
+        src->getInterpolation(), src->getWrapping(), utilgl::getStorageFormat(src->getOwner()));
+    utilgl::uploadToTexture(*src, *dst->getTexture(), true);
     return dst;
 }
 
@@ -62,7 +58,8 @@ void LayerRAM2GLConverter::update(std::shared_ptr<const LayerRAM> src,
     dst->setInterpolation(src->getInterpolation());
     dst->setWrapping(src->getWrapping());
 
-    dst->getTexture()->upload(src->getData());
+    utilgl::uploadToTexture(*src, *dst->getTexture(), false);
+    dst->setLossy(utilgl::isLossy(src->getDataFormat(), *dst->getTexture()));
 }
 
 std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
@@ -75,7 +72,7 @@ std::shared_ptr<LayerRAM> LayerGL2RAMConverter::createFrom(
                                  *src->getDataFormat());
     }
 
-    src->getTexture()->download(dst->getData());
+    utilgl::downloadFromTexture(*src->getTexture(), *dst);
     return dst;
 }
 
@@ -86,7 +83,7 @@ void LayerGL2RAMConverter::update(std::shared_ptr<const LayerGL> src,
     dst->setInterpolation(src->getInterpolation());
     dst->setWrapping(src->getWrapping());
 
-    src->getTexture()->download(dst->getData());
+    utilgl::downloadFromTexture(*src->getTexture(), *dst);
 }
 
 }  // namespace inviwo
