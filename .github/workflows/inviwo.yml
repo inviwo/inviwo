@@ -191,7 +191,11 @@ jobs:
       shell: bash
       run: |
         echo "::add-matcher::inviwo/.github/matchers/${{ matrix.system }}.json"
-        cmake --build build --config ${{ matrix.configuration }} --verbose --parallel --target ${{ matrix.targets }}
+        parallel_args=(--parallel)
+        if [[ "${{ matrix.system }}" == "windows" && "${{ matrix.linkage }}" == "static" ]]; then
+          parallel_args=(--parallel 2)
+        fi
+        cmake --build build --config ${{ matrix.configuration }} --verbose "${parallel_args[@]}" --target ${{ matrix.targets }}
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
 

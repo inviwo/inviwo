@@ -21,6 +21,7 @@
       "cacheVariables": {
         "IVW_CFG_MSVC_FORCE_SHARED_CRT":      { "type": "BOOL", "value": "ON"},
         "IVW_CFG_MSVC_MULTI_PROCESSOR_COUNT": { "type": "STRING", "value": "1"},
+        "VCPKG_FEATURE_FLAGS":              { "type": "STRING", "value": "compilertracking"},
         "IVW_TEST_UNIT_TESTS":                { "type": "BOOL", "value": "OFF"},
         "BUILD_SHARED_LIBS":                  { "type": "BOOL", "value": "OFF"}
       }
