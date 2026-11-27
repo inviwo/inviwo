@@ -40,12 +40,24 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <span>
+#include <cstddef>
+#include <cstdint>
 
 namespace inviwo {
 
 class DataFormatBase;
 
 namespace hdf5 {
+
+/**
+ * Controls when the data of a Volume or Layer created from an HDF5 dataset is read.
+ */
+enum class Loading : std::uint8_t {
+    Eager,  ///< Read the data into a RAM representation right away.
+    Lazy    ///< Create a VolumeHDF or LayerHDF representation which reads the data on demand when
+            ///< it is converted to another representation, e.g. directly into a GL texture.
+};
 
 IVW_MODULE_HDF5_API VolumeConfig getVolumeConfig(const Handle& handle,
                                                  const std::vector<Selection>& selection,
@@ -59,14 +71,37 @@ IVW_MODULE_HDF5_API std::pair<VolumeConfig, Selection> getTemporalVolumeConfig(
     VolumeConfig volumeConfig);
 
 /**
+ * Read the hyperslab @p selection of the dataset at @p handle into @p dst, converting the data to
+ * @p format. The @p selection is given in column major (Inviwo) order and must resolve to
+ * @p dimensions, see getVolumeConfig. @p dst must hold exactly `glm::compMul(dimensions)` elements
+ * of @p format, which will be written in column major order.
+ * @throws Exception if the selection does not match @p dimensions, if the size of @p dst does not
+ * match, or if the data could not be read.
+ */
+IVW_MODULE_HDF5_API void readVolumeData(const Handle& handle,
+                                        const std::vector<Selection>& selection, size3_t dimensions,
+                                        const DataFormatBase* format, std::span<std::byte> dst);
+
+/**
+ * Read the hyperslab @p selection of the dataset at @p handle into @p dst, converting the data to
+ * @p format. @see readVolumeData
+ */
+IVW_MODULE_HDF5_API void readLayerData(const Handle& handle,
+                                       const std::vector<Selection>& selection, size2_t dimensions,
+                                       const DataFormatBase* format, std::span<std::byte> dst);
+
+/**
  * Read the dataset at @p handle into a Volume. The @p selection defines a hyperslab per
  * dimension in column major (Inviwo) order. If @p type is null the data format is deduced from
  * the dataset.
  * @p getVolume is used to allocate the resulting Volume, allowing the caller to reuse storage.
+ * With Loading::Lazy no data is read, instead the Volume gets a VolumeHDF representation which
+ * reads the data on demand. Any existing representations of a reused Volume are invalidated.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Volume> getVolumeAtPathAsType(
     const Handle& handle, const std::vector<Selection>& selection, VolumeConfig volumeConfig,
-    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume);
+    const std::function<std::shared_ptr<Volume>(const VolumeConfig&)>& getVolume,
+    Loading loading = Loading::Eager);
 
 /**
  * Helper for the @p getVolume callback of getVolumeAtPathAsType. If @p reuse has the same
@@ -80,7 +115,8 @@ IVW_MODULE_HDF5_API std::shared_ptr<Volume> reuseOrCreateVolume(const VolumeConf
  * Read the dataset at @p handle into a Layer. @see getVolumeAtPathAsType.
  */
 IVW_MODULE_HDF5_API std::shared_ptr<Layer> getLayerAtPathAsType(
-    const Handle& handle, const std::vector<Selection>& selection, LayerConfig layerConfig);
+    const Handle& handle, const std::vector<Selection>& selection, LayerConfig layerConfig,
+    Loading loading = Loading::Eager);
 
 /**
  * Read the dataset at @p handle into a Buffer. @see getVolumeAtPathAsType.

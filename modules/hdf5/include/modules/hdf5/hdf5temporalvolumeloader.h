@@ -32,6 +32,7 @@
 #include <modules/hdf5/hdf5moduledefine.h>
 #include <modules/hdf5/datastructures/hdf5handle.h>
 #include <modules/hdf5/datastructures/hdf5selection.h>
+#include <modules/hdf5/hdf5read.h>
 
 #include <inviwo/core/datastructures/volume/temporalvolume.h>
 #include <inviwo/core/datastructures/volume/volumeconfig.h>
@@ -61,6 +62,11 @@ namespace hdf5 {
  * @note load() serializes all HDF5 access via an internal mutex since the underlying HDF5 C
  * library is not guaranteed to be safe for concurrent use from the background thread pool that
  * TemporalVolume may invoke load() from.
+ *
+ * With Loading::Lazy the frames are backed by a VolumeHDF representation and no voxel data is read
+ * in load(). The data is instead read when the frame is converted to another representation,
+ * e.g. directly into a GL texture, on the thread requesting the conversion. Hence prefetching
+ * does not hide any file I/O in this mode.
  */
 class IVW_MODULE_HDF5_API HDF5TemporalVolumeLoader : public TemporalVolumeLoader {
 public:
@@ -70,9 +76,10 @@ public:
      * @param timeDimension index into @p selection designating the time axis
      * @param dt            time between consecutive frames
      * @param config        the prototype VolumeConfig to use
+     * @param loading       whether to read the voxel data in load() or defer it, see Loading
      */
     HDF5TemporalVolumeLoader(Handle handle, std::vector<Selection> selection, size_t timeDimension,
-                             Seconds dt, VolumeConfig config);
+                             Seconds dt, VolumeConfig config, Loading loading = Loading::Eager);
 
     virtual std::shared_ptr<Volume> load(size_t index, std::shared_ptr<Volume> reuse,
                                          std::stop_token stop) const override;
@@ -87,6 +94,7 @@ private:
     Selection timeSelection_;
     Seconds dt_;
     VolumeConfig prototype_;
+    Loading loading_;
 };
 
 }  // namespace hdf5

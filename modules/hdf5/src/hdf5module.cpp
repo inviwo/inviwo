@@ -30,6 +30,8 @@
 #include <modules/hdf5/hdf5module.h>
 
 #include <modules/hdf5/ports/hdf5port.h>
+#include <modules/hdf5/datastructures/volumehdfconverter.h>
+#include <modules/hdf5/datastructures/layerhdfconverter.h>
 #include <modules/hdf5/processors/hdf5source.h>
 #include <modules/hdf5/processors/hdf5volumesource.h>
 #include <modules/hdf5/processors/hdf5temporalvolumesource.h>
@@ -44,6 +46,11 @@ namespace inviwo {
 HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
     registerPort<hdf5::Inport>();
     registerPort<hdf5::Outport>();
+
+    registerRepresentationConverter<VolumeRepresentation>(
+        std::make_unique<hdf5::VolumeHDF2RAMConverter>());
+    registerRepresentationConverter<LayerRepresentation>(
+        std::make_unique<hdf5::LayerHDF2RAMConverter>());
 
     registerProcessor<hdf5::Source>();
     registerProcessor<hdf5::HDF5ToVolume>();

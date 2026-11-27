@@ -34,7 +34,6 @@
 #include <H5Ppublic.h>
 #include <warn/pop>
 
-
 namespace inviwo::hdf5 {
 
 namespace {
@@ -86,6 +85,8 @@ Document Handle::getInfo() const {
 }
 
 const H5::Group& Handle::getGroup() const { return data_; }
+
+const std::filesystem::path& Handle::getFilename() const { return filename_; }
 
 const Path& Handle::getPath() const { return path_; }
 

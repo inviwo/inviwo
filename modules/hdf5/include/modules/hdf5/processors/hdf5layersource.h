@@ -76,6 +76,7 @@ private:
 
     CompositeProperty outputGroup_;
     OptionPropertyInt datatype_;
+    BoolProperty lazyLoading_;
     DimSelectionsProperty selection_;
 
     bool deserialized_ = false;

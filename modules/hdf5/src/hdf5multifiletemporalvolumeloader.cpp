@@ -51,7 +51,7 @@ namespace inviwo::hdf5 {
 
 HDF5MultiFileTemporalVolumeLoader::HDF5MultiFileTemporalVolumeLoader(
     std::vector<std::filesystem::path> files, Path path, std::vector<Selection> selection,
-    size_t timeDimension, Seconds dt, VolumeConfig config)
+    size_t timeDimension, Seconds dt, VolumeConfig config, Loading loading)
     : files_{std::move(files)}
     , path_{std::move(path)}
     , selection_{std::move(selection)}
@@ -59,7 +59,8 @@ HDF5MultiFileTemporalVolumeLoader::HDF5MultiFileTemporalVolumeLoader(
     , timeSelections_{}
     , frameOffsets_{}
     , dt_{dt}
-    , prototype_{std::move(config)} {
+    , prototype_{std::move(config)}
+    , loading_{loading} {
 
     if (files_.empty()) {
         throw Exception{SourceContext{}, "No HDF5 files given"};
@@ -119,26 +120,31 @@ std::shared_ptr<Volume> HDF5MultiFileTemporalVolumeLoader::load(size_t index,
 
     try {
         const Handle handle = Handle{file} + path_;
-        return getVolumeAtPathAsType(handle, sel, prototype_, [&](const VolumeConfig& cfg) {
-            const auto expectedDims =
-                prototype_.dimensions.value_or(VolumeConfig::defaultDimensions);
-            const auto expectedFormat = prototype_.formatId.value_or(VolumeConfig::defaultFormatId);
-            const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
-            const auto formatId = cfg.formatId.value_or(VolumeConfig::defaultFormatId);
-            if (dims != expectedDims || formatId != expectedFormat) {
-                throw Exception{SourceContext{},
-                                "Dataset '{}' in HDF5 file '{}' has dimensions {} and format {}, "
-                                "expected {} and {} as in '{}'",
-                                path_.toString(),
-                                file,
-                                dims,
-                                DataFormatBase::get(formatId)->getString(),
-                                expectedDims,
-                                DataFormatBase::get(expectedFormat)->getString(),
-                                files_.front()};
-            }
-            return reuseOrCreateVolume(cfg, reuse);
-        });
+        return getVolumeAtPathAsType(
+            handle, sel, prototype_,
+            [&](const VolumeConfig& cfg) {
+                const auto expectedDims =
+                    prototype_.dimensions.value_or(VolumeConfig::defaultDimensions);
+                const auto expectedFormat =
+                    prototype_.formatId.value_or(VolumeConfig::defaultFormatId);
+                const auto dims = cfg.dimensions.value_or(VolumeConfig::defaultDimensions);
+                const auto formatId = cfg.formatId.value_or(VolumeConfig::defaultFormatId);
+                if (dims != expectedDims || formatId != expectedFormat) {
+                    throw Exception{
+                        SourceContext{},
+                        "Dataset '{}' in HDF5 file '{}' has dimensions {} and format {}, "
+                        "expected {} and {} as in '{}'",
+                        path_.toString(),
+                        file,
+                        dims,
+                        DataFormatBase::get(formatId)->getString(),
+                        expectedDims,
+                        DataFormatBase::get(expectedFormat)->getString(),
+                        files_.front()};
+                }
+                return reuseOrCreateVolume(cfg, reuse);
+            },
+            loading_);
     } catch (H5::Exception& e) {
         throw Exception{SourceContext{}, "Error reading dataset '{}' in HDF5 file '{}': {}",
                         path_.toString(), file, e.getDetailMsg()};
