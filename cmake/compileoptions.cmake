@@ -42,6 +42,44 @@ if(CMAKE_GENERATOR STREQUAL "Xcode")
 
 endif()
 
+# Xcode manages sanitizer settings through its scheme editor (see IVW_CFG_XCODE_ADDRESS_SANITIZER
+# above), so we only expose the command-line sanitizer options for non-Xcode generators.
+if(NOT CMAKE_GENERATOR STREQUAL "Xcode")
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+        "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+        option(IVW_CFG_ADDRESS_SANITIZER "Enable Address Sanitizer" OFF)
+        option(IVW_CFG_UNDEFINED_BEHAVIOR_SANITIZER "Enable Undefined Behavior Sanitizer" OFF)
+        # Note: IVW_CFG_CODE_COVERAGE should not be used simultaneously with sanitizers.
+        # Use it in a separate build configuration to collect coverage data.
+        # After building, run the tests and then use llvm-cov or lcov to generate reports:
+        #   llvm-profdata merge -sparse default.profraw -o default.profdata
+        #   llvm-cov report ./bin/inviwo-unittests -instr-profile=default.profdata
+        # Or with gcov-style coverage:
+        #   lcov --capture --directory . --output-file coverage.info
+        #   genhtml coverage.info --output-directory coverage-report
+        option(IVW_CFG_CODE_COVERAGE "Enable code coverage instrumentation (do not combine with sanitizers)" OFF)
+
+        if(IVW_CFG_ADDRESS_SANITIZER)
+            add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+            add_link_options(-fsanitize=address)
+        endif()
+
+        if(IVW_CFG_UNDEFINED_BEHAVIOR_SANITIZER)
+            add_compile_options(-fsanitize=undefined)
+            add_link_options(-fsanitize=undefined)
+        endif()
+
+        if(IVW_CFG_CODE_COVERAGE)
+            if(IVW_CFG_ADDRESS_SANITIZER OR IVW_CFG_UNDEFINED_BEHAVIOR_SANITIZER)
+                message(WARNING "IVW_CFG_CODE_COVERAGE should not be used together with sanitizers. "
+                    "Use a separate build configuration for coverage data collection.")
+            endif()
+            add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+            add_link_options(-fprofile-instr-generate)
+        endif()
+    endif()
+endif()
+
 set(IVW_XCODE_WARNINGS 
     # CLANG_WARN__EXIT_TIME_DESTRUCTORS
     CLANG_WARN_ASSIGN_ENUM
